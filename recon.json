@@ -34,6 +34,36 @@
   ],
   "accepted_functions": [
     {
+      "symbol": "_DDSetDebug",
+      "rva": "0x00003100",
+      "size": 16,
+      "tu": "src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDLoadBitmap",
+      "rva": "0x00003110",
+      "size": 400,
+      "tu": "src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDReLoadBitmap",
+      "rva": "0x000032a0",
+      "size": 160,
+      "tu": "src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDCopyBitmap",
+      "rva": "0x00003340",
+      "size": 512,
+      "tu": "src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDLoadPalette",
+      "rva": "0x00003540",
+      "size": 608,
+      "tu": "src/ddutil.cpp"
+    },
+    {
       "symbol": "_DDColorMatch",
       "rva": "0x000037a0",
       "size": 256,
@@ -52,9 +82,39 @@
       "tu": "src/ddutil.cpp"
     },
     {
+      "symbol": "?OutputDebug@@YAXPAD@Z",
+      "rva": "0x0001f010",
+      "size": 16,
+      "tu": "src/misc.cpp"
+    },
+    {
+      "symbol": "?InitHInstance@@YAXPAX@Z",
+      "rva": "0x0001f1e0",
+      "size": 16,
+      "tu": "src/misc.cpp"
+    },
+    {
+      "symbol": "?LoadStringA@@YAXIPADH@Z",
+      "rva": "0x0001f1f0",
+      "size": 32,
+      "tu": "src/misc.cpp"
+    },
+    {
       "symbol": "?ConvLongToPos@@YA?AUtagPOINT@@J@Z",
       "rva": "0x0001f330",
       "size": 32,
+      "tu": "src/misc.cpp"
+    },
+    {
+      "symbol": "?InitRandom@@YAXXZ",
+      "rva": "0x0001f350",
+      "size": 16,
+      "tu": "src/misc.cpp"
+    },
+    {
+      "symbol": "?TraceErrorDS@@YAXJPADH@Z",
+      "rva": "0x0001ffa0",
+      "size": 432,
       "tu": "src/misc.cpp"
     },
     {
@@ -100,6 +160,12 @@
       "tu": "src/movie.cpp"
     },
     {
+      "symbol": "??1CMovie@@QAE@XZ",
+      "rva": "0x00020450",
+      "size": 16,
+      "tu": "src/movie.cpp"
+    },
+    {
       "symbol": "?Create@CMovie@@QAEHXZ",
       "rva": "0x00020460",
       "size": 48,
@@ -128,6 +194,12 @@
       "rva": "0x000205b0",
       "size": 32,
       "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?ReadData@CSound@@IAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z",
+      "rva": "0x00022a10",
+      "size": 304,
+      "tu": "src/sound.cpp"
     },
     {
       "symbol": "?CreateBufferFromWaveFile@CSound@@IAEHHPAD@Z",
@@ -205,6 +277,18 @@
       "symbol": "?Flush@CSound@@QAEXH@Z",
       "rva": "0x00022ec0",
       "size": 64,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?PlayMusic@CSound@@QAEHPAXPAD@Z",
+      "rva": "0x00023340",
+      "size": 432,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?RestartMusic@CSound@@QAEHXZ",
+      "rva": "0x000234f0",
+      "size": 80,
       "tu": "src/sound.cpp"
     },
     {

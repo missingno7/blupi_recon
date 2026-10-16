@@ -162,12 +162,18 @@ def report(results: list[dict[str, Any]], unit_order: list[str]) -> tuple[dict[s
                                              str(detail.get("target_va"))))
     for object_path, oracle_path, target_va in sorted(path_exceptions):
         print(f"build-path data difference: object={object_path!r} oracle={oracle_path!r} target={target_va}")
-    print("\nTU                      functions  strict  unverified  mismatch  game bytes")
-    print("----------------------  ---------  ------  ----------  --------  ----------")
+    for result in results:
+        for warning in result.get("layout_warnings", []):
+            print(f"layout warning ({Path(result['object']).name}): {warning}")
+    print("\nTU                      functions  strict  unverified  mismatch  locations U/P/C/F/A  game bytes")
+    print("----------------------  ---------  ------  ----------  --------  ------------------  ----------")
     for unit in unit_order:
         functions = by_unit[unit]
         counts = {key: sum(f["status"] == key for f in functions)
                   for key in ("STRICT", "RELOC-UNVERIFIED", "MISMATCH")}
+        bases = {key: sum(f.get("placement_basis") == key for f in functions)
+                 for key in ("unique", "placed by TU order", "placed by verified call targets", "forced by --at")}
+        unresolved_locations = sum(f.get("placement_basis") in ("ambiguous", "unlocated") for f in functions)
         intervals: list[tuple[int, int]] = []
         for func in functions:
             if func["status"] != "STRICT":
@@ -179,8 +185,14 @@ def report(results: list[dict[str, Any]], unit_order: list[str]) -> tuple[dict[s
                 intervals.append((low, high))
         covered = union_size(intervals)
         all_intervals.extend(intervals)
+        location_counts = (f"{bases['unique']}/{bases['placed by TU order']}/"
+                           f"{bases['placed by verified call targets']}/{bases['forced by --at']}/"
+                           f"{unresolved_locations}")
         print(f"{unit:<22}  {len(functions):>9}  {counts['STRICT']:>6}  "
-              f"{counts['RELOC-UNVERIFIED']:>10}  {counts['MISMATCH']:>8}  {covered:>5} / {GAME_TEXT_SIZE}")
+              f"{counts['RELOC-UNVERIFIED']:>10}  {counts['MISMATCH']:>8}  "
+              f"{location_counts:>16}  "
+              f"{covered:>5} / {GAME_TEXT_SIZE}")
+    print("Location counts U/P/C/F/A = unique / placed by TU order / placed by verified calls / forced by --at / unresolved.")
     total = union_size(all_intervals)
     print(f"All TUs strict game .text coverage: {total} / {GAME_TEXT_SIZE} bytes")
     return by_unit, total

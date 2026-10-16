@@ -298,7 +298,7 @@ def import_map(pe: pefile.PE) -> dict[str, int]:
     for entry in getattr(pe, "DIRECTORY_ENTRY_IMPORT", []):
         for imp in entry.imports:
             if imp.name:
-                result[imp.name.decode("ascii", "replace").casefold()] = imp.address
+                result[normalize_import(imp.name.decode("ascii", "replace"))] = imp.address
     return result
 
 
@@ -315,6 +315,96 @@ def symbol_map_key(obj_path: Path, symbol: Symbol) -> str:
     if symbol.storage == 2:
         return "global:" + symbol.name
     return f"local:{obj_path.resolve()}:{symbol.index}"
+
+
+def align16(value: int) -> int:
+    return (value + 15) & ~15
+
+
+def reachable_function_starts(start: int, funcs: list[Function]) -> set[int]:
+    """Return starts reachable if each unlocated function is kept or dead-stripped."""
+    positions = {start}
+    for func in funcs:
+        # A function section may be retained or removed by the original linker.
+        positions |= {align16(position + len(func.data)) for position in positions}
+        if len(positions) > 4096:
+            return set()
+    return positions
+
+
+def select_tu_locations(loaded: list[tuple[Path, Coff, list[Function], dict[int, list[int]]]],
+                        text_rva: int) -> dict[tuple[str, int], tuple[int, str]]:
+    """Select only byte-unique locations or duplicates proved by TU order.
+
+    For an ambiguous body, its nearest uniquely located neighbours must bracket
+    exactly one hit. At a TU boundary, one unique neighbour is enough when the
+    hit and neighbour are adjacent after /O2's 16-byte function alignment.
+    Unlocated functions can be omitted by the original linker (for example dead
+    COMDATs), so the boundary check uses the hit's actual byte extent and the
+    nearest unique function rather than assuming every COFF section survived.
+    """
+    selected: dict[tuple[str, int], tuple[int, str]] = {}
+    for obj_path, _coff, funcs, hits_by_index in loaded:
+        raw: dict[int, list[int]] = {f.symbol.index: sorted(set(hits_by_index.get(f.symbol.index, [])))
+                                     for f in funcs}
+        chosen: dict[int, tuple[int, str]] = {}
+        for func in funcs:
+            hits = raw[func.symbol.index]
+            if len(hits) == 1:
+                chosen[func.symbol.index] = (hits[0], "unique")
+
+        # The compiler emits the function sections in TU order. The linker in
+        # this build keeps that order; section indices preserve it in the COFF.
+        ordered_funcs = list(funcs)
+        for pos, func in enumerate(ordered_funcs):
+            func_hits = raw[func.symbol.index]
+            if len(func_hits) < 2:
+                continue
+            prev_pos = next((i for i in range(pos - 1, -1, -1)
+                             if len(raw[ordered_funcs[i].symbol.index]) == 1), None)
+            next_pos = next((i for i in range(pos + 1, len(ordered_funcs))
+                             if len(raw[ordered_funcs[i].symbol.index]) == 1), None)
+            candidates: list[int] = []
+            if prev_pos is not None and next_pos is not None:
+                prev = ordered_funcs[prev_pos]
+                next_func = ordered_funcs[next_pos]
+                prev_va = raw[prev.symbol.index][0]
+                next_va = raw[next_func.symbol.index][0]
+                before = reachable_function_starts(align16(prev_va + len(prev.data)),
+                                                   ordered_funcs[prev_pos + 1:pos])
+                for hit in func_hits:
+                    if hit not in before or hit % 16:
+                        continue
+                    after = reachable_function_starts(align16(hit + len(func.data)),
+                                                      ordered_funcs[pos + 1:next_pos])
+                    if next_va in after:
+                        candidates.append(hit)
+            elif pos == 0 and next_pos is not None:
+                # First surviving function in this TU: boundary plus the
+                # nearest unique successor. Intervening unlocated sections
+                # may be omitted, but the gap must be reachable by alignment.
+                next_func = ordered_funcs[next_pos]
+                next_va = raw[next_func.symbol.index][0]
+                for hit in func_hits:
+                    after = reachable_function_starts(align16(hit + len(func.data)),
+                                                      ordered_funcs[pos + 1:next_pos])
+                    if hit % 16 == 0 and next_va in after:
+                        candidates.append(hit)
+            elif pos == len(ordered_funcs) - 1 and prev_pos is not None:
+                prev = ordered_funcs[prev_pos]
+                prev_va = raw[prev.symbol.index][0]
+                before = reachable_function_starts(align16(prev_va + len(prev.data)),
+                                                   ordered_funcs[prev_pos + 1:pos])
+                for hit in func_hits:
+                    if hit % 16 == 0 and hit in {align16(p + len(func.data)) for p in before}:
+                        candidates.append(hit)
+            if len(set(candidates)) == 1:
+                chosen[func.symbol.index] = (candidates[0], "placed by TU order")
+
+        for func in funcs:
+            if func.symbol.index in chosen:
+                selected[(str(obj_path.resolve()), func.symbol.index)] = chosen[func.symbol.index]
+    return selected
 
 
 def relocation_targets(reloc: Relocation, section: Section, base_offset: int,
@@ -387,6 +477,10 @@ def data_extent(coff: Coff, symbol: Symbol, addend: int) -> tuple[int, bytes] | 
                   and s.storage in (2, 3) and not (s.typ == 0 and s.name == section.name)
                   and s.value <= target_offset]
     if symbol.name.startswith("??_C@"):
+        if section_kind(section.name) == "bss" and symbol.name.startswith("??_C@_00"):
+            # VC5 emits the empty-string COMDAT as a one-byte zero-fill BSS
+            # section instead of a raw .rdata byte.
+            return target_offset, b"\0"
         raw = section.raw[target_offset:]
         nul = raw.find(b"\0")
         if nul < 0:
@@ -431,15 +525,28 @@ def verify_data_target(pe: pefile.PE, coff: Coff, symbol: Symbol, addend: int,
     oracle_name = oracle_section.Name.rstrip(b"\0").decode("ascii", "replace") if oracle_section else "<unmapped>"
     entry.update({"object_section": obj_section.name, "oracle_section": oracle_name,
                   "object_offset": target_offset, "data_size": len(expected)})
+    actual = pe_bytes(pe, target_va, len(expected))
     if kind == "bss":
-        kind_ok = (oracle_section is not None and oracle_name == ".data"
-                   and oracle_offset >= oracle_section.SizeOfRawData)
+        # MSVC's uninitialized globals share the image's writable .data output
+        # section. PE file alignment can put the start of that zero-fill area in
+        # the last file-alignment unit of raw .data, before VirtualSize exceeds
+        # SizeOfRawData. Accept only the virtual tail or an all-zero aligned tail.
+        file_alignment = max(1, int(pe.OPTIONAL_HEADER.FileAlignment))
+        aligned_tail = max(0, oracle_section.SizeOfRawData - file_alignment) if oracle_section else 0
+        in_virtual_bss = (oracle_section is not None and oracle_name == ".data"
+                          and oracle_offset >= oracle_section.SizeOfRawData)
+        in_zero_file_tail = (oracle_section is not None and oracle_name == ".data"
+                             and oracle_offset >= aligned_tail
+                             and oracle_offset + len(expected) <= oracle_section.SizeOfRawData
+                             and actual is not None and not any(actual))
+        kind_ok = in_virtual_bss or in_zero_file_tail
+        if kind_ok:
+            entry["oracle_bss_range"] = "virtual zero-fill" if in_virtual_bss else "zero file-alignment tail"
     else:
         expected_name = {"rdata": ".rdata", "data": ".data", "text": ".text"}.get(kind)
         kind_ok = oracle_name == expected_name
     if not kind_ok:
         return "MISMATCH", f"data target section kind {kind} landed in {oracle_name}", entry
-    actual = pe_bytes(pe, target_va, len(expected))
     if actual is None:
         return "MISMATCH", "data target exceeds oracle section bounds", entry
     if actual != expected:
@@ -481,9 +588,14 @@ def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: i
         key = symbol_map_key(obj_path, symbol)
         observed = global_symbols.get(key)
         if key not in global_symbols or observed is None or observed != symbol_va:
-            reason = "symbol has conflicting global bindings" if key in global_symbols else "symbol has no unique run-wide binding"
-            entry.update({"verified": False, "status": "RELOC-UNVERIFIED", "reason": reason})
+            conflict = key in global_symbols and observed is None
+            reason = ("symbol has conflicting global bindings" if conflict else
+                      "symbol has no unique run-wide binding")
+            entry.update({"verified": False,
+                          "status": "MISMATCH" if conflict else "RELOC-UNVERIFIED",
+                          "reason": reason})
             reports.append(entry)
+            hard_mismatch |= conflict
             unresolved = True
             continue
 
@@ -595,7 +707,8 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                    global_symbols: dict[str, int | None] | None = None,
                    function_defs: dict[str, list[Function]] | None = None,
                    data_defs: dict[str, list[tuple[Coff, Symbol]]] | None = None,
-                   oracle_function_vas: set[int] | None = None) -> dict[str, Any]:
+                   oracle_function_vas: set[int] | None = None,
+                   locations: dict[tuple[str, int], tuple[int, str]] | None = None) -> dict[str, Any]:
     coff = Coff(obj_path)
     functions = coff.functions()
     candidates: dict[str, list[int]] = {}
@@ -614,10 +727,17 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
         data = func.data
         hits = function_hits[id(func)]
         specified = at.get(func.name)
+        located = (locations or {}).get((str(obj_path.resolve()), func.symbol.index))
         if specified is not None:
             hit_offsets = [specified - text_rva]
+            placement_basis = (located[1] if located is not None and located[0] == specified - text_rva
+                               else "forced by --at")
+        elif located is not None:
+            hit_offsets = [located[0]]
+            placement_basis = located[1]
         else:
             hit_offsets = hits
+            placement_basis = "ambiguous" if len(set(hits)) > 1 else "unlocated"
         records = []
         raw_exact_hits = 0
         for base in hit_offsets:
@@ -636,18 +756,22 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
             if not bytes_equal:
                 status = "MISMATCH"
                 reloc_reports = []
+            elif located is None and specified is None:
+                # Candidate bytes alone do not authorize their relocations to
+                # affect run-wide bindings. Keep all locations visible, but
+                # leave their address-dependent evidence unverified.
+                status = "RELOC-UNVERIFIED"
+                reloc_reports = [{"verified": False, "status": "RELOC-UNVERIFIED",
+                                  "reason": "function location is ambiguous"}]
             else:
                 status, reloc_reports = resolve_sites(
                     func, base, exe_text, text_rva, pe.OPTIONAL_HEADER.ImageBase, pe, coff, obj_path,
                     unique_candidates, function_defs or {}, data_defs or {}, imports, explicit,
                     global_symbols or {}, oracle_function_vas or set())
-                if specified is None and len(set(hits)) != 1:
-                    status = "RELOC-UNVERIFIED"
-                    reloc_reports.append({"verified": False, "status": "RELOC-UNVERIFIED",
-                                          "reason": "function location is ambiguous"})
             records.append({"rva": f"0x{text_rva + base:08x}", "status": status,
                             "size": len(data), "code_size": len(data),
                             "alignment_padding_after": func.alignment_padding,
+                            "placement_basis": placement_basis,
                             "relocations": reloc_reports})
         best = None
         diff = None
@@ -669,6 +793,7 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
             overall_status = "RELOC-UNVERIFIED"
         results.append({"name": func.name, "section": func.section.name, "size": len(data),
                         "code_size": len(data), "alignment_padding_after": func.alignment_padding,
+                        "placement_basis": placement_basis,
                         "status": overall_status,
                         "relocation_count": len(func.relocs), "wildcard_hit_count": len(hits),
                         "raw_exact_hit_count": raw_exact_hits,
@@ -686,9 +811,34 @@ def oracle_function_starts(path: Path = ROOT / "oracle" / "functions.csv") -> se
     return starts
 
 
+def layout_warnings(obj_path: Path, locations: dict[tuple[str, int], tuple[int, str]],
+                    text_rva: int) -> list[str]:
+    """Report selected adjacent object functions that do not occupy adjacent aligned RVAs."""
+    coff = Coff(obj_path)
+    funcs = coff.functions()
+    warnings = []
+    obj_key = str(obj_path.resolve())
+    for left, right in zip(funcs, funcs[1:]):
+        left_location = locations.get((obj_key, left.symbol.index))
+        right_location = locations.get((obj_key, right.symbol.index))
+        if left_location is None or right_location is None:
+            continue
+        left_base, left_basis = left_location
+        right_base, right_basis = right_location
+        expected = align16(left_base + len(left.data))
+        if right_base != expected:
+            relation = "out-of-order/overlap" if right_base < left_base + len(left.data) else "gap beyond alignment padding"
+            warnings.append(
+                f"{left.name} ({text_rva + left_base:#x}, {left_basis}) -> "
+                f"{right.name} ({text_rva + right_base:#x}, {right_basis}): {relation}, "
+                f"expected next RVA {text_rva + expected:#x}")
+    return warnings
+
+
 def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, text_rva: int,
                          at: dict[str, int]) -> tuple[dict[str, list[int]], dict[str, int | None],
-                                                      dict[str, list[Function]], dict[str, list[tuple[Coff, Symbol]]]]:
+                                                       dict[str, list[Function]], dict[str, list[tuple[Coff, Symbol]]],
+                                                       dict[tuple[str, int], tuple[int, str]]]:
     loaded: list[tuple[Path, Coff, list[Function], dict[int, list[int]]]] = []
     candidates: dict[str, list[int]] = defaultdict(list)
     function_defs: dict[str, list[Function]] = defaultdict(list)
@@ -700,43 +850,101 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
         for func in funcs:
             function_defs[func.name].append(func)
             hits = candidates_for(func, exe_text)
-            forced = at.get(func.name)
-            if forced is not None:
-                base = forced - text_rva
-                masked = [False] * len(func.data)
-                for reloc in func.relocs:
-                    begin = reloc.offset - func.start
-                    for pos in range(max(0, begin), min(len(masked), begin + relocation_size(reloc.typ))):
-                        masked[pos] = True
-                if 0 <= base <= len(exe_text) - len(func.data) and is_byte_match(func.data, exe_text[base:base + len(func.data)], masked):
-                    hits = [base]
-                else:
-                    hits = []
             hits_by_index[func.symbol.index] = hits
-            candidates[func.name].extend(hits)
         for symbol in coff.symbols:
             if symbol.storage == 2 and symbol.section > 0 and not symbol.is_function and symbol.section <= len(coff.sections):
                 if section_kind(coff.sections[symbol.section - 1].name) in ("rdata", "data", "bss"):
                     data_defs[symbol.name].append((coff, symbol))
         loaded.append((obj_path, coff, funcs, hits_by_index))
+    locations = select_tu_locations(loaded, text_rva)
+    # Some helpers are emitted as identical short stubs (for example an
+    # optimized-away OutputDebug wrapper). A direct call from several already
+    # located functions proves which matching oracle entry the linker bound.
+    # Use only relocations from unique/order-placed callers, and require the
+    # target to be both an exact oracle function start and one of the helper's
+    # byte-matching candidates.
+    image_base = pe.OPTIONAL_HEADER.ImageBase
+    oracle_function_vas = {image_base + rva for rva in oracle_function_starts()}
+    call_observations: dict[str, list[tuple[tuple[str, int], int]]] = defaultdict(list)
+    for obj_path, coff, funcs, _hits_by_index in loaded:
+        obj_key = str(obj_path.resolve())
+        for func in funcs:
+            caller_key = (obj_key, func.symbol.index)
+            location = locations.get(caller_key)
+            if location is None or location[1] not in ("unique", "placed by TU order"):
+                continue
+            for reloc in func.relocs:
+                symbol = coff.sym_by_index.get(reloc.symbol_index)
+                if symbol is None or symbol.name not in function_defs or reloc.typ != 0x0014:
+                    continue
+                if len(function_defs[symbol.name]) != 1:
+                    continue
+                target = relocation_targets(reloc, func.section, location[0], exe_text, text_rva,
+                                            image_base, func.start)
+                if target is not None and target[2] == 0:
+                    call_observations[symbol.name].append((caller_key, target[1]))
+    for name, observations in call_observations.items():
+        defs = function_defs.get(name, [])
+        if len(defs) != 1:
+            continue
+        definition = defs[0]
+        # Resolve the object owner by symbol identity, not basename.
+        owner = next((obj_path for obj_path, coff, _funcs, _hits in loaded
+                      if any(symbol is definition.symbol for symbol in coff.symbols)), None)
+        if owner is None:
+            continue
+        key = (str(owner.resolve()), definition.symbol.index)
+        if key in locations:
+            continue
+        targets = {target for _caller, target in observations}
+        callers = {caller for caller, _target in observations}
+        if len(targets) != 1 or len(callers) < 2:
+            continue
+        target_va = next(iter(targets))
+        target_offset = target_va - image_base - text_rva
+        raw_hits = candidates_for(definition, exe_text)
+        if (target_va in oracle_function_vas and target_offset in raw_hits):
+            locations[key] = (target_offset, "placed by verified call targets")
+    # Apply explicit manifest assertions after independent byte/order/call
+    # proofs so the report retains the actual proof basis when they agree.
+    for obj_path, _coff, funcs, hits_by_index in loaded:
+        obj_key = str(obj_path.resolve())
+        for func in funcs:
+            expected = at.get(func.name)
+            if expected is None:
+                continue
+            hit = expected - text_rva
+            if hit not in hits_by_index.get(func.symbol.index, []):
+                continue
+            key = (obj_key, func.symbol.index)
+            current = locations.get(key)
+            if current is None or current[0] != hit:
+                locations[key] = (hit, "forced by --at")
+    for obj_path, _coff, funcs, _hits_by_index in loaded:
+        for func in funcs:
+            location = locations.get((str(obj_path.resolve()), func.symbol.index))
+            if location is not None:
+                candidates[func.name].append(location[0])
     candidates = {name: sorted(set(values)) for name, values in candidates.items()}
 
     observed: dict[str, set[int]] = defaultdict(set)
     image_base = pe.OPTIONAL_HEADER.ImageBase
     for obj_path, coff, funcs, hits_by_index in loaded:
         for func in funcs:
-            hits = sorted(set(hits_by_index.get(func.symbol.index, [])))
-            for base in hits:
-                for reloc in func.relocs:
-                    target = relocation_targets(reloc, func.section, base, exe_text, text_rva, image_base, func.start)
-                    symbol = coff.sym_by_index.get(reloc.symbol_index)
-                    if target is None or symbol is None:
-                        continue
-                    observed[symbol_map_key(obj_path, symbol)].add(target[0])
+            location = locations.get((str(obj_path.resolve()), func.symbol.index))
+            if location is None:
+                continue
+            base = location[0]
+            for reloc in func.relocs:
+                target = relocation_targets(reloc, func.section, base, exe_text, text_rva, image_base, func.start)
+                symbol = coff.sym_by_index.get(reloc.symbol_index)
+                if target is None or symbol is None:
+                    continue
+                observed[symbol_map_key(obj_path, symbol)].add(target[0])
     global_symbols: dict[str, int | None] = {}
     for key, values in observed.items():
         global_symbols[key] = next(iter(values)) if len(values) == 1 else None
-    return candidates, global_symbols, dict(function_defs), dict(data_defs)
+    return candidates, global_symbols, dict(function_defs), dict(data_defs), locations
 
 
 def main() -> int:
@@ -758,26 +966,37 @@ def main() -> int:
     exe_text = text_section.get_data()[:text_section.SizeOfRawData]
     imports = import_map(pe)
     object_paths = [path.resolve() for path in args.objects]
-    shared_candidates, global_symbols, function_defs, data_defs = collect_global_state(object_paths, pe, exe_text, text_rva, at)
+    shared_candidates, global_symbols, function_defs, data_defs, locations = collect_global_state(
+        object_paths, pe, exe_text, text_rva, at)
     oracle_function_vas = {pe.OPTIONAL_HEADER.ImageBase + rva for rva in oracle_function_starts()}
     all_results = []
     for obj_path in object_paths:
         result = compare_object(obj_path, pe, exe_text, text_rva, imports, explicit, at, not args.summary,
-                                shared_candidates, global_symbols, function_defs, data_defs, oracle_function_vas)
+                                shared_candidates, global_symbols, function_defs, data_defs,
+                                oracle_function_vas, locations)
+        result["layout_warnings"] = layout_warnings(obj_path, locations, text_rva)
         all_results.append(result)
         counts = Counter()
+        placement_counts = Counter()
         wildcard = 0
         exact_bytes = 0
         for func in result["functions"]:
+            placement_counts[func["placement_basis"]] += 1
             if func["wildcard_hit_count"]:
                 wildcard += 1
                 exact_bytes += int(func["raw_exact_hit_count"] > 0)
             counts[func["status"]] += 1
         print(f"{obj_path.name}: functions={len(result['functions'])} wildcard-hit={wildcard} exact-byte-functions={exact_bytes} "
-              f"strict={counts['STRICT']} reloc-unverified={counts['RELOC-UNVERIFIED']} mismatch={counts['MISMATCH']}")
+              f"strict={counts['STRICT']} reloc-unverified={counts['RELOC-UNVERIFIED']} mismatch={counts['MISMATCH']} "
+              f"locations(unique={placement_counts['unique']}, placed by TU order={placement_counts['placed by TU order']}, "
+              f"placed by verified calls={placement_counts['placed by verified call targets']}, "
+              f"forced={placement_counts['forced by --at']}, ambiguous={placement_counts['ambiguous']})")
+        for warning in result["layout_warnings"]:
+            print(f"  layout warning: {warning}")
         if not args.summary:
             for func in result["functions"]:
-                statuses = ",".join(f"{m['rva']}:{m['status']}" for m in func["matches"]) or "no hit"
+                statuses = ",".join(f"{m['rva']}:{m['status']}[{m.get('placement_basis', '?')}]"
+                                     for m in func["matches"]) or "no hit"
                 print(f"  {func['name']} size={func['size']} relocs={func['relocation_count']} hits={func['wildcard_hit_count']} {statuses}")
                 if func["disassembly_diff"]:
                     print(f"    nearest {func['best_candidate']}")

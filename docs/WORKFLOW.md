@@ -16,8 +16,9 @@ The verifier removes and recreates only `build/verify/`, sends `TMP` and `TEMP`
 to the repository's `build/tmp/`, compiles each TU with the manifest settings,
 and compares all objects in one run. It writes objects, logs, and JSON details
 under `build/verify/`, prints compiler component SHA-256 hashes once, and
-reports per-TU counts and strict game `.text` coverage. A nonzero exit means a
-previously accepted function failed its status, RVA, or code-size check.
+reports per-TU counts, location proofs, and strict game `.text` coverage. A
+nonzero exit means a previously accepted function failed its status, RVA, or
+code-size check.
 
 To check a candidate without changing `src/`, substitute one TU for that run:
 
@@ -48,12 +49,32 @@ substituted candidate cannot be promoted.
 - **MISMATCH** means code bytes or a proven relocation target/data payload
   differs, or a forced accepted RVA no longer matches.
 
+The comparator reports each location as `unique`, `placed by TU order`,
+`placed by verified call targets`, `forced by --at`, or unresolved. For
+identical-byte hits it uses the nearest unique locations in the same object's
+function order. A TU boundary and one unique neighbour can prove a placement
+when the function extent and 16-byte `/O2` alignment fit the observed gap,
+allowing intervening unlocated function sections to have been dead-stripped;
+otherwise the function stays ambiguous. A helper can also be placed when
+multiple uniquely located callers target the same candidate, which is an
+oracle function start.
+Only selected locations contribute relocation bindings. A conflict between
+selected bindings is a mismatch. The JSON and console report adjacent object
+functions whose oracle gap is not just 16-byte alignment padding.
+
 The report gives function code size separately from trailing `/O2` alignment
 padding. Padding is not counted as function body coverage.
 
-The current known data exception is `__FILE__`: compiling
-`src/sound.cpp` produces `D:\Prog\blupi_recon\src\sound.cpp`, while the oracle
-contains `F:\Profil\sound.cpp` at RVA `0x7b484`. `cmpfunc.py` reports this as a
-`build-path data difference` and leaves affected functions unverified; it does
-not mask the literal bytes. Other string literals and initialized data must
-match byte-for-byte.
+The current known data exception is `__FILE__`: `msvc.py` passes an absolute
+source path, producing `D:\Prog\blupi_recon\src\sound.cpp`, while the oracle
+contains `F:\Profil\sound.cpp` at RVA `0x7b484`. A VC5 `/E` probe with the
+relative command-line path `src/sound.cpp` produced the literal
+`src/sound.cpp`; it does not recreate the original drive path. Reproducing
+`F:\Profil\sound.cpp` would require that original source path or an equivalent
+path directive. `cmpfunc.py` reports the difference and leaves affected
+functions unverified; it does not mask the literal. Other string literals and
+initialized data must match byte-for-byte.
+
+VC5 `.bss` globals are checked against the oracle's writable `.data` zero-fill
+tail. The final file-alignment unit is accepted only when its bytes are all
+zero, since PE file padding can precede that zero-fill range.
