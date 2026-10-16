@@ -1,0 +1,13 @@
+assets/
+external/
+build/
+scratch/
+__pycache__/
+*.obj
+*.pdb
+*.ilk
+*.pch
+*.exe
+*.dll
+*.lib
+.pyenv/
