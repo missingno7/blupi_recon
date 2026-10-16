@@ -291,7 +291,7 @@ rva,size,tu,confidence,best_source,status,evidence
 0x1f140,5,menu.cpp,anchored,sb2:menu.cpp:CMenu::MouseDown,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (16 bytes, STRICT); CMenu::MouseDown"
 0x1f150,95,menu.cpp,anchored,sb2:menu.cpp:CMenu::MouseMove,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (96 bytes, STRICT); CMenu::MouseMove; calls: 0x1f0d0,0x1f020"
 0x1f1b0,44,menu.cpp,anchored,sb2:menu.cpp:CMenu::MouseUp,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (48 bytes, STRICT); CMenu::MouseUp; calls: 0x1f0d0"
-0x1f1e0,10,menu.cpp,bracketed,sb2:menu.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1f1e0,10,misc.cpp,bracketed,pb:misc.cpp:InitHInstance,strict,[EVIDENCE] first misc function; same-TU boundary and LoadStringA successor at 0x1f1f0 prove placement
 0x1f1f0,28,misc.cpp,anchored,pb:misc.cpp:LoadStringA,strict,"[EVIDENCE] unique cmpfunc location from pb:misc.cpp (32 bytes, STRICT); LoadStringA; imports: USER32.dll"
 0x1f210,285,misc.cpp,bracketed,pb:misc.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x1f330,17,misc.cpp,anchored,pb:misc.cpp:ConvLongToPos,strict,"[EVIDENCE] unique cmpfunc location from pb:misc.cpp (32 bytes, STRICT); ConvLongToPos"
@@ -330,36 +330,36 @@ rva,size,tu,confidence,best_source,status,evidence
 0x20fe0,18,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
 0x21000,35,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
 0x21030,4,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x21040,133,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x22910
-0x210d0,148,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x21170,19,pixmap.cpp,inferred,pb:pixmap.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x03100
+0x21040,133,pixmap.cpp,bracketed,pb:pixmap.cpp:CPixmap::CPixmap,none,[EVIDENCE] first pixmap function after network TU boundary: 0x21030 size 4 aligns to 0x21040; target constructor body remains unmatched
+0x210d0,148,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::~CPixmap,strict,[EVIDENCE] unique strict 160-byte candidate body in clean combined verification
+0x21170,19,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetDebug,strict,[EVIDENCE] unique strict 32-byte candidate body in clean combined verification
 0x21190,902,pixmap.cpp,inferred,pb:pixmap.cpp,none,"[HYPOTHESIS] placed by TU block/source order; pixmap literal; imports: GDI32.dll,USER32.dll; calls: 0x23896,0x1f010,0x1f690"
 0x21520,6,pixmap.cpp,inferred,pb:pixmap.cpp,similar,[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique
-0x21530,11,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::Restore,similar,"[EVIDENCE] unique cmpfunc location from pb:pixmap.cpp (16 bytes, RELOC-UNVERIFIED); CPixmap::Restore; calls: 0x215a0"
-0x21540,87,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x215a0,172,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21650,228,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21740,88,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x21530,11,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::Restore,strict,[EVIDENCE] unique strict 16-byte candidate body in clean combined verification
+0x21540,87,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::InitSysPalette,strict,[EVIDENCE] unique strict 96-byte candidate body in clean combined verification
+0x215a0,172,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::RestoreAll,strict,[EVIDENCE] unique strict 176-byte candidate body in clean combined verification
+0x21650,228,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::BltFast(int),strict,[EVIDENCE] unique strict 240-byte candidate body in clean combined verification
+0x21740,88,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::BltFast(surface),strict,[EVIDENCE] unique strict 96-byte candidate body in clean combined verification
 0x217a0,98,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21810,40,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21840,35,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21870,391,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21a00,44,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21a30,60,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21a70,67,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21ac0,33,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x21af0,36,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x21810,40,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SavePalette,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x21840,35,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::RestorePalette,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x21870,391,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::Cache,strict,[EVIDENCE] unique strict 400-byte candidate body in clean combined verification
+0x21a00,44,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::Flush,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x21a30,60,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetTransparent,strict,[EVIDENCE] unique strict 64-byte candidate body in clean combined verification
+0x21a70,67,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetTransparent2,strict,[EVIDENCE] unique strict 80-byte candidate body in clean combined verification
+0x21ac0,33,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetClipping,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x21af0,36,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::GetClipping,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
 0x21b20,770,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x21e30,719,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x22100,185,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x221c0,115,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x22240,145,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x222e0,67,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x22330,41,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x22360,10,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x221c0,115,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::DrawImage,strict,[EVIDENCE] unique strict 128-byte candidate body in clean combined verification
+0x22240,145,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::Display,strict,[EVIDENCE] unique strict 160-byte candidate body in clean combined verification
+0x222e0,67,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetMousePosSprite,strict,[EVIDENCE] unique strict 80-byte candidate body in clean combined verification
+0x22330,41,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetMouseSprite,strict,[EVIDENCE] unique strict 48-byte candidate body in clean combined verification
+0x22360,10,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::MouseShow,strict,[EVIDENCE] unique strict 16-byte candidate body in clean combined verification
 0x22370,326,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x224c0,186,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x22580,8,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x224c0,186,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::MouseQuickDraw,strict,[EVIDENCE] unique strict 192-byte candidate body in clean combined verification
+0x22580,8,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::MouseInvalidate,strict,[EVIDENCE] unique strict 16-byte candidate body in clean combined verification
 0x22590,18,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x225b0,268,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x226c0,241,pixmap.cpp,bracketed,pb:pixmap.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block

@@ -207,7 +207,7 @@ void AddUserPath(char *pFilename)
 	strcpy(temp, "c:\\Planet Blupi SE\\");
 #endif
 #else
-	strcpy(temp, "c:\\Planète Blupi\\");
+	strcpy(temp, "c:\\Speedy Blupi\\");
 #endif
 
 	att.nLength = sizeof(SECURITY_ATTRIBUTES);

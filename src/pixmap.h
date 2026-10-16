@@ -74,6 +74,7 @@ protected:
 protected:
 	BOOL					m_bFullScreen;
 	int						m_mouseType;
+	BOOL						m_bTrueColorBack;
 	BOOL					m_bDebug;
 	BOOL					m_bPalette;
 	HWND					m_hWnd;

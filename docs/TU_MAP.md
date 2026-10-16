@@ -6,7 +6,13 @@ The per-function assignments are in [oracle/tu_map.csv](../oracle/tu_map.csv). T
 
 **[EVIDENCE]** I reran `tools/cmpfunc.py` against 109 existing objects: PB `*_o2_gy_gx.obj` and all SB2 `*o2*` variants. The fixed comparator result is in `build/tumap/cmpfunc_all.json`. I used only source functions with a single candidate location as direct anchors; repeated short bodies and locations that matched multiple source methods do not identify a source method by themselves. A static Capstone pass recorded literal, import, and direct-call references in `build/tumap/xref_report.tsv`.
 
-**[EVIDENCE]** The CSV has exactly 421 unique rows. Its confidence totals are 116 `anchored`, 153 `bracketed`, and 152 `inferred`. Status totals are 71 `strict`, 55 `similar`, and 295 `none`; no row needed the `byte-equal`-only category. `similar` means the comparator found a fixed-byte match with relocation sites still unverified or a non-unique function identity. It is not a strict match. Status describes the matched COFF source body at that RVA; `size` remains the Ghidra body-byte count, and the evidence field records the COFF comparison size when available.
+**[EVIDENCE]** The CSV has exactly 421 unique rows. Its confidence totals are 137 `anchored`, 135 `bracketed`, and 149 `inferred`. Status totals are 94 `strict`, 54 `similar`, and 273 `none`; no row needed the `byte-equal`-only category. `similar` means the comparator found a fixed-byte match with relocation sites still unverified or a non-unique function identity. It is not a strict match. Status describes the matched COFF source body at that RVA; `size` remains the Ghidra body-byte count, and the evidence field records the COFF comparison size when available.
+
+**[EVIDENCE]** Correction: RVA `0x1f1e0` is `misc.cpp`'s `InitHInstance`, not a trailing `menu.cpp` entry. In the PB source order it is misc's first function, immediately before anchored `LoadStringA` at `0x1f1f0`; the same-TU boundary-plus-successor placement proves the address. The previous map assigned the misc block start one function late.
+
+**[EVIDENCE]** Correction: the network TU ends at `0x21030`; the 4-byte body there is followed by 16-byte-aligned pixmap functions at `0x21040` (`CPixmap` constructor), `0x210d0` (strict destructor), and `0x21170` (`SetDebug`). The constructor-to-destructor-to-`SetDebug` object order and alignment prove the pixmap boundary. The previous map extended `network.cpp` through the destructor.
+
+**[EVIDENCE]** The clean combined verification strictly reproduces 22 functions in the pixmap block. Their rows are updated to anchored/strict with method identities in `oracle/tu_map.csv`; the unmatched constructor and Create-like body remain hypotheses.
 
 **[EVIDENCE]** Three additional strict source-function hits do not start at an entry in `oracle/functions.csv`: `TimerStep` at `0x1c50`, the `CButton` constructor at `0x29f0`, and the `CJauge` constructor at `0x1edd0`. They help locate neighboring blocks but are not counted as mapped function rows. The seven-digit RVA is always an image-relative address; `size` is the Ghidra function-body byte count, not the span to the next entry.
 
@@ -31,11 +37,11 @@ The first and last addresses below are the first and last Ghidra function entrie
 | `decor.cpp` | `0x13d50–0x161d0` | 21 | 9,246 | 2 / 2 | SB-engine | 6,657 |
 | `event.cpp` | `0x16220–0x1d230` | 86 | 34,724 | 25 / 12 | SB-engine | 31,252 |
 | `jauge.cpp` | `0x1edf0–0x1efd0` | 8 | 436 | 7 / 7 | SB-engine | 392 |
-| `menu.cpp` | `0x1eff0–0x1f1e0` | 9 | 417 | 7 / 6 | SB-engine | 375 |
-| `misc.cpp` | `0x1f1f0–0x1ffa0` | 9 | 3,633 | 6 / 2 | PB-derived | 3,451 |
+| `menu.cpp` | `0x1eff0–0x1f1b0` | 8 | 407 | 7 / 6 | SB-engine | 366 |
+| `misc.cpp` | `0x1f1e0–0x1ffa0` | 10 | 3,643 | 6 / 3 | PB-derived | 3,461 |
 | `movie.cpp` | `0x20150–0x205b0` | 12 | 1,025 | 12 / 10 | PB-derived | 984 |
-| `network.cpp` | `0x205d0–0x210d0` | 19 | 2,568 | 0 / 0 | SB-engine, inferred | 1,412 |
-| `pixmap.cpp` | `0x21170–0x22910` | 34 | 5,775 | 1 / 0 | PB-derived, partial | 4,793 |
+| `network.cpp` | `0x205d0–0x21030` | 17 | 2,287 | 0 / 0 | SB-engine, inferred | 1,258 |
+| `pixmap.cpp` | `0x21040–0x22910` | 36 | 6,056 | 22 / 22 | PB-derived, partial | 5,026 |
 | `sound.cpp` | `0x22940–0x23610` | 29 | 3,140 | 23 / 16 | PB-derived | 3,109 |
 | `text.cpp` | `0x23660–0x23af0` | 10 | 1,126 | 4 / 0 | PB-derived, partial | 1,002 |
 | `wave.cpp` | `0x23b20–0x240c0` | 15 | 1,452 | 0 / 0 | Unknown | 407 |
@@ -46,7 +52,7 @@ The first and last addresses below are the first and last Ghidra function entrie
 
 ## Link order
 
-**[EVIDENCE]** The direct anchors appear in this order in `.text`: `blupi` (`0x1000`), `button` (`0x29f0`), `ddutil` (`0x3110`), `decblupi` (`0xf8c0`), `decnet` (`0x10670`), `decor` (`0x13d50`, `0x15de0`), `event` (`0x16360`), `jauge` (`0x1edd0`), `menu` (`0x1eff0`), `misc` (`0x1f1f0`), `movie` (`0x20150`), `pixmap` (`0x21530`), `sound` (`0x22940`), and `text` (`0x23660`). The strongest continuous blocks are `misc` (`0x1f1f0`–`0x20150`), `movie` (`0x20150`–`0x205d0`), and `sound` (`0x22940`–`0x23660`); the sound source path is a literal in the oracle.
+**[EVIDENCE]** The direct anchors appear in this order in `.text`: `blupi` (`0x1000`), `button` (`0x29f0`), `ddutil` (`0x3110`), `decblupi` (`0xf8c0`), `decnet` (`0x10670`), `decor` (`0x13d50`, `0x15de0`), `event` (`0x16360`), `jauge` (`0x1edd0`), `menu` (`0x1eff0`), `misc` (`0x1f1e0`), `movie` (`0x20150`), `pixmap` (`0x210d0`), `sound` (`0x22940`), and `text` (`0x23660`). The strongest continuous blocks are `misc` (`0x1f1e0`–`0x20150`), `movie` (`0x20150`–`0x205d0`), `pixmap` (`0x21040`–`0x22940`), and `sound` (`0x22940`–`0x23660`); the sound source path is a literal in the oracle.
 
 **[HYPOTHESIS]** The full partition in the CSV is `blupi → button → ddutil → decblock → decdesign → decblupi → decnet → decmove → decor → event → jauge → menu → misc → movie → network → pixmap → sound → text → wave`. `decdesign` is placed around the table/grid helpers at `0x5c20`, `0x5e80`, `0x61f0`, and `0x6530`; `decblupi` is supported by movement-speed arrays and the `TestPath` match; `decmove` by the moving-object animation tables; and `network` by DirectPlay error strings and imports. These engine boundaries are inferred, not proved by unique code matches.
 
@@ -61,7 +67,7 @@ Ranked by body bytes × ancestry-strength weight, from highest expected matching
 3. `decmove.cpp` — 12,846 bytes, score 8,478.
 4. `decdesign.cpp` — 13,694 bytes, score 6,847.
 5. `decor.cpp` — 9,246 bytes, score 6,657.
-6. `pixmap.cpp` — 5,775 bytes, score 4,793.
+6. `pixmap.cpp` — 6,056 bytes, score 5,026.
 7. `blupi.cpp` — 5,120 bytes, score 3,584.
 8. `misc.cpp` — 3,633 bytes, score 3,451.
 9. `sound.cpp` — 3,140 bytes, score 3,109.

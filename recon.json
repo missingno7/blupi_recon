@@ -39,6 +39,9 @@
       "source": "src/movie.cpp"
     },
     {
+      "source": "src/pixmap.cpp"
+    },
+    {
       "source": "src/sound.cpp"
     },
     {
@@ -290,13 +293,7 @@
       "symbol": "?InitHInstance@@YAXPAX@Z",
       "rva": "0x0001f1e0",
       "size": 16,
-      "tu": "src/misc.cpp",
-      "status": "folded",
-      "into": {
-        "symbol": "FUN_0041f1e0",
-        "rva": "0x0001f1e0",
-        "tu": "src/menu.cpp"
-      }
+      "tu": "src/misc.cpp"
     },
     {
       "symbol": "?LoadStringA@@YAXIPADH@Z",
@@ -401,16 +398,136 @@
       "tu": "src/movie.cpp"
     },
     {
-      "symbol": "?GetHide@CButton@@QAEHXZ",
-      "rva": "0x00021030",
+      "symbol": "??1CPixmap@@QAE@XZ",
+      "rva": "0x000210d0",
+      "size": 160,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetDebug@CPixmap@@QAEXH@Z",
+      "rva": "0x00021170",
+      "size": 32,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Restore@CPixmap@@QAEHXZ",
+      "rva": "0x00021530",
       "size": 16,
-      "tu": "src/button.cpp",
-      "status": "folded",
-      "into": {
-        "symbol": "FUN_00421030",
-        "rva": "0x00021030",
-        "tu": "network.cpp"
-      }
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?InitSysPalette@CPixmap@@QAEHXZ",
+      "rva": "0x00021540",
+      "size": 96,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?RestoreAll@CPixmap@@IAEJXZ",
+      "rva": "0x000215a0",
+      "size": 176,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z",
+      "rva": "0x00021650",
+      "size": 240,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?BltFast@CPixmap@@IAEJPAUIDirectDrawSurface@@HUtagPOINT@@UtagRECT@@H@Z",
+      "rva": "0x00021740",
+      "size": 96,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SavePalette@CPixmap@@QAEHXZ",
+      "rva": "0x00021810",
+      "size": 48,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?RestorePalette@CPixmap@@QAEHXZ",
+      "rva": "0x00021840",
+      "size": 48,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Cache@CPixmap@@QAEHHPADUtagPOINT@@1H@Z",
+      "rva": "0x00021870",
+      "size": 400,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Flush@CPixmap@@QAEXH@Z",
+      "rva": "0x00021a00",
+      "size": 48,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetTransparent@CPixmap@@QAEXHK@Z",
+      "rva": "0x00021a30",
+      "size": 64,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetTransparent2@CPixmap@@QAEXHKK@Z",
+      "rva": "0x00021a70",
+      "size": 80,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetClipping@CPixmap@@QAEXUtagRECT@@@Z",
+      "rva": "0x00021ac0",
+      "size": 48,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?GetClipping@CPixmap@@QAE?AUtagRECT@@XZ",
+      "rva": "0x00021af0",
+      "size": 48,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?DrawImage@CPixmap@@QAEHHHUtagRECT@@H@Z",
+      "rva": "0x000221c0",
+      "size": 128,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Display@CPixmap@@QAEHXZ",
+      "rva": "0x00022240",
+      "size": 160,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetMousePosSprite@CPixmap@@QAEXUtagPOINT@@HH@Z",
+      "rva": "0x000222e0",
+      "size": 80,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?SetMouseSprite@CPixmap@@QAEXHH@Z",
+      "rva": "0x00022330",
+      "size": 48,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseShow@CPixmap@@QAEXH@Z",
+      "rva": "0x00022360",
+      "size": 16,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseQuickDraw@CPixmap@@IAEHUtagRECT@@@Z",
+      "rva": "0x000224c0",
+      "size": 192,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseInvalidate@CPixmap@@QAEXXZ",
+      "rva": "0x00022580",
+      "size": 16,
+      "tu": "src/pixmap.cpp"
     },
     {
       "symbol": "?ReadData@CSound@@IAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z",

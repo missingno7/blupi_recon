@@ -6,9 +6,11 @@ source compatibility define. `src/` keeps original filenames and source line
 numbers; see [src/PROVENANCE.md](../src/PROVENANCE.md) for file provenance.
 
 `/Gy` packages functions as COMDATs; the original link also folded identical
-COMDATs (linker ICF, commonly `/OPT:ICF`). Comparing all eight current TUs with
-and without `/Gy` found identical function body bytes (128 functions total).
-The oracle's shared `OutputDebug` body demonstrates the link-time folding.
+COMDATs (linker ICF, commonly `/OPT:ICF`). Comparing the eight earlier TUs with
+and without `/Gy` found identical function body bytes (128 functions). A
+separate comparison of the new pixmap TU found all 45 function bodies
+byte-identical with and without `/Gy`. The oracle's shared `OutputDebug` body
+demonstrates link-time folding.
 
 From the repository root, build and verify every listed TU:
 
@@ -53,11 +55,13 @@ remain `STRICT`.
   RVA; other calls land at an exact start in `oracle/functions.csv`; and
   referenced data lands in the expected PE section with identical initialized
   bytes.
-- **FOLDED** means the candidate body matches exactly and its verified oracle
-  location belongs to another TU's body. Calls bind to that owner address. The
-  manifest records the owner symbol/RVA; folded code is reported separately,
-  excluded from the originating TU's owned-byte count, and counted once under
-  its owner.
+- **FOLDED** means the candidate body matches exactly, an object from another
+  TU independently emits that same body, and verified call relocations from at
+  least two placed caller objects land on the shared oracle body. A map entry or
+  raw oracle reference alone cannot establish folding. Calls bind to the owner
+  address. The manifest records the owner symbol/RVA; folded code is reported
+  separately, excluded from the originating TU's owned-byte count, and counted
+  once under its owner.
 - **RELOC-UNVERIFIED** means code bytes match, but a target could not be proven
   or a documented source-path string differs. The report includes the reason.
 - **MISMATCH** means code bytes or a proven relocation target/data payload
@@ -66,7 +70,8 @@ remain `STRICT`.
 The comparator reports each location as `unique`, `placed by TU order`,
 `placed by verified call targets`, `forced by --at`, or unresolved. For
 identical-byte hits it uses the nearest unique locations in the same object's
-function order. A TU boundary and one unique neighbour can prove a placement
+function order. Same-TU object order takes precedence over a stale TU-map
+boundary. A TU boundary and one unique neighbour can prove a placement
 when the function extent and 16-byte `/O2` alignment fit the observed gap,
 allowing intervening unlocated function sections to have been dead-stripped;
 otherwise the function stays ambiguous. A helper can also be placed when

@@ -634,7 +634,13 @@ def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: i
             hits = sorted(set(all_candidates.get(target_function.name, [])))
             if target_function.name == func.name:
                 hits = [base_offset]
-            if len(hits) == 1:
+            if not hits:
+                ok = effective_va in oracle_function_vas and effective_va == symbol_va
+                entry.update({"verified": ok, "status": "STRICT" if ok else "RELOC-UNVERIFIED",
+                              "reason": "oracle function entry bound for unreconstructed candidate"
+                              if ok else "unreconstructed candidate call does not land on an oracle function entry"})
+                unresolved |= not ok
+            elif len(hits) == 1:
                 expected_va = image_base + text_rva + hits[0]
                 ok = effective_va == expected_va and (addend == 0 or symbol.section > 0 and target_function.start == symbol.value + addend)
                 entry.update({"verified": ok, "status": "STRICT" if ok else "MISMATCH",
@@ -709,7 +715,8 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                    data_defs: dict[str, list[tuple[Coff, Symbol]]] | None = None,
                    oracle_function_vas: set[int] | None = None,
                    locations: dict[tuple[str, int], tuple[int, str]] | None = None,
-                   folded: dict[tuple[str, int], dict[str, Any]] | None = None) -> dict[str, Any]:
+                   folded: dict[tuple[str, int], dict[str, Any]] | None = None,
+                   location_issues: dict[tuple[str, int], str] | None = None) -> dict[str, Any]:
     coff = Coff(obj_path)
     functions = coff.functions()
     candidates: dict[str, list[int]] = {}
@@ -738,7 +745,8 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
             placement_basis = located[1]
         else:
             hit_offsets = hits
-            placement_basis = "ambiguous" if len(set(hits)) > 1 else "unlocated"
+            placement_basis = (location_issues or {}).get((str(obj_path.resolve()), func.symbol.index),
+                             "ambiguous" if len(set(hits)) > 1 else "unlocated")
         records = []
         raw_exact_hits = 0
         folded_into = (folded or {}).get((str(obj_path.resolve()), func.symbol.index))
@@ -764,7 +772,10 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                 # leave their address-dependent evidence unverified.
                 status = "RELOC-UNVERIFIED"
                 reloc_reports = [{"verified": False, "status": "RELOC-UNVERIFIED",
-                                  "reason": "function location is ambiguous"}]
+                                  "reason": (location_issues or {}).get(
+                                      (str(obj_path.resolve()), func.symbol.index),
+                                      "function location is ambiguous" if len(set(hits)) > 1
+                                      else "function location is not proven") }]
             else:
                 status, reloc_reports = resolve_sites(
                     func, base, exe_text, text_rva, pe.OPTIONAL_HEADER.ImageBase, pe, coff, obj_path,
@@ -836,24 +847,43 @@ def object_tu_name(path: Path) -> str:
     return Path(stem.split("-", 1)[0]).stem.lower()
 
 
-def oracle_direct_reference_counts(exe_text: bytes, text_rva: int, image_base: int,
-                                   oracle_starts: set[int]) -> Counter[int]:
-    """Count direct near calls/tail jumps to known oracle function starts in .text."""
-    counts: Counter[int] = Counter()
-    cursor = 0
-    text_va = image_base + text_rva
-    oracle_vas = {image_base + rva for rva in oracle_starts}
-    for opcode in (b"\xe8", b"\xe9"):
-        cursor = 0
-        while True:
-            pos = exe_text.find(opcode, cursor)
-            if pos < 0 or pos + 5 > len(exe_text):
-                break
-            target = text_va + pos + 5 + struct.unpack_from("<i", exe_text, pos + 1)[0]
-            if target in oracle_vas:
-                counts[target] += 1
-            cursor = pos + 1
-    return counts
+def tu_order_proves_location(funcs: list[Function], locations: dict[tuple[str, int], tuple[int, str]],
+                             obj_key: str, func: Function, offset: int) -> bool:
+    """Check an independently found location against adjacent functions in this object."""
+    if offset % 16:
+        return False
+    pos = next((i for i, candidate in enumerate(funcs)
+                if candidate.symbol.index == func.symbol.index), None)
+    if pos is None:
+        return False
+
+    def placed(i: int) -> tuple[int, str] | None:
+        location = locations.get((obj_key, funcs[i].symbol.index))
+        if location is None or location[1] not in ("unique", "placed by TU order"):
+            return None
+        return location
+
+    prev_pos = next((i for i in range(pos - 1, -1, -1) if placed(i) is not None), None)
+    next_pos = next((i for i in range(pos + 1, len(funcs)) if placed(i) is not None), None)
+    if prev_pos is not None and next_pos is not None:
+        prev = funcs[prev_pos]
+        next_func = funcs[next_pos]
+        prev_base = placed(prev_pos)[0]  # type: ignore[index]
+        next_base = placed(next_pos)[0]  # type: ignore[index]
+        before = reachable_function_starts(align16(prev_base + len(prev.data)), funcs[prev_pos + 1:pos])
+        after = reachable_function_starts(align16(offset + len(func.data)), funcs[pos + 1:next_pos])
+        return offset in before and next_base in after
+    if pos == 0 and next_pos is not None:
+        next_func = funcs[next_pos]
+        next_base = placed(next_pos)[0]  # type: ignore[index]
+        after = reachable_function_starts(align16(offset + len(func.data)), funcs[pos + 1:next_pos])
+        return next_base in after
+    if pos == len(funcs) - 1 and prev_pos is not None:
+        prev = funcs[prev_pos]
+        prev_base = placed(prev_pos)[0]  # type: ignore[index]
+        before = reachable_function_starts(align16(prev_base + len(prev.data)), funcs[prev_pos + 1:pos])
+        return offset in before
+    return False
 
 
 def layout_warnings(obj_path: Path, locations: dict[tuple[str, int], tuple[int, str]],
@@ -888,7 +918,8 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
                          at: dict[str, int]) -> tuple[dict[str, list[int]], dict[str, int | None],
                                                        dict[str, list[Function]], dict[str, list[tuple[Coff, Symbol]]],
                                                         dict[tuple[str, int], tuple[int, str]],
-                                                        dict[tuple[str, int], dict[str, Any]]]:
+                                                        dict[tuple[str, int], dict[str, Any]],
+                                                        dict[tuple[str, int], str]]:
     loaded: list[tuple[Path, Coff, list[Function], dict[int, list[int]]]] = []
     candidates: dict[str, list[int]] = defaultdict(list)
     function_defs: dict[str, list[Function]] = defaultdict(list)
@@ -907,12 +938,41 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
                     data_defs[symbol.name].append((coff, symbol))
         loaded.append((obj_path, coff, funcs, hits_by_index))
     locations = select_tu_locations(loaded, text_rva)
-    # Some helpers are emitted as identical short stubs (for example an
-    # optimized-away OutputDebug wrapper). A direct call from several already
-    # located functions proves which matching oracle entry the linker bound.
-    # Use only relocations from unique/order-placed callers, and require the
-    # target to be both an exact oracle function start and one of the helper's
-    # byte-matching candidates.
+    tu_by_rva = oracle_tu_at_rva()
+    location_issues: dict[tuple[str, int], str] = {}
+    function_by_key: dict[tuple[str, int], Function] = {}
+    object_tu_by_key: dict[tuple[str, int], str] = {}
+    for obj_path, _coff, funcs, _hits in loaded:
+        obj_key = str(obj_path.resolve())
+        for func in funcs:
+            key = (obj_key, func.symbol.index)
+            function_by_key[key] = func
+            object_tu_by_key[key] = object_tu_name(obj_path)
+
+    # A unique byte sequence outside the source TU is still only a byte hit.
+    # Keep it when neighbouring functions prove its place in this TU; otherwise
+    # defer it until verified callers and an identical owner body prove folding.
+    for obj_path, _coff, funcs, _hits in loaded:
+        obj_key = str(obj_path.resolve())
+        obj_tu = object_tu_name(obj_path)
+        for func in funcs:
+            key = (obj_key, func.symbol.index)
+            location = locations.get(key)
+            if location is None or location[1] != "unique":
+                continue
+            mapped_tu = tu_by_rva.get(text_rva + location[0])
+            if not mapped_tu or Path(mapped_tu).stem.lower() == obj_tu:
+                continue
+            if tu_order_proves_location(funcs, locations, obj_key, func, location[0]):
+                locations[key] = (location[0], "placed by TU order")
+            else:
+                del locations[key]
+                location_issues[key] = (f"unique byte hit is mapped to {mapped_tu}; no same-TU order proof "
+                                        "or cross-TU fold proof")
+
+    # Verified relocations from uniquely placed callers can distinguish a
+    # short helper whose identical body occurs at several oracle locations.
+    # This is placement evidence; a fold still needs a second object's body.
     image_base = pe.OPTIONAL_HEADER.ImageBase
     oracle_function_vas = {image_base + rva for rva in oracle_function_starts()}
     call_observations: dict[str, list[tuple[tuple[str, int], int]]] = defaultdict(list)
@@ -955,57 +1015,61 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
         raw_hits = candidates_for(definition, exe_text)
         if (target_va in oracle_function_vas and target_offset in raw_hits):
             locations[key] = (target_offset, "placed by verified call targets")
-    # COMDAT folding can make a source function's only valid address belong to
-    # another TU. Keep that body visible as FOLDED, while its owner remains the
-    # sole TU that receives strict byte coverage. Oracle call/tail-jump
-    # references establish that the body is used; the TU map identifies its
-    # owner. If that TU is present, an equal independently located object body
-    # ties the folded symbol to its concrete owner symbol.
-    tu_by_rva = oracle_tu_at_rva()
-    oracle_function_rvas = oracle_function_starts()
-    direct_refs = oracle_direct_reference_counts(exe_text, text_rva, pe.OPTIONAL_HEADER.ImageBase,
-                                                 oracle_function_rvas)
-    oracle_names: dict[int, str] = {}
-    with (ROOT / "oracle" / "functions.csv").open("r", encoding="utf-8-sig", newline="") as stream:
-        for row in csv.DictReader(stream):
-            if row.get("rva") and row.get("name"):
-                oracle_names[int(row["rva"], 0)] = row["name"]
     folded: dict[tuple[str, int], dict[str, Any]] = {}
-    function_by_key: dict[tuple[str, int], Function] = {}
-    object_tu_by_key: dict[tuple[str, int], str] = {}
-    for obj_path, _coff, funcs, _hits in loaded:
-        obj_key = str(obj_path.resolve())
-        for func in funcs:
-            key = (obj_key, func.symbol.index)
-            function_by_key[key] = func
-            object_tu_by_key[key] = object_tu_name(obj_path)
-    for key, (offset, basis) in list(locations.items()):
-        if basis not in ("unique", "placed by TU order", "placed by verified call targets"):
+    coff_by_key = {str(obj_path.resolve()): coff for obj_path, coff, _funcs, _hits in loaded}
+    hits_by_key = {(str(obj_path.resolve()), func.symbol.index): hits_by_index[func.symbol.index]
+                   for obj_path, _coff, funcs, hits_by_index in loaded for func in funcs}
+    for name, observations in call_observations.items():
+        defs = function_defs.get(name, [])
+        if len(defs) != 1:
             continue
-        rva = text_rva + offset
-        owner_tu = tu_by_rva.get(rva)
-        target_va = pe.OPTIONAL_HEADER.ImageBase + rva
-        if (not owner_tu or Path(owner_tu).stem.lower() == object_tu_by_key.get(key)
-                or direct_refs.get(target_va, 0) == 0):
+        definition = defs[0]
+        key = next((candidate_key for candidate_key, function in function_by_key.items()
+                    if function is definition), None)
+        if key is None:
             continue
-        function = function_by_key[key]
-        owner_symbol = oracle_names.get(rva, f"FUN_{pe.OPTIONAL_HEADER.ImageBase + rva:08x}")
-        owner_key = None
-        for other_key, other_func in function_by_key.items():
-            if other_key == key or object_tu_by_key.get(other_key) != Path(owner_tu).stem.lower():
+        targets = {target for _caller, target in observations}
+        callers = {caller for caller, _target in observations}
+        if len(targets) != 1 or len(callers) < 2:
+            continue
+        target_va = next(iter(targets))
+        offset = target_va - image_base - text_rva
+        location = locations.get(key)
+        if (target_va not in oracle_function_vas or location is None or location[0] != offset
+                or offset not in hits_by_key.get(key, [])):
+            continue
+        source_func = function_by_key[key]
+        source_obj_tu = object_tu_by_key[key]
+        source_coff = coff_by_key[key[0]]
+        source_relocs = [(r.offset - source_func.start, r.typ) for r in source_func.relocs]
+        for owner_key, owner_func in function_by_key.items():
+            if owner_key == key or object_tu_by_key[owner_key] == source_obj_tu:
                 continue
-            other_location = locations.get(other_key)
-            if (other_location is not None and other_location[0] == offset
-                    and other_location[1] in ("unique", "placed by TU order")
-                    and function.data == other_func.data
-                    and [(r.offset - function.start, r.typ) for r in function.relocs]
-                    == [(r.offset - other_func.start, r.typ) for r in other_func.relocs]):
-                owner_key = other_key
-                owner_symbol = other_func.name
-                break
-        folded[key] = {"symbol": owner_symbol, "rva": f"0x{rva:08x}", "tu": owner_tu,
-                       "owner_object_present": owner_key is not None,
-                       "oracle_direct_refs": direct_refs[target_va]}
+            owner_location = locations.get(owner_key)
+            if (owner_location is None or owner_location[0] != offset
+                    or owner_location[1] not in ("unique", "placed by TU order")
+                    or owner_func.data != source_func.data
+                    or [(r.offset - owner_func.start, r.typ) for r in owner_func.relocs] != source_relocs):
+                continue
+            owner_coff = coff_by_key[owner_key[0]]
+            relocations_agree = True
+            for source_reloc, owner_reloc in zip(source_func.relocs, owner_func.relocs):
+                left = relocation_targets(source_reloc, source_func.section, offset, exe_text, text_rva,
+                                          image_base, source_func.start)
+                right = relocation_targets(owner_reloc, owner_func.section, offset, exe_text, text_rva,
+                                           image_base, owner_func.start)
+                if left is None or right is None or left[0] != right[0]:
+                    relocations_agree = False
+                    break
+            if not relocations_agree:
+                continue
+            owner_tu = f"src/{object_tu_by_key[owner_key]}.cpp"
+            folded[key] = {"symbol": owner_func.name, "rva": f"0x{text_rva + offset:08x}",
+                           "tu": owner_tu, "owner_object_present": True,
+                           "proof": f"{len(callers)} verified caller objects bind here; identical body "
+                                    f"independently located in {owner_tu}"}
+            location_issues.pop(key, None)
+            break
     # Apply explicit manifest assertions after independent byte/order/call
     # proofs so the report retains the actual proof basis when they agree.
     for obj_path, _coff, funcs, hits_by_index in loaded:
@@ -1045,7 +1109,7 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
     global_symbols: dict[str, int | None] = {}
     for key, values in observed.items():
         global_symbols[key] = next(iter(values)) if len(values) == 1 else None
-    return candidates, global_symbols, dict(function_defs), dict(data_defs), locations, folded
+    return candidates, global_symbols, dict(function_defs), dict(data_defs), locations, folded, location_issues
 
 
 def main() -> int:
@@ -1067,14 +1131,14 @@ def main() -> int:
     exe_text = text_section.get_data()[:text_section.SizeOfRawData]
     imports = import_map(pe)
     object_paths = [path.resolve() for path in args.objects]
-    shared_candidates, global_symbols, function_defs, data_defs, locations, folded = collect_global_state(
+    shared_candidates, global_symbols, function_defs, data_defs, locations, folded, location_issues = collect_global_state(
         object_paths, pe, exe_text, text_rva, at)
     oracle_function_vas = {pe.OPTIONAL_HEADER.ImageBase + rva for rva in oracle_function_starts()}
     all_results = []
     for obj_path in object_paths:
         result = compare_object(obj_path, pe, exe_text, text_rva, imports, explicit, at, not args.summary,
                                 shared_candidates, global_symbols, function_defs, data_defs,
-                                oracle_function_vas, locations, folded)
+                                oracle_function_vas, locations, folded, location_issues)
         result["layout_warnings"] = layout_warnings(obj_path, locations, text_rva, folded)
         all_results.append(result)
         counts = Counter()
