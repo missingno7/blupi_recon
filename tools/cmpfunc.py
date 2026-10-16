@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
+import csv
 import json
 from pathlib import Path
 import re
@@ -73,6 +74,7 @@ class Function:
     start: int
     end: int
     relocs: list[Relocation]
+    alignment_padding: int = 0
 
     @property
     def data(self) -> bytes:
@@ -176,7 +178,8 @@ class Coff:
                 if end <= symbol.value:
                     continue
                 relocs = [r for r in section.relocations if symbol.value <= r.offset < end]
-                funcs.append(Function(symbol, section, symbol.value, end, relocs))
+                padding = max(0, next_value - end) if aux_size else 0
+                funcs.append(Function(symbol, section, symbol.value, end, relocs, padding))
         return sorted(funcs, key=lambda f: (f.section.index, f.start, f.name))
 
 
@@ -308,107 +311,264 @@ def normalize_import(name: str) -> str:
     return value.casefold()
 
 
+def symbol_map_key(obj_path: Path, symbol: Symbol) -> str:
+    if symbol.storage == 2:
+        return "global:" + symbol.name
+    return f"local:{obj_path.resolve()}:{symbol.index}"
+
+
+def relocation_targets(reloc: Relocation, section: Section, base_offset: int,
+                       exe_text: bytes, text_rva: int, image_base: int,
+                       start: int) -> tuple[int, int, int] | None:
+    size = REL_SIZES.get(reloc.typ)
+    if size is None or reloc.typ not in (0x0006, 0x0007, 0x0014):
+        return None
+    site = base_offset + reloc.offset - start
+    field = exe_text[site:site + size]
+    raw_addend = section.raw[reloc.offset:reloc.offset + size]
+    if len(field) != size or len(raw_addend) != size:
+        return None
+    addend = int.from_bytes(raw_addend, "little", signed=True)
+    field_value = int.from_bytes(field, "little", signed=(reloc.typ == 0x0014))
+    field_va = image_base + text_rva + site
+    if reloc.typ == 0x0014:
+        effective_va = field_va + 4 + field_value
+    elif reloc.typ == 0x0006:
+        effective_va = field_value & 0xFFFFFFFF
+    else:
+        effective_va = image_base + (field_value & 0xFFFFFFFF)
+    return effective_va - addend, effective_va, addend
+
+
+def pe_section_at(pe: pefile.PE, va: int):
+    rva = va - pe.OPTIONAL_HEADER.ImageBase
+    for section in pe.sections:
+        begin = section.VirtualAddress
+        end = begin + max(section.Misc_VirtualSize, section.SizeOfRawData)
+        if begin <= rva < end:
+            return section, rva - begin
+    return None, None
+
+
+def pe_bytes(pe: pefile.PE, va: int, size: int) -> bytes | None:
+    section, offset = pe_section_at(pe, va)
+    if section is None or offset + size > max(section.Misc_VirtualSize, section.SizeOfRawData):
+        return None
+    rva = va - pe.OPTIONAL_HEADER.ImageBase
+    raw_size = min(size, max(0, section.SizeOfRawData - offset))
+    raw = pe.get_data(rva, raw_size) if raw_size else b""
+    if len(raw) < size:
+        raw += b"\0" * (size - len(raw))
+    return raw
+
+
+def section_kind(name: str) -> str:
+    value = name.lower().split("$")[0]
+    if value.startswith(".text"):
+        return "text"
+    if value.startswith(".rdata"):
+        return "rdata"
+    if value.startswith(".data"):
+        return "data"
+    if value.startswith(".bss"):
+        return "bss"
+    return "other"
+
+
+def data_extent(coff: Coff, symbol: Symbol, addend: int) -> tuple[int, bytes] | None:
+    if symbol.section <= 0 or symbol.section > len(coff.sections):
+        return None
+    section = coff.sections[symbol.section - 1]
+    target_offset = symbol.value + addend
+    if target_offset < 0 or target_offset >= max(section.raw_size, len(section.raw)):
+        return None
+    named_data = [s for s in coff.symbols
+                  if s.section == symbol.section and not s.is_function and s.value >= 0
+                  and s.storage in (2, 3) and not (s.typ == 0 and s.name == section.name)
+                  and s.value <= target_offset]
+    if symbol.name.startswith("??_C@"):
+        raw = section.raw[target_offset:]
+        nul = raw.find(b"\0")
+        if nul < 0:
+            return None
+        return target_offset, raw[:nul + 1]
+    owners = [s for s in named_data if s.value <= target_offset]
+    if not owners:
+        return None
+    owner = max(owners, key=lambda s: (s.value, s.index))
+    following = [s.value for s in coff.symbols
+                 if s.section == symbol.section and not s.is_function and s.value > owner.value
+                 and s.storage in (2, 3) and not (s.typ == 0 and s.name == section.name)]
+    end = min(following) if following else max(section.raw_size, len(section.raw))
+    if end <= target_offset:
+        return None
+    if section.raw:
+        content = section.raw[target_offset:min(end, len(section.raw))]
+        if len(content) < end - target_offset:
+            content += b"\0" * (end - target_offset - len(content))
+    else:
+        content = b"\0" * (end - target_offset)
+    return target_offset, content
+
+
+def path_string(data: bytes) -> str | None:
+    value = data.split(b"\0", 1)[0].decode("cp1252", "replace")
+    if re.search(r"[A-Za-z]:[\\/].*\.(?:cpp|cxx|c)\Z", value, re.IGNORECASE):
+        return value
+    return None
+
+
+def verify_data_target(pe: pefile.PE, coff: Coff, symbol: Symbol, addend: int,
+                       target_va: int) -> tuple[str, str, dict[str, Any]]:
+    extent = data_extent(coff, symbol, addend)
+    entry: dict[str, Any] = {"target_va": f"0x{target_va:08x}"}
+    if extent is None:
+        return "RELOC-UNVERIFIED", "initialized data extent is not identifiable", entry
+    target_offset, expected = extent
+    obj_section = coff.sections[symbol.section - 1]
+    kind = section_kind(obj_section.name)
+    oracle_section, oracle_offset = pe_section_at(pe, target_va)
+    oracle_name = oracle_section.Name.rstrip(b"\0").decode("ascii", "replace") if oracle_section else "<unmapped>"
+    entry.update({"object_section": obj_section.name, "oracle_section": oracle_name,
+                  "object_offset": target_offset, "data_size": len(expected)})
+    if kind == "bss":
+        kind_ok = (oracle_section is not None and oracle_name == ".data"
+                   and oracle_offset >= oracle_section.SizeOfRawData)
+    else:
+        expected_name = {"rdata": ".rdata", "data": ".data", "text": ".text"}.get(kind)
+        kind_ok = oracle_name == expected_name
+    if not kind_ok:
+        return "MISMATCH", f"data target section kind {kind} landed in {oracle_name}", entry
+    actual = pe_bytes(pe, target_va, len(expected))
+    if actual is None:
+        return "MISMATCH", "data target exceeds oracle section bounds", entry
+    if actual != expected:
+        obj_path = path_string(expected)
+        oracle_path = path_string(actual)
+        if obj_path or oracle_path:
+            detail = {"object_path": obj_path, "oracle_path": oracle_path,
+                      "object_offset": target_offset, "target_va": f"0x{target_va:08x}"}
+            entry["build_path_difference"] = detail
+            return "RELOC-UNVERIFIED", f"build-path data difference: object={obj_path!r}, oracle={oracle_path!r}", entry
+        entry["object_bytes"] = expected[:32].hex()
+        entry["oracle_bytes"] = actual[:32].hex()
+        return "MISMATCH", "initialized data bytes differ", entry
+    return "STRICT", "data section and initialized bytes match", entry
+
+
 def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: int, image_base: int,
-                  coff: Coff, all_candidates: dict[str, list[int]], imports: dict[str, int],
-                  explicit: dict[str, int], global_external: dict[str, tuple[int, int]]) -> tuple[str, list[dict[str, Any]]]:
-    mappings: dict[str, int] = {}
-    reports = []
-    unresolved = []
-    target_functions: dict[str, list[int]] = all_candidates
+                  pe: pefile.PE, coff: Coff, obj_path: Path, all_candidates: dict[str, list[int]],
+                  function_defs: dict[str, list[Function]], data_defs: dict[str, list[tuple[Coff, Symbol]]],
+                  imports: dict[str, int], explicit: dict[str, int],
+                  global_symbols: dict[str, int | None], oracle_function_vas: set[int]) -> tuple[str, list[dict[str, Any]]]:
+    reports: list[dict[str, Any]] = []
+    unresolved = False
+    hard_mismatch = False
     for reloc in func.relocs:
         symbol = coff.sym_by_index.get(reloc.symbol_index)
-        size = REL_SIZES.get(reloc.typ)
         site_rel = reloc.offset - func.start
-        site = base_offset + site_rel
-        rname = REL_NAMES.get(reloc.typ, f"0x{reloc.typ:04x}")
-        entry: dict[str, Any] = {"offset": site_rel, "type": rname, "symbol": symbol.name if symbol else f"<index-{reloc.symbol_index}>"}
-        if symbol is None or size is None or reloc.typ not in (0x0006, 0x0007, 0x0014):
-            entry["verified"] = False
-            entry["reason"] = "relocation type or symbol not decoded"
+        entry: dict[str, Any] = {"offset": site_rel, "type": REL_NAMES.get(reloc.typ, f"0x{reloc.typ:04x}"),
+                                 "symbol": symbol.name if symbol else f"<index-{reloc.symbol_index}>"}
+        target = relocation_targets(reloc, func.section, base_offset, exe_text, text_rva, image_base, func.start)
+        if symbol is None or target is None:
+            entry.update({"verified": False, "status": "RELOC-UNVERIFIED", "reason": "relocation type or field not decoded"})
             reports.append(entry)
-            unresolved.append(entry["reason"])
+            unresolved = True
             continue
-        field = exe_text[site:site + size]
-        if len(field) != size:
-            entry["verified"] = False
-            entry["reason"] = "relocation field outside oracle .text"
-            reports.append(entry)
-            unresolved.append(entry["reason"])
-            continue
-        addend_raw = func.section.raw[reloc.offset:reloc.offset + size]
-        if len(addend_raw) != size:
-            addend = 0
-        else:
-            addend = int.from_bytes(addend_raw, "little", signed=True)
-        field_value = int.from_bytes(field, "little", signed=(reloc.typ == 0x0014))
-        field_va = image_base + text_rva + site
-        if reloc.typ == 0x0014:
-            # COFF REL32: field = S + A - (P + 4), P = address of the field.
-            symbol_va = field_va + 4 + field_value - addend
-            effective_va = field_va + 4 + field_value
-        elif reloc.typ == 0x0006:
-            symbol_va = (field_value & 0xFFFFFFFF) - addend
-            effective_va = field_value & 0xFFFFFFFF
-        else:
-            symbol_va = image_base + (field_value & 0xFFFFFFFF) - addend
-            effective_va = image_base + (field_value & 0xFFFFFFFF)
+        symbol_va, effective_va, addend = target
         entry.update({"addend": addend, "resolved_symbol_va": f"0x{symbol_va:08x}",
                       "effective_target_va": f"0x{effective_va:08x}"})
-        symbol_key = symbol.key
-        old = mappings.get(symbol_key)
-        if old is not None and old != symbol_va:
-            entry["verified"] = False
-            entry["reason"] = f"symbol maps inconsistently: 0x{old:08x} vs 0x{symbol_va:08x}"
-            unresolved.append(entry["reason"])
-        else:
-            mappings[symbol_key] = symbol_va
-            target_import = imports.get(normalize_import(symbol.name)) if symbol.section == 0 else None
-            if target_import is not None:
-                # pefile ImportData.address is already an absolute VA.
-                expected_va = target_import
-                ok = symbol_va == expected_va
-                entry.update({"verified": ok, "reason": "import IAT slot" if ok else f"expected IAT 0x{expected_va:08x}"})
-                if not ok:
-                    unresolved.append(entry["reason"])
-            elif symbol.name in explicit:
-                expected_va = explicit[symbol.name]
-                ok = symbol_va == expected_va
-                entry.update({"verified": ok, "reason": "explicit symbol mapping" if ok else f"expected 0x{expected_va:08x}"})
-                if not ok:
-                    unresolved.append(entry["reason"])
-            elif symbol.section > 0 and symbol.is_function:
-                target_hits = target_functions.get(symbol.name, [])
-                if symbol.name == func.name:
-                    target_hits = [base_offset]
-                if len(target_hits) == 1:
-                    expected_va = image_base + text_rva + target_hits[0]
-                    ok = symbol_va == expected_va
-                    entry.update({"verified": ok, "reason": "located function target" if ok else f"function target expected 0x{expected_va:08x}"})
-                    if not ok:
-                        unresolved.append(entry["reason"])
-                else:
-                    entry["verified"] = False
-                    entry["reason"] = "internal function target is not uniquely located"
-                    unresolved.append(entry["reason"])
-            elif symbol.section > 0:
-                # Defined TU data/section symbols are mapped by their linked address; repeated
-                # references to the same symbol must agree above.
-                entry["verified"] = True
-                entry["reason"] = "consistent translation-unit data mapping"
-            elif symbol_key in global_external:
-                global_va, use_count = global_external[symbol_key]
-                ok = symbol_va == global_va and use_count >= 2
-                entry["verified"] = ok
-                entry["reason"] = (f"consistent external symbol mapping across {use_count} sites" if ok
-                                    else "external target mapping is inconsistent or observed only once")
-                if not ok:
-                    unresolved.append(entry["reason"])
+        key = symbol_map_key(obj_path, symbol)
+        observed = global_symbols.get(key)
+        if key not in global_symbols or observed is None or observed != symbol_va:
+            reason = "symbol has conflicting global bindings" if key in global_symbols else "symbol has no unique run-wide binding"
+            entry.update({"verified": False, "status": "RELOC-UNVERIFIED", "reason": reason})
+            reports.append(entry)
+            unresolved = True
+            continue
+
+        target_import = imports.get(normalize_import(symbol.name)) if symbol.section == 0 else None
+        if target_import is not None:
+            ok = symbol_va == target_import and effective_va == target_import
+            entry.update({"verified": ok, "status": "STRICT" if ok else "MISMATCH",
+                          "reason": "import IAT slot" if ok else f"expected IAT slot 0x{target_import:08x}"})
+            hard_mismatch |= not ok
+            unresolved |= not ok
+            reports.append(entry)
+            continue
+        if symbol.name in explicit:
+            ok = symbol_va == explicit[symbol.name]
+            entry.update({"verified": ok, "status": "STRICT" if ok else "MISMATCH",
+                          "reason": "explicit target mapping" if ok else f"expected 0x{explicit[symbol.name]:08x}"})
+            hard_mismatch |= not ok
+            unresolved |= not ok
+            reports.append(entry)
+            continue
+
+        # Calls and function pointers to reconstructed TUs must resolve to the one
+        # byte-verified candidate for that symbol across the complete object set.
+        target_function: Function | None = None
+        if symbol.name in function_defs and function_defs[symbol.name]:
+            definitions = function_defs[symbol.name]
+            if len(definitions) == 1:
+                target_function = definitions[0]
+        if target_function is None and symbol.section > 0 and symbol.section <= len(coff.sections):
+            if section_kind(coff.sections[symbol.section - 1].name) == "text":
+                target_offset = symbol.value + addend
+                local = [f for f in coff.functions() if f.section.index == symbol.section and f.start == target_offset]
+                if len(local) == 1:
+                    target_function = local[0]
+        if target_function is not None:
+            hits = sorted(set(all_candidates.get(target_function.name, [])))
+            if target_function.name == func.name:
+                hits = [base_offset]
+            if len(hits) == 1:
+                expected_va = image_base + text_rva + hits[0]
+                ok = effective_va == expected_va and (addend == 0 or symbol.section > 0 and target_function.start == symbol.value + addend)
+                entry.update({"verified": ok, "status": "STRICT" if ok else "MISMATCH",
+                              "reason": "verified reconstructed function RVA" if ok else f"expected function RVA 0x{expected_va:08x}"})
+                hard_mismatch |= not ok
+                unresolved |= not ok
             else:
-                entry["verified"] = False
-                entry["reason"] = "external target has no independent mapping"
-                unresolved.append(entry["reason"])
+                entry.update({"verified": False, "status": "RELOC-UNVERIFIED", "reason": "reconstructed function has no unique verified RVA"})
+                unresolved = True
+            reports.append(entry)
+            continue
+
+        # Unreconstructed direct calls are accepted only at an exact function entry
+        # from the Ghidra oracle inventory, and the symbol binding remains global.
+        if reloc.typ == 0x0014 or symbol.is_function:
+            ok = effective_va in oracle_function_vas and effective_va == symbol_va
+            entry.update({"verified": ok, "status": "STRICT" if ok else "RELOC-UNVERIFIED",
+                          "reason": "oracle function entry bound for run" if ok else "target is not an oracle function entry"})
+            unresolved |= not ok
+            reports.append(entry)
+            continue
+
+        # Defined TU data and data definitions from another reconstructed TU must
+        # land in the matching PE section and retain their initialized payload.
+        data_source: tuple[Coff, Symbol] | None = None
+        if symbol.section > 0 and symbol.section <= len(coff.sections) and section_kind(coff.sections[symbol.section - 1].name) in ("rdata", "data", "bss"):
+            data_source = (coff, symbol)
+        elif symbol.section == 0:
+            defs = data_defs.get(symbol.name, [])
+            if len(defs) == 1:
+                data_source = defs[0]
+        if data_source is not None:
+            data_status, reason, detail = verify_data_target(pe, data_source[0], data_source[1], addend, effective_va)
+            entry.update(detail)
+            entry.update({"verified": data_status == "STRICT", "status": data_status, "reason": reason})
+            hard_mismatch |= data_status == "MISMATCH"
+            unresolved |= data_status != "STRICT"
+            reports.append(entry)
+            continue
+
+        entry.update({"verified": False, "status": "RELOC-UNVERIFIED", "reason": "external data target has no unique reconstructed definition"})
+        unresolved = True
         reports.append(entry)
-    return ("STRICT" if not unresolved else "RELOC-UNVERIFIED"), reports
+    if hard_mismatch:
+        return "MISMATCH", reports
+    return ("RELOC-UNVERIFIED" if unresolved else "STRICT"), reports
 
 
 def disasm_lines(data: bytes, address: int, count: int = 8) -> list[str]:
@@ -431,7 +591,11 @@ def parse_mapping(items: list[str], kind: str) -> dict[str, int]:
 
 def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int,
                    imports: dict[str, int], explicit: dict[str, int], at: dict[str, int],
-                   want_diff: bool = True) -> dict[str, Any]:
+                   want_diff: bool = True, shared_candidates: dict[str, list[int]] | None = None,
+                   global_symbols: dict[str, int | None] | None = None,
+                   function_defs: dict[str, list[Function]] | None = None,
+                   data_defs: dict[str, list[tuple[Coff, Symbol]]] | None = None,
+                   oracle_function_vas: set[int] | None = None) -> dict[str, Any]:
     coff = Coff(obj_path)
     functions = coff.functions()
     candidates: dict[str, list[int]] = {}
@@ -440,41 +604,11 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
         hits = candidates_for(func, exe_text)
         candidates.setdefault(func.name, []).extend(hits)
         function_hits[id(func)] = hits
-    # Keep unique locations for verification of internal direct calls.
-    unique_candidates = {name: sorted(set(hits)) for name, hits in candidates.items()}
-    for name, rva in at.items():
-        unique_candidates[name] = [rva - text_rva]
-    # Build TU-wide external-symbol evidence from functions with a single selected location.
-    external_uses: dict[str, list[int]] = defaultdict(list)
-    for func in functions:
-        selected = unique_candidates.get(func.name, [])
-        if len(selected) != 1:
-            continue
-        base = selected[0]
-        for reloc in func.relocs:
-            symbol = coff.sym_by_index.get(reloc.symbol_index)
-            size = REL_SIZES.get(reloc.typ)
-            site = base + reloc.offset - func.start
-            if symbol is None or symbol.section != 0 or size is None or reloc.typ not in (0x0006, 0x0007, 0x0014):
-                continue
-            field = exe_text[site:site + size]
-            addend_raw = func.section.raw[reloc.offset:reloc.offset + size]
-            if len(field) != size or len(addend_raw) != size:
-                continue
-            addend = int.from_bytes(addend_raw, "little", signed=True)
-            field_value = int.from_bytes(field, "little", signed=(reloc.typ == 0x0014))
-            field_va = pe.OPTIONAL_HEADER.ImageBase + text_rva + site
-            if reloc.typ == 0x0014:
-                symbol_va = field_va + field_value - addend
-            elif reloc.typ == 0x0006:
-                symbol_va = (field_value & 0xFFFFFFFF) - addend
-            else:
-                symbol_va = pe.OPTIONAL_HEADER.ImageBase + (field_value & 0xFFFFFFFF) - addend
-            external_uses[symbol.key].append(symbol_va)
-    global_external = {}
-    for key, values in external_uses.items():
-        if len(set(values)) == 1:
-            global_external[key] = (values[0], len(values))
+    # Locations are shared across every object so cross-TU references use the
+    # same binding as same-TU calls.
+    unique_candidates = ({name: list(values) for name, values in shared_candidates.items()}
+                         if shared_candidates is not None
+                         else {name: sorted(set(hits)) for name, hits in candidates.items()})
     results = []
     for func in functions:
         data = func.data
@@ -503,13 +637,18 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                 status = "MISMATCH"
                 reloc_reports = []
             else:
-                status, reloc_reports = resolve_sites(func, base, exe_text, text_rva, pe.OPTIONAL_HEADER.ImageBase,
-                                                      coff, unique_candidates, imports, explicit, global_external)
+                status, reloc_reports = resolve_sites(
+                    func, base, exe_text, text_rva, pe.OPTIONAL_HEADER.ImageBase, pe, coff, obj_path,
+                    unique_candidates, function_defs or {}, data_defs or {}, imports, explicit,
+                    global_symbols or {}, oracle_function_vas or set())
                 if specified is None and len(set(hits)) != 1:
                     status = "RELOC-UNVERIFIED"
-                    reloc_reports.append({"verified": False, "reason": "function location is ambiguous"})
+                    reloc_reports.append({"verified": False, "status": "RELOC-UNVERIFIED",
+                                          "reason": "function location is ambiguous"})
             records.append({"rva": f"0x{text_rva + base:08x}", "status": status,
-                            "size": len(data), "relocations": reloc_reports})
+                            "size": len(data), "code_size": len(data),
+                            "alignment_padding_after": func.alignment_padding,
+                            "relocations": reloc_reports})
         best = None
         diff = None
         if want_diff and (not records or any(r["status"] == "MISMATCH" for r in records)):
@@ -523,11 +662,81 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                 diff = {"object": disasm_lines(data, pe.OPTIONAL_HEADER.ImageBase + text_rva + best_offset),
                         "oracle": disasm_lines(exe_text[best_offset:best_offset + len(data)],
                                                pe.OPTIONAL_HEADER.ImageBase + text_rva + best_offset)}
+        overall_status = "MISMATCH"
+        if len(records) == 1:
+            overall_status = records[0]["status"]
+        elif records and any(r["status"] == "RELOC-UNVERIFIED" for r in records):
+            overall_status = "RELOC-UNVERIFIED"
         results.append({"name": func.name, "section": func.section.name, "size": len(data),
+                        "code_size": len(data), "alignment_padding_after": func.alignment_padding,
+                        "status": overall_status,
                         "relocation_count": len(func.relocs), "wildcard_hit_count": len(hits),
                         "raw_exact_hit_count": raw_exact_hits,
                         "matches": records, "best_candidate": best, "disassembly_diff": diff})
     return {"object": str(obj_path), "functions": results}
+
+
+def oracle_function_starts(path: Path = ROOT / "oracle" / "functions.csv") -> set[int]:
+    starts = set()
+    with path.open("r", encoding="utf-8-sig", newline="") as stream:
+        for row in csv.DictReader(stream):
+            value = row.get("rva", "")
+            if value:
+                starts.add(int(value, 0))
+    return starts
+
+
+def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, text_rva: int,
+                         at: dict[str, int]) -> tuple[dict[str, list[int]], dict[str, int | None],
+                                                      dict[str, list[Function]], dict[str, list[tuple[Coff, Symbol]]]]:
+    loaded: list[tuple[Path, Coff, list[Function], dict[int, list[int]]]] = []
+    candidates: dict[str, list[int]] = defaultdict(list)
+    function_defs: dict[str, list[Function]] = defaultdict(list)
+    data_defs: dict[str, list[tuple[Coff, Symbol]]] = defaultdict(list)
+    for obj_path in obj_paths:
+        coff = Coff(obj_path)
+        funcs = coff.functions()
+        hits_by_index: dict[int, list[int]] = {}
+        for func in funcs:
+            function_defs[func.name].append(func)
+            hits = candidates_for(func, exe_text)
+            forced = at.get(func.name)
+            if forced is not None:
+                base = forced - text_rva
+                masked = [False] * len(func.data)
+                for reloc in func.relocs:
+                    begin = reloc.offset - func.start
+                    for pos in range(max(0, begin), min(len(masked), begin + relocation_size(reloc.typ))):
+                        masked[pos] = True
+                if 0 <= base <= len(exe_text) - len(func.data) and is_byte_match(func.data, exe_text[base:base + len(func.data)], masked):
+                    hits = [base]
+                else:
+                    hits = []
+            hits_by_index[func.symbol.index] = hits
+            candidates[func.name].extend(hits)
+        for symbol in coff.symbols:
+            if symbol.storage == 2 and symbol.section > 0 and not symbol.is_function and symbol.section <= len(coff.sections):
+                if section_kind(coff.sections[symbol.section - 1].name) in ("rdata", "data", "bss"):
+                    data_defs[symbol.name].append((coff, symbol))
+        loaded.append((obj_path, coff, funcs, hits_by_index))
+    candidates = {name: sorted(set(values)) for name, values in candidates.items()}
+
+    observed: dict[str, set[int]] = defaultdict(set)
+    image_base = pe.OPTIONAL_HEADER.ImageBase
+    for obj_path, coff, funcs, hits_by_index in loaded:
+        for func in funcs:
+            hits = sorted(set(hits_by_index.get(func.symbol.index, [])))
+            for base in hits:
+                for reloc in func.relocs:
+                    target = relocation_targets(reloc, func.section, base, exe_text, text_rva, image_base, func.start)
+                    symbol = coff.sym_by_index.get(reloc.symbol_index)
+                    if target is None or symbol is None:
+                        continue
+                    observed[symbol_map_key(obj_path, symbol)].add(target[0])
+    global_symbols: dict[str, int | None] = {}
+    for key, values in observed.items():
+        global_symbols[key] = next(iter(values)) if len(values) == 1 else None
+    return candidates, global_symbols, dict(function_defs), dict(data_defs)
 
 
 def main() -> int:
@@ -548,26 +757,22 @@ def main() -> int:
     text_rva = text_section.VirtualAddress
     exe_text = text_section.get_data()[:text_section.SizeOfRawData]
     imports = import_map(pe)
+    object_paths = [path.resolve() for path in args.objects]
+    shared_candidates, global_symbols, function_defs, data_defs = collect_global_state(object_paths, pe, exe_text, text_rva, at)
+    oracle_function_vas = {pe.OPTIONAL_HEADER.ImageBase + rva for rva in oracle_function_starts()}
     all_results = []
-    for obj_path in args.objects:
-        obj_path = obj_path.resolve()
-        result = compare_object(obj_path, pe, exe_text, text_rva, imports, explicit, at, not args.summary)
+    for obj_path in object_paths:
+        result = compare_object(obj_path, pe, exe_text, text_rva, imports, explicit, at, not args.summary,
+                                shared_candidates, global_symbols, function_defs, data_defs, oracle_function_vas)
         all_results.append(result)
         counts = Counter()
         wildcard = 0
         exact_bytes = 0
         for func in result["functions"]:
-            records = func["matches"]
             if func["wildcard_hit_count"]:
                 wildcard += 1
                 exact_bytes += int(func["raw_exact_hit_count"] > 0)
-                statuses = [record["status"] for record in records]
-                if len(records) == 1 and statuses == ["STRICT"]:
-                    counts["STRICT"] += 1
-                else:
-                    counts["RELOC-UNVERIFIED"] += 1
-            else:
-                counts["MISMATCH"] += 1
+            counts[func["status"]] += 1
         print(f"{obj_path.name}: functions={len(result['functions'])} wildcard-hit={wildcard} exact-byte-functions={exact_bytes} "
               f"strict={counts['STRICT']} reloc-unverified={counts['RELOC-UNVERIFIED']} mismatch={counts['MISMATCH']}")
         if not args.summary:

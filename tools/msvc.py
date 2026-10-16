@@ -59,6 +59,8 @@ def main() -> int:
     parser.add_argument("--define", action="append", default=[], help="preprocessor definition; repeatable")
     parser.add_argument("--flag", action="append", default=[], help="additional cl.exe argument; repeatable")
     parser.add_argument("--cwd", type=Path, default=ROOT, help="compiler working directory")
+    parser.add_argument("--log-dir", type=Path, default=ROOT / "build" / "match" / "logs",
+                        help="directory for the compile transcript")
     args = parser.parse_args()
 
     source = args.source.resolve()
@@ -105,7 +107,7 @@ def main() -> int:
                                 encoding="mbcs", errors="replace")
     banner_text = banner_run.stdout
     banner_line = next((line.strip() for line in banner_text.splitlines() if line.strip()), "<banner unavailable>")
-    log_dir = ROOT / "build" / "match" / "logs"
+    log_dir = args.log_dir.resolve()
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"{output.stem}.log"
     lines = [f"toolchain: {tree}", f"cl banner: {banner_line}", f"cwd: {args.cwd.resolve()}",

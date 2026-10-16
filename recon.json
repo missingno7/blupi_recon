@@ -1,0 +1,241 @@
+{
+  "toolchain": {
+    "tree": "sp3",
+    "include_dirs": [
+      "C:\\tools\\dx6sdk\\INCLUDE"
+    ],
+    "defines": [
+      "WIN32",
+      "NDEBUG",
+      "_WINDOWS",
+      "nullptr=0"
+    ],
+    "flags": [
+      "/W3",
+      "/GX",
+      "/O2",
+      "/ML",
+      "/Gd"
+    ]
+  },
+  "translation_units": [
+    {
+      "source": "src/sound.cpp"
+    },
+    {
+      "source": "src/movie.cpp"
+    },
+    {
+      "source": "src/misc.cpp"
+    },
+    {
+      "source": "src/ddutil.cpp"
+    }
+  ],
+  "accepted_functions": [
+    {
+      "symbol": "_DDColorMatch",
+      "rva": "0x000037a0",
+      "size": 256,
+      "tu": "src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDSetColorKey",
+      "rva": "0x000038a0",
+      "size": 48,
+      "tu": "src/ddutil.cpp"
+    },
+    {
+      "symbol": "_DDSetColorKey2",
+      "rva": "0x000038d0",
+      "size": 64,
+      "tu": "src/ddutil.cpp"
+    },
+    {
+      "symbol": "?ConvLongToPos@@YA?AUtagPOINT@@J@Z",
+      "rva": "0x0001f330",
+      "size": 32,
+      "tu": "src/misc.cpp"
+    },
+    {
+      "symbol": "?initAVI@CMovie@@IAEHXZ",
+      "rva": "0x00020150",
+      "size": 80,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?termAVI@CMovie@@IAEXXZ",
+      "rva": "0x000201a0",
+      "size": 48,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?positionMovie@CMovie@@IAEXPAXUtagRECT@@@Z",
+      "rva": "0x000201d0",
+      "size": 48,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?fileCloseMovie@CMovie@@IAEXPAX@Z",
+      "rva": "0x00020200",
+      "size": 80,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?fileOpenMovie@CMovie@@IAEHPAXUtagRECT@@PAD@Z",
+      "rva": "0x00020250",
+      "size": 368,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?playMovie@CMovie@@IAEXPAXH@Z",
+      "rva": "0x000203c0",
+      "size": 128,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "??0CMovie@@QAE@XZ",
+      "rva": "0x00020440",
+      "size": 16,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?Create@CMovie@@QAEHXZ",
+      "rva": "0x00020460",
+      "size": 48,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?GetEnable@CMovie@@QAEHXZ",
+      "rva": "0x00020490",
+      "size": 16,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?IsExist@CMovie@@QAEHPAD@Z",
+      "rva": "0x000204a0",
+      "size": 176,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?Play@CMovie@@QAEHPAXUtagRECT@@PAD@Z",
+      "rva": "0x00020550",
+      "size": 96,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?Stop@CMovie@@QAEXPAX@Z",
+      "rva": "0x000205b0",
+      "size": 32,
+      "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?CreateBufferFromWaveFile@CSound@@IAEHHPAD@Z",
+      "rva": "0x00022b40",
+      "size": 240,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?InitMidiVolume@@YAXH@Z",
+      "rva": "0x00022c30",
+      "size": 128,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "??0CSound@@QAE@XZ",
+      "rva": "0x00022cb0",
+      "size": 96,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "??1CSound@@QAE@XZ",
+      "rva": "0x00022d10",
+      "size": 80,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?GetEnable@CSound@@QAEHXZ",
+      "rva": "0x00022dc0",
+      "size": 16,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?SetState@CSound@@QAEXH@Z",
+      "rva": "0x00022dd0",
+      "size": 16,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?SetAudioVolume@CSound@@QAEXH@Z",
+      "rva": "0x00022de0",
+      "size": 16,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?GetAudioVolume@CSound@@QAEHXZ",
+      "rva": "0x00022df0",
+      "size": 32,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?SetMidiVolume@CSound@@QAEXH@Z",
+      "rva": "0x00022e10",
+      "size": 16,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?GetMidiVolume@CSound@@QAEHXZ",
+      "rva": "0x00022e20",
+      "size": 32,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?CacheAll@CSound@@QAEXXZ",
+      "rva": "0x00022e40",
+      "size": 64,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?Cache@CSound@@QAEHHPAD@Z",
+      "rva": "0x00022e80",
+      "size": 64,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?Flush@CSound@@QAEXH@Z",
+      "rva": "0x00022ec0",
+      "size": 64,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?SuspendMusic@CSound@@QAEXXZ",
+      "rva": "0x00023540",
+      "size": 80,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?StopMusic@CSound@@QAEXXZ",
+      "rva": "0x00023590",
+      "size": 32,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?IsPlayingMusic@CSound@@QAEHXZ",
+      "rva": "0x000235b0",
+      "size": 16,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?AdaptVolumeMusic@CSound@@QAEXXZ",
+      "rva": "0x000235c0",
+      "size": 64,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?SetSuspendSkip@CSound@@QAEXH@Z",
+      "rva": "0x00023600",
+      "size": 16,
+      "tu": "src/sound.cpp"
+    }
+  ]
+}
