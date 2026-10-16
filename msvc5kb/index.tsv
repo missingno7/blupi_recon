@@ -1,0 +1,30 @@
+symptom_class	asm_pattern	rule_ids	first_experiment
+same_size_register	residual registers differ but instruction count and size agree	CTX-01,CTX-03,REG-03	sweep top/end/before on one scratch TU; retain per-function strict vector
+same_size_x87	x87 load order reversed for commutative operation	REG-01	hold expression fixed; sweep real TU context and inspect x87 stack sequence
+same_size_sib	[eax+ecx] versus [ecx+eax] or base/index roles reverse	REG-02	diff SIB operands; then bounded top/end counter probe
+same_size_schedule	same instruction multiset in different order	ORD-01,ORD-02	compare statement order under authentic /O1 and /O2 flags
+field_store_order	mov to independent fields reversed	ORD-01,ORD-02	reconstruct source statement order; compile two semantics-safe orders
+reload_member	target reloads [object+field] at each use; candidate holds local	MEM-01	diff direct member and evidence-backed cached form; check full TU
+array_alias	base/index register or pointer reload differs	REG-03	compare typed pointer access forms under target flags
+loop_head	target keeps sentinel/head pointer live across loop	REG-04	compare real loop-invariant local versus repeated head access
+float_x87	x87 stack temporary or store/load sequence differs	MEM-02	keep numeric float and bit-pattern probes separate; test /O1 and /O2
+local_slot	stack slots do not follow declaration order	NEG-01	stop broad permutations; inspect live ranges and initialization
+cleanup_branch	target branch reaches destructor test; candidate returns to epilogue	EH-02	compare lexical fall-through and early return with real destructor scope
+missing_eh_frame	cleanup funclet or C++ frame absent	EH-01	match /GX then inspect object funclets and unwind refs
+inline_cutoff	early calls inline, later calls remain call instructions	INL-01	compile one caller while varying call count and callee size
+nested_inline	wrapper call sites inline in reverse textual order	INL-02	probe direct sites against nested wrapper sites
+wrapper_mismatch	native typed helper call remains out of line	SRC-01	establish wrapper call sites from project evidence before edits
+vector_macro	macro expansion has different component loads/stores	SRC-02	inspect actual macro expansion; test one equivalent form
+signature_result	call/result instruction differs with apparent same values	SRC-03	verify helper return and parameter types first
+template_counter	template member changes after end-of-TU declaration	TMP-01	list full TU and delayed instance ranges
+duplicate_comdat	duplicate function copies differ before linker folds them	TMP-02	compare each object copy and linked survivor separately
+pch_context	many functions move after /YX or include-order change	CTX-05	rebuild one unchanged TU with authentic PCH procedure
+front_back_counter	top/before/end probes affect different functions	CTX-02,CTX-03	compare per-function $L/$T listings across placements
+compiler_build	same TU changes between RTM, SP2, SP3, NT5, or VC6	CTX-06,FLG-02	hold headers, flags, and linker fixed; compare function bytes and tool hashes
+flag_o1_o2	function size/call shape changes under /O1 versus /O2	INL-04,FLG-01	compile same TU under each authentic optimization flag
+flag_ox	/Ox proposed as distinct from /O2	FLG-04,FLG-01	run one-TU byte comparison before source edits
+comdat_fold	same function symbols share RVA in final image	LNK-01	compare object bodies, then linker selection and final RVAs
+import_thunk	PE import/IAT or thunk ordering differs	LNK-02	freeze object inputs; compare linker metadata independently
+compiler_rank	one package wins one function but loses another	FLG-03	build all candidates with same target and linker; rank strict bytes and functions
+padding_probe	dummy declaration/local suggested to force bytes	NEG-03	do not build padding variants; test only authentic source forms
+cleanup_spelling	string-copy/lifetime variants change but do not match	NEG-02	stop repeated spellings absent new instruction evidence

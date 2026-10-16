@@ -1,0 +1,91 @@
+# MSVC 5.0 knowledge-base transfer validation
+
+This document records the KB transfer checks against Speedy Blupi 1. **[EVIDENCE]** marks measured outcomes, **[HYPOTHESIS]** marks the question being tested or an interpretation, and **[OPEN]** marks unresolved coverage. Canonical `src/` files were not edited. Source variants and TU snapshots are under ignored `scratch/kb/merge/`; compiler objects, listings, JSON, and logs are under ignored `build/kb/`.
+
+## Strictness and setup
+
+**[EVIDENCE]** All PE comparisons below use `tools/cmpfunc.py` strict status: the full candidate function is compared at a forced or unique RVA, object relocation fields are checked, and unresolved targets remain `RELOC-UNVERIFIED`. The compiler/sweep checks also supplied the known full target function length. A normalized instruction diff is never counted as equality.
+
+**[EVIDENCE]** Baseline command context: VC5 SP3 cl 11.00.7022, `/W3 /GX /O2 /ML /Gd`, defines `WIN32`, `NDEBUG`, `_WINDOWS`, `nullptr=0`, and `C:\tools\dx6sdk\INCLUDE`. A byte-preserving snapshot of all four TUs and their local headers was made before experiments. The four baseline object builds produced 34/34 strict accepted functions: sound 18/18, movie 12/12, misc 1/1, ddutil 3/3. Totals over all emitted functions were 18/27, 12/13, 1/12, and 3/9 strict respectively.
+
+| Snapshot file | SHA-256 |
+|---|---|
+| `ddutil.cpp` | `6b8fbf357b64fdfe246e03faa4433fd2ddbf3da1b1801649c632867d320174d1` |
+| `ddutil.h` | `6b0b625f2d23cedb51b88dc4344e9c98b36444654ad9937ede10c83974373a50` |
+| `def.h` | `2c521aa760a93e3398099aaae4fd1f56041c8fbe5fb58f26ea957d05a9640b53` |
+| `misc.cpp` | `3a884234ec7f4eee52ba02a4ede1c240c542d8d5279ff80f6efd1daedaf16ee5` |
+| `misc.h` | `cc34d61ab605486fb666f72c3cb7055fc3dfe5205b988c96060fcc99b288d57f` |
+| `movie.cpp` | `b4a113af16bd69522b9c6e7ceea36fe0a36dbb5f4ef11bbcd9aac60f58098e70` |
+| `movie.h` | `9a0054f473b7260449d23f0919ddf25591164ababc11aa0241fb43d88388e195` |
+| `resource.h` | `bbafbde619ec7a735c7beb54c32e9841b0f4a3dbafa4c1b973f33b6042c8655a` |
+| `sound.cpp` | `7fbc9e7ebecda92879a70137e211814980ba9d3b7bd6e8b3b98da4d7b41830bf` |
+| `sound.h` | `be68a7fc3af1fdb5ee70a407affdd1453d1ea86b2d6a135b68aac732e428dfb9` |
+
+## Experiment 1: baseline
+
+- **[HYPOTHESIS] Hypothesis:** the current reconstructed TUs reproduce every already accepted strict function before any probe or source-form variant is considered.
+- **Rule IDs:** baseline gate for all rules.
+- **[EVIDENCE] Baseline:** four copied TUs and local headers; compiler and flags listed above; 34 accepted functions in `recon.json`.
+- **[EVIDENCE] Result:** 4 compiles; all 34 accepted functions were `STRICT`. The all-function counts are shown above. Results and compiler logs are in `build/kb/baseline/`.
+- **[HYPOTHESIS] Conclusion:** usable strict baseline for this workspace snapshot. This does not claim a whole-image rebuild or full-project PCH/link equivalence.
+
+## Experiment 2: TU counter placement and sensitivity
+
+- **[HYPOTHESIS] Hypothesis:** a strict sound function or one of its peers might change when declarations are inserted at different TU positions, as observed in the VC5 engine corpus.
+- **Rule IDs:** CTX-01, CTX-02, CTX-03, CTX-04.
+- **[EVIDENCE] Baseline:** scratch snapshot of `sound.cpp`; SP3 `/O2 /GX /ML /Gd`; target `?CreateBufferFromWaveFile@CSound@@IAEHHPAD@Z`, RVA `0x22b40`, 240 bytes. The independent peer mappings for `CreateSoundBuffer` and `ReadData` were supplied so their call relocations could be checked.
+- **[EVIDENCE] Experiment:** 21 compiles: counts `0, 1, 2, 4, 8, 16, 32` at top, end, and immediately before `CreateBufferFromWaveFile`. A stable scratch source pathname was reused to keep path-sensitive constructs fixed. `vc5probe` compared every function in the TU; four additional `/FAs` compiles captured counter labels.
+- **[EVIDENCE] Result:** the target remained `STRICT` at all 21 points; all 27 emitted functions retained their baseline status and RVA, with 21 strict, 1 reloc-unverified, and 5 mismatches. Raw object bodies did move: every sampled nonzero top probe changed four bodies (`CreateSoundBuffer`, `StopAllSounds`, `PlaySoundDS`, `InitMidiVolume`); every nonzero before-target probe changed three later bodies (`StopAllSounds`, `PlaySoundDS`, `InitMidiVolume`); end probes changed no function body. None of these changes gained or lost strict functions.
+- **[EVIDENCE] Counter listing:** the parser saw `$L` label-set changes in 19 functions after a top declaration, 18 after a before-target declaration, and 5 after an end declaration. This listing exposed no `$T` labels, so it does not establish which SB1 counter phase moved.
+- **[HYPOTHESIS] Conclusion:** the Blood II count-sensitivity mechanism has a measurable SB1 effect on some non-strict object bodies, but this sampled sound target has no strict window transition through 32 declarations. The placement/count pattern is not evidence for original filler or a source edit. More TUs/functions are needed before concluding how often SB1 code responds.
+- **Artifacts:** `build/kb/counter_stable/` and `build/kb/counter_listings/`.
+
+## Experiment 3: compiler build and optimization sweep
+
+- **[HYPOTHESIS] Hypothesis:** compiler package or optimization differences may explain SB1 function residues, but any rank should be target- and TU-specific.
+- **Rule IDs:** FLG-01, FLG-02, FLG-03, FLG-04.
+- **[EVIDENCE] Baseline:** full `sound.cpp` and `misc.cpp` TU snapshots. All runs used `/W3 /GX /ML /Gd`, `WIN32`, `NDEBUG`, `_WINDOWS`, `nullptr=0`, DX6 headers, and explicit VC5 SP3 headers searched before compiler-tree defaults. Flag variants were `/O1`, `/O2`, `/Ox`. The same oracle PE and linker output were held fixed; compilation stopped at COFF object output.
+- **[EVIDENCE] Experiment:** 36 compiles (six compiler trees × three flag sets × two TUs): VC5 SP3, SP2, RTM, NT5 1592, NT5 1691, and VC6 RTM.
+- **[EVIDENCE] Sound target:** `CreateBufferFromWaveFile`, RVA `0x22b40`, 240 bytes. Under `/O2`, SP2, SP3, and both NT5 trees were `STRICT` and the TU had 21/27 strict functions; RTM was `STRICT` for this target but had 20/27 strict functions. RTM's `CreateSoundBuffer` body differed from SP3 in 23 non-relocated bytes and `ReadData` differed in 232 non-relocated bytes. `/Ox` emitted the same selected function bytes and strict counts as `/O2`. Every VC5 `/O1` run produced a 153-byte mismatch and 5/27 strict functions. VC6 `/O2` and `/Ox` produced 240-byte mismatches and 13/27 strict functions; VC6 `/O1` produced a 146-byte mismatch and 5/27 strict functions.
+- **[EVIDENCE] Misc target:** `ConvLongToPos`, RVA `0x1f330`, 32 bytes. `/O2` and `/Ox` were `STRICT` under all six compiler trees; `/O1` produced a 13-byte mismatch under all six. Target function bytes were identical across all six trees for each flag set. The full TU had 6/12 strict under `/O2` and 5/12 under `/Ox` for VC5; one peer changed status even though `ConvLongToPos` did not.
+- **[HYPOTHESIS] Conclusion:** SB1 transfer is target-specific. The SP2/SP3/NT5 selected functions agree in these runs; this does not establish whole-TU identity. The RTM sound result is a new counterexample to treating all VC5 drops as globally interchangeable: two same-TU helpers changed with compiler tree while the selected target function remained strict. VC6 matches the small utility but not the larger sound function. `/O2` and `/Ox` were identical in the selected function bodies, but `/Ox` changed a misc peer's strict status.
+- **Artifacts:** `build/kb/compiler_sweep_sp3headers/` and `build/kb/compiler_sweep_misc_fixedheaders/`.
+
+## Experiment 4: source-form transfer on a nonmatching SB1 function
+
+- **[HYPOTHESIS] Hypothesis:** the Blood II direct-member/reload observation might transfer to `PlaySoundDS` in SB1.
+- **Rule IDs:** MEM-01, REG-03.
+- **[EVIDENCE] Baseline:** `?PlaySoundDS@CSound@@IAEHKK@Z` was a 128-byte `MISMATCH` with no wildcard hit in the unforced strict comparison of the baseline sound object; the sound TU had 21/27 strict functions.
+- **Source change:** only in `scratch/kb/merge/sourceform/sound_cached_member.cpp`, after the existing bounds check, read `m_lpDSB[dwSound]` once into a typed `LPDIRECTSOUNDBUFFER` local and use that local for the status and play calls. The canonical source was not edited.
+- **[EVIDENCE] Experiment:** 1 candidate compile plus strict object comparison. A byte-level candidate-versus-baseline function diff was also classified by `vc5probe diff`.
+- **[EVIDENCE] Result:** candidate body was 112 bytes and classified as size/structural versus the 128-byte baseline body. It remained `MISMATCH` with zero wildcard hits. Strict peer count stayed 21/27 and no peer status/RVA changed; there was no strict gain.
+- **[HYPOTHESIS] Conclusion:** the source form changes VC5 code generation but does not validate as an SB1 reconstruction. The cached pointer crosses external COM calls, so its semantic equivalence also needs independent proof before any integration.
+- **Artifacts:** source variant and preparation script in `scratch/kb/merge/sourceform_prepare.py`; outputs in `build/kb/sourceform/`.
+
+## Experiment 5: inline-budget applicability
+
+- **Hypothesis:** a visible inline/template candidate in the four SB1 TUs might exercise the `/O2` per-caller budget rule.
+- **Rule IDs:** INL-01, INL-02, INL-04, TMP-01.
+- **[EVIDENCE] Baseline:** the captured `sound.cpp`, `misc.cpp`, `movie.cpp`, `ddutil.cpp` files and their local headers.
+- **[EVIDENCE] Result:** a source/header scan found no explicit `inline` or `template` definitions in these four TUs or local headers. No compiler run was made because there was no source-level candidate to measure. This does not prove that the optimizer never inlines a visible ordinary function.
+- **[HYPOTHESIS] Conclusion:** Blood II inline-budget observations need validation in another SB1 TU or reconstructed header context; for the current four TUs the synthetic budget rule is not directly actionable.
+
+## [EVIDENCE] Transfer summary
+
+| Finding | SB1 status |
+|---|---|
+| Fixed compiler, flags, include paths, TU, and strict relocation checks before editing source | Directly applicable workflow; baseline and toolchain docs support it. |
+| `/O1` versus `/O2` and `/Ox` effects | Confirmed for two SB1 functions only; not a global rank. |
+| VC5 RTM/SP2/SP3/NT5 interchangeability | Not universal: selected functions agree in part, but RTM changes two sound helpers under fixed SP3 headers. Broader TU coverage remains open. |
+| TU counter sensitivity | Some SB1 sound object bodies changed, but no strict status flipped in the bounded scan; phase attribution and other TUs remain open. |
+| Direct member reload versus cached local | Tested on `PlaySoundDS`; code changed but no strict gain. Needs new source/target evidence. |
+| Blood II inline budgets, nested wrapper sites, EH lowering, templates, duplicate COMDAT handling | Mechanisms remain supported only under the cited Blood II conditions; the current four SB1 TUs did not provide a visible inline/template candidate. |
+| `VEC_*`, packet wrappers, helper signatures | Project conventions only; irrelevant to these SB1 TUs unless independently present in SB1 source. |
+| COMDAT folding, Rich data, imports, and thunk order | Linker-only; retain separate from compiler-function equality. SB1 exact 5.10 patch remains open. |
+
+## [OPEN] Open checks
+
+- Test counter and source-form rules on a second nontrivial SB1 TU with a proven target boundary and independently mapped relocations.
+- Capture `/FAs` `$T` output or an alternate counter view if the VC5 SB1 compiler emits it; current `sound.cpp` listings exposed `$L` labels only.
+- Isolate RTM versus SP3 `c1xx` and `c2` components under the fixed-header setup before attributing the two sound-helper differences to one compiler pass.
+- Find an SB1 header/TU with a visible inline/template body before importing the Blood II inline-budget threshold.
