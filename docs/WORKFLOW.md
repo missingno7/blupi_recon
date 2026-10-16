@@ -1,10 +1,14 @@
 # Matching source workflow
 
 `recon.json` is the canonical input list and acceptance record. It pins the VC5
-SP3 compiler tree, `/O2 /GX` release flags, DirectX 6 headers, and the
-`nullptr=0` source compatibility define. `src/` keeps original filenames and
-source line numbers; see [src/PROVENANCE.md](../src/PROVENANCE.md) for upstream
-and license details.
+SP3 compiler tree, `/O2 /GX /Gy` flags, DirectX 6 headers, and the `nullptr=0`
+source compatibility define. `src/` keeps original filenames and source line
+numbers; see [src/PROVENANCE.md](../src/PROVENANCE.md) for file provenance.
+
+`/Gy` packages functions as COMDATs; the original link also folded identical
+COMDATs (linker ICF, commonly `/OPT:ICF`). Comparing all eight current TUs with
+and without `/Gy` found identical function body bytes (128 functions total).
+The oracle's shared `OutputDebug` body demonstrates the link-time folding.
 
 From the repository root, build and verify every listed TU:
 
@@ -16,7 +20,7 @@ The verifier removes and recreates only `build/verify/`, sends `TMP` and `TEMP`
 to the repository's `build/tmp/`, compiles each TU with the manifest settings,
 and compares all objects in one run. It writes objects, logs, and JSON details
 under `build/verify/`, prints compiler component SHA-256 hashes once, and
-reports per-TU counts, location proofs, and strict game `.text` coverage. A
+reports per-TU counts, location proofs, and strict/folded game `.text` coverage. A
 nonzero exit means a previously accepted function failed its status, RVA, or
 code-size check.
 
@@ -27,23 +31,33 @@ To check a candidate without changing `src/`, substitute one TU for that run:
 ```
 
 The canonical source remains the manifest's default for all other TUs. Use
-`--accept` after a clean build to add newly STRICT functions to `recon.json`:
+`--accept` after a clean build to add newly STRICT or FOLDED functions to
+`recon.json`:
 
 ```powershell
 .\.pyenv\python.exe tools\verify.py --accept
 ```
 
 Promotion is refused if any existing accepted function regresses, and a
-substituted candidate cannot be promoted.
+substituted candidate cannot be promoted. Newly verified folded bodies are
+recorded with `status: "folded"` and an `into` owner; ordinary accepted bodies
+remain `STRICT`.
 
 ## Comparator statuses
 
-- **STRICT** means one unique code location matches every non-relocation byte;
+- **STRICT** means one proved code location matches every non-relocation byte;
+  the location can be unique by bytes, placed by TU order or verified calls, or
+  anchored by an accepted `--at` assertion;
   each relocation has one run-wide symbol binding; imports resolve to their
   IAT slots; calls to reconstructed functions land at their unique matched
   RVA; other calls land at an exact start in `oracle/functions.csv`; and
   referenced data lands in the expected PE section with identical initialized
   bytes.
+- **FOLDED** means the candidate body matches exactly and its verified oracle
+  location belongs to another TU's body. Calls bind to that owner address. The
+  manifest records the owner symbol/RVA; folded code is reported separately,
+  excluded from the originating TU's owned-byte count, and counted once under
+  its owner.
 - **RELOC-UNVERIFIED** means code bytes match, but a target could not be proven
   or a documented source-path string differs. The report includes the reason.
 - **MISMATCH** means code bytes or a proven relocation target/data payload
@@ -63,7 +77,12 @@ selected bindings is a mismatch. The JSON and console report adjacent object
 functions whose oracle gap is not just 16-byte alignment padding.
 
 The report gives function code size separately from trailing `/O2` alignment
-padding. Padding is not counted as function body coverage.
+padding. Padding is not counted as function body coverage. Folded functions do
+not generate TU-order layout warnings.
+
+The UI cluster's compiler-generated switch labels are listed as explicit
+`symbol_mappings` in `recon.json`; their addresses were checked against static
+oracle disassembly and are described in [docs/UI_CLUSTER.md](UI_CLUSTER.md).
 
 The current known data exception is `__FILE__`: `msvc.py` passes an absolute
 source path, producing `D:\Prog\blupi_recon\src\sound.cpp`, while the oracle

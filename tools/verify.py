@@ -124,6 +124,8 @@ def run_comparator(objects: list[Path], manifest: dict[str, Any]) -> list[dict[s
                "--summary", "--json-out", str(output)]
     for accepted in manifest.get("accepted_functions", []):
         command.extend(["--at", f"{accepted['symbol']}={parse_number(accepted['rva']):#x}"])
+    for mapping in manifest.get("symbol_mappings", []):
+        command.extend(["--symbol-va", f"{mapping['symbol']}={parse_number(mapping['va']):#x}"])
     run = subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          text=True, encoding="utf-8", errors="replace")
     if run.returncode:
@@ -149,7 +151,8 @@ def union_size(intervals: list[tuple[int, int]]) -> int:
 
 def report(results: list[dict[str, Any]], unit_order: list[str]) -> tuple[dict[str, list[dict[str, Any]]], int]:
     by_unit: dict[str, list[dict[str, Any]]] = {name: [] for name in unit_order}
-    all_intervals: list[tuple[int, int]] = []
+    intervals_by_owner: dict[str, list[tuple[int, int]]] = {name: [] for name in unit_order}
+    folded_owner_intervals: dict[str, list[tuple[int, int]]] = {}
     path_exceptions: set[tuple[str, str, str]] = set()
     for result, unit in zip(results, unit_order):
         by_unit[unit] = result["functions"]
@@ -160,41 +163,53 @@ def report(results: list[dict[str, Any]], unit_order: list[str]) -> tuple[dict[s
                     if detail:
                         path_exceptions.add((str(detail.get("object_path")), str(detail.get("oracle_path")),
                                              str(detail.get("target_va"))))
+                if func["status"] not in ("STRICT", "FOLDED") or len(func["matches"]) != 1:
+                    continue
+                rva = int(func["matches"][0]["rva"], 16)
+                low, high = max(rva, ORACLE_TEXT_START), min(rva + func["code_size"], GAME_TEXT_END)
+                if low >= high:
+                    continue
+                interval = (low, high)
+                if func["status"] == "STRICT":
+                    intervals_by_owner[unit].append(interval)
+                else:
+                    owner = str(func.get("folded_into", {}).get("tu", "unknown TU"))
+                    owner_name = Path(owner).name.lower()
+                    owner_unit = next((name for name in unit_order if Path(name).name.lower() == owner_name), None)
+                    if owner_unit is not None:
+                        intervals_by_owner[owner_unit].append(interval)
+                    else:
+                        folded_owner_intervals.setdefault(owner, []).append(interval)
     for object_path, oracle_path, target_va in sorted(path_exceptions):
         print(f"build-path data difference: object={object_path!r} oracle={oracle_path!r} target={target_va}")
     for result in results:
         for warning in result.get("layout_warnings", []):
             print(f"layout warning ({Path(result['object']).name}): {warning}")
-    print("\nTU                      functions  strict  unverified  mismatch  locations U/P/C/F/A  game bytes")
-    print("----------------------  ---------  ------  ----------  --------  ------------------  ----------")
+    print("\nTU                      functions  strict  folded  unverified  mismatch  locations U/P/C/F/A  game bytes")
+    print("----------------------  ---------  ------  ------  ----------  --------  ------------------  ----------")
     for unit in unit_order:
         functions = by_unit[unit]
         counts = {key: sum(f["status"] == key for f in functions)
-                  for key in ("STRICT", "RELOC-UNVERIFIED", "MISMATCH")}
+                  for key in ("STRICT", "FOLDED", "RELOC-UNVERIFIED", "MISMATCH")}
         bases = {key: sum(f.get("placement_basis") == key for f in functions)
                  for key in ("unique", "placed by TU order", "placed by verified call targets", "forced by --at")}
         unresolved_locations = sum(f.get("placement_basis") in ("ambiguous", "unlocated") for f in functions)
-        intervals: list[tuple[int, int]] = []
-        for func in functions:
-            if func["status"] != "STRICT":
-                continue
-            record = func["matches"][0]
-            rva = int(record["rva"], 16)
-            low, high = max(rva, ORACLE_TEXT_START), min(rva + func["code_size"], GAME_TEXT_END)
-            if low < high:
-                intervals.append((low, high))
+        intervals = intervals_by_owner[unit]
         covered = union_size(intervals)
-        all_intervals.extend(intervals)
         location_counts = (f"{bases['unique']}/{bases['placed by TU order']}/"
                            f"{bases['placed by verified call targets']}/{bases['forced by --at']}/"
                            f"{unresolved_locations}")
-        print(f"{unit:<22}  {len(functions):>9}  {counts['STRICT']:>6}  "
+        print(f"{unit:<22}  {len(functions):>9}  {counts['STRICT']:>6}  {counts['FOLDED']:>6}  "
               f"{counts['RELOC-UNVERIFIED']:>10}  {counts['MISMATCH']:>8}  "
               f"{location_counts:>16}  "
               f"{covered:>5} / {GAME_TEXT_SIZE}")
     print("Location counts U/P/C/F/A = unique / placed by TU order / placed by verified calls / forced by --at / unresolved.")
-    total = union_size(all_intervals)
-    print(f"All TUs strict game .text coverage: {total} / {GAME_TEXT_SIZE} bytes")
+    for owner, intervals in sorted(folded_owner_intervals.items()):
+        covered = union_size(intervals)
+        print(f"folded owner {owner}: {covered} game .text bytes")
+    total = union_size([interval for intervals in intervals_by_owner.values() for interval in intervals]
+                       + [interval for intervals in folded_owner_intervals.values() for interval in intervals])
+    print(f"All TUs strict plus folded-owner game .text coverage: {total} / {GAME_TEXT_SIZE} bytes")
     return by_unit, total
 
 
@@ -210,9 +225,20 @@ def accepted_regressions(manifest: dict[str, Any], by_unit: dict[str, list[dict[
         records = func["matches"]
         rva_ok = (len(records) == 1 and int(records[0]["rva"], 16) == parse_number(accepted["rva"]))
         size_ok = func["code_size"] == parse_number(accepted["size"])
-        if func["status"] != "STRICT" or not rva_ok or not size_ok:
+        expected_status = "FOLDED" if accepted.get("status", "strict").lower() == "folded" else "STRICT"
+        owner_ok = True
+        if expected_status == "FOLDED":
+            expected_owner = accepted.get("into", {})
+            observed_owner = func.get("folded_into", {})
+            owner_ok = (observed_owner.get("rva") == f"0x{parse_number(expected_owner.get('rva', 0)):08x}"
+                        and observed_owner.get("tu", "").lower().endswith(
+                            Path(expected_owner.get("tu", "")).name.lower())
+                        and (not expected_owner.get("symbol")
+                             or observed_owner.get("symbol") == expected_owner["symbol"]))
+        if func["status"] != expected_status or not rva_ok or not size_ok or not owner_ok:
             errors.append(f"{tu}: {accepted['symbol']} status={func['status']} "
-                          f"rva={records[0]['rva'] if records else 'none'} size={func['code_size']}")
+                          f"rva={records[0]['rva'] if records else 'none'} size={func['code_size']}"
+                          + (" owner mismatch" if not owner_ok else ""))
     return errors
 
 
@@ -222,20 +248,27 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
     additions = []
     for tu, functions in by_unit.items():
         for func in functions:
-            if func["status"] != "STRICT" or len(func["matches"]) != 1:
+            if func["status"] not in ("STRICT", "FOLDED") or len(func["matches"]) != 1:
                 continue
             rva = int(func["matches"][0]["rva"], 16)
             key = (func["name"], rva, tu)
             if key in known:
                 continue
-            additions.append({"symbol": func["name"], "rva": rva,
-                              "size": int(func["code_size"]), "tu": tu})
+            item: dict[str, Any] = {"symbol": func["name"], "rva": rva,
+                                    "size": int(func["code_size"]), "tu": tu}
+            if func["status"] == "FOLDED":
+                owner = func["folded_into"]
+                item["status"] = "folded"
+                item["into"] = {key: owner[key] for key in ("symbol", "rva", "tu")}
+            additions.append(item)
     manifest.setdefault("accepted_functions", []).extend(additions)
     for item in manifest["accepted_functions"]:
         item["rva"] = f"0x{parse_number(item['rva']):08x}"
     manifest["accepted_functions"].sort(key=lambda item: (parse_number(item["rva"]), item["tu"], item["symbol"]))
     MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    print(f"accepted {len(additions)} newly STRICT function(s)")
+    strict_count = sum(item.get("status") != "folded" for item in additions)
+    folded_count = len(additions) - strict_count
+    print(f"accepted {strict_count} newly STRICT and {folded_count} newly FOLDED function(s)")
     return len(additions)
 
 

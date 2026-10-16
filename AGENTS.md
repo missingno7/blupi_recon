@@ -16,5 +16,8 @@ Hard rules:
   `scratch/`. Commit only small canonical inputs, focused scripts and concise docs.
 - Separate proven facts from hypotheses in docs ([EVIDENCE] / [HYPOTHESIS] / [OPEN]).
 - Do not run git commit; the supervisor integrates. Do not leave background processes running.
+- Matching loop: candidate in scratch -> `tools/verify.py --tu src/X.cpp=<candidate>` (docs/WORKFLOW.md). When a
+  function does not match, consult msvc5kb/README.md (`msvc5kb/tools/kb.py hints <func>`) before guessing; Blood II
+  rules are hypotheses until confirmed on SB1. Record verified compiler findings and negatives in the catalog.
 - Python: use `.pyenv\python.exe` (repo-local, ignored PyPy 3.11 with pefile + capstone 5.0.3).
   Prefer a few focused scripts over frameworks.

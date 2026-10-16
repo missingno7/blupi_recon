@@ -708,7 +708,8 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                    function_defs: dict[str, list[Function]] | None = None,
                    data_defs: dict[str, list[tuple[Coff, Symbol]]] | None = None,
                    oracle_function_vas: set[int] | None = None,
-                   locations: dict[tuple[str, int], tuple[int, str]] | None = None) -> dict[str, Any]:
+                   locations: dict[tuple[str, int], tuple[int, str]] | None = None,
+                   folded: dict[tuple[str, int], dict[str, Any]] | None = None) -> dict[str, Any]:
     coff = Coff(obj_path)
     functions = coff.functions()
     candidates: dict[str, list[int]] = {}
@@ -740,6 +741,7 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
             placement_basis = "ambiguous" if len(set(hits)) > 1 else "unlocated"
         records = []
         raw_exact_hits = 0
+        folded_into = (folded or {}).get((str(obj_path.resolve()), func.symbol.index))
         for base in hit_offsets:
             if base < 0 or base + len(data) > len(exe_text):
                 records.append({"rva": f"0x{specified:08x}" if specified is not None else None,
@@ -768,10 +770,13 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                     func, base, exe_text, text_rva, pe.OPTIONAL_HEADER.ImageBase, pe, coff, obj_path,
                     unique_candidates, function_defs or {}, data_defs or {}, imports, explicit,
                     global_symbols or {}, oracle_function_vas or set())
+                if status == "STRICT" and folded_into is not None:
+                    status = "FOLDED"
             records.append({"rva": f"0x{text_rva + base:08x}", "status": status,
                             "size": len(data), "code_size": len(data),
                             "alignment_padding_after": func.alignment_padding,
                             "placement_basis": placement_basis,
+                            **({"folded_into": folded_into} if folded_into is not None else {}),
                             "relocations": reloc_reports})
         best = None
         diff = None
@@ -795,6 +800,7 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                         "code_size": len(data), "alignment_padding_after": func.alignment_padding,
                         "placement_basis": placement_basis,
                         "status": overall_status,
+                        **({"folded_into": folded_into} if folded_into is not None else {}),
                         "relocation_count": len(func.relocs), "wildcard_hit_count": len(hits),
                         "raw_exact_hit_count": raw_exact_hits,
                         "matches": records, "best_candidate": best, "disassembly_diff": diff})
@@ -811,16 +817,59 @@ def oracle_function_starts(path: Path = ROOT / "oracle" / "functions.csv") -> se
     return starts
 
 
+def oracle_tu_at_rva(path: Path = ROOT / "oracle" / "tu_map.csv") -> dict[int, str]:
+    """Return source-TU ownership for exact oracle function starts."""
+    result: dict[int, str] = {}
+    with path.open("r", encoding="utf-8-sig", newline="") as stream:
+        for row in csv.DictReader(stream):
+            if row.get("rva") and row.get("tu"):
+                result[int(row["rva"], 0)] = row["tu"]
+    return result
+
+
+def object_tu_name(path: Path) -> str:
+    """Recover the canonical TU stem from verify.py's NN_<stem>.obj naming."""
+    stem = path.stem
+    match = re.match(r"^\d+_(.+)$", stem)
+    if match:
+        stem = match.group(1)
+    return Path(stem.split("-", 1)[0]).stem.lower()
+
+
+def oracle_direct_reference_counts(exe_text: bytes, text_rva: int, image_base: int,
+                                   oracle_starts: set[int]) -> Counter[int]:
+    """Count direct near calls/tail jumps to known oracle function starts in .text."""
+    counts: Counter[int] = Counter()
+    cursor = 0
+    text_va = image_base + text_rva
+    oracle_vas = {image_base + rva for rva in oracle_starts}
+    for opcode in (b"\xe8", b"\xe9"):
+        cursor = 0
+        while True:
+            pos = exe_text.find(opcode, cursor)
+            if pos < 0 or pos + 5 > len(exe_text):
+                break
+            target = text_va + pos + 5 + struct.unpack_from("<i", exe_text, pos + 1)[0]
+            if target in oracle_vas:
+                counts[target] += 1
+            cursor = pos + 1
+    return counts
+
+
 def layout_warnings(obj_path: Path, locations: dict[tuple[str, int], tuple[int, str]],
-                    text_rva: int) -> list[str]:
+                    text_rva: int, folded: dict[tuple[str, int], dict[str, Any]] | None = None) -> list[str]:
     """Report selected adjacent object functions that do not occupy adjacent aligned RVAs."""
     coff = Coff(obj_path)
     funcs = coff.functions()
     warnings = []
     obj_key = str(obj_path.resolve())
     for left, right in zip(funcs, funcs[1:]):
-        left_location = locations.get((obj_key, left.symbol.index))
-        right_location = locations.get((obj_key, right.symbol.index))
+        left_key = (obj_key, left.symbol.index)
+        right_key = (obj_key, right.symbol.index)
+        if folded and (left_key in folded or right_key in folded):
+            continue
+        left_location = locations.get(left_key)
+        right_location = locations.get(right_key)
         if left_location is None or right_location is None:
             continue
         left_base, left_basis = left_location
@@ -838,7 +887,8 @@ def layout_warnings(obj_path: Path, locations: dict[tuple[str, int], tuple[int, 
 def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, text_rva: int,
                          at: dict[str, int]) -> tuple[dict[str, list[int]], dict[str, int | None],
                                                        dict[str, list[Function]], dict[str, list[tuple[Coff, Symbol]]],
-                                                       dict[tuple[str, int], tuple[int, str]]]:
+                                                        dict[tuple[str, int], tuple[int, str]],
+                                                        dict[tuple[str, int], dict[str, Any]]]:
     loaded: list[tuple[Path, Coff, list[Function], dict[int, list[int]]]] = []
     candidates: dict[str, list[int]] = defaultdict(list)
     function_defs: dict[str, list[Function]] = defaultdict(list)
@@ -905,6 +955,57 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
         raw_hits = candidates_for(definition, exe_text)
         if (target_va in oracle_function_vas and target_offset in raw_hits):
             locations[key] = (target_offset, "placed by verified call targets")
+    # COMDAT folding can make a source function's only valid address belong to
+    # another TU. Keep that body visible as FOLDED, while its owner remains the
+    # sole TU that receives strict byte coverage. Oracle call/tail-jump
+    # references establish that the body is used; the TU map identifies its
+    # owner. If that TU is present, an equal independently located object body
+    # ties the folded symbol to its concrete owner symbol.
+    tu_by_rva = oracle_tu_at_rva()
+    oracle_function_rvas = oracle_function_starts()
+    direct_refs = oracle_direct_reference_counts(exe_text, text_rva, pe.OPTIONAL_HEADER.ImageBase,
+                                                 oracle_function_rvas)
+    oracle_names: dict[int, str] = {}
+    with (ROOT / "oracle" / "functions.csv").open("r", encoding="utf-8-sig", newline="") as stream:
+        for row in csv.DictReader(stream):
+            if row.get("rva") and row.get("name"):
+                oracle_names[int(row["rva"], 0)] = row["name"]
+    folded: dict[tuple[str, int], dict[str, Any]] = {}
+    function_by_key: dict[tuple[str, int], Function] = {}
+    object_tu_by_key: dict[tuple[str, int], str] = {}
+    for obj_path, _coff, funcs, _hits in loaded:
+        obj_key = str(obj_path.resolve())
+        for func in funcs:
+            key = (obj_key, func.symbol.index)
+            function_by_key[key] = func
+            object_tu_by_key[key] = object_tu_name(obj_path)
+    for key, (offset, basis) in list(locations.items()):
+        if basis not in ("unique", "placed by TU order", "placed by verified call targets"):
+            continue
+        rva = text_rva + offset
+        owner_tu = tu_by_rva.get(rva)
+        target_va = pe.OPTIONAL_HEADER.ImageBase + rva
+        if (not owner_tu or Path(owner_tu).stem.lower() == object_tu_by_key.get(key)
+                or direct_refs.get(target_va, 0) == 0):
+            continue
+        function = function_by_key[key]
+        owner_symbol = oracle_names.get(rva, f"FUN_{pe.OPTIONAL_HEADER.ImageBase + rva:08x}")
+        owner_key = None
+        for other_key, other_func in function_by_key.items():
+            if other_key == key or object_tu_by_key.get(other_key) != Path(owner_tu).stem.lower():
+                continue
+            other_location = locations.get(other_key)
+            if (other_location is not None and other_location[0] == offset
+                    and other_location[1] in ("unique", "placed by TU order")
+                    and function.data == other_func.data
+                    and [(r.offset - function.start, r.typ) for r in function.relocs]
+                    == [(r.offset - other_func.start, r.typ) for r in other_func.relocs]):
+                owner_key = other_key
+                owner_symbol = other_func.name
+                break
+        folded[key] = {"symbol": owner_symbol, "rva": f"0x{rva:08x}", "tu": owner_tu,
+                       "owner_object_present": owner_key is not None,
+                       "oracle_direct_refs": direct_refs[target_va]}
     # Apply explicit manifest assertions after independent byte/order/call
     # proofs so the report retains the actual proof basis when they agree.
     for obj_path, _coff, funcs, hits_by_index in loaded:
@@ -944,7 +1045,7 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
     global_symbols: dict[str, int | None] = {}
     for key, values in observed.items():
         global_symbols[key] = next(iter(values)) if len(values) == 1 else None
-    return candidates, global_symbols, dict(function_defs), dict(data_defs), locations
+    return candidates, global_symbols, dict(function_defs), dict(data_defs), locations, folded
 
 
 def main() -> int:
@@ -966,15 +1067,15 @@ def main() -> int:
     exe_text = text_section.get_data()[:text_section.SizeOfRawData]
     imports = import_map(pe)
     object_paths = [path.resolve() for path in args.objects]
-    shared_candidates, global_symbols, function_defs, data_defs, locations = collect_global_state(
+    shared_candidates, global_symbols, function_defs, data_defs, locations, folded = collect_global_state(
         object_paths, pe, exe_text, text_rva, at)
     oracle_function_vas = {pe.OPTIONAL_HEADER.ImageBase + rva for rva in oracle_function_starts()}
     all_results = []
     for obj_path in object_paths:
         result = compare_object(obj_path, pe, exe_text, text_rva, imports, explicit, at, not args.summary,
                                 shared_candidates, global_symbols, function_defs, data_defs,
-                                oracle_function_vas, locations)
-        result["layout_warnings"] = layout_warnings(obj_path, locations, text_rva)
+                                oracle_function_vas, locations, folded)
+        result["layout_warnings"] = layout_warnings(obj_path, locations, text_rva, folded)
         all_results.append(result)
         counts = Counter()
         placement_counts = Counter()
@@ -987,7 +1088,7 @@ def main() -> int:
                 exact_bytes += int(func["raw_exact_hit_count"] > 0)
             counts[func["status"]] += 1
         print(f"{obj_path.name}: functions={len(result['functions'])} wildcard-hit={wildcard} exact-byte-functions={exact_bytes} "
-              f"strict={counts['STRICT']} reloc-unverified={counts['RELOC-UNVERIFIED']} mismatch={counts['MISMATCH']} "
+              f"strict={counts['STRICT']} folded={counts['FOLDED']} reloc-unverified={counts['RELOC-UNVERIFIED']} mismatch={counts['MISMATCH']} "
               f"locations(unique={placement_counts['unique']}, placed by TU order={placement_counts['placed by TU order']}, "
               f"placed by verified calls={placement_counts['placed by verified call targets']}, "
               f"forced={placement_counts['forced by --at']}, ambiguous={placement_counts['ambiguous']})")

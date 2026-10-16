@@ -15,24 +15,121 @@
       "/GX",
       "/O2",
       "/ML",
-      "/Gd"
+      "/Gd",
+      "/Gy"
     ]
   },
   "translation_units": [
     {
-      "source": "src/sound.cpp"
+      "source": "src/button.cpp"
     },
     {
-      "source": "src/movie.cpp"
+      "source": "src/ddutil.cpp"
+    },
+    {
+      "source": "src/jauge.cpp"
+    },
+    {
+      "source": "src/menu.cpp"
     },
     {
       "source": "src/misc.cpp"
     },
     {
-      "source": "src/ddutil.cpp"
+      "source": "src/movie.cpp"
+    },
+    {
+      "source": "src/sound.cpp"
+    },
+    {
+      "source": "src/text.cpp"
     }
   ],
   "accepted_functions": [
+    {
+      "symbol": "??0CButton@@QAE@XZ",
+      "rva": "0x000029f0",
+      "size": 64,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?SetIconMenu@CButton@@QAEXPAHH@Z",
+      "rva": "0x00002ae0",
+      "size": 48,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?SetToolTips@CButton@@QAEXPAHH@Z",
+      "rva": "0x00002b10",
+      "size": 48,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?GetState@CButton@@QAEHXZ",
+      "rva": "0x00002c90",
+      "size": 16,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?SetState@CButton@@QAEXH@Z",
+      "rva": "0x00002ca0",
+      "size": 48,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?GetMenu@CButton@@QAEHXZ",
+      "rva": "0x00002cd0",
+      "size": 16,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?SetMenu@CButton@@QAEXH@Z",
+      "rva": "0x00002ce0",
+      "size": 48,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?SetEnable@CButton@@QAEXH@Z",
+      "rva": "0x00002d10",
+      "size": 48,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?SetHide@CButton@@QAEXH@Z",
+      "rva": "0x00002d40",
+      "size": 32,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?TreatEvent@CButton@@QAEHIIJ@Z",
+      "rva": "0x00002d60",
+      "size": 144,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?MouseOnButton@CButton@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00002df0",
+      "size": 32,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?Detect@CButton@@IAEHUtagPOINT@@@Z",
+      "rva": "0x00002f00",
+      "size": 112,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?MouseMove@CButton@@IAEHUtagPOINT@@@Z",
+      "rva": "0x00002fd0",
+      "size": 208,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?MouseUp@CButton@@IAEHUtagPOINT@@@Z",
+      "rva": "0x000030a0",
+      "size": 96,
+      "tu": "src/button.cpp"
+    },
     {
       "symbol": "_DDSetDebug",
       "rva": "0x00003100",
@@ -82,16 +179,124 @@
       "tu": "src/ddutil.cpp"
     },
     {
+      "symbol": "??0CJauge@@QAE@XZ",
+      "rva": "0x0001edd0",
+      "size": 32,
+      "tu": "src/jauge.cpp"
+    },
+    {
+      "symbol": "?Create@CJauge@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HH@Z",
+      "rva": "0x0001edf0",
+      "size": 96,
+      "tu": "src/jauge.cpp"
+    },
+    {
+      "symbol": "?GetLevel@CJauge@@QAEHXZ",
+      "rva": "0x0001ef50",
+      "size": 16,
+      "tu": "src/jauge.cpp"
+    },
+    {
+      "symbol": "?SetLevel@CJauge@@QAEXH@Z",
+      "rva": "0x0001ef60",
+      "size": 48,
+      "tu": "src/jauge.cpp"
+    },
+    {
+      "symbol": "?GetType@CJauge@@QAEHXZ",
+      "rva": "0x0001ef90",
+      "size": 16,
+      "tu": "src/jauge.cpp"
+    },
+    {
+      "symbol": "?SetType@CJauge@@QAEXH@Z",
+      "rva": "0x0001efa0",
+      "size": 32,
+      "tu": "src/jauge.cpp"
+    },
+    {
+      "symbol": "?GetHide@CJauge@@QAEHXZ",
+      "rva": "0x0001efc0",
+      "size": 16,
+      "tu": "src/jauge.cpp"
+    },
+    {
+      "symbol": "?SetHide@CJauge@@QAEXH@Z",
+      "rva": "0x0001efd0",
+      "size": 32,
+      "tu": "src/jauge.cpp"
+    },
+    {
+      "symbol": "??0CMenu@@QAE@XZ",
+      "rva": "0x0001eff0",
+      "size": 32,
+      "tu": "src/menu.cpp"
+    },
+    {
+      "symbol": "??1CMenu@@QAE@XZ",
+      "rva": "0x0001f010",
+      "size": 16,
+      "tu": "src/menu.cpp"
+    },
+    {
       "symbol": "?OutputDebug@@YAXPAD@Z",
       "rva": "0x0001f010",
       "size": 16,
-      "tu": "src/misc.cpp"
+      "tu": "src/misc.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "??1CMenu@@QAE@XZ",
+        "rva": "0x0001f010",
+        "tu": "src/menu.cpp"
+      }
+    },
+    {
+      "symbol": "?Delete@CMenu@@QAEXXZ",
+      "rva": "0x0001f020",
+      "size": 32,
+      "tu": "src/menu.cpp"
+    },
+    {
+      "symbol": "?TreatEvent@CMenu@@QAEHIIJ@Z",
+      "rva": "0x0001f040",
+      "size": 144,
+      "tu": "src/menu.cpp"
+    },
+    {
+      "symbol": "?Detect@CMenu@@IAEHUtagPOINT@@@Z",
+      "rva": "0x0001f0d0",
+      "size": 112,
+      "tu": "src/menu.cpp"
+    },
+    {
+      "symbol": "?MouseDown@CMenu@@IAEHUtagPOINT@@@Z",
+      "rva": "0x0001f140",
+      "size": 16,
+      "tu": "src/menu.cpp"
+    },
+    {
+      "symbol": "?MouseMove@CMenu@@IAEHUtagPOINT@@@Z",
+      "rva": "0x0001f150",
+      "size": 96,
+      "tu": "src/menu.cpp"
+    },
+    {
+      "symbol": "?MouseUp@CMenu@@IAEHUtagPOINT@@@Z",
+      "rva": "0x0001f1b0",
+      "size": 48,
+      "tu": "src/menu.cpp"
     },
     {
       "symbol": "?InitHInstance@@YAXPAX@Z",
       "rva": "0x0001f1e0",
       "size": 16,
-      "tu": "src/misc.cpp"
+      "tu": "src/misc.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "FUN_0041f1e0",
+        "rva": "0x0001f1e0",
+        "tu": "src/menu.cpp"
+      }
     },
     {
       "symbol": "?LoadStringA@@YAXIPADH@Z",
@@ -194,6 +399,18 @@
       "rva": "0x000205b0",
       "size": 32,
       "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?GetHide@CButton@@QAEHXZ",
+      "rva": "0x00021030",
+      "size": 16,
+      "tu": "src/button.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "FUN_00421030",
+        "rva": "0x00021030",
+        "tu": "network.cpp"
+      }
     },
     {
       "symbol": "?ReadData@CSound@@IAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z",
@@ -320,6 +537,97 @@
       "rva": "0x00023600",
       "size": 16,
       "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z",
+      "rva": "0x00023660",
+      "size": 80,
+      "tu": "src/text.cpp"
+    },
+    {
+      "symbol": "?DrawTextLeft@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "rva": "0x00023740",
+      "size": 48,
+      "tu": "src/text.cpp"
+    },
+    {
+      "symbol": "?DrawTextCenter@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "rva": "0x000237a0",
+      "size": 192,
+      "tu": "src/text.cpp"
+    },
+    {
+      "symbol": "?GetTextWidth@@YAHPADH@Z",
+      "rva": "0x00023860",
+      "size": 48,
+      "tu": "src/text.cpp"
+    }
+  ],
+  "symbol_mappings": [
+    {
+      "symbol": "$L33192",
+      "va": "0x00402dd0",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "?MouseDown@CButton@@IAEHUtagPOINT@@@Z",
+      "va": "0x00402f70",
+      "evidence": "oracle CButton::MouseDown entry in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33075",
+      "va": "0x00402daa",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33073",
+      "va": "0x00402d94",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33077",
+      "va": "0x00402dc0",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33067",
+      "va": "0x00402dc9",
+      "evidence": "UI switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33272",
+      "va": "0x0041f0b8",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33203",
+      "va": "0x0041f083",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33201",
+      "va": "0x0041f06d",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33205",
+      "va": "0x0041f099",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L33206",
+      "va": "0x0041f0af",
+      "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "?DrawTextA@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "va": "0x00423770",
+      "evidence": "Windows DrawText macro expands the candidate function name to DrawTextA; static oracle target in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "?GetCharWidthA@@YAHDH@Z",
+      "va": "0x00423610",
+      "evidence": "Windows GetCharWidth macro expands the candidate function name to GetCharWidthA; static oracle target in docs/UI_CLUSTER.md"
     }
   ]
 }

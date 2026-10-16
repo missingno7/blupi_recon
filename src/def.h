@@ -62,12 +62,12 @@
 #define CHHILI			5
 #define CHFOG			6
 #define CHMASK1			7
-#define CHLITTLE		8
+#define CHLITTLE		7
 #define CHMAP			9
 #define CHBUTTON		10
 #define CHGROUND		11
 #define CHJAUGE			12
-#define CHTEXT			13
+#define CHTEXT			6
 #define CHBIGNUM		14
 
 #define FOGHIDE			4
