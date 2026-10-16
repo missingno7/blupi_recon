@@ -1,0 +1,68 @@
+# Speedy Blupi 2 / Free Eggbert and SB1 structural map
+
+This note compares the read-only `sb2-decomp` and `free-eggbert` trees with the 1998 English SB1 `BLUPI.EXE` and `.BLP` files under `assets/Speedy Blupi`. The oracle was inspected statically; no game executable or ISO content was run. RVAs below are relative to image base `0x400000`.
+
+Labels distinguish direct observations from interpretation: **[EVIDENCE]** is reproducible from the checked-in trees or oracle; **[HYPOTHESIS]** is a source/function mapping; **[OPEN]** is not resolved by the available files.
+
+## Provenance, license, and build intent
+
+- **[EVIDENCE]** `free-eggbert` is a continuation/fork of `sb2-decomp`, not an independent decompilation. The shared history begins at `b0bd809` ("Initial commit", 2024-05-17); the merge-base of the checked-out histories is `fd61dbf` ("buh", 2024-06-10). Free Eggbert's first-parent history then has merge `3aeaf65` with parents `fd61dbf` and `bfd07b8` from the SB2 tree. These identical Git object IDs establish copied ancestry. A later Free Eggbert commit splits `CDecor` into `dec*.cpp` files; that split is organizational, not an independent rediscovery of the code.
+- **[EVIDENCE]** `sb2-decomp/README.md` says the source was reconstructed with Ghidra and IDA, using Planet Blupi v1.7 as a comparison; some names came from the 2013 Windows Phone Speedy Blupi assembly inspected with ILSpy. It says the reconstruction is functional but defective and missing features, and marks most `CDecor` files as needing attention. It makes no matching-build or exact-byte claim. Commit `f369942` explicitly says `jauge.cpp` was added from Planet Blupi v1.7 source, so that file is direct PB-derived evidence rather than independent SB2 evidence.
+- **[EVIDENCE]** Free Eggbert's `audit.md` says its current target is `SpeedyBlupi2_v2.2_EN.exe` and identifies early HMVocaloid / `jummy` authorship. Its report of a larger Ghidra project and traces is a maintainer audit; that project is not part of the checked-out `external/free-eggbert` tree. It cannot establish SB1 semantics by itself. Free Eggbert changes after the fork include fixes, a `CDecor` file split, CMake, Free API/Free Direct compatibility layers, Web and Android support, and BASS/MIDI packaging. These are independent project changes, but only corrections explicitly checked against the relevant original binary are independent behavioral evidence. Portability and "works in Free Eggbert" do not establish historical code or SB1 behavior.
+- **[EVIDENCE]** `sb2-decomp/LICENSE` and `free-eggbert/LICENSE` contain the GNU GPL version 3 text. Planet Blupi's `LICENSE.all` explicitly says GPLv3+. Free Eggbert also includes separately licensed dependencies/assets; its project license does not relicense those components.
+- **[EVIDENCE]** `msvc5/sb2decomp/sb2decomp.dsp` is a Developer Studio 5.00 Win32/x86 application project. Release flags are `/nologo /W3 /GX /O2 /YX /FD /c`, with `/D WIN32 /D NDEBUG /D _WINDOWS` and the DX3 include path. Debug uses `/Gm /GX /Zi /Od`, `/D WIN32 /D _DEBUG /D _WINDOWS`. Both link standard Win32 libraries, `/machine:I386`, and the DX3 library path; no DirectPlay, DirectSound, or DirectDraw import library is named on the link line. This describes how to build the reconstruction, not how the original executable was built.
+- **[OPEN]** The `sb2-decomp` README does not identify an exact original executable hash. Free Eggbert's audit names its target as SB2 v2.2 English, which is a later title/version than this SB1 oracle; neither repo claims to reproduce SB1 machine code.
+
+## SB1 module evidence
+
+The strongest evidence is strings, imports, data-table sequences, and Ghidra function behavior. A module's presence does not imply its reconstructed source is byte-accurate.
+
+| SB2 source/module | SB1 status and confidence | Oracle evidence and useful RVAs |
+|---|---|---|
+| `CDecor`, `decio.cpp` | **[EVIDENCE: high]** Same world/user/save path roles and map structures. | `.data` strings `data\world%.3d.blp` at `0x34440`, `data\u%.3d-%.3d.blp` at `0x34454`, `data\s%.3d-%.3d.blp` at `0x34468`. Candidate path helper `0x14880`; save routines `0x14da0`, `0x153d0`, `0x159f0`. `0x14da0` opens the `s...blp` file for write and allocates `0xd490` bytes. |
+| `decblock.cpp`, `decdesign.cpp` | **[EVIDENCE: high]** Tile-grid operations and related table-driven behavior are present; exact source method names remain hypotheses. | Candidate functions `0x5c20`, `0x5e80`, `0x61f0`, `0x6530` use 100x100 short-indexed grids and SB2 `dectables.cpp` value sequences. See layout notes below. |
+| `decblupi.cpp`, `decmove.cpp` | **[EVIDENCE: high]** Blupi/moving-object state and animation tables are present. | `0x9280` indexes exact `table_vitesse_march/nage/surf` sequences. `0x11bd0` indexes bulldozer, fish, bird, Blupi, explosion, and other animation sequences; its callers pass the same `this` pointer and an object index. It strides records by `0x30` (48 bytes). |
+| `CPixmap`, `ddutil.cpp` | **[EVIDENCE: high]** DirectDraw bitmap/pixmap support is present. | Strings include `New pixmap` (`0x2e464`), `DDLoadBitmap` / `DDCopyBitmap` diagnostics (`0x2e4bc`-`0x2e684`), `CPixmap::RestoreAll` (`0x7b3b4`), and `image08\init.blp` (`0x2e430`). Imports include `DDRAW!DirectDrawCreate` and GDI functions. |
+| `CSound`, `wave.cpp` | **[EVIDENCE: high]** Original WinMM/MCI and DirectSound paths are present. | Imports include `WINMM!mciSendCommandA`, MIDI/timer/joystick APIs, and `DSOUND!DirectSoundCreate`. Strings include `sound\music%.3d.blp` (`0x77de0`), `sound\sound%.3d.blp` (`0x7b4dc`), and DirectSound diagnostics (`0x7894c`). Candidate media/music code includes `0x19310` and `0x1c7e0`; exact class split is open. |
+| `CMovie` | **[EVIDENCE: high]** AVI/movie playback paths are present. | `movie\win%.3d.avi`, `movie\play%.3d.avi`, and `movie\essai.avi` at `0x77db8`, `0x77dcc`, `0x77f0c`; WinMM MCI import. |
+| `CEvent` | **[EVIDENCE: high]** Phase/event image loading exists. | Literal `CEvent::ChangePhase [LoadImages]` at `0x77e08`; candidate containing routine `0x19310` also references movie/music paths. |
+| `CButton`, `CMenu`, `CJauge`, `CText` | **[EVIDENCE: high for module families; medium for per-class split]** UI image/cache systems are present. | Strings `Cache text.blp` (`0x2e220`), `Cache jauge.blp` (`0x2e244`), `Cache button00.blp` (`0x2e268`), `image08\text.blp` (`0x2e230`), `image08\jauge.blp` (`0x2e254`), `image08\button00.blp` (`0x2e27c`), plus phase sheets such as `image%.2d\multi.blp` (`0x42334`). |
+| `CNetwork` / DirectPlay | **[EVIDENCE: high]** Networking is present in SB1. | `DPLAYX.dll` import descriptor has ordinal imports 1 and 2; `DirectPlay Error %s` at `0x78ab4`; `New network` at `0x2e1f4`. This is direct counter-evidence to treating multiplayer as SB2-only. |
+| `misc.cpp` | **[EVIDENCE: medium]** Configuration/file utility behavior is present. | `data\config.def` at `0x2e094`; the shipped `DATA/Config.def` contains runtime settings. Exact helper correspondence is not assigned. |
+| `dectables.cpp` | **[EVIDENCE: high for data identity]** Many SB2 integer arrays are in SB1 `.data`. | The scan found 89 whole initializer sequences from `dectables.cpp` byte-for-byte in `.data`. Examples: `table_vitesse_march` at `0x31a58`, `table_bulldozer_left` at `0x33840`, `table_poisson_turn2l` at `0x33970`, `table_blupih_turn2l` at `0x33bc0`, `table_clear` at `0x34018`, `table_electro` at `0x34130`. `table_tutorial` at `0x2e8e8` is referenced by candidate function `0x5270`. |
+| `pixtables.h`, `texttables.h` | **[EVIDENCE: low/no full-table identity]** No whole initializer matched. | Exact search across loaded PE sections found no complete SB2 pixel or text table initializer. Near search found at most 8 contiguous values in `table_icon_object` (8/2647 16-bit entries) and 4 in `table_width` (4/128 32-bit entries); too short to establish identity. This may reflect different image atlases, changed tables, or reconstruction differences; it is not proof that SB1 lacks those systems. |
+
+The table matches are data matches, **not** strict machine-code matches. Near-match scan also found 1,510 contiguous values within `table_blupi` (1,510/2,842), 288/335 in `table_mirror`, and 132/519 in `table_decor_action`; these runs are useful search anchors but not whole-array matches.
+
+### Functions worth a first matching attempt
+
+These are candidate **entry RVAs** from Ghidra 12.1 headless analysis of SB1; Ghidra's `FUN_...` names are autogenerated, not recovered symbols. Their VA is `0x400000 + RVA`.
+
+| Candidate source method/family | SB1 RVA | Why it is promising |
+|---|---:|---|
+| `CDecor::GetMissionPath` | `0x14880` | Uses the exact world/user path literals that the SB2 source formats. |
+| `CDecor::CurrentWrite` | `0x14da0` | Save path, write mode, and fixed `0xd490`-byte state buffer closely match the SB2 source role. |
+| `CDecor::CurrentRead` | `0x153d0` | Same save path and state-buffer read/check pattern. |
+| `CDecor::FileExist` | `0x159f0` | Same save-file family; loads save metadata for a display name. |
+| CDecor tile-grid/table helpers | `0x5c20`, `0x5e80`, `0x61f0`, `0x6530` | Compact grid bounds/indexing and table-driven icon changes. |
+| Blupi/movement update | `0x9280` | Direct references to matching movement-speed arrays. |
+| Moving-object animation/update | `0x11bd0` | Direct references to matching animation arrays and a 48-byte object-record stride. |
+| `CEvent::ChangePhase` family | `0x19310` | Contains a reference to the exact phase-change debug literal and image/media paths. |
+
+These labels should be checked against Ghidra decompilation before using a source function name as a confirmed identity. The relevant outputs are in ignored `build/sb2/functions.csv`, `candidate_rvas.tsv`, and `candidates.decomp.c`.
+
+## Data-file and class-layout comparison
+
+- **[EVIDENCE]** `DATA` contains 70 `.BLP` files: 59 `WORLD*.BLP` files are 50,468 bytes with header revision `(1,2)`; `u001-001.blp` and `u001-999.blp` are also 50,468 bytes, revision `(1,3)`. The remaining demo/info files have revision `(1,0)` and smaller sizes. No `s*.blp` save sample is present.
+- **[EVIDENCE]** SB2 `src/decor.h` defines the map `DescFile` as an 868-byte header followed by two `100x100` arrays of 2-byte `Cellule`, then 200 `MoveObject` records of 48 bytes: `868 + 20,000 + 20,000 + 9,600 = 50,468`. This exactly explains the SB1 map-file size. Layout offsets are: `posDecor=0xcc`, `dimDecor=0xd4`, `world=0xdc`, `music=0xde`, `region=0xe0`, starting positions `0x148`, name `0x178`, `decor=0x364`, `bigDecor=0x519c`, and `moveObject=0x9fa4`.
+- **[EVIDENCE]** SB2 `CDecor::Write` emits map revision 1.3; `Read` accepts earlier 1.x revisions, reads `bigDecor` from 1.1, all 200 move objects from 1.2, and the mission title for 1.3+. SB1's 1.2 world and 1.3 user files therefore fit the source reader's compatibility branches. The revision bump does not change total file size because the fixed header already reserves the name field.
+- **[EVIDENCE]** Parsing the 59 SB1 world files at the `DescFile` grid offset yields 177 distinct signed 16-bit cell values, all present in SB2's `Object` enum. Values 48-67, which SB2 names `Dream_1` through `Dream_20`, occur in SB1 levels (including `WORLD060`-`WORLD066`, `WORLD099`, and `WORLD205`). The raw values establish shared IDs; the semantic names are from SB2 source.
+- **[HYPOTHESIS]** Ghidra candidates `0x5e80` and `0x5c20` index 100x100 short cells at receiver offsets `+0x10` and `+0x4e30`; the 0x4e20 difference is exactly one 20,000-byte grid. Candidate `0x11bd0` and its callers use a 48-byte stride from receiver offset `+0x9c50`. This is a strong likely SB1 `CDecor` layout: `m_decor` at `+0x10`, `m_bigDecor` at `+0x4e30`, and `m_moveObject` at `+0x9c50`. The record fields line up with `MoveObject`'s `POINT` positions and shorts. Method/class names are inferred from the table behavior, not embedded symbols.
+- **[HYPOTHESIS]** SB2 source inserts `m_balleTraj` and `m_moveTraj` between the two grids and `m_moveObject`; each source member is 1,251 bytes. If the surrounding SB2 object prefix is otherwise the same, that would move `m_moveObject` by `2,502` bytes to about `+0xa616`. This is a likely layout evolution, not yet a confirmed SB2 binary offset. The separate serialized `DescGameFile` uses 13x100-byte trajectory arrays and revision 1.4; no `.s*.blp` sample is available to compare.
+- **[OPEN]** Free Eggbert's `DREAM_IN_SB2` define says Dream blocks are allowed in SB2, but the SB1 level data already uses the same 48-67 numeric range. Do not classify Dream blocks as SB2-exclusive based on that macro or on absent strings. I found no high-confidence SB2-only or SB1-only gameplay feature in this local comparison. Establishing exclusivity needs the corresponding original SB2 binary (or another independent version-specific behavior/data source).
+
+## Function structure and limits
+
+**[EVIDENCE]** Ghidra headless analysis created 579 SB1 function entries and resolved ordinary PE imports. The oracle has no PDB/debug directory (per PE header inspection) and its functions remain anonymous `FUN_...` entries; the analysis did not provide named class vtables or C++ source symbols. The useful naming evidence is limited to strings such as `CEvent::ChangePhase [LoadImages]` and `CPixmap::RestoreAll`, imported APIs, and table references. These facts are enough to prioritize matching candidates, not to claim any code-level match.
+
+Reproducible scratch scripts are in `scratch/sb2/`; generated PE scans, Ghidra project, function exports, and tables are under ignored `build/sb2/`.
