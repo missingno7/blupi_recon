@@ -486,15 +486,15 @@
         }
       ],
       "keywords": "type width signed char return",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "SortGetType",
+        "rva": "0x13af0",
+        "tu": "decmove.cpp; scratch/tu/engine_include/decor.h",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd /Gy",
+        "compiles": 2,
+        "outcome": "char-return candidate emitted 32 bytes and mismatched; int __cdecl candidate matched the 34-byte target body in a 48-byte COFF window",
+        "doc_ref": "docs/ENGINE_PROBE.md#compiler-findings"
       },
       "legacy_ids": []
     },
@@ -572,15 +572,15 @@
         }
       ],
       "keywords": "branch layout condition polarity",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "CDecor::GetPosDecor",
+        "rva": "0xf540",
+        "tu": "decblupi.cpp; scratch/tu/engine_include/decor.h",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd /Gy",
+        "compiles": 2,
+        "outcome": "zero-dimension test before clamp changed branch layout and produced a strict 108-byte target body",
+        "doc_ref": "docs/ENGINE_PROBE.md#compiler-findings"
       },
       "legacy_ids": []
     },
@@ -657,13 +657,13 @@
       "keywords": "guard returns exit branch",
       "blupi_status": "transferred-unverified",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "CDecor::MoveObjectDetect",
+        "rva": "0x135e0",
+        "tu": "decmove.cpp; scratch/tu/engine_include/decor.h",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd /Gy",
+        "compiles": 3,
+        "outcome": "Target-based helicopter guard and creature/player-position skip plus uninitialized IntersectRect output changed a 512-byte baseline candidate to 608 bytes; target body is 538 bytes and remains MISMATCH. A short type local had no further code-size effect; negative only for these tested source forms.",
+        "doc_ref": "docs/ENGINE_PROBE.md#compiler-findings"
       },
       "legacy_ids": []
     },
@@ -878,15 +878,15 @@
         }
       ],
       "keywords": "symbol counter register x87 SIB TU",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "CButton::MouseMove",
+        "rva": "0x2fd0",
+        "tu": "button.cpp; sound.h included before member bodies",
+        "flags": "VC5 SP3 cl 11.00.7022 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 99,
+        "outcome": "SB1 SP3 count probes: top and before:MouseMove restore STRICT at counts 7-14 and 23-30; end probes do not restore through count 32. Pre-function declaration context is measured; exact counter phase is inferred from placement response.",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-7"
       },
       "legacy_ids": [
         "CTX-01",
@@ -916,15 +916,15 @@
         }
       ],
       "keywords": "cross function coupling context",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "CButton::TreatEvent; CButton::MouseMove; CMenu::TreatEvent",
+        "rva": "0x2d60; 0x2fd0; 0x1f040",
+        "tu": "button.cpp and menu.cpp include sound.h",
+        "flags": "VC5 SP3 cl 11.00.7022 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 27,
+        "outcome": "Across baseline, StopSound-only, and SB2-header full builds (9 TUs each), adding BOOL CSound::StopSound(int) changed accepted peers in button.cpp and menu.cpp; the StopSound-only candidate made all three STRICT baselines MISMATCH.",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-7"
       },
       "legacy_ids": [
         "CTX-02",
@@ -960,15 +960,15 @@
         }
       ],
       "keywords": "count probe top end before function",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "CButton::MouseMove",
+        "rva": "0x2fd0",
+        "tu": "button.cpp; probes at top, before:MouseMove, and end",
+        "flags": "VC5 SP3 cl 11.00.7022 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 99,
+        "outcome": "Counts 7-14 and 23-30 at top/before restore STRICT; no end placement from 0 through 32 does. Placement localizes the measured sensitivity to context preceding MouseMove, with phase attribution remaining an inference.",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-7"
       },
       "legacy_ids": [
         "CTX-03"
@@ -997,15 +997,15 @@
         }
       ],
       "keywords": "peer function strict status collateral",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "CSound::StopSound; CButton::TreatEvent; CButton::MouseMove; CMenu::TreatEvent",
+        "rva": "0x23050; peers 0x2d60, 0x2fd0, 0x1f040",
+        "tu": "sound.cpp candidate plus button.cpp/menu.cpp peers",
+        "flags": "VC5 SP3 cl 11.00.7022 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 27,
+        "outcome": "The 99-byte StopSound body at 0x23050 is STRICT (candidate object emits 112 bytes including 13 trailing NOPs); adding its declaration changes three accepted peer bodies from STRICT to MISMATCH in the StopSound-only full build.",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-7"
       },
       "legacy_ids": []
     },
@@ -1319,15 +1319,15 @@
         }
       ],
       "keywords": "constant condition offset struct layout",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "CDecor::MoveObjectDelete",
+        "rva": "0x13a30",
+        "tu": "decmove.cpp; scratch/tu/engine_include/decor.h",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd /Gy",
+        "compiles": 2,
+        "outcome": "Inherited int result accumulator plus else-if mismatched; private void declaration plus independent start/end checks emitted 128 COFF bytes and strictly matched the 115-byte target. The source changes were tested together.",
+        "doc_ref": "docs/ENGINE_PROBE.md#compiler-findings"
       },
       "legacy_ids": [
         "SRC-03"
@@ -1758,6 +1758,208 @@
         "compiles": 5,
         "outcome": "oracle pushes 5 twice; value-5 candidate moved Draw to RELOC-UNVERIFIED, not STRICT; three DrawPart REL32 targets lack unique verified RVAs",
         "doc_ref": "docs/MSVC5KB_VALIDATION.md#retrieval-on-real-sb1-residuals"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LAY-02",
+      "section": "layout",
+      "title": "CDecor FIFO fields precede no-barre and timers",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": "O2"
+      },
+      "symptoms": {
+        "any": [
+          "displacement_differs"
+        ],
+        "none": []
+      },
+      "symptom": "BlupiAddFifo accesses the FIFO count and positions below their SB2-derived offsets.",
+      "construct": "Place m_blupiFifoNb and m_blupiFifoPos[10] after m_blupiDynamite and before m_blupiNoBarre and the timer fields in the private CDecor layout.",
+      "explanation": "The target uses offsets +0xc978 and +0xc97c; moving the fields by -0x1c aligns the candidate accesses.",
+      "experiment": "Compile the full decblupi candidate after changing only private member order.",
+      "not_when": "Do not promote the scratch layout to shared headers before all dependent TUs are reconciled.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ENGINE_PROBE.md#cdecor-layout-and-private-header-deltas",
+          "tier": "PROVEN",
+          "counts": "VC5 SP3; BlupiAddFifo became STRICT for 142 target bytes after a -0x1c field shift"
+        }
+      ],
+      "keywords": "CDecor FIFO m_blupiFifoNb m_blupiFifoPos offset",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::BlupiAddFifo",
+        "rva": "0xf5b0",
+        "tu": "decblupi.cpp; scratch/tu/engine_include/decor.h",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd /Gy",
+        "compiles": 2,
+        "outcome": "FIFO field order shifted accesses by -0x1c and produced a strict body; private layout only",
+        "doc_ref": "docs/ENGINE_PROBE.md#cdecor-layout-and-private-header-deltas"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LAY-03",
+      "section": "layout",
+      "title": "CDecor power flag precedes shield flag",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": "O2"
+      },
+      "symptoms": {
+        "any": [
+          "displacement_differs"
+        ],
+        "none": []
+      },
+      "symptom": "CaisseGetMove reads m_blupiPower four bytes after the target access.",
+      "construct": "Declare m_blupiPower before m_blupiShield in the private CDecor layout.",
+      "explanation": "The target reads Power at +0xc934; placing Power before Shield shifts it four bytes to that offset.",
+      "experiment": "Compile the full decmove candidate after changing only private member order.",
+      "not_when": "Do not infer unrelated field order from this single target access.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ENGINE_PROBE.md#cdecor-layout-and-private-header-deltas",
+          "tier": "PROVEN",
+          "counts": "VC5 SP3; CaisseGetMove became STRICT for 89 target bytes after a four-byte field shift"
+        }
+      ],
+      "keywords": "CDecor m_blupiPower m_blupiShield offset",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::CaisseGetMove",
+        "rva": "0x132c0",
+        "tu": "decmove.cpp; scratch/tu/engine_include/decor.h",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd /Gy",
+        "compiles": 2,
+        "outcome": "Power field shifted by -4 bytes and produced a strict body; private layout only",
+        "doc_ref": "docs/ENGINE_PROBE.md#cdecor-layout-and-private-header-deltas"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-BENCH-01",
+      "section": "source",
+      "title": "Benchmark uses the SB1 ten-frame average and output",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": "O2"
+      },
+      "symptoms": {
+        "any": [
+          "size_differs"
+        ]
+      },
+      "symptom": "The inherited SB2 benchmark reports memory and raw elapsed time instead of the SB1 average and log text.",
+      "construct": "Count down ten UpdateFrame/SetDecor/Display iterations, handle the millisecond wrap, divide elapsed milliseconds by ten, and emit the SB1 CheckTime line to data\\time.blp.",
+      "explanation": "The target pseudocode and embedded strings identify the SB1 benchmark behavior. The corrected scratch TU compares STRICT; this is a game-version source difference.",
+      "experiment": "Compile the owning blupi.cpp TU with VC5 SP3 and compare the full function at RVA 0x1d60, including every relocation.",
+      "not_when": "Do not transfer the output string, file behavior, or timing calculation to another build without target evidence.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/BLUPI_TU.md#compiler-findings",
+          "tier": "PROVEN",
+          "counts": "Final SP3 candidate: 208-byte span STRICT at 0x1d60 against a 204-byte Ghidra body; all relocations proven."
+        }
+      ],
+      "keywords": "Benchmark time average ten frames CheckTime time.blp SB1 source behavior",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "Benchmark",
+        "rva": "0x1d60",
+        "tu": "blupi.cpp",
+        "flags": "VC5 SP3 /W3 /O2 /GX /ML /Gd /Gy",
+        "compiles": 1,
+        "outcome": "SB1 loop, average, and output behavior compare STRICT; 208-byte candidate span covers 204-byte target body.",
+        "doc_ref": "docs/BLUPI_TU.md#compiler-findings"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SETDECOR-ARGS-01",
+      "section": "source",
+      "title": "SetDecor passes the mouse point with the build rectangle",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": "O2"
+      },
+      "symptoms": {
+        "any": [
+          "size_differs"
+        ]
+      },
+      "symptom": "The target Build call site includes the rectangle and two additional point words.",
+      "construct": "Pass posMouse as the second value to the private CDecor::Build(RECT, POINT) declaration.",
+      "explanation": "The candidate without the point argument mismatched. Adding it produced the exact caller bytes and relocation to the Build entry at 0x404350; the target callee returns with ret 0x18.",
+      "experiment": "Compile the owning blupi.cpp TU and compare SetDecor at RVA 0x14f0, explicitly mapping Build to VA 0x404350.",
+      "not_when": "This evidence is limited to the SB1 SetDecor call and the matching private header. Do not change other Build call sites without their target evidence.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/BLUPI_TU.md#private-header-deltas; docs/BLUPI_TU.md#compiler-findings",
+          "tier": "PROVEN",
+          "counts": "Build(RECT) was MISMATCH; Build(RECT, POINT) produced a 208-byte STRICT span at 0x14f0 with the Build relocation proven."
+        }
+      ],
+      "keywords": "SetDecor CDecor Build RECT POINT call arguments stack cleanup source header",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "SetDecor; CDecor::Build",
+        "rva": "0x14f0; 0x4350",
+        "tu": "blupi.cpp; private decor.h overlay",
+        "flags": "VC5 SP3 /W3 /O2 /GX /ML /Gd /Gy",
+        "compiles": 2,
+        "outcome": "Adding the POINT argument changed the callsite to STRICT; target Build entry ends with ret 0x18.",
+        "doc_ref": "docs/BLUPI_TU.md#compiler-findings"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-CTX-01",
+      "section": "context",
+      "title": "A sound header declaration can shift included SB1 member bodies",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "reorder_regalloc",
+          "block_reorder",
+          "load_reorder",
+          "sib_order"
+        ]
+      },
+      "symptom": "Adding the real StopSound declaration changes MouseMove and other accepted functions in TUs that include sound.h.",
+      "construct": "Recover the authentic declaration set and order from SB1 evidence; compare all peers after each header change.",
+      "explanation": "Under the pinned SP3 build, MouseMove responds to pre-function count context in two bounded windows, while end-of-TU probes do not. A strict StopSound body therefore does not establish a safe header context.",
+      "experiment": "Compile all accepted functions with baseline and real-declaration-only scratch headers; use top/before/end probes diagnostically, then remove them.",
+      "not_when": "Do not retain dummy declarations or guess missing helper prototypes to fit a probe window; this single TU result does not identify the original SB1 header contents.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#experiment-7",
+          "tier": "PROVEN",
+          "counts": "99 count-probe compiles; 27 full-TU builds across baseline, StopSound-only, and SB2-header contexts; 3 accepted peer regressions"
+        }
+      ],
+      "keywords": "sound.h declaration count MouseMove StopSound peer regression",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CSound::StopSound; CButton::MouseMove",
+        "rva": "0x23050; 0x2fd0",
+        "tu": "sound.cpp; button.cpp and menu.cpp include sound.h",
+        "flags": "VC5 SP3 cl 11.00.7022 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 126,
+        "outcome": "StopSound is STRICT, but StopSound-only and SB2-header candidates break accepted peers. Pre-function probes restore MouseMove at counts 7-14 and 23-30; end probes do not through 32. No original header context is established.",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-7"
       },
       "legacy_ids": []
     }
