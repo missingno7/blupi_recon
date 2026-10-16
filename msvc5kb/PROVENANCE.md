@@ -1,7 +1,7 @@
-# Provenance and reuse
+﻿# MSVC 5.0 KB provenance
 
-Blood II measurements in `rules/` are cited as repository-relative paths under the private `blood2_recon` checkout, with short commits where recorded. Citations identify evidence and counts only; no Blood II source, disassembly, or private file text is included here.
+`catalog.json` is the portable runtime source. Transferred VC5 rules cite `blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-*` with tier and measurement counts; rule text here is independently authored. The tools never open `blood2_recon` or require its files.
 
-SB1 evidence points to the repository toolchain/matching docs and controlled experiments summarized in `docs/MSVC5KB_VALIDATION.md`. Probe objects, listings, scratch source copies, JSON, and compiler logs stay under ignored `build/kb/` and `scratch/kb/merge/`.
+SB1 measurements cite local validation and reconstruction documents, including `docs/MSVC5KB_VALIDATION.md`, `docs/CORE_CLUSTER.md`, `docs/UI_CLUSTER.md`, `docs/DECOMP_PILOT.md`, and the relevant repository tools. Compiler mechanisms, SB1 source/header conventions, and linker behavior are kept separate. Intel compiler findings are excluded.
 
-The evidence corpus describes MSVC 5.0 engine/game builds. Intel C/C++ renderer observations are excluded. Project macros, wrapper APIs, and headers are tagged as source conventions; linker outcomes are kept separate.
+The source repository is private. Keep citations as references only, and review transferred rule text before a public release.

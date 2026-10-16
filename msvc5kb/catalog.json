@@ -1,0 +1,1765 @@
+{
+  "schema_version": 1,
+  "compiler": "MSVC 5.0 x86",
+  "description": "SB1-oriented rule catalog. Transferred VC5 rules are hypotheses until validated with Speedy Blupi evidence. No runtime dependency on blood2_recon.",
+  "known_tags": [
+    "block_reorder",
+    "bool_idiom",
+    "branch_count_differs",
+    "branch_flip",
+    "condition_differs",
+    "displacement_differs",
+    "frame_differs",
+    "immediate_differs",
+    "load_reorder",
+    "native_calls_more",
+    "native_fewer_loads",
+    "native_fewer_stack",
+    "native_more_loads",
+    "native_more_stack",
+    "ours_calls_more",
+    "push_reorder",
+    "regalloc_only",
+    "reorder_only",
+    "reorder_regalloc",
+    "ret_count_differs",
+    "sib_order",
+    "size_differs",
+    "store_reorder",
+    "structural",
+    "x87_operand_order"
+  ],
+  "legacy_map": {
+    "MEM-01": [
+      "VC5-LOC-01",
+      "VC5-LOC-02"
+    ],
+    "REG-03": [
+      "VC5-LOC-01"
+    ],
+    "REG-04": [
+      "VC5-LOC-02"
+    ],
+    "MEM-02": [
+      "VC5-LOC-03",
+      "VC5-X87-01"
+    ],
+    "NEG-01": [
+      "VC5-LOC-04"
+    ],
+    "REG-02": [
+      "VC5-CTX-01"
+    ],
+    "ORD-01": [
+      "VC5-ORD-01"
+    ],
+    "SRC-02": [
+      "VC5-ORD-01"
+    ],
+    "ORD-02": [
+      "VC5-ORD-02"
+    ],
+    "SRC-03": [
+      "BLUPI-DIA-01",
+      "VC5-SEM-01"
+    ],
+    "EH-02": [
+      "VC5-CTL-02"
+    ],
+    "INL-01": [
+      "VC5-INL-01"
+    ],
+    "INL-02": [
+      "VC5-INL-02"
+    ],
+    "SRC-01": [
+      "VC5-INL-03"
+    ],
+    "INL-04": [
+      "VC5-INL-05"
+    ],
+    "CTX-01": [
+      "VC5-CTX-01"
+    ],
+    "CTX-02": [
+      "VC5-CTX-02"
+    ],
+    "CTX-04": [
+      "VC5-CTX-02",
+      "VC5-CTX-06"
+    ],
+    "CTX-03": [
+      "VC5-CTX-03"
+    ],
+    "CTX-05": [
+      "VC5-CTX-06"
+    ],
+    "TMP-01": [
+      "VC5-CTX-07"
+    ],
+    "REG-01": [
+      "VC5-X87-01"
+    ],
+    "FLG-01": [
+      "VC5-FLG-01"
+    ],
+    "FLG-04": [
+      "VC5-FLG-01"
+    ],
+    "FLG-02": [
+      "VC5-FLG-02"
+    ],
+    "FLG-03": [
+      "BLUPI-FLG-01"
+    ],
+    "CTX-06": [
+      "VC5-FLG-02"
+    ],
+    "EH-01": [
+      "VC5-FLG-04"
+    ],
+    "NEG-02": [
+      "VC5-NEG-01"
+    ],
+    "NEG-03": [
+      "VC5-NEG-03"
+    ],
+    "LNK-01": [
+      "BLUPI-LNK-01"
+    ],
+    "LNK-02": [
+      "BLUPI-LNK-01"
+    ],
+    "TMP-02": [
+      "BLUPI-LNK-01"
+    ]
+  },
+  "rules": [
+    {
+      "id": "VC5-LOC-01",
+      "section": "locals",
+      "title": "A repeated field read may mean the source had no cached local",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "native_more_loads"
+        ],
+        "none": [
+          "immediate_differs",
+          "condition_differs"
+        ]
+      },
+      "symptom": "Native reloads a member chain; ours keeps one value live.",
+      "construct": "Repeated member expression versus one named pointer/value local.",
+      "explanation": "VC5 may reload across calls or aliasing stores instead of keeping an optimizer-created cache.",
+      "experiment": "Remove the local and restore the full member expression at each native read.",
+      "not_when": "Do not do this when native reads once and reuses the value.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-LOC-01",
+          "tier": "PROVEN",
+          "counts": "recorded examples=5"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#direct_to_local",
+          "tier": "CORPUS",
+          "counts": "O1 36/54 changed; O2 51/86 changed"
+        }
+      ],
+      "keywords": "member reload cache alias local",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "MEM-01",
+        "REG-03"
+      ]
+    },
+    {
+      "id": "VC5-LOC-02",
+      "section": "locals",
+      "title": "A value read once may have had a named local",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "native_fewer_loads"
+        ],
+        "none": [
+          "immediate_differs",
+          "condition_differs"
+        ]
+      },
+      "symptom": "Native loads a value once and reuses its register; ours reloads it.",
+      "construct": "One local holding a field, call result, list head, or repeated size.",
+      "explanation": "A local forces one evaluation where an intervening call/store may alias.",
+      "experiment": "Introduce one local at the likely original declaration point and reuse it.",
+      "not_when": "Avoid when VC5 already reuses the cheap expression.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-LOC-02",
+          "tier": "PROVEN",
+          "counts": "recorded examples=6"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#local_to_direct",
+          "tier": "CORPUS",
+          "counts": "O1 11/15 changed; O2 19/30 changed"
+        }
+      ],
+      "keywords": "cached local call result pointer",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "MEM-01",
+        "REG-04"
+      ]
+    },
+    {
+      "id": "VC5-LOC-03",
+      "section": "locals",
+      "title": "Block scope can reuse dead stack slots",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "frame_differs",
+          "native_more_stack",
+          "native_fewer_stack"
+        ]
+      },
+      "symptom": "Stack offsets or frame size differ while the main instruction shape is close.",
+      "construct": "Place a local inside its use block or at function scope.",
+      "explanation": "VC5 may assign inner-block locals to slots whose prior values are dead.",
+      "experiment": "Compare the evidenced scope and declaration lifetime; inspect debug output if available.",
+      "not_when": "This does not explain a register-only difference.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-LOC-03",
+          "tier": "PROVEN",
+          "counts": "recorded examples=2"
+        }
+      ],
+      "keywords": "scope stack slot frame local lifetime",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "MEM-02"
+      ]
+    },
+    {
+      "id": "VC5-LOC-04",
+      "section": "negative",
+      "title": "Local declaration order is usually inert",
+      "tier": "CORPUS",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "sib_order",
+          "native_more_stack",
+          "native_fewer_stack"
+        ]
+      },
+      "symptom": "Only local slot order or SIB operand order differs.",
+      "construct": "Swap adjacent local declarations.",
+      "explanation": "Corpus results show declaration swaps rarely alter optimized code.",
+      "experiment": "Try one evidence-backed order only after checking TU context.",
+      "not_when": "Do not permute declarations broadly.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-LOC-04",
+          "tier": "CORPUS",
+          "counts": "recorded examples=2"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#decl_swap",
+          "tier": "CORPUS",
+          "counts": "O1 7/434 changed; O2 5/612 changed"
+        }
+      ],
+      "keywords": "declaration order stack slots inert",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "NEG-01"
+      ]
+    },
+    {
+      "id": "VC5-ORD-01",
+      "section": "order",
+      "title": "Independent statements can preserve native store order",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "store_reorder",
+          "load_reorder",
+          "reorder_only",
+          "reorder_regalloc"
+        ],
+        "none": [
+          "immediate_differs",
+          "condition_differs"
+        ]
+      },
+      "symptom": "The same operations appear in a different order.",
+      "construct": "Order independent assignments as they appear in native.",
+      "explanation": "VC5 commonly retains source statement order at /O2.",
+      "experiment": "Reorder one semantics-independent pair and compare the whole TU.",
+      "not_when": "Check flags and dependencies before reordering.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-ORD-01",
+          "tier": "PROVEN",
+          "counts": "recorded examples=4"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#swap_adjacent_assign",
+          "tier": "CORPUS",
+          "counts": "O1 365/473 changed; O2 593/705 changed"
+        }
+      ],
+      "keywords": "store order statement order scheduling",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "ORD-01",
+        "SRC-02"
+      ]
+    },
+    {
+      "id": "VC5-ORD-02",
+      "section": "order",
+      "title": "/O1 can move stores that /O2 leaves in source order",
+      "tier": "PROVEN",
+      "scope": "optimization-specific",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "store_reorder",
+          "reorder_only"
+        ]
+      },
+      "symptom": "/O1 and /O2 disagree on independent store order.",
+      "construct": "Keep the source order evidenced by the /O2 target.",
+      "explanation": "The size-oriented path can schedule independent stores differently.",
+      "experiment": "Confirm the owning TU flags before changing source.",
+      "not_when": "Do not apply from a single image without flag evidence.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-ORD-02",
+          "tier": "PROVEN",
+          "counts": "recorded examples=2"
+        }
+      ],
+      "keywords": "O1 O2 store scheduling",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "ORD-02"
+      ]
+    },
+    {
+      "id": "VC5-EXP-01",
+      "section": "expressions",
+      "title": "A call comparison and a local comparison can use different boolean code",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "bool_idiom"
+        ]
+      },
+      "symptom": "Native uses neg/sbb while ours uses test/setcc, or the reverse.",
+      "construct": "Compare the call expression directly versus a local holding its result.",
+      "explanation": "VC5 selects a different boolean idiom from these source forms.",
+      "experiment": "Compile both forms with the real return type.",
+      "not_when": "Check byte versus integer return width first.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-EXP-01",
+          "tier": "PROVEN",
+          "counts": "recorded examples=3"
+        }
+      ],
+      "keywords": "boolean call local compare setcc",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "VC5-EXP-03",
+      "section": "types",
+      "title": "Result width selects byte or dword instructions",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "Native uses AL while ours uses EAX, or movsx differs from movzx.",
+      "construct": "Match the declared return or member width and signedness.",
+      "explanation": "The prototype and member types control extension and result width.",
+      "experiment": "Check the shared declaration before changing the caller.",
+      "not_when": "Do not override a fixed SDK prototype.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-EXP-03",
+          "tier": "PROVEN",
+          "counts": "recorded examples=4"
+        }
+      ],
+      "keywords": "type width signed char return",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "VC5-EXP-04",
+      "section": "expressions",
+      "title": "VC5 folds within an expression but keeps some statement boundaries",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "Native performs two constant operations; ours combines them, or vice versa.",
+      "construct": "Split or merge arithmetic at the evidenced local/statement boundary.",
+      "explanation": "Expression folding does not necessarily cross a stored local.",
+      "experiment": "Compile the two minimal source forms at the same function site.",
+      "not_when": "A genuinely wrong constant is a source difference.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-EXP-04",
+          "tier": "PROVEN",
+          "counts": "recorded examples=2"
+        }
+      ],
+      "keywords": "constant folding statement local",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "VC5-CTL-01",
+      "section": "control",
+      "title": "Branch layout often follows source block order",
+      "tier": "CORPUS",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "block_reorder",
+          "branch_flip",
+          "structural",
+          "ret_count_differs"
+        ],
+        "none": [
+          "condition_differs",
+          "immediate_differs"
+        ]
+      },
+      "symptom": "Equivalent blocks appear in another order or conditional polarity.",
+      "construct": "Restore the native then/else ordering and condition shape.",
+      "explanation": "VC5 commonly emits the source then-block first.",
+      "experiment": "Compare one condition/body rearrangement at the same flags.",
+      "not_when": "Do not invert semantics based only on address layout.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTL-01",
+          "tier": "CORPUS",
+          "counts": "recorded examples=3"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#if_else_swap",
+          "tier": "CORPUS",
+          "counts": "O1 131/146 changed; O2 164/188 changed"
+        }
+      ],
+      "keywords": "branch layout condition polarity",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "VC5-CTL-02",
+      "section": "control",
+      "title": "Destructor scopes can distinguish fall-through from early return",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "Native branches to a destructor test; ours returns to the epilogue.",
+      "construct": "A scoped fall-through block versus an early return.",
+      "explanation": "A live destructor joins cleanup paths differently.",
+      "experiment": "Restore the source scope/exit form supported by object lifetime evidence.",
+      "not_when": "Trivial locals may not show this effect.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTL-02",
+          "tier": "PROVEN",
+          "counts": "recorded examples=1"
+        }
+      ],
+      "keywords": "destructor cleanup early return scope",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "EH-02"
+      ]
+    },
+    {
+      "id": "VC5-CTL-03",
+      "section": "control",
+      "title": "Several guards can differ from one joined exit",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "ret_count_differs",
+          "branch_count_differs",
+          "block_reorder",
+          "structural"
+        ],
+        "none": [
+          "condition_differs",
+          "immediate_differs"
+        ]
+      },
+      "symptom": "Native has distinct guard exits; ours joins them into one path.",
+      "construct": "Separate guard returns versus a shared final return.",
+      "explanation": "VC5 preserves different exit structures when cleanup and branch joins differ.",
+      "experiment": "Try only the guard structure indicated by native control flow.",
+      "not_when": "Check destructor scope and conditions first.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTL-03",
+          "tier": "PROVEN",
+          "counts": "recorded examples=6"
+        }
+      ],
+      "keywords": "guard returns exit branch",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "VC5-INL-01",
+      "section": "inline",
+      "title": "Inline decisions can vary by caller site",
+      "tier": "PROVEN",
+      "scope": "optimization-specific",
+      "applies": {
+        "opt": "O2"
+      },
+      "symptoms": {
+        "any": [
+          "native_calls_more",
+          "ours_calls_more"
+        ]
+      },
+      "symptom": "The same helper is called at some sites and expanded at others.",
+      "construct": "Restore the real helper call sites and wrapper layers.",
+      "explanation": "VC5 spends a caller-local inline budget; expansion size and nesting matter.",
+      "experiment": "List calls in source order and test one caller with the real helper body.",
+      "not_when": "Do not add inline/noinline hints to force a call list.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-INL-01",
+          "tier": "PROVEN",
+          "counts": "recorded examples=3"
+        }
+      ],
+      "keywords": "inline budget call sites wrappers",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "INL-01"
+      ]
+    },
+    {
+      "id": "VC5-INL-02",
+      "section": "inline",
+      "title": "Expanded wrappers can add later inline decisions",
+      "tier": "PROVEN",
+      "scope": "optimization-specific",
+      "applies": {
+        "opt": "O2"
+      },
+      "symptoms": {
+        "any": [
+          "native_calls_more",
+          "ours_calls_more"
+        ]
+      },
+      "symptom": "Nested helper calls expand at sites with an unexpected order.",
+      "construct": "Restore an evidenced wrapper call instead of direct calls.",
+      "explanation": "Nested sites may be considered after direct sites and in reverse order.",
+      "experiment": "Compare direct and wrapper forms in one caller.",
+      "not_when": "The observed order is VC5-specific and bounded.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-INL-02",
+          "tier": "PROVEN",
+          "counts": "recorded examples=1"
+        }
+      ],
+      "keywords": "nested wrapper inline reverse order",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "INL-02"
+      ]
+    },
+    {
+      "id": "VC5-INL-03",
+      "section": "inline",
+      "title": "Call a real inline member instead of open-coding it",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "reorder_regalloc",
+          "native_more_loads",
+          "native_fewer_loads"
+        ]
+      },
+      "symptom": "A helper body is expanded but register or load choices differ.",
+      "construct": "Use the original helper call expression when its definition is available.",
+      "explanation": "Inline-body source context can affect the generated sequence.",
+      "experiment": "Compare one call site against the open-coded body.",
+      "not_when": "Do not invent a helper absent from source evidence.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-INL-03",
+          "tier": "PROVEN",
+          "counts": "recorded examples=3"
+        }
+      ],
+      "keywords": "inline member open code helper",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "SRC-01"
+      ]
+    },
+    {
+      "id": "VC5-INL-05",
+      "section": "inline",
+      "title": "/O1 can leave larger inline bodies out of line",
+      "tier": "PROVEN",
+      "scope": "optimization-specific",
+      "applies": {
+        "opt": "O1"
+      },
+      "symptoms": {
+        "any": [
+          "native_calls_more",
+          "ours_calls_more"
+        ]
+      },
+      "symptom": "Helper calls differ between /O1 and /O2.",
+      "construct": "Use the actual per-TU optimization level.",
+      "explanation": "VC5 /O1 and /O2 can choose different inline shapes.",
+      "experiment": "Compile both authentic flag sets before changing helper source.",
+      "not_when": "Do not transfer a project-wide flag assumption to every TU.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-INL-05",
+          "tier": "PROVEN",
+          "counts": "recorded examples=2"
+        }
+      ],
+      "keywords": "O1 O2 inline calls optimization",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "INL-04"
+      ]
+    },
+    {
+      "id": "VC5-CTX-01",
+      "section": "context",
+      "title": "Register-only residues may come from TU-wide compiler context",
+      "tier": "PROVEN",
+      "scope": "tu-context",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "x87_operand_order",
+          "sib_order",
+          "regalloc_only",
+          "reorder_regalloc"
+        ],
+        "none": [
+          "immediate_differs",
+          "condition_differs",
+          "native_calls_more",
+          "ours_calls_more"
+        ]
+      },
+      "symptom": "Instruction shape is stable but registers or commutative operands differ.",
+      "construct": "Test authentic TU context before rewriting expressions.",
+      "explanation": "A TU symbol counter can select among equal-cost code sequences.",
+      "experiment": "Use count probes at top, end, and before the function on scratch copies.",
+      "not_when": "A probe is diagnostic only; never keep artificial declarations.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTX-01",
+          "tier": "PROVEN",
+          "counts": "recorded examples=3"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#count_shift",
+          "tier": "CORPUS",
+          "counts": "O1 127/11137 moved; O2 177/15323 moved"
+        }
+      ],
+      "keywords": "symbol counter register x87 SIB TU",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "CTX-01",
+        "REG-02"
+      ]
+    },
+    {
+      "id": "VC5-CTX-02",
+      "section": "context",
+      "title": "An earlier source change can move a later function",
+      "tier": "MICRO",
+      "scope": "tu-context",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "A nearby edit changes another function without changing its semantics.",
+      "construct": "Compare cross-function effects after each source edit.",
+      "explanation": "Compiler numbering and phase context can couple functions in one TU.",
+      "experiment": "Record the strict status vector for the full TU, not one function.",
+      "not_when": "Do not attribute every peer change to source semantics.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTX-02",
+          "tier": "MICRO",
+          "counts": "recorded examples=0"
+        }
+      ],
+      "keywords": "cross function coupling context",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "CTX-02",
+        "CTX-04"
+      ]
+    },
+    {
+      "id": "VC5-CTX-03",
+      "section": "context",
+      "title": "Probe placement can separate TU context hypotheses",
+      "tier": "PROVEN",
+      "scope": "tu-context",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "sib_order",
+          "x87_operand_order"
+        ]
+      },
+      "symptom": "Top/end/before-function probes affect different later regions.",
+      "construct": "Compare the same count at three scratch-only insertion points.",
+      "explanation": "Different placement responses can reveal local versus delayed compiler work.",
+      "experiment": "Use small counts and compare all peer functions.",
+      "not_when": "No response in a bounded range does not disprove all context effects.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTX-03",
+          "tier": "PROVEN",
+          "counts": "recorded examples=2"
+        }
+      ],
+      "keywords": "count probe top end before function",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "CTX-03"
+      ]
+    },
+    {
+      "id": "VC5-CTX-04",
+      "section": "context",
+      "title": "A strict gain in one function can break a peer",
+      "tier": "PROVEN",
+      "scope": "tu-context",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "A source edit helps one function but shifts another.",
+      "construct": "Keep the full translation-unit strict result beside the target result.",
+      "explanation": "Shared TU context and data bindings couple otherwise separate bodies.",
+      "experiment": "Recompare every function after each successful edit.",
+      "not_when": "Do not promote a target-only gain without peer review.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTX-04",
+          "tier": "PROVEN",
+          "counts": "recorded examples=1"
+        }
+      ],
+      "keywords": "peer function strict status collateral",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "VC5-CTX-06",
+      "section": "context",
+      "title": "Automatic PCH mode is part of the build context",
+      "tier": "PROVEN",
+      "scope": "tu-context",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "A broad TU difference appears with /YX or include order.",
+      "construct": "Match the original IDE PCH settings and creation order.",
+      "explanation": "Automatic precompiled headers alter the compiler input stream.",
+      "experiment": "Compare with and without the authentic PCH procedure.",
+      "not_when": "Do not treat /YX as a generic speed flag.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTX-06",
+          "tier": "PROVEN",
+          "counts": "recorded examples=1"
+        }
+      ],
+      "keywords": "YX PCH translation unit",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "CTX-04",
+        "CTX-05"
+      ]
+    },
+    {
+      "id": "VC5-CTX-07",
+      "section": "context",
+      "title": "Definition order can affect delayed compiler work",
+      "tier": "PROVEN",
+      "scope": "tu-context",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "x87_operand_order",
+          "sib_order"
+        ]
+      },
+      "symptom": "Later functions shift after a definition or template moves.",
+      "construct": "Restore the evidenced definition order in the owning TU.",
+      "explanation": "Some VC5 work is deferred until later in the translation unit.",
+      "experiment": "Move only a real definition supported by source evidence.",
+      "not_when": "Do not add dummy definitions for alignment.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTX-07",
+          "tier": "PROVEN",
+          "counts": "recorded examples=2"
+        }
+      ],
+      "keywords": "definition order delayed template",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "TMP-01"
+      ]
+    },
+    {
+      "id": "VC5-X87-01",
+      "section": "floating",
+      "title": "Commutative x87 order can be TU context",
+      "tier": "PROVEN",
+      "scope": "tu-context",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "x87_operand_order"
+        ]
+      },
+      "symptom": "Only the x87 operand load/reverse sequence differs.",
+      "construct": "Check TU context before swapping source operands.",
+      "explanation": "VC5 can choose x87 operand order from a numbered tie-break.",
+      "experiment": "Try a bounded scratch count probe before changing the expression.",
+      "not_when": "Keep noncommutative floating operations semantically fixed.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-X87-01",
+          "tier": "PROVEN",
+          "counts": "recorded examples=2"
+        }
+      ],
+      "keywords": "x87 operand order context",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "MEM-02",
+        "REG-01"
+      ]
+    },
+    {
+      "id": "VC5-FLG-01",
+      "section": "flags",
+      "title": "Test a flag on the target function, not by its name",
+      "tier": "MICRO",
+      "scope": "optimization-specific",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "A flag change is proposed to explain a local instruction difference.",
+      "construct": "Change one compiler flag while holding source and context fixed.",
+      "explanation": "Option names do not predict which target body will improve.",
+      "experiment": "Compare the target and every peer under authentic settings.",
+      "not_when": "Do not globally promote a flag from one function.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-FLG-01",
+          "tier": "MICRO",
+          "counts": "recorded examples=0"
+        }
+      ],
+      "keywords": "compiler flags target function",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "FLG-01",
+        "FLG-04"
+      ]
+    },
+    {
+      "id": "VC5-FLG-02",
+      "section": "flags",
+      "title": "Compiler package effects can vary by TU",
+      "tier": "MICRO",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "One function agrees across builds but a peer changes.",
+      "construct": "Sweep compiler builds on the owning TU with headers fixed.",
+      "explanation": "Front-end context and compiler package can interact.",
+      "experiment": "Compare per-function bytes and isolate compiler components before attribution.",
+      "not_when": "Do not call packages interchangeable from one helper.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-FLG-02",
+          "tier": "MICRO",
+          "counts": "recorded examples=0"
+        }
+      ],
+      "keywords": "RTM SP2 SP3 compiler builds",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "CTX-06",
+        "FLG-02"
+      ]
+    },
+    {
+      "id": "VC5-FLG-04",
+      "section": "flags",
+      "title": "C++ unwind paths require the matching EH flag",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "Cleanup calls or exception frames are missing.",
+      "construct": "Match /GX, then recover real C++ scopes and destructors.",
+      "explanation": "VC5 /GX enables the measured C++ unwind support.",
+      "experiment": "Compile a minimal throwing call with a destructor and inspect the object.",
+      "not_when": "Function-body bytes alone omit some EH sections.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-FLG-04",
+          "tier": "PROVEN",
+          "counts": "recorded examples=2"
+        }
+      ],
+      "keywords": "GX exception handling unwind",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "EH-01"
+      ]
+    },
+    {
+      "id": "VC5-FLG-06",
+      "section": "flags",
+      "title": "Intrinsic calls can change with optimization mode",
+      "tier": "PROVEN",
+      "scope": "optimization-specific",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "memcpy/memset calls appear in one optimization mode but not another.",
+      "construct": "Use the source construct and authentic /O1 or /O2 setting.",
+      "explanation": "VC5 may call these intrinsics at /O1 and expand them at /O2.",
+      "experiment": "Compile both real flag sets and compare peer functions.",
+      "not_when": "Do not infer the source helper from the call alone.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-FLG-06",
+          "tier": "PROVEN",
+          "counts": "recorded examples=2"
+        }
+      ],
+      "keywords": "memcpy memset O1 O2 inline",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "VC5-SEM-01",
+      "section": "semantics",
+      "title": "Constant, condition, and offset differences usually mean real source differences",
+      "tier": "CORPUS",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "immediate_differs",
+          "condition_differs",
+          "displacement_differs"
+        ]
+      },
+      "symptom": "A value, branch condition, or memory displacement differs.",
+      "construct": "Check literal values, comparison operators, prototypes, and field layout.",
+      "explanation": "VC5 preserves many semantic differences rather than normalizing them.",
+      "experiment": "Trace the value or offset to source/header evidence before codegen experiments.",
+      "not_when": "Register-only and reorder-only diffs need a different first step.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-SEM-01",
+          "tier": "CORPUS",
+          "counts": "recorded examples=0"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#const_bump",
+          "tier": "CORPUS",
+          "counts": "O1 260/267 changed; O2 429/436 changed"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#cmp_relax",
+          "tier": "CORPUS",
+          "counts": "O1 188/191 changed; O2 258/261 changed"
+        }
+      ],
+      "keywords": "constant condition offset struct layout",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "SRC-03"
+      ]
+    },
+    {
+      "id": "VC5-NEG-01",
+      "section": "negative",
+      "title": "Many equivalent spellings produce identical code",
+      "tier": "CORPUS",
+      "scope": "negative",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "x87_operand_order",
+          "sib_order",
+          "reorder_regalloc"
+        ]
+      },
+      "symptom": "A syntax-only rewrite is proposed with no instruction evidence.",
+      "construct": "Avoid changing equivalent boolean, increment, or pointer spellings by default.",
+      "explanation": "VC5 normalizes many such forms; corpus perturbations were usually inert.",
+      "experiment": "Spend compiles on a source form that predicts a visible instruction change.",
+      "not_when": "A type, alias, or statement-boundary change is not merely spelling.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-NEG-01",
+          "tier": "CORPUS",
+          "counts": "recorded examples=0"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#not_to_eq0",
+          "tier": "CORPUS",
+          "counts": "O1 0/259 changed; O2 0/446 changed"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#if_to_ne0",
+          "tier": "CORPUS",
+          "counts": "O1 0/370 changed; O2 0/652 changed"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#postinc_to_preinc",
+          "tier": "CORPUS",
+          "counts": "O1 0/75 changed; O2 0/75 changed"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#incr_to_addassign",
+          "tier": "CORPUS",
+          "counts": "O1 0/75 changed; O2 0/75 changed"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#index_to_ptr",
+          "tier": "CORPUS",
+          "counts": "O1 0/151 changed; O2 0/262 changed"
+        }
+      ],
+      "keywords": "inert equivalent spelling do not try",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "NEG-02"
+      ]
+    },
+    {
+      "id": "VC5-NEG-02",
+      "section": "negative",
+      "title": "Commuting arithmetic and expanding compound assignment are usually inert",
+      "tier": "CORPUS",
+      "scope": "negative",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "x87_operand_order",
+          "sib_order"
+        ]
+      },
+      "symptom": "Only arithmetic operand order or compound-assignment spelling differs.",
+      "construct": "Do not try these as a byte-matching lever without evidence.",
+      "explanation": "Measured VC5 corpus perturbations rarely changed the output.",
+      "experiment": "Move to a different hypothesis after one inert check.",
+      "not_when": "This does not cover changed types or side effects.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-NEG-02",
+          "tier": "CORPUS",
+          "counts": "recorded examples=1"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#commute_operands",
+          "tier": "CORPUS",
+          "counts": "O1 8/129 changed; O2 3/186 changed"
+        },
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#compound_expand",
+          "tier": "CORPUS",
+          "counts": "O1 4/175 changed; O2 8/246 changed"
+        }
+      ],
+      "keywords": "commute operands compound assignment negative",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "VC5-NEG-03",
+      "section": "negative",
+      "title": "Dummy declarations are not a source reconstruction",
+      "tier": "FALSIFIED",
+      "scope": "negative",
+      "applies": {
+        "opt": "any"
+      },
+      "symptoms": {},
+      "symptom": "Padding declarations are proposed to reach another code shape.",
+      "construct": "Use counter declarations only in scratch diagnostics.",
+      "explanation": "A probe response says nothing about whether the original contained padding.",
+      "experiment": "Remove probes before candidate source is promoted.",
+      "not_when": "Never use artificial code in canonical matching sources.",
+      "evidence": [
+        {
+          "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-NEG-03",
+          "tier": "FALSIFIED",
+          "counts": "recorded examples=0"
+        }
+      ],
+      "keywords": "dummy declaration padding artificial",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "not yet validated on SB1",
+        "rva": null,
+        "tu": null,
+        "flags": "SB1 default /O2 /GX /ML",
+        "compiles": 0,
+        "outcome": "open hypothesis",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+      },
+      "legacy_ids": [
+        "NEG-03"
+      ]
+    },
+    {
+      "id": "BLUPI-LNK-01",
+      "section": "linker",
+      "title": "OutputDebug calls fold to the empty menu destructor",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {},
+      "symptom": "Many calls resolve to a one-byte ret at RVA 0x1f010.",
+      "construct": "The empty CMenu destructor is emitted in menu.cpp with /Gy COMDAT packaging.",
+      "explanation": "The SB1 linker folds identical eligible COMDAT bodies; call targets can name the destructor-owned ret. The verifier reports FOLDED separately from STRICT.",
+      "experiment": "Compare object sections and call relocations, then verify the folded owner and RVA in the linked image.",
+      "not_when": "This is linker placement evidence, not a compiler-function match.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/CORE_CLUSTER.md; tools/cmpfunc.py",
+          "tier": "PROVEN",
+          "counts": "56 OutputDebug call sites; target RVA 0x1f010; five-TU comparison"
+        }
+      ],
+      "keywords": "COMDAT folding FOLDED OutputDebug ret destructor linker",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "OutputDebug call targets; CMenu::~CMenu",
+        "rva": "0x1f010",
+        "tu": "menu.cpp and sound.cpp/misc.cpp callers",
+        "flags": "VC5 SP3 /O2 /Gy /GX /ML; linker 5.10 family",
+        "compiles": 5,
+        "outcome": "56 calls resolve to the destructor-owned bare ret; comparator models FOLDED",
+        "doc_ref": "docs/CORE_CLUSTER.md; tools/cmpfunc.py -- FOLDED"
+      },
+      "legacy_ids": [
+        "LNK-01",
+        "LNK-02",
+        "TMP-02"
+      ]
+    },
+    {
+      "id": "BLUPI-FLG-01",
+      "section": "flags",
+      "title": "RTM changes two SB1 sound helpers under fixed SP3 headers",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {},
+      "symptom": "RTM and SP3 bodies differ in two sound helpers although the selected target stays strict.",
+      "construct": "Same sound TU, fixed headers, flags, oracle and link context; change compiler tree.",
+      "explanation": "SB1 evidence rejects universal VC5-build interchangeability. The RTM cause is not isolated to c1xx or c2.",
+      "experiment": "Compare both helpers and all TU peers; isolate compiler components before attribution.",
+      "not_when": "Do not infer that every RTM function differs.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#experiment-3",
+          "tier": "PROVEN",
+          "counts": "36 compiles; CreateSoundBuffer 23 fixed bytes; ReadData 232 fixed bytes"
+        }
+      ],
+      "keywords": "RTM SP3 sound compiler build",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CreateSoundBuffer; ReadData; CreateBufferFromWaveFile",
+        "rva": "0x22940; 0x22a10; 0x22b40",
+        "tu": "sound.cpp",
+        "flags": "/O2 /GX /ML /Gd; fixed VC5 SP3 headers",
+        "compiles": 36,
+        "outcome": "RTM differs in 23 and 232 non-relocated bytes; target remains STRICT",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-3"
+      },
+      "legacy_ids": [
+        "FLG-03"
+      ]
+    },
+    {
+      "id": "BLUPI-OBS-01",
+      "section": "source-observability",
+      "title": "__FILE__ and __LINE__ are observable SB1 inputs",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {},
+      "symptom": "A path string or diagnostic line argument differs even when surrounding logic matches.",
+      "construct": "TRY_DS passes __FILE__ and __LINE__; VC5 embeds the source path and line values.",
+      "explanation": "The oracle contains F:\\Profil\\sound.cpp; a local absolute or relative source path emits a different literal. Line shifts can change diagnostic arguments.",
+      "experiment": "Keep source line numbering and compile path stable; inspect the data relocation and argument pushes.",
+      "not_when": "Do not mask string/data differences as codegen noise.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/WORKFLOW.md; docs/CORE_CLUSTER.md",
+          "tier": "PROVEN",
+          "counts": "F:\\Profil\\sound.cpp at RVA 0x7b484; TraceErrorDS strict at RVA 0x1ffa0"
+        }
+      ],
+      "keywords": "__FILE__ __LINE__ path TraceErrorDS sound.cpp",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CreateSoundBuffer; TraceErrorDS",
+        "rva": "0x22940; 0x1ffa0; path literal 0x7b484",
+        "tu": "sound.cpp; misc.cpp",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd",
+        "compiles": 5,
+        "outcome": "source path is byte-visible; TRY_DS line numbers remain preserved in the candidate",
+        "doc_ref": "docs/WORKFLOW.md; docs/CORE_CLUSTER.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-DIA-01",
+      "section": "decompilation",
+      "title": "Treat decompiler prototypes and merged control flow as hypotheses",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {},
+      "symptom": "Pseudocode suggests a different prototype, merged branch, or guessed field name.",
+      "construct": "Translate instructions, call targets and field offsets into a minimal source candidate; compile and compare.",
+      "explanation": "The SB1 pilot found useful body/call structure but unreliable inferred parameters, return widths, and field names.",
+      "experiment": "Check prototypes from ret/stack behavior, then compile the smallest semantic source form and use strict cmpfunc verification.",
+      "not_when": "Pseudocode similarity is not evidence of source identity.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/DECOMP_PILOT.md",
+          "tier": "PROVEN",
+          "counts": "7 targeted compiles; 5/6 selected functions strict after translation and relocation proof; ChangeSprite remained mismatch"
+        }
+      ],
+      "keywords": "decompiler Ghidra prototype calling convention field offset branch ChangeSprite",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangeSprite; CEvent::FlushInput; CButton::TreatEvent; CMenu::TreatEvent; two wrappers",
+        "rva": "0x1f210; 0x166f0; 0x2d60; 0x1f040",
+        "tu": "misc.cpp; button.cpp; menu.cpp; event.cpp; wave.cpp",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd",
+        "compiles": 7,
+        "outcome": "instruction-led translation resolved five selected cases; ChangeSprite still differs",
+        "doc_ref": "docs/DECOMP_PILOT.md"
+      },
+      "legacy_ids": [
+        "SRC-03"
+      ]
+    },
+    {
+      "id": "BLUPI-NEG-01",
+      "section": "negative",
+      "title": "Caching the PlaySoundDS member pointer did not improve the SB1 match",
+      "tier": "FALSIFIED",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": "O2"
+      },
+      "symptoms": {
+        "any": [
+          "size_differs"
+        ]
+      },
+      "symptom": "A cached member pointer changes the body but leaves PlaySoundDS mismatching.",
+      "construct": "Load m_lpDSB[dwSound] once into a typed local, then use the local across the existing calls.",
+      "explanation": "The one tested cache changed output size without matching the oracle or improving the strict peer count.",
+      "experiment": "Do not repeat this cache form without new evidence of a value-lifetime mismatch; test the direct member reads first.",
+      "not_when": "This is one SB1 function and one candidate form, not a general rule against local caching.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#experiment-4",
+          "tier": "FALSIFIED",
+          "counts": "1 candidate compile; body 128 -> 112 bytes; zero wildcard hits; 21/27 strict peers unchanged"
+        }
+      ],
+      "keywords": "PlaySoundDS cached pointer local member reload negative no strict gain",
+      "blupi_status": "contradicted",
+      "blupi_evidence": {
+        "function": "CSound::PlaySoundDS",
+        "rva": "unmapped; no exact target assigned",
+        "tu": "sound.cpp",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd",
+        "compiles": 1,
+        "outcome": "128-byte baseline -> 112-byte cached form; MISMATCH, zero wildcard hits; 21/27 strict peers unchanged",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-4"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LAY-01",
+      "section": "layout",
+      "title": "CPixmap has a measured four-byte slot at this+8",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": "O2"
+      },
+      "symptoms": {
+        "all": [
+          "displacement_differs",
+          "native_more_loads",
+          "native_calls_more"
+        ]
+      },
+      "symptom": "A CPixmap-like body differs in field offsets and load/call structure.",
+      "construct": "Keep a neutral BOOL member at offset +8 after m_mouseType; initialize it in the constructor.",
+      "explanation": "Target code writes and reads this slot; adding it shifts later members by four bytes. Its semantic name is unknown.",
+      "experiment": "Check constructor and method offsets, then compile the full pixmap TU and compare all peers strictly.",
+      "not_when": "Do not infer a semantic field name from the offset or apply this layout to another class.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/CORE_CLUSTER.md#class-layout-delta",
+          "tier": "PROVEN",
+          "counts": "Four CPixmap candidate object variants; final isolated TU: 20 STRICT, 4 RELOC-UNVERIFIED, 21 MISMATCH; Create remains mismatched"
+        }
+      ],
+      "keywords": "CPixmap offset layout m_unknown08 field structure class member",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CPixmap constructor; CPixmap::Create and other field users",
+        "rva": "0x21040; 0x21190; other users in docs/CORE_CLUSTER.md",
+        "tu": "pixmap.cpp; pixmap.h",
+        "flags": "VC5 SP3 /O2 /Gy /GX /ML",
+        "compiles": 4,
+        "outcome": "slot at +8 required to align later target fields; 20/45 strict cluster functions, target Create still MISMATCH",
+        "doc_ref": "docs/CORE_CLUSTER.md#class-layout-delta"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SEM-01",
+      "section": "semantics",
+      "title": "CJauge::Draw passes channel id 5 in the oracle",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": "O2"
+      },
+      "symptoms": {},
+      "symptom": "The source candidate pushes 12 twice where the oracle pushes 5.",
+      "construct": "Set the scratch UI header CHJAUGE value to 5 for CJauge::Draw.",
+      "explanation": "The value is an SB1 channel identifier from the target body. This does not establish the correct value for other builds or projects.",
+      "experiment": "Compile the owning TU with the candidate value and strict-verify it; inspect remaining call relocations before claiming equality.",
+      "not_when": "Do not change the canonical source from this one function result without verifying the owning header and all users.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#retrieval-on-real-sb1-residuals",
+          "tier": "PROVEN",
+          "counts": "Five candidate compiler invocations; Draw moved from MISMATCH to RELOC-UNVERIFIED after the two immediate operands changed; three DrawPart REL32 targets unresolved"
+        }
+      ],
+      "keywords": "CJauge Draw CHJAUGE channel id constant immediate 5 12 ?Draw@CJauge@@QAEXXZ",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CJauge::Draw",
+        "rva": "0x1ee50",
+        "tu": "jauge.cpp; copied UI header tree",
+        "flags": "VC5 SP3 /O2 /GX /ML /Gd /Gy",
+        "compiles": 5,
+        "outcome": "oracle pushes 5 twice; value-5 candidate moved Draw to RELOC-UNVERIFIED, not STRICT; three DrawPart REL32 targets lack unique verified RVAs",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md#retrieval-on-real-sb1-residuals"
+      },
+      "legacy_ids": []
+    }
+  ]
+}
