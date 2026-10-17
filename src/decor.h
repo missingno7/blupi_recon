@@ -455,9 +455,7 @@ public:
 	BOOL	Read(int gamer, int mission, BOOL bUser);
 	BOOL	SomethingMissionPath(int gamer, int mission, BOOL bUser);
 	BOOL	CurrentWrite(int gamer, int mission);
-#ifdef SB1_EVENT_API
 	BOOL	CurrentWrite(int gamer, int mission, BOOL bUser);
-#endif
 	BOOL	CurrentRead(int gamer, int mission, int *pMission, BOOL *pbPrivate);
 	BOOL	FileExist(int gamer, int mission, char* param3);
 

@@ -267,9 +267,34 @@ def report(results: list[dict[str, Any]], unit_order: list[str]) -> tuple[dict[s
     return by_unit, total
 
 
+def report_withdrawn(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) -> None:
+    withdrawn = [item for item in manifest.get("accepted_functions", []) if item.get("withdrawn")]
+    if not withdrawn:
+        return
+    print(f"\nWithdrawn from the regression gate ({len(withdrawn)}):")
+    for item in withdrawn:
+        tu = item["tu"]
+        candidates = [func for func in by_unit.get(tu, []) if func["name"] == item["symbol"]]
+        if len(candidates) == 1:
+            func = candidates[0]
+            locations = ",".join(match["rva"] for match in func.get("matches", [])) or "none"
+            observed = (f"status={func['status']} candidate_rva={locations} "
+                        f"candidate_size={func['code_size']}")
+        else:
+            observed = f"candidate_count={len(candidates)}"
+        details = item["withdrawn"]
+        print(f"  {tu}: {item['symbol']} expected_rva={item['rva']} {observed}")
+        if details.get("reason"):
+            print(f"    reason: {details['reason']}")
+        if details.get("evidence") or details.get("date"):
+            print(f"    evidence: {details.get('evidence', 'unspecified')}; date: {details.get('date', 'unspecified')}")
+
+
 def accepted_regressions(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) -> list[str]:
     errors = []
     for accepted in manifest.get("accepted_functions", []):
+        if accepted.get("withdrawn"):
+            continue
         tu = accepted["tu"]
         matches = [func for func in by_unit.get(tu, []) if func["name"] == accepted["symbol"]]
         if len(matches) != 1:
@@ -297,9 +322,14 @@ def accepted_regressions(manifest: dict[str, Any], by_unit: dict[str, list[dict[
 
 
 def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) -> int:
+    accepted = manifest.get("accepted_functions", [])
     known = {(item["symbol"], parse_number(item["rva"]), item["tu"])
-             for item in manifest.get("accepted_functions", [])}
+             for item in accepted if not item.get("withdrawn")}
+    withdrawn_by_function = {
+        (item["symbol"], item["tu"]): item for item in accepted if item.get("withdrawn")
+    }
     additions = []
+    reactivated = []
     excluded = {item["symbol"] for item in manifest.get("promotion_exclusions", [])}
     skipped = []
     for tu, functions in by_unit.items():
@@ -311,6 +341,23 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
                 continue
             rva = int(func["matches"][0]["rva"], 16)
             key = (func["name"], rva, tu)
+            withdrawn_item = withdrawn_by_function.get((func["name"], tu))
+            if withdrawn_item is not None:
+                history = withdrawn_item.setdefault("withdrawal_history", [])
+                history.append(withdrawn_item.pop("withdrawn"))
+                withdrawn_item["rva"] = rva
+                withdrawn_item["size"] = int(func["code_size"])
+                if func["status"] == "FOLDED":
+                    owner = func["folded_into"]
+                    withdrawn_item["status"] = "folded"
+                    withdrawn_item["into"] = {name: owner[name] for name in ("symbol", "rva", "tu")}
+                else:
+                    withdrawn_item.pop("status", None)
+                    withdrawn_item.pop("into", None)
+                reactivated.append(withdrawn_item)
+                withdrawn_by_function.pop((func["name"], tu))
+                known.add(key)
+                continue
             if key in known:
                 continue
             item: dict[str, Any] = {"symbol": func["name"], "rva": rva,
@@ -328,9 +375,12 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
     strict_count = sum(item.get("status") != "folded" for item in additions)
     folded_count = len(additions) - strict_count
     print(f"accepted {strict_count} newly STRICT and {folded_count} newly FOLDED function(s)")
+    if reactivated:
+        print(f"re-accepted {len(reactivated)} previously withdrawn function(s): "
+              + ", ".join(item["symbol"] for item in reactivated))
     if skipped:
         print("kept unpromoted excluded candidates: " + ", ".join(sorted(set(skipped))))
-    return len(additions)
+    return len(additions) + len(reactivated)
 
 
 def main() -> int:
@@ -363,6 +413,7 @@ def main() -> int:
         by_unit_order = [name for name, _ in units]
         comparison = run_comparator([obj for _, obj in units], evidence_objects, manifest)
         by_unit, _ = report(comparison, by_unit_order)
+        report_withdrawn(manifest, by_unit)
         regressions = accepted_regressions(manifest, by_unit)
         if regressions:
             print("\nAccepted-function regression(s):")

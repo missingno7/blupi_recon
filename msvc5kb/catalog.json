@@ -1927,7 +1927,7 @@
     {
       "id": "BLUPI-CTX-01",
       "section": "context",
-      "title": "A sound header declaration can shift included SB1 member bodies",
+      "title": "Incomplete shared-header declarations shift VC5 TU context of including files",
       "tier": "PROVEN",
       "scope": "blupi-specific",
       "applies": {
@@ -1958,6 +1958,11 @@
           "ref": "blupi_recon:docs/CORE_CLUSTER.md#residuals-round",
           "tier": "PROVEN",
           "counts": "Resolution: real SB1 declarations for the sound helpers (PlaySoundDS(int,int,int,int) 0x22f00, PlaySoundDS(int,int,int) 0x22fc0, PlayImage 0x230c0, Play 0x23220) make StopSound STRICT while CButton::TreatEvent, CButton::MouseMove and CMenu::TreatEvent stay STRICT (copied-tree all-TU build)."
+        },
+        {
+          "ref": "blupi_recon:docs/HEADERS.md",
+          "tier": "PROVEN",
+          "counts": "Second instance: six declarations gated per TU regressed CButton::MouseMove when unguarded; completing all SB1 class declarations (full method inventories in plausible order) made them unconditional with MouseMove still STRICT (317/318 accepted). Remaining GetBlupiInfo window +24..27/+32 top/before only -> missing preceding decblock bodies."
         }
       ],
       "keywords": "sound.h declaration count MouseMove StopSound peer regression",

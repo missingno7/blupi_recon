@@ -48,10 +48,7 @@
       "source": "src/network.cpp"
     },
     {
-      "source": "src/pixmap.cpp",
-      "defines": [
-        "SB1_GAME_API"
-      ]
+      "source": "src/pixmap.cpp"
     },
     {
       "source": "src/sound.cpp"
@@ -60,54 +57,28 @@
       "source": "src/text.cpp"
     },
     {
-      "source": "src/blupi.cpp",
-      "defines": [
-        "SB1_GAME_API",
-        "SB1_EVENT_API"
-      ]
+      "source": "src/blupi.cpp"
     },
     {
-      "source": "src/decnet.cpp",
-      "defines": [
-        "SB1_GAME_API"
-      ]
+      "source": "src/decnet.cpp"
     },
     {
-      "source": "src/decor.cpp",
-      "defines": [
-        "SB1_GAME_API"
-      ]
+      "source": "src/decor.cpp"
     },
     {
-      "source": "src/event.cpp",
-      "defines": [
-        "SB1_GAME_API",
-        "SB1_EVENT_API"
-      ]
+      "source": "src/event.cpp"
     },
     {
-      "source": "src/decblock.cpp",
-      "defines": [
-        "SB1_GAME_API"
-      ]
+      "source": "src/decblock.cpp"
     },
     {
-      "source": "src/decdesign.cpp",
-      "defines": [
-        "SB1_GAME_API"
-      ]
+      "source": "src/decdesign.cpp"
     },
     {
-      "source": "src/decmove.cpp",
-      "defines": [
-        "SB1_GAME_API"
-      ]
+      "source": "src/decmove.cpp"
     },
     {
-      "source": "src/decblupi.cpp",
-      "defines": [
-        "SB1_GAME_API"
-      ]
+      "source": "src/decblupi.cpp"
     },
     {
       "source": "src/dectables.cpp"
@@ -397,7 +368,12 @@
       "symbol": "?GetBlupiInfo@CDecor@@QAEXPAH000@Z",
       "rva": "0x000057b0",
       "size": 80,
-      "tu": "src/decblock.cpp"
+      "tu": "src/decblock.cpp",
+      "withdrawn": {
+        "reason": "The complete shared-header, no-per-TU-define build mismatches this function. Top-of-file and before-definition count probes restore strict output only at 24-27 or 32 extra front-end declarations, while end-of-file probes do not; the original declarations or preceding decblock bodies remain unidentified.",
+        "evidence": "docs/HEADERS.md#whole-tree-and-isolation-experiments",
+        "date": "2026-10-17"
+      }
     },
     {
       "symbol": "?PlaySoundA@CDecor@@QAEXHUtagPOINT@@H@Z",

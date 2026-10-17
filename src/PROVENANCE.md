@@ -58,7 +58,7 @@
 
 - `event.cpp` and the SB2-derived `event.h` compatibility layout are GPLv3 ancestry. `Phase::backName[32]` and the CEvent offsets in the compatibility header follow the SB1 target; the SB2-only `m_menuIndex`, `m_menuDecor[11]`, and `m_9840[32]` fields are omitted so `m_oldMousePos` is at `+0x9810`. The phase table is the worker's exact SB1 table.
 - `sound.h` retains the event call-compatible `PlayMusic(HWND,int)` overload and distinct `PlayImage` declarations: the three-argument form used by the PB-derived sound TU and the four-argument game form. The target `VoyageInit` pushes five stack words to the callee at `0x230c0`, which returns with `ret 0x14`; `decor.cpp` passes the fourth word explicitly so VC5 selects that ABI without changing the other TUs' declaration context.
-- Current per-TU compile-context gates are listed under `Build-context debt`: `SB1_EVENT_API` gates `CButton::SetDemo`, the three-argument `CDecor::CurrentWrite`, the six-argument `CPixmap::Create`, and `CSound::PlayMusic(HWND,int)`; `SB1_GAME_API` gates the pixmap `BackgroundCache`, `DrawMap`, and `QuickIcon` declarations. Phase/resource values and the pixmap cache/true-colour declarations are now unconditional. `event.h` has a guard and forward-declares `CNetwork`; `event.cpp` includes `network.h` after `event.h`, so DPID and the full network declaration are available before method definitions.
+- **[EVIDENCE]** Follow-up 17 removes the former per-TU API gates; their shared declarations are now unconditional, and the manifest has no per-TU `SB1_*` definitions. The withdrawn `GetBlupiInfo` record and its probe evidence are documented below. `event.h` has a guard and forward-declares `CNetwork`; `event.cpp` includes `network.h` after `event.h`, so DPID and the full network declaration are available before method definitions.
 - **[EVIDENCE]** The integrated shared-header run reports 54 STRICT event names and 3,584 unique event code bytes. The three `Play*` names alias `BuildUp` at one RVA; only `BuildUp` is accepted. `NetSendLobby`, `WaitMouse`, `HideMouse`, and `ChatSend` are strict in the integrated source. `CEvent::~CEvent` is strict after verifying its `__except_list` absolute `FS:0` references, `.text$x` funclet bytes/relocations, and linked `.xdata$x` exception table. The exception cleanup's `CButton::~CButton` function-address relocations bind its identical 16-byte body to the independently matched `CMenu::~CMenu` owner at `0x1f010`, so it is reported FOLDED and counted under the menu TU.
 - **[OPEN]** `SetDemo` remains excluded: its 48-byte body has four identical-byte hits and none of the 18 built objects contains a direct incoming relocation to its symbol, so call-based placement has no witness. The identical `PlayDown`/`PlayMove`/`PlayUp` aliases are excluded. `CheckWorld1` has duplicate bodies outside the event block. Integrated functions that still mismatch are intentionally not accepted.
 
@@ -114,29 +114,33 @@
 
 ## Build-context debt
 
-**[EVIDENCE]** The `SB1_GAME_API`/`SB1_EVENT_API` header audit tested each
-conditional block with a full multi-TU verify. The following shared class
-declarations still need per-TU visibility to preserve accepted functions:
+**[EVIDENCE]** Follow-up 17 integrates the four shared headers from
+`scratch/hdr/src/`. They contain the complete candidate declarations with the
+six former `SB1_GAME_API`/`SB1_EVENT_API` blocks unconditional. `recon.json`
+has no per-TU definitions, and no `#ifdef SB1_*` block remains in the source
+headers. This removes the synthetic per-TU header views; it does not prove
+that every inherited candidate declaration appeared in the original 1998
+headers.
 
-| Remaining block | Current macro-enabled TUs | Accepted regression when unguarded |
-|---|---|---|
-| `button.h`: `CButton::SetDemo(BOOL)` | `blupi.cpp`, `event.cpp` (`SB1_EVENT_API`) | `CButton::MouseMove` at `0x2fd0` mismatches. |
-| `decor.h`: `CDecor::CurrentWrite(int,int,BOOL)` | `blupi.cpp`, `event.cpp` (`SB1_EVENT_API`) | `CButton::MouseMove` at `0x2fd0`; `CDecor::GetBlupiInfo` at `0x57b0`. |
-| `pixmap.h`: six-argument `CPixmap::Create` | `blupi.cpp`, `event.cpp` (`SB1_EVENT_API`) | `CButton::MouseMove` at `0x2fd0`; `CDecor::GetBlupiInfo` at `0x57b0`. |
-| `pixmap.h`: `BackgroundCache` | `pixmap.cpp`, `blupi.cpp`, `decnet.cpp`, `decor.cpp`, `event.cpp`, `decblock.cpp`, `decdesign.cpp`, `decmove.cpp`, `decblupi.cpp` (`SB1_GAME_API`) | `CButton::MouseMove` at `0x2fd0` mismatches. |
-| `pixmap.h`: `DrawMap` and `QuickIcon` | same game TUs as `BackgroundCache` (`SB1_GAME_API`) | `CButton::MouseMove` at `0x2fd0` mismatches. |
-| `sound.h`: `PlayMusic(HWND,int)` | `blupi.cpp`, `event.cpp` (`SB1_EVENT_API`) | `CButton::MouseMove` at `0x2fd0`; `CDecor::GetBlupiInfo` at `0x57b0`. |
+**[EVIDENCE]** A clean full build with the shared declarations reports 317
+STRICT and 3 FOLDED functions, covering 42,016 unique game `.text` bytes.
+`CButton::MouseMove` (`0x2fd0`) remains STRICT. The only mismatch among the
+previous accepted set is `CDecor::GetBlupiInfo` (`0x57b0`, `decblock.cpp`).
+Its accepted-function record remains in `recon.json` with an explicit
+withdrawal reason, evidence link, and date; it is excluded from regression
+failure and printed separately with its current candidate status.
 
-**[OPEN]** These switches preserve matches but are not evidence for an
-authentic one-project header view. The isolated probes and `kb.py hints` found
-no target-supported declaration/order fix for the listed regressions. No
-per-TU switch has been removed by guessing; the next resolution needs proven
-missing declarations or a supported original include structure.
+**[OPEN]** `GetBlupiInfo` emits an 80-byte candidate span against a 67-byte
+target body followed by 13 NOP bytes. Scratch-only declarations restore
+STRICT output when 24–27 or 32 are inserted at the top of `decblock.cpp` or
+before this definition; the same counts at end of file do not. This supports
+the hypothesis that earlier front-end symbols from unreconstructed or
+incomplete `decblock.cpp` bodies affect compiler context, but does not identify
+those declarations or bodies. These counts are not source material. Evidence:
+`docs/HEADERS.md#whole-tree-and-isolation-experiments`.
 
-**[EVIDENCE]** The other audited guarded blocks were made unconditional and
-each passed a clean full verify with no accepted-status change: `misc.h`'s
-`<windows.h>` include, `def.h`'s phase constants, `resource.h`'s SB1 resource
-IDs, `text.h`'s `FONTGOLD`/`FONTSELECTED`, and `pixmap.h`'s event cache,
-benchmark, and true-colour declarations. `pixmap.h` now has one shared
-`GetTrueColorDecor()` declaration; this replaces the overlapping event/game
-declarations. The remaining per-TU defines guard only the blocks listed above.
+**[EVIDENCE]** `tools/verify.py` keeps withdrawn functions in the manifest,
+reports their observed status separately, and does not fail the gate for
+them. A later `--accept` reactivates a withdrawn function only when its
+candidate becomes STRICT or FOLDED, moving the withdrawal record to
+`withdrawal_history` instead of discarding that history.

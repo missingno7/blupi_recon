@@ -20,9 +20,7 @@ public:
 	void	SetDebug(BOOL bDebug);
 	
 	BOOL	Create(HWND hwnd, POINT dim, BOOL bFullScreen, BOOL bTrueColor, int mouseType);
-#ifdef SB1_EVENT_API
 	BOOL	Create(HWND hwnd, POINT dim, BOOL bFullScreen, int mouseType, BOOL bTrueColor, BOOL bTrueColorDecor);
-#endif
 	BOOL	Flush();
 	BOOL	Restore();
 	BOOL	InitSysPalette();
@@ -34,9 +32,7 @@ public:
 	int		SearchColor(int red, int green, int blue);
 	BOOL	Cache(int channel, char *pFilename, POINT totalDim, POINT iconDim, BOOL bUsePalette);
 	BOOL	Cache(int channel, char *pFilename, POINT totalDim, BOOL bUsePalette);
-#ifdef SB1_GAME_API
 	BOOL	BackgroundCache(int channel, const char *pFilename, POINT totalDim, POINT iconDim, BOOL bUsePalette);
-#endif
 	BOOL	Cache(int channel, HBITMAP hbm, POINT totalDim);
 	void	Flush(int channel);
 	void	SetTransparent(int channel, COLORREF color);
@@ -51,10 +47,8 @@ public:
 	BOOL	DrawIconPart(int chDst, int channel, int rank, POINT pos, int startY, int endY, int mode=0, BOOL bMask=FALSE);
 	BOOL	DrawPart(int chDst, int channel, POINT dest, RECT rect, int mode=0, BOOL bMask=FALSE);
 	BOOL	DrawImage(int chDst, int channel, RECT rect, int mode=0);
-#ifdef SB1_GAME_API
 	BOOL	DrawMap(int channel, RECT src, RECT dest);
 	void	QuickIcon(int channel, int rank, POINT pos);
-#endif
 	BOOL	CacheAll(BOOL cache, HWND hWnd, BOOL bFullScreen, BOOL bTrueColor, BOOL bTrueColorDecor, int mouseType, const char *pFilename, int region);
 	BOOL	GetBenchmarkSuccess();
 	void	SetTrueColorBack(BOOL bTrueColor);
