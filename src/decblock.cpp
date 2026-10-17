@@ -159,25 +159,25 @@ void CDecor::InitDecor()
 	m_blupiFocus = TRUE;
 	m_blupiAir = FALSE;
 	m_blupiHelico = FALSE;
-	m_blupiOver = FALSE;
 	m_blupiJeep = FALSE;
 	m_blupiTank = FALSE;
 	m_blupiSkate = FALSE;
 	m_blupiNage = FALSE;
 	m_blupiSurf = FALSE;
-	m_blupiSuspend = FALSE;
+	m_blupiVent = FALSE;
 	m_blupiJumpAie = FALSE;
 	m_blupiShield = FALSE;
-	m_blupiPower = FALSE;
 	m_blupiCloud = FALSE;
-	m_blupiHide = -1;
-	m_blupiInvert = FALSE;
-	m_blupiBalloon = FALSE;
-	m_blupiEcrase = FALSE;
-	m_blupiVent = FALSE;
-	m_blupiPosHelico.y = 0;
-	m_blupiPosMagic.x = 0;
-	m_blupiPosMagic.y = 0;
+	m_blupiPower = FALSE;
+	m_blupiHide = FALSE;
+	m_blupiPosHelico.x = -1;
+	m_blupiPosHelico.y = FALSE;
+	m_blupiPosMagic.x = FALSE;
+	m_blupiPosMagic.y = FALSE;
+	m_blupiSuspend = FALSE;
+	m_blupiFront = 0;
+	m_blupiBullet = 0;
+	m_blupiPerso = 0;
 	m_blupiActionOuf = 0;
 	m_blupiTimeMockery = 0;
 	m_blupiVitesse = POINT( 0, 0 );
@@ -232,21 +232,21 @@ void CDecor::PlayPrepare(BOOL bTest)
 	m_blupiFocus = TRUE;
 	m_blupiAir = FALSE;
 	m_blupiHelico = FALSE;
-	m_blupiOver = FALSE;
 	m_blupiJeep = FALSE;
 	m_blupiTank = FALSE;
 	m_blupiSkate = FALSE;
 	m_blupiNage = FALSE;
 	m_blupiSurf = FALSE;
-	m_blupiSuspend = FALSE;
+	m_blupiVent = FALSE;
 	m_blupiJumpAie = FALSE;
 	m_blupiShield = FALSE;
-	m_blupiPower = FALSE;
 	m_blupiCloud = FALSE;
+	m_blupiPower = FALSE;
 	m_blupiHide = FALSE;
-	m_blupiInvert = FALSE;
-	m_blupiBalloon = FALSE;
-	m_blupiEcrase = FALSE;
+	m_blupiPosHelico.x = FALSE;
+	m_blupiPosHelico.y = FALSE;
+	m_blupiPosMagic.x = FALSE;
+	m_blupiPosMagic.y = FALSE;
 	m_blupiActionOuf = 0;
 	m_blupiTimeNoAsc = 0;
 	m_blupiTimeMockery = 0;
@@ -302,14 +302,14 @@ void CDecor::PlayPrepare(BOOL bTest)
 	UpdateCaisse();
 	m_scrollPoint = m_blupiPos;
 	m_scrollAdd = POINT( 0, 0 );
-	m_blupiHide = -1;
+	m_blupiPosHelico.x = -1;
 	m_nbLinkCaisse = 0;
 	m_bHelicoMarch = FALSE;
 	m_bHelicoStop = FALSE;
 	m_bJeepMarch = FALSE;
 	m_bJeepStop = FALSE;
 	m_blupiTimeShield = FALSE;
-	m_blupiRestart = 0;
+	m_blupiNoBarre = 0;
 	m_blupiValidPos = m_blupiPos;
 	m_blupiFifoNb = 0;
 	m_blupiTimeFire = 0;
@@ -514,15 +514,15 @@ void CDecor::Build(RECT rect, POINT mousePos)
 	if (m_phase != WM_PHASE_BUILD)
 	{
 		m_blupiSec = 0;
-		if (!m_blupiPosHelico.y)
+		if (!m_blupiFront)
 		{
 			tinyPoint.x = m_blupiPos.x - posDecor.x;
 			tinyPoint.y = m_blupiPos.y - posDecor.y;
-			if (m_blupiJeep)
+			if (m_blupiTank)
 			{
 				tinyPoint.y += BLUPIOFFY;
 			}
-			if (m_blupiShield)
+			if (m_blupiCloud)
 			{
 				m_blupiSec = SEC_SHIELD;
 				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
@@ -544,7 +544,7 @@ void CDecor::Build(RECT rect, POINT mousePos)
 					m_pPixmap->QuickIcon(CHELEMENT, num2, tinyPoint);
 				}
 			}
-			else if (m_blupiCloud)
+			else if (m_blupiHide)
 			{
 				m_blupiSec = SEC_CLOUD;
 				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
@@ -558,7 +558,7 @@ void CDecor::Build(RECT rect, POINT mousePos)
 					}
 				}
 			}
-			else if (m_blupiHide)
+			else if (m_blupiPosHelico.x)
 			{
 				m_blupiSec = SEC_HIDE;
 				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
@@ -793,7 +793,7 @@ void CDecor::Build(RECT rect, POINT mousePos)
 		}
 
 	}
-	if (m_blupiPosHelico.y && m_phase != WM_PHASE_BUILD)
+	if (m_blupiFront && m_phase != WM_PHASE_BUILD)
 	{
 		tinyPoint = m_blupiPos - posDecor;
 		m_pPixmap->QuickIcon(m_blupiChannel, m_blupiIcon, tinyPoint);
@@ -832,16 +832,16 @@ void CDecor::DrawInfo()
 
 		pos.x = 420;
 		pos.y = 442;
-		for (i = 0; i < m_blupiPosMagic.x; i++)
+		for (i = 0; i < m_blupiBullet; i++)
 		{
 			m_pPixmap->QuickIcon(CHELEMENT, 176, pos);
 			pos.x += 6;
 		}
 
-		if (m_blupiPosMagic.y > 0)
+		if (m_blupiPerso > 0)
 		{
 			m_pPixmap->QuickIcon(CHBLUPI, GetIconPerso(), POINT( 520, 438 ));
-			sprintf(text, "= %d", m_blupiPosMagic.y);
+			sprintf(text, "= %d", m_blupiPerso);
 			DrawText(m_pPixmap, POINT( 552, 452 ), text, FONTWHITE);
 		}
 
@@ -937,11 +937,11 @@ void CDecor::SetDemoPlay(BOOL param)
 void CDecor::GetBlupiInfo(BOOL* bHelico, BOOL* bJeep, BOOL* bSkate, BOOL* bNage)
 {
 	*bHelico = m_blupiHelico;
-	int jeep = m_blupiOver;
-	jeep |= m_blupiJeep;
+	int jeep = m_blupiJeep;
+	jeep |= m_blupiTank;
 	*bJeep = jeep;
-	*bSkate = m_blupiTank;
-	*bNage = m_blupiNage | m_blupiSkate;
+	*bSkate = m_blupiSkate;
+	*bNage = m_blupiSurf | m_blupiNage;
 }
 
 void CDecor::PlaySound(int sound, POINT pos, BOOL bLocal)

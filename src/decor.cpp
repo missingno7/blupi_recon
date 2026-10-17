@@ -94,7 +94,7 @@ void CDecor::VoyageStep()
 			}
 			if (m_voyageIcon == GetIconPerso() && m_voyageChannel == CHBUTTON)
 			{
-				m_blupiPosMagic.y++;
+				m_blupiPerso++;
 				m_pSound->PlayImage(SOUND_JUMPEND, m_voyageEnd, -1, 0);
 			}
 			if (m_voyageIcon == 177 && m_voyageChannel == CHELEMENT)
@@ -475,7 +475,6 @@ BOOL CDecor::CurrentWrite(int gamer, int mission)
 	pBuffer->blupiFocus = m_blupiFocus;
 	pBuffer->blupiAir = m_blupiAir;
 	pBuffer->blupiHelico = m_blupiHelico;
-	pBuffer->blupiOver = m_blupiOver;
 	pBuffer->blupiJeep = m_blupiJeep;
 	pBuffer->blupiTank = m_blupiTank;
 	pBuffer->blupiSkate = m_blupiSkate;
@@ -484,21 +483,24 @@ BOOL CDecor::CurrentWrite(int gamer, int mission)
 	pBuffer->blupiVent = m_blupiVent;
 	pBuffer->blupiSuspend = m_blupiSuspend;
 	pBuffer->blupiJumpAie = m_blupiJumpAie;
-	pBuffer->blupiShield = m_blupiPower;
-	pBuffer->blupiPower = m_blupiShield;
+	pBuffer->blupiShield = m_blupiShield;
+	pBuffer->blupiPower = m_blupiPower;
 	pBuffer->blupiCloud = m_blupiCloud;
 	pBuffer->blupiHide = m_blupiHide;
-	pBuffer->blupiInvert = m_blupiInvert;
-	pBuffer->blupiBalloon = m_blupiBalloon;
-	pBuffer->blupiEcrase = m_blupiEcrase;
-	pBuffer->blupiPosHelico = m_blupiPosHelico;
-	pBuffer->blupiPosMagic = m_blupiPosMagic;
+	pBuffer->blupiPosHelico.x = m_blupiPosHelico.x;
+	pBuffer->blupiPosHelico.y = m_blupiPosHelico.y;
+	pBuffer->blupiPosMagic.x = m_blupiPosMagic.x;
+	pBuffer->blupiPosMagic.y = m_blupiPosMagic.y;
 	pBuffer->blupiRestart = m_blupiRestart;
-	pBuffer->blupiFront = m_blupiTimeShield;
-	pBuffer->blupiBullet = m_blupiTimeFire;
-	pBuffer->blupiPerso = m_blupiTimeOuf;
-	pBuffer->blupiDynamite = m_blupiActionOuf;
+	pBuffer->blupiFront = m_blupiFront;
+	pBuffer->blupiBullet = m_blupiBullet;
+	pBuffer->blupiPerso = m_blupiPerso;
 	pBuffer->blupiNoBarre = m_blupiNoBarre;
+	pBuffer->blupiTimeShield = m_blupiTimeShield;
+	pBuffer->blupiTimeFire = m_blupiTimeFire;
+	pBuffer->blupiTimeOuf = m_blupiTimeOuf;
+	pBuffer->blupiActionOuf = m_blupiActionOuf;
+	pBuffer->blupiFifoNb = m_blupiFifoNb;
 	memcpy(pBuffer->blupiFifoPos, m_blupiFifoPos, sizeof(pBuffer->blupiFifoPos));
 	memcpy(pBuffer->blupiStartPos, m_blupiStartPos, sizeof(pBuffer->blupiStartPos));
 	memcpy(pBuffer->blupiStartDir, m_blupiStartDir, sizeof(pBuffer->blupiStartDir));
@@ -608,7 +610,6 @@ success:
 	m_blupiFocus = pBuffer->blupiFocus;
 	m_blupiAir = pBuffer->blupiAir;
 	m_blupiHelico = pBuffer->blupiHelico;
-	m_blupiOver = pBuffer->blupiOver;
 	m_blupiJeep = pBuffer->blupiJeep;
 	m_blupiTank = pBuffer->blupiTank;
 	m_blupiSkate = pBuffer->blupiSkate;
@@ -617,21 +618,24 @@ success:
 	m_blupiVent = pBuffer->blupiVent;
 	m_blupiSuspend = pBuffer->blupiSuspend;
 	m_blupiJumpAie = pBuffer->blupiJumpAie;
-	m_blupiPower = pBuffer->blupiShield;
-	m_blupiShield = pBuffer->blupiPower;
+	m_blupiShield = pBuffer->blupiShield;
+	m_blupiPower = pBuffer->blupiPower;
 	m_blupiCloud = pBuffer->blupiCloud;
 	m_blupiHide = pBuffer->blupiHide;
-	m_blupiInvert = pBuffer->blupiInvert;
-	m_blupiBalloon = pBuffer->blupiBalloon;
-	m_blupiEcrase = pBuffer->blupiEcrase;
-	m_blupiPosHelico = pBuffer->blupiPosHelico;
-	m_blupiPosMagic = pBuffer->blupiPosMagic;
+	m_blupiPosHelico.x = pBuffer->blupiPosHelico.x;
+	m_blupiPosHelico.y = pBuffer->blupiPosHelico.y;
+	m_blupiPosMagic.x = pBuffer->blupiPosMagic.x;
+	m_blupiPosMagic.y = pBuffer->blupiPosMagic.y;
 	m_blupiRestart = pBuffer->blupiRestart;
-	m_blupiTimeShield = pBuffer->blupiFront;
-	m_blupiTimeFire = pBuffer->blupiBullet;
-	m_blupiTimeOuf = pBuffer->blupiPerso;
-	m_blupiActionOuf = pBuffer->blupiDynamite;
+	m_blupiFront = pBuffer->blupiFront;
+	m_blupiBullet = pBuffer->blupiBullet;
+	m_blupiPerso = pBuffer->blupiPerso;
 	m_blupiNoBarre = pBuffer->blupiNoBarre;
+	m_blupiTimeShield = pBuffer->blupiTimeShield;
+	m_blupiTimeFire = pBuffer->blupiTimeFire;
+	m_blupiTimeOuf = pBuffer->blupiTimeOuf;
+	m_blupiActionOuf = pBuffer->blupiActionOuf;
+	m_blupiFifoNb = pBuffer->blupiFifoNb;
 	memcpy(m_blupiFifoPos, pBuffer->blupiFifoPos, sizeof(m_blupiFifoPos));
 	memcpy(m_blupiStartPos, pBuffer->blupiStartPos, sizeof(m_blupiStartPos));
 	memcpy(m_blupiStartDir, pBuffer->blupiStartDir, sizeof(m_blupiStartDir));

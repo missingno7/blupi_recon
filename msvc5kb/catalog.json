@@ -2144,6 +2144,49 @@
         "doc_ref": "docs/SOLSIB.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-CTX-02",
+      "section": "context",
+      "title": "An unused anonymous-union type in a shared class header shifts VC5 TU context",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "reorder_regalloc",
+          "sib_order"
+        ]
+      },
+      "symptom": "A correct member-layout change in a shared header regresses an unrelated accepted function in another TU, although the scalar member count did not change.",
+      "construct": "Extra or missing type declarations inside the class (anonymous unions, nested structs) rather than plain members.",
+      "explanation": "In SB1, the SB2-derived decor.h carried an unused anonymous union (moveObjectSpeed). Its type declaration consumed VC5 symbol-counter numbers in every including TU; with it present the recovered CDecor layout regressed CButton::MouseMove (button.cpp), with it removed MouseMove stayed STRICT and CDecor::BlupiStep (25,269 B) became STRICT. Scalar member count alone did not explain the shift.",
+      "experiment": "When a layout fix regresses another TU, diff the two headers in counter terms (types, unions, nested structs, declarators), remove declarations the original did not have, and re-run the whole-tree gate.",
+      "not_when": "Do not remove a union/type that oracle code actually uses; never add filler to compensate.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/LAYOUT_DEBT.md",
+          "tier": "PROVEN",
+          "counts": "whole tree 324/324 accepted pass; BlupiStep 117 fixed differences -> 0, 350 relocations"
+        }
+      ],
+      "keywords": "anonymous union nested type declaration header context shift layout regression",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::BlupiStep; CButton::MouseMove",
+        "rva": "0x9280; 0x2fd0",
+        "tu": "decblupi.cpp; button.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": "bounded",
+        "outcome": "BlupiStep STRICT, MouseMove kept",
+        "doc_ref": "docs/LAYOUT_DEBT.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

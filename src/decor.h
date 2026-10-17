@@ -53,10 +53,7 @@ MoveObject;
 typedef struct
 {
 	char type;
-	union {
-		char data1;
-		char moveObjectSpeed;
-	};
+	char data1;
 	union {
 		short data2;
 		short posX;
@@ -163,7 +160,6 @@ typedef struct
 	BOOL blupiFocus;
 	BOOL blupiAir;
 	BOOL blupiHelico;
-	BOOL blupiOver;
 	BOOL blupiJeep;
 	BOOL blupiTank;
 	BOOL blupiSkate;
@@ -176,17 +172,18 @@ typedef struct
 	BOOL blupiPower;
 	BOOL blupiCloud;
 	BOOL blupiHide;
-	BOOL blupiInvert;
-	BOOL blupiBalloon;
-	BOOL blupiEcrase;
 	POINT blupiPosHelico;
 	POINT blupiPosMagic;
 	BOOL blupiRestart;
 	BOOL blupiFront;
 	int blupiBullet;
 	int blupiPerso;
-	int blupiDynamite;
 	int blupiNoBarre;
+	int blupiTimeShield;
+	int blupiTimeFire;
+	int blupiTimeOuf;
+	int blupiActionOuf;
+	int blupiFifoNb;
 	POINT blupiFifoPos[MAXFIFOPOS];
 
 	short reseve5[100];
@@ -521,7 +518,6 @@ protected:
 	BOOL		m_blupiFocus;
 	BOOL        m_blupiAir;
 	BOOL        m_blupiHelico;
-	BOOL        m_blupiOver;
 	BOOL        m_blupiJeep;
 	BOOL        m_blupiTank;
 	BOOL        m_blupiSkate;
@@ -530,22 +526,23 @@ protected:
 	BOOL        m_blupiVent;
 	BOOL        m_blupiSuspend;
 	BOOL        m_blupiJumpAie;
-	BOOL        m_blupiPower;
 	BOOL        m_blupiShield;
+	BOOL        m_blupiPower;
 	BOOL        m_blupiCloud;
 	BOOL        m_blupiHide;
-	BOOL        m_blupiInvert;
-	BOOL        m_blupiBalloon;
-	BOOL        m_blupiEcrase;
 	POINT		m_blupiPosHelico;
 	POINT		m_blupiPosMagic;
 	BOOL		m_blupiRestart;
-	BOOL		m_blupiTimeShield;
+	BOOL		m_blupiFront;
+	int			m_blupiBullet;
+	int			m_blupiPerso;
+	int			m_blupiNoBarre;
+	int			m_blupiTimeShield;
 	int			m_blupiTimeFire;
 	int			m_blupiTimeMockery;
 	int			m_blupiTimeOuf;
 	int			m_blupiActionOuf;
-	union { int m_blupiFifoNb; int m_blupiNoBarre; };
+	int			m_blupiFifoNb;
 	POINT		m_blupiFifoPos[10];
 	POINT		m_blupiStartPos[4];
 	int			m_blupiStartDir[4];
@@ -608,12 +605,7 @@ protected:
 	int 		m_decorAction;
 	int 		m_decorPhase;
 	int		m_lastDecorIndexes[200];
-	int		m_sb2TimeShield;
-	int		m_sb2TimeFire;
 	int		m_blupiTimeNoAsc;
-	int		m_sb2TimeMockery;
-	int		m_sb2TimeOuf;
-	int		m_sb2ActionOuf;
 	BYTE		m_balleTraj[MAXCELX * MAXCELY / 8 + 1];
 	BYTE		m_moveTraj[MAXCELX * MAXCELY / 8 + 1];
 	int		m_detectIcon;
@@ -660,7 +652,7 @@ inline BOOL CDecor::IsBlupiVehicle()
 
 inline BOOL CDecor::IsBlupiMotorVehicle()
 {
-	return m_blupiHelico || m_blupiOver || m_blupiJeep || m_blupiTank;
+	return m_blupiHelico || m_blupiJeep || m_blupiTank;
 }
 
 inline BOOL CDecor::IsBlupiStanding()
@@ -672,7 +664,7 @@ inline BOOL CDecor::IsBlupiStanding()
 		m_blupiAction == ACTION_ADVANCE ||
 		m_blupiAction == ACTION_RECEDE) &&
 		!IsBlupiVehicle() &&
-		!(m_blupiAir || m_blupiBalloon || m_blupiEcrase ||
+		!(m_blupiAir ||
 		m_blupiNage || m_blupiSurf || m_blupiSuspend);		
 }
 

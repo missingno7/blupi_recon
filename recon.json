@@ -612,6 +612,12 @@
       "tu": "src/decdesign.cpp"
     },
     {
+      "symbol": "?BlupiStep@CDecor@@QAEXXZ",
+      "rva": "0x00009280",
+      "size": 25280,
+      "tu": "src/decblupi.cpp"
+    },
+    {
       "symbol": "?GetPosDecor@CDecor@@QAE?AUtagPOINT@@U2@@Z",
       "rva": "0x0000f540",
       "size": 112,

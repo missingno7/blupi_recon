@@ -246,7 +246,7 @@ void CDecor::MoveObjectPollution()
 		offset.x = 22;
 		bPollution = TRUE;
 	}
-	if (m_blupiOver)
+	if (m_blupiJeep)
 	{
 		if (m_keyPress & (KEY_JUMP | KEY_UP))
 		{
@@ -278,7 +278,7 @@ void CDecor::MoveObjectPollution()
 		}
 		bPollution = TRUE;
 	}
-	if (m_blupiJeep)
+	if (m_blupiTank)
 	{
 		if (m_blupiVitesse.x == 0)
 		{
@@ -301,7 +301,7 @@ void CDecor::MoveObjectPollution()
 		offset.x = 32;
 		bPollution = TRUE;
 	}
-	if (m_blupiTank)
+	if (m_blupiSkate)
 	{
 		if (m_blupiVitesse.x == 0)
 		{
@@ -694,7 +694,7 @@ void CDecor::MoveObjectStepLine(int i)
 	if (m_moveObject[i].type == TYPE_ASCENSEUR ||
 		m_moveObject[i].type == TYPE_ASCENSEURs ||
 		m_moveObject[i].type == TYPE_ASCENSEURsi &&
-		!m_blupiSuspend)
+		!m_blupiJumpAie)
 	{
 		RECT src;
 		src.left = m_blupiPos.x + 20;
@@ -710,7 +710,7 @@ void CDecor::MoveObjectStepLine(int i)
 		tinyPoint = m_moveObject[i].posCurrent;
 	}
 	POINT posCurrent;
-	if (m_blupiFocus && !m_blupiHide && m_moveObject[i].type == TYPE_BOMBEFOLLOW2)
+	if (m_blupiFocus && !m_blupiPosHelico.x && m_moveObject[i].type == TYPE_BOMBEFOLLOW2)
 	{
 		posCurrent = m_moveObject[i].posCurrent;
 		if (posCurrent.x < m_blupiPos.x)
@@ -1811,7 +1811,7 @@ void CDecor::DynamiteStart(int i, int dx, int dy)
 			}
 		}
 	}
-	if (m_blupiFocus && !m_blupiShield && !m_blupiHide && !m_bSuperBlupi && m_blupiPos.x > posStart.x - 30 && m_blupiPos.x < posStart.x + 30 + DIMOBJX && m_blupiPos.y > posStart.y - 30 && m_blupiPos.y < posStart.y + 30 + DIMOBJY)
+	if (m_blupiFocus && !m_blupiCloud && !m_blupiPosHelico.x && !m_bSuperBlupi && m_blupiPos.x > posStart.x - 30 && m_blupiPos.x < posStart.x + 30 + DIMOBJX && m_blupiPos.y > posStart.y - 30 && m_blupiPos.y < posStart.y + 30 + DIMOBJY)
 	{
 		BlupiDead(ACTION_CLEAR1, -1);
 		m_blupiAir = TRUE;
@@ -2190,7 +2190,7 @@ int CDecor::MockeryDetect(POINT pos)
 BOOL CDecor::BlupiElectro(POINT pos)
 {
 	if (m_phase == WM_PHASE_BUILD) return FALSE;
-	if (!m_blupiCloud) return FALSE;
+	if (!m_blupiHide) return FALSE;
 
 	RECT src;
 	src.left = pos.x + 16;
@@ -2208,7 +2208,7 @@ BOOL CDecor::BlupiElectro(POINT pos)
 
 void CDecor::MoveObjectFollow(POINT pos)
 {
-	if (m_blupiHide) return;
+	if (m_blupiPosHelico.x) return;
 
 	RECT src = BlupiRect(pos);
 	src.left = pos.x + 16;
