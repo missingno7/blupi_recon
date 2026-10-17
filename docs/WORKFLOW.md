@@ -195,3 +195,13 @@ If a later clean build makes a withdrawn candidate STRICT or FOLDED,
 metadata in `withdrawal_history`.
 
 `forced_locations` supplies evidence-backed `--at` comparisons for identical bodies whose TU placement is established; all code bytes and relocations still pass the comparator. `symbol_mappings` names compiler-generated local switch destinations only where their target addresses are statically established. `promotion_exclusions` keeps ambiguous event aliases and duplicate `ObjectDelete` output from becoming extra accepted functions. The latter body is owned by `decnet.cpp` at `0x108a0`; it is counted once even though `decmove.cpp` also emits an identical candidate.
+
+## Register residues: tracing c2.exe (tools/c2trace)
+
+When a function differs only in scratch registers (eax/ecx/edx), trace the compiler's own temp-register assignment
+instead of guessing. `tools/c2trace/c2trace.py build-stub` once, then `capture NAME src/X.cpp[=cand.cpp]`,
+`assigns NAME SYMBOL` (each temp's path: preference / rotor / first free) and `shift NAME SYMBOL RVA`: it moves c2's
+rotor pointer by one or two slots at each assignment and reports the differing bytes. A `MATCH` at assignment K means
+the original source had one rotor step more or less just before K; `map NAME SYMBOL K` shows the instruction. The
+debugger only reads and pokes c2.exe's memory in its own run, never files; rotor shifts are diagnostics, never
+source. Model and addresses: docs/COMPILER_STUDY.md, round 4.

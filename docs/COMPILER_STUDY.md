@@ -212,3 +212,19 @@ argument and the toggle result, with identical bytes. Consistent explanations: t
 the rotor) was a real temp in the original, or the `lParam` argument took a non-rotating path (still ecx). [OPEN]
 the source form. Inert so far: c-variable / `!` / pre-increment / `+= 1` forms of the test, `message` vs
 `WM_KEYDOWN`, local copies of `lParam` and of the call result.
+
+### Preference pass and toggle forms ([EVIDENCE])
+
+- A pass before temp assignment (0x42ac33, store at 0x42b051) sets a temp's preferred register when the temp is
+  copied into something that already has one (descriptors at 0x494758 + 0x50*reg). Example: in TreatEventBase the
+  toggle result of `m_b = !m_b; bEnable = m_b;` prefers bEnable's esi; esi is busy, so the rotor decides (edx).
+- The micro copy of the cheat matcher (build/c2/cheatlab.py) reproduces the candidate's toggle exactly. There,
+  `m_b = !m_b;` (also `m_b ? 0 : 1`, `m_b == 0`) yields the oracle shape `mov edx,[m]; xor ecx,ecx; test edx,edx;
+  sete cl` through a preference for ecx. Adding any later `bEnable = <call result>` handler (TreatEventBase has
+  several) turns the preference into bEnable's register, and the shape returns to the candidate's.
+- Remaining hypotheses for the one TreatEventBase rotor step: H1 the terminator byte load was a real temp (edx);
+  H2 the TreatTextInput `lParam` argument took a non-rotating path (ecx); H3 the toggle load itself was a rotating temp
+  allocated before the result (edx, then the result gets ecx with eax live). Inert in the micro copy and/or the real
+  function: unsigned/int/pointer/c-variable/`<= 0` spellings of the terminator test; `!= 0` and `msg` forms of the
+  TreatTextInput call; `== 1`, `!= 0`, braces and reversed if/else forms of the toggle; `int c`, `>= 0` rank test
+  and dropping `bEnable = FALSE` (these change code).
