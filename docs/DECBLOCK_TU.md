@@ -382,3 +382,111 @@ sentinel solely for its lower score. Several Build table definitions
 their values and relocation ownership will need proof before STRICT can be
 claimed even after fixed bytes agree. These are future data-owner work, not
 header changes made by this worker. No background process is left running.
+
+## Senior pass follow-up after e11d936 (sol-decblock, 2026-10-17)
+
+[EVIDENCE] Refreshed `scratch/soldecblock/decblock.cpp` from `src/decblock.cpp`.
+The canonical InitDecor and DrawInfo are now accepted. Final candidate is
+byte-identical to the refreshed canonical file: no unsuccessful Build rewrite
+or diagnostic declaration was retained. Both final verification with canonical
+data and the separate private table-proposal verification exited **0**.
+
+| Function | RVA | Body bytes | Final status |
+|---|---:|---:|---|
+| InitDecor | `3b80` | 744 | STRICT, preserved |
+| DrawInfo | `5270` | 1,010 | STRICT, 25/25 relocations, preserved |
+| GetBlupiInfo | `57b0` | 67 | STRICT, preserved |
+| Build | `4350` | 3,846 versus 3,866 | MISMATCH, unchanged |
+
+[EVIDENCE] Build remains frame `44`, compared extent 3,856 versus 3,872,
+score 1,489, fixed prefix 202 (`ca`), normalized instruction prefix 67.
+There are **no new STRICT functions or code bytes** in this follow-up.
+Final evidence: `followup-final-verify.log`, `followup-final-exit.txt`, and
+`f18-final/` under `scratch/soldecblock/`; current run objects/results are in
+`build/verify-soldecblock/`. Only the owned scratch directory and this appended
+documentation section were written.
+
+### Recovered data proposal for infra
+
+[EVIDENCE] Build's direct table operands establish the following data addresses.
+The index masks/moduli establish the extents. Values were read as signed
+little-endian 32-bit integers from oracle `.data`, then written as ordinary
+array initializers. No executable bytes were used as source data.
+
+| Definition | Target RVA | Payload bytes | 4-byte-aligned complete-payload hits in oracle `.data` |
+|---|---:|---:|---|
+| `table_shield_blupi = {151,150,151,150}` | `2e720` | 16 | `2e720` only |
+| `table_decor_lave = {68,69,70,71,72}` | `2e7e0` | 20 | `2e7e0` only |
+| `table_decor_eau1 = {92,93,94,95}` | `2e7f8` | 16 | `2e7f8`, `33b18` |
+| `table_decor_eau2 = {91,96,97,98}` | `2e808` | 16 | `2e808` only |
+
+[EVIDENCE] Integration fragment: `scratch/soldecblock/recovered-tables.cpp`.
+The full private proposal `scratch/soldecblock/dectables.cpp` is a copy of the
+current canonical data TU with only these four definitions appended. Existing
+extern declarations suffice; **no header delta** is required. A full run used:
+
+```powershell
+.pyenv\python.exe tools\verify.py --tu src/decblock.cpp=scratch\soldecblock\decblock.cpp --tu src/dectables.cpp=scratch\soldecblock\dectables.cpp --build-dir soldecblock
+```
+
+[EVIDENCE] Exit 0, all accepted entries preserved. Extracting each named symbol's
+payload from the resulting `18_dectables.obj` and comparing it to the target
+RVA proved **all 68 initialized bytes equal**, not a masked comparison. The
+audited object and run JSON are preserved in `scratch/soldecblock/tables-evidence/`;
+`table-proof.json` records names, RVAs, values, lengths, hashes, payload hits,
+COFF positions and `compiled_payload_equal: true`. Transcript/exit code:
+`tables-verify.log` / `tables-verify-exit.txt`.
+
+[OPEN] This is a ready data-content proposal, not a STRICT Build claim. In
+particular, water-1's address cannot be proven by payload uniqueness because
+the editor table contains a second copy. Its target address comes from Build's
+direct operand; a fully matching caller must prove its relocation. Infra owns
+the canonical dectables.cpp integration. No shared source or manifest mapping
+was edited to force the proposed address.
+
+### Compiler findings and negative trials
+
+[EVIDENCE] All trials use the complete decblock TU, canonical headers, pinned
+SP3 and the manifest `/W3 /GX /O2 /ML /Gd /Gy` flags. Every evaluation used
+`tools/verify.py --build-dir soldecblock`; campaigns ran sequentially.
+
+- [EVIDENCE; `VC5-ORD-01`; negative] Background increments using
+  `rect.bottom/right` instead of dimension constants (f01), explicit inner
+  countdown (f02), working local RECT instead of the incoming RECT (corrected
+  f08), both extent assignments before the outer loop (f09), and interchanging
+  the existing i/j identities for the background loops (f10) are byte-inert
+  for Build. All remain 3,856 extent / frame 44 / score 1,489 / prefix 202.
+  The malformed intermediate f07 passed the old RECT rather than the new
+  working RECT; its output is excluded as an invalid translation experiment.
+- [EVIDENCE; `VC5-CTL-03`, `BLUPI-REG-01`; negative] Rendering suppression
+  through a genuine bDraw flag (f03) gives extent 3,872, score 2,035 and an
+  extra flag path. Direct normal rendering with early completion after the
+  temporary-image arm (f04) restores coordinate/icon pushes before the getter,
+  but gives extent 3,888, score 1,591 and extra point spills. Neither matches
+  the complete target CFG or byte stream; neither is retained.
+- [EVIDENCE; `VC5-LOC-03`, `BLUPI-REG-02`; negative] In that direct-rendering
+  candidate, cloud icon calculation at the call (f05), a scoped aggregate cloud
+  POINT (f06), foreground y-first assignment (f15), and invariant cloud x with
+  call-local POINT construction (f16) are byte-inert. All retain the extra
+  y spill and extent 3,888 / frame 44 / score 1,591 / prefix 202. Reusing the
+  root POINT for the three temporary-image origins (f12) changes code but does
+  not recover the target's single zero register: score 1,557 and GetBlupiInfo
+  regresses. Chained zero assignment (f13) gives score 1,565 and the same peer
+  regression. These variants were reverted.
+- [EVIDENCE; `VC5-CTX-01..04`, `BLUPI-REG-01`; negative for Build context]
+  Diagnostic 64-extern probes at TU top, immediately before Build and TU end
+  (f11), followed by eight before-Build probes with counts 32..39 (f14), all
+  produce **byte-identical Build bodies**. The 32..39 probes regress
+  GetBlupiInfo; the 64 probes preserve it. Thus these probes are not a claimed
+  source repair. `followup-byte-audit.json` records full Build payload hashes;
+  no probe declaration remains in the final candidate.
+
+[OPEN] This follow-up did not close Build. Diminishing returns were reached for
+the tested scheduling, point-form and context families. The unresolved target
+still materializes background height before the inner-loop counter at `+ca`,
+while the candidate materializes it during argument construction. The direct
+foreground-call variant fixes argument timing but changes spill/branch layout,
+including cloud y preservation. Continue with a new source-backed hypothesis
+for that complete foreground CFG/use graph; the tested local spelling and
+declaration-count families are now recorded negatives. The four missing table
+contents are resolved separately above. No background process remains.

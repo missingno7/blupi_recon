@@ -804,6 +804,18 @@
       "tu": "src/decmove.cpp"
     },
     {
+      "symbol": "?MoveObjectStep@CDecor@@QAEXXZ",
+      "rva": "0x000115c0",
+      "size": 592,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectStepLine@CDecor@@QAEXH@Z",
+      "rva": "0x00011810",
+      "size": 960,
+      "tu": "src/decmove.cpp"
+    },
+    {
       "symbol": "?AscenseurSynchro@CDecor@@QAEXH@Z",
       "rva": "0x00012dd0",
       "size": 64,
