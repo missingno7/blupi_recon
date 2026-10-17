@@ -4333,13 +4333,16 @@ BOOL CDecor::IsRessort(POINT pos)
 
 BOOL CDecor::IsSurfWater(POINT pos)
 {
-	if (pos.y % 64 < 64 - BLUPISURF)
+	if (pos.y % DIMOBJY >= DIMOBJY - BLUPISURF)
 	{
-		return FALSE;
+		int x = (pos.x + DIMBLUPIX / 2) / DIMOBJX;
+		int icon2 = m_decor[x][(pos.y + BLUPISURF) / DIMOBJY].icon;
+		if (m_decor[x][pos.y / DIMOBJY].icon != 92 && icon2 == 92)
+		{
+			return TRUE;
+		}
 	}
-	int icon = m_decor[(pos.x + 30) / DIMOBJX][pos.y / DIMOBJY].icon;
-	int icon2 = m_decor[(pos.x + 30) / DIMOBJX][(pos.y + BLUPISURF) / DIMOBJY].icon;
-	return icon != 92 && icon2 == 92;
+	return FALSE;
 }
 
 BOOL CDecor::IsDeepWater(POINT pos)

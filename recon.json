@@ -394,6 +394,12 @@
       "tu": "src/decblock.cpp"
     },
     {
+      "symbol": "?GetBlupiInfo@CDecor@@QAEXPAH000@Z",
+      "rva": "0x000057b0",
+      "size": 80,
+      "tu": "src/decblock.cpp"
+    },
+    {
       "symbol": "?PlaySoundA@CDecor@@QAEXHUtagPOINT@@H@Z",
       "rva": "0x00005800",
       "size": 128,
@@ -670,6 +676,12 @@
       "tu": "src/decblupi.cpp"
     },
     {
+      "symbol": "?IsSurfWater@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00010210",
+      "size": 128,
+      "tu": "src/decblupi.cpp"
+    },
+    {
       "symbol": "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z",
       "rva": "0x00010290",
       "size": 80,
@@ -716,6 +728,12 @@
       "rva": "0x000109c0",
       "size": 64,
       "tu": "src/decnet.cpp"
+    },
+    {
+      "symbol": "?NetSendBarePacket@CDecor@@QAEXEF@Z",
+      "rva": "0x00010a60",
+      "size": 48,
+      "tu": "src/decmove.cpp"
     },
     {
       "symbol": "?NetMessageIndexFlush@CDecor@@QAEXXZ",

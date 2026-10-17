@@ -63,6 +63,11 @@ public:
 	BOOL	GetTrueColorBack();
 	BOOL	GetTrueColorDecor();
 #endif
+#ifndef SB1_EVENT_API
+#ifdef SB1_GAME_API
+	BOOL	GetTrueColorDecor();
+#endif
+#endif
 
 	BOOL	BuildIconMask(int channelMask, int rankMask,
 						  int channel, int rankSrc, int rankDst);

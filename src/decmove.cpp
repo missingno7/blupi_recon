@@ -26,12 +26,17 @@ void CDecor::NetDataFlush()
 
 void CDecor::NetSendBarePacket(BYTE type, short num)
 {
-	char data[4];
-	data[0] = 4;
-	data[1] = type;
-	data[2] = num & 0xff;
-	data[3] = num >> 8;
-	m_pNetwork->Send(&data, 4, DPSEND_GUARANTEED);
+	struct BarePacket
+	{
+		BYTE size;
+		BYTE type;
+		short num;
+	};
+	BarePacket data;
+	data.size = 4;
+	data.type = type;
+	data.num = num;
+	m_pNetwork->Send(&data, sizeof(data), DPSEND_GUARANTEED);
 }
 
 void CDecor::DoNetSmooth(int player)

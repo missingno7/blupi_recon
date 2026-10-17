@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <def.h>
 #include "decor.h"
 #include <misc.h>
@@ -54,6 +55,37 @@ void CDecor::Create(HWND hWnd, CSound* pSound, CPixmap* pPixmap, CNetwork* pNetw
 	m_jauges[JAUGE_POWER].SetHide(TRUE);
 	NetMessageIndexFlush();
 	NotifFlush();
+}
+
+BOOL CDecor::LoadImages()
+{
+	char filename[52];
+
+	if (m_region != m_lastRegion)
+	{
+		m_lastRegion = m_region;
+		POINT totalDim;
+		totalDim.x = LXIMAGE;
+		totalDim.y = LYIMAGE;
+		POINT iconDim;
+		iconDim.x = 0;
+		iconDim.y = 0;
+		if (m_pPixmap->GetTrueColorDecor())
+		{
+			sprintf(filename, "image16\\decor%.3d.blp", m_region);
+			if (m_pPixmap->Cache(3, filename, totalDim, iconDim, FALSE))
+			{
+				return TRUE;
+			}
+		}
+		sprintf(filename, "image08\\decor%.3d.blp", m_region);
+		if (!m_pPixmap->Cache(3, filename, totalDim, iconDim, FALSE))
+		{
+			return FALSE;
+		}
+		return TRUE;
+	}
+	return TRUE;
 }
 
 void CDecor::InitGamer()
@@ -301,9 +333,11 @@ void CDecor::SetDemoPlay(BOOL param)
 void CDecor::GetBlupiInfo(BOOL* bHelico, BOOL* bJeep, BOOL* bSkate, BOOL* bNage)
 {
 	*bHelico = m_blupiHelico;
-	*bJeep = m_blupiJeep | m_blupiTank;
-	*bSkate = m_blupiSkate;
-	*bNage = m_blupiNage | m_blupiSurf;
+	int jeep = m_blupiOver;
+	jeep |= m_blupiJeep;
+	*bJeep = jeep;
+	*bSkate = m_blupiTank;
+	*bNage = m_blupiNage | m_blupiSkate;
 }
 
 void CDecor::PlaySound(int sound, POINT pos, BOOL bLocal)
