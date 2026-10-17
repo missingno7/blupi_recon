@@ -397,6 +397,15 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
     return len(additions) + len(reactivated)
 
 
+def warn_line_endings() -> None:
+    """src/ is byte-exact (git -text) and CRLF like the original sources; flag accidental LF copies."""
+    for path in sorted((ROOT / "src").iterdir()):
+        if path.suffix.lower() in (".cpp", ".h") and b"
+" in path.read_bytes().replace(b"
+", b""):
+            print(f"warning: {path.relative_to(ROOT)} has non-CRLF line endings")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tu", action="append", default=[], metavar="src/x.cpp=path",
@@ -421,6 +430,7 @@ def main() -> int:
         print("compiler SHA-256:")
         for name, path in zip(("cl.exe", "c1xx.dll", "c2.exe"), clean_hashes):
             print(f"  {name}: {hash_file(path)}")
+        warn_line_endings()
         safe_clean_build()
         units = compile_units(manifest, substitutions)
         evidence_objects = compile_crt_evidence(manifest)
