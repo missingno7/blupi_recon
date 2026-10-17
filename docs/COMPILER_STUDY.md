@@ -118,6 +118,12 @@ source difference nearby.
 - [EVIDENCE] Removing the 14 POINT operator helpers from def.h compiles every TU (none uses them) but regresses four
   accepted functions (IsDeepWater, MockeryDetect, MoveObjectSort, QuickIcon): their context currently depends on
   those definitions, which therefore stand in for some genuine original context. Kept until that is identified.
+- [EVIDENCE] Declaring the same 14 helpers `inline` keeps every accepted function strict (clean gate, 110,928 bytes)
+  and removes 14 of the 16 duplicate definitions that blocked the full link (tools/relink.py). The front-end
+  context they supply survives; only their COMDAT emission goes away. Canonical def.h now uses `inline`.
+- [EVIDENCE] IsDeepWater (decblupi.cpp) has a declaration-count threshold: removing the duplicate
+  GetBlupiChannelActual/Standard bodies (owned by decblock.cpp) breaks it (x/y order), and 6 or more `extern int`
+  probes before BlupiIsGround restore it (0-4 do not). [OPEN] which genuine SB1 declarations supplied that count.
 
 ## Round 3: allocator measurements (build/tmp/ra lab)
 
