@@ -1,5 +1,24 @@
 # Event SIB investigation (sol-sib)
 
+**[EVIDENCE] Integration delivery follow-up.** One apply-checked patch is now
+at `scratch/solsib/integration/integration.patch`. A fresh full copy of all
+20 canonical TUs, sharing the revised event.h, passes every active accepted
+entry: 330 STRICT and three FOLDED, with expected RVAs/sizes/owners preserved.
+DrawButtons' 78 bytes were not closed by the additional controlled experiments;
+TreatEventBase remains eight bytes away. The final delivery section below
+supersedes the earlier warning that shared-header integration was untested.
+
+**[EVIDENCE] Latest continuation after `010763d`, 2026-10-17.** Refreshed the
+worker from canonical source and headers. TreatEventBase remains an eight-byte
+register near match. Fifteen private header/context probes did not change it.
+DrawButtons advances from a 4,886-byte fixed prefix to 6,599 bytes, with its
+exact 7,419-byte body size and 78 remaining fixed-byte differences. The final
+worker changes only DrawButtons and the private event.h name-array layout;
+ChangeButtons remains STRICT. No new STRICT function or byte coverage is claimed.
+See the final section for the retained header delta and controlled results.
+
+## Initial ChangeButtons checkpoint
+
 **[EVIDENCE] Partial completion, 2026-10-17.** `scratch/solsib/event.cpp`
 and its private `event.h` make `CEvent::ChangeButtons` STRICT at `0x1b220`:
 2,854 original function-body bytes, plus 10 matching alignment NOPs. All 83
@@ -447,3 +466,208 @@ The next useful input is a new source-identity or c2 operand-order hypothesis
 with a controlled positive example for these scalar loads, rather than treating
 the confirmed shared-index SIB rule as a universal allocation rule. All worker
 verification commands have completed; no background campaign is left running.
+
+## Canonical refresh, header context, and DrawButtons continuation
+
+**[EVIDENCE]** Refreshed from src after `010763d` (BlupiStep/layout recovery),
+including the integrated ChangeButtons and TreatEventBase bodies. The frozen
+starting files are `scratch/solsib/ctx_base/`; `runs/ctx_canonical/` records
+the baseline. The final candidate is `scratch/solsib/event.cpp`, with private
+headers beside it and results in `build/verify-solsib/results.json` and
+`scratch/solsib/runs/solsib_final/`. Its SHA-256 is
+`e74d30addb493ae23ad06aaa78b9af64ac76c91fad070d59629a15eb1c0e31ad`.
+Only DrawButtons differs from that canonical cpp; all private headers except
+event.h are restored byte-for-byte from the refresh. Source outside DrawButtons,
+including its original newline bytes, is preserved.
+
+**[EVIDENCE]** Every compile in this continuation used verify.py -> msvc.py,
+the pinned SP3 `/W3 /GX /O2 /ML /Gd /Gy` context, manifest defines, and
+`--build-dir solsib`. Shell commands and candidate verifications ran serially;
+BLUPI_JOBS and BLUPI_COMPILE_SLOTS were left at their defaults. No direct cl.exe
+invocation or permuter campaign was used. No process is left running.
+
+| Function | Final result |
+|---|---|
+| ChangeButtons, `0x1b220` | Still STRICT: 2,854 original code bytes, 2,864-byte section, 83 proved relocations; already integrated, no new coverage. |
+| TreatEventBase, `0x1d230` | Still MISMATCH: 6,616-byte body, 7,072-byte section including tables/alignment, 273 relocations; exactly the same eight fixed-byte differences at `+0x41b/+0x421/+0x423/+0x426/+0x428/+0x42e/+0x6f4/+0x6ff`. The final raw function-section bytes equal the refresh baseline. Internal static/label symbol numbers changed after editing the earlier DrawButtons body; this is not strict relocation proof. |
+| DrawButtons, `0x16f70` | Still MISMATCH: body 7,386 -> target 7,419 bytes; section 7,392 -> 7,424 bytes (five trailing NOPs). Fixed differences 1,525 -> 78; prefix 4,886 -> 6,599 (`+0x19c7`). All residual fixed bytes are between `+0x19c7` and `+0x1ab7`; the epilogue ends at the target `+0x1cfb`. There are 234 relocations, not yet all proved. |
+
+**[EVIDENCE]** Final event counts remain 69 STRICT / 1 RELOC-UNVERIFIED /
+39 MISMATCH, with no baseline STRICT symbol lost. The full verification gate
+exits zero. `final_audit.json` lists exact remaining offsets and status counts;
+`final_event.diff` and `final_header.diff` are reviewable source deltas.
+The small register-insensitive disassembly alignment and relocation-masked
+progress counts are diagnostics only. A separate same-offset comparison of
+known mapped call targets finds no incorrect mapped call in final DrawButtons;
+this does not establish proof for all 234 relocations.
+
+### Header delta and offset evidence
+
+**[EVIDENCE] Retained private event.h only.** Replace the reconstruction's
+CEventNameRow wrapper (four-byte prefix, 96-byte text, conversion operator)
+with ordinary `char m_names[10][100]`, enlarge `m_name[96]` to `m_name[100]`,
+and remove `int m_900`. No constants or method declarations change.
+
+| Member | Refreshed canonical layout | Private recovered layout / oracle evidence |
+|---|---|---|
+| m_name | Starts `0x490`, 96 bytes | Starts `0x490`, 100 bytes. |
+| m_names | Wrapper array starts `0x4f0`; each text starts four bytes later | Plain row zero starts `0x4f4`, stride 100, preserving every row text address in DrawButtons. |
+| m_bNamesExist | Starts `0x8d8` | Starts `0x8dc`. Target DrawButtons `+0x1af3` reads `[this + fileIndex*4 + 0x8dc]`; the same canonical discrepancy was independently recorded for ReadAll in docs/SWEEP_SWEEPA.md. |
+| m_900 / m_filenameBuffer | Unused scalar at `0x900`; filenames at `0x904` | Scalar removed; the longer presence array ends at `0x904`, so filenames and all subsequent members retain their offsets. |
+
+**[EVIDENCE]** The GAMER clear-button access uses the one-based gamer number:
+target `[this + gamer*4 + 0x8d8]` is preserved by changing its source index to
+`m_bNamesExist[m_gamer - 1]` under the recovered `0x8dc` base. The save-slot
+access remains `m_bNamesExist[m_fileIndex]`. Changing the header without that
+gamer correction exposes an earlier `+0x24c` field-offset mismatch. This is a
+real layout/source correction (VC5-SEM-01), not a context adjustment. The target
+proves addresses and stride, not the unique original declaration spelling.
+No private header deletion/union experiment below is retained. The verify gate
+compiles this event candidate against private headers and other TUs against
+canonical headers; shared-header integration still requires the supervisor's
+whole-tree check. ReadAll is not claimed STRICT.
+
+### DrawButtons source recovery
+
+**[EVIDENCE]** Target disassembly supports the retained read-design loop's
+six-row head guard, selected font, x=240/y=122 setup, and absence of an input
+box there. The write-design block uses heading y=31, white content text,
+the text buffer rather than res, ellipsis at text+32, DrawTextLeft, and the
+input box at (320,333) after that block. Target `+0x1826` addresses text+32;
+the earlier trial using +26 was corrected. Save/load draws exactly six slots,
+uses text for the number and first title line, draws the original filename
+when no newline is present, and places the sheet-8 icon at (33,149). The
+BYE strings are white and use `LXIMAGE/2 - lg/2` centering. These are grouped
+VC5-SEM-01/VC5-CTL-01 reconstruction corrections, not separate optimizer rules.
+
+### Compiler findings: header negatives and point live ranges
+
+All controlled variants below use the full event TU and flags above. Candidate
+names identify snapshots and logs under scratch/solsib. No new STRICT result.
+
+| Trigger / original versus candidate | Exact controls and measured code effect | Rule / classification |
+|---|---|---|
+| TreatEventBase's eight register bytes; suspect unused header declarations | Ten probes: remove NetPacket; remove four unused NetMessage aliases; remove GetDemo; remove the const export-path overload; remove network callback prototypes; remove DescFile+DescGameFile; combine declaration removals; omit redundant explicit network include; recover flat name rows; combine flat rows with cleanup. Every probe retains all eight TreatEventBase bytes. The first eight leave DrawButtons' prefix 4,886; the two uncorrected flat-row probes expose the separate gamer-offset issue at 588. | BLUPI-CTX-02 / VC5-CTX-01, **negative for these residues**, not a refutation of the proven BlupiStep context case. |
+| Anonymous-union type presence rather than scalar count | Five further probes: flatten each of NetMessage's three anonymous unions separately; flatten all four NetMessage/NetPacket unions to their first short member; retain only the first member inside each union. Same sizes and residue sites: TreatEventBase eight, DrawButtons 97 in the then-current checkpoint. All five pass the existing acceptance gate. They are private context probes; aliases needed by other TUs are restored. | BLUPI-CTX-02, **negative under these exact header controls**. |
+| Session highlight member load hoisted before the inline ellipsis copy at `+0x1316` | Before: `pos.y=122`, construct POINT(170,pos.y) at each draw. After: `pos.x=170; pos.y=122` before the loop and pass existing pos at the draw. On the corrected later-body checkpoint this fixes the complete `+0x1316..+0x1375` sequence: xor EDX at +1316, text LEA before copy tail, page/index loads after the copy, and call arguments in target registers. Prefix 4,886 -> 6,599, differences 144 -> 97, size unchanged. Counter-example: assigning pos.x=170 inside the loop immediately before the draw was inert in the earlier draw_pos control. | VC5-LOC-01 / VC5-ORD-01, **Blupi-specific positive point-lifetime evidence**. It does not prove a universal register preference or SIB algorithm. |
+| Multiplayer x reloaded as an immediate inside the player loop | Replace separate `int x=130, y=110` and POINT(x,y) with existing pos.x/pos.y initialized before the loop and pass pos. Target keeps x=130 in EBX across the loop. Differences 180 -> 144 at unchanged size and first prefix. | VC5-LOC-01, **Blupi-specific positive aggregate/local identity evidence**. |
+| Save-title x=330 kept in ESI across two calls; five-byte body shortfall | Add the ordinary second-line `pos.x=330` assignment after incrementing y, before the second DrawTextLeft. This recovers the target's second immediate x load, restores body size 7,414 -> 7,419, and reduces differences 696 -> 180 at that checkpoint. | VC5-ORD-01 / VC5-LOC-01, **Blupi-specific positive source-order evidence**. |
+| Remaining save-title address arithmetic and register choices | Five order/identity controls: y-before-x, termination after position assignments, root line2, int cast of pointer difference, block length local. First/root/cast retain 97; moving termination gives 108; length local gives 78. Five further controls: shared lg length, root length, end pointer, shared bEnable selection, shared lg selection: four give 78, end pointer 102. Five expression controls: selected-font arithmetic gives 78, number BOOL alone 97, both 78, integer-pointer and long-pointer casts both 97. The final retains selected-font arithmetic; pointer casts and extra locals are discarded. | BLUPI-REG-01 / VC5-LOC-01 / VC5-ORD-01, **mixed narrow evidence**, no general allocation rule. |
+| Branch-based font assignments / loop continuation / unused gauge arrays | Two valid if-based font variants (separate used locals versus shared lg) regress prefix to 452 and section to 7,440. One initial separate-local source failed compilation through a duplicate declaration; corrected before measuring. A no-newline continue form retains 78. Removing levels[2], types[2], or both (three controls) retains 78. None is retained. | VC5-CTL-01 / BLUPI-CTX-02, **negative**. |
+
+**[OPEN]** TreatEventBase still needs a new explanation for the EDX/ECX toggle
+and EDX HWND load. The tested unused header/type/union families do not select
+those registers. DrawButtons now has only a two-byte ECX/EAX choice in the
+single-line arm (`+0x19c7/+0x19cf`) and the `+0x1a3d..+0x1ab7` arithmetic,
+scheduling, and register family in its split-title arm. Further equivalent
+spellings and already-tested declaration-count sweeps have diminishing returns.
+The next useful experiment is a reduced positive control for that pointer-
+difference/zero-store/conditional-font graph, while preserving the recovered
+point lifetimes and checking shared-header integration separately.
+
+## Integration delivery and pointer/font controls
+
+**[EVIDENCE] Deliverable:**
+`scratch/solsib/integration/integration.patch` (7,639 bytes, SHA-256
+`de3d28984a92063fa59db932a2df2a668c7e708c27952c5c96ebf9ad0063adc5`).
+It changes only src/event.cpp and src/event.h. Both `git apply --check` against
+the canonical working tree and application to a clean scratch copy succeed;
+the applied files equal the compiled candidate byte-for-byte. Their line
+endings are CRLF. No canonical file, manifest, catalog, or tool was edited by
+this worker. The working scratch event.cpp and headers now equal the delivered
+copies; event.cpp SHA-256 is
+`9f9b23a209b432712b0996902dea7c2dc469da2f11bd8a0b94d3f23c5c601692`.
+
+**[EVIDENCE] Whole-tree verification:** The final base is canonical commit
+`e11d936e120941018fb7c57bfd9e3db957803af6`; frozen recon.json SHA-256 is
+`a0b938d22ed7f88baf09f2cbdbdf526e76cace44ac41244981b8d5087c10ec47`.
+All src files were copied to `scratch/solsib/integration/src/`, and all 20
+manifest TUs were substituted into one verify.py run with `--build-dir solsib`.
+Quoted includes resolve to this one copied header set for every TU. The gate
+exits zero: all 330 active accepted STRICT entries and three accepted FOLDED
+entries retain status, RVA, size, and folded owner. The full comparator reports
+335 STRICT, 3 FOLDED, 6 RELOC-UNVERIFIED, and 407 MISMATCH records. The five
+other STRICT records are not new worker gains; no unique-byte coverage is added.
+Event remains 69 STRICT / 1 RELOC-UNVERIFIED / 39 MISMATCH.
+
+The full command is in `integration/verify_command.json`, and the snapshot,
+per-file hashes, gate results, object files, raw comparator results, and log
+are in `integration/base/`, `verification_summary.json`, `accepted_gate.json`,
+`objects/`, `results.json`, and `verify.log`. `runs/whole_tree_final/` also
+preserves the final event object/source/headers. The former pre-normalization
+whole-tree success is archived under `integration/history/pre_normalization/`.
+The shared verifier briefly had an invalid new line-ending warning; its owner
+fixed it in 886b97d. The final gate uses that repaired verifier. A lone inherited
+LF at the DrawButtons/method boundary was normalized without changing logical
+line counts before the final build and patch check.
+
+**[EVIDENCE] Handler scope:** The full delivered event.cpp contains both
+DrawButtons and TreatEventBase. TreatEventBase is already identical to the
+canonical source body integrated in f778a36, as checked in
+`integration/body_state.json`; it therefore needs no additional patch hunk.
+It remains MISMATCH at 0x1d230, 6,616 original instruction bytes / 7,072-byte
+section, with eight fixed differences and 273 relocations. DrawButtons remains
+MISMATCH at 0x16f70, 7,419 original instruction bytes / 7,424-byte section,
+with 78 fixed differences and 234 relocations. ChangeButtons remains STRICT
+at 0x1b220, 2,854 original instruction bytes, 83 proved relocations. Its coverage
+was already integrated and is not counted again.
+
+### Why the previously integrated event.h layout is revised
+
+**[EVIDENCE]** The previous 96-byte m_name plus CEventNameRow wrapper preserved
+the observed first name string at 0x4f4 and the 100-byte row stride, but put the
+presence array at 0x8d8. The GAMER clear-button access alone appeared consistent
+with that base because its source used the one-based m_gamer without subtracting
+one. Two independent zero-based save-slot accesses contradict that inference:
+
+| Oracle instruction | Proven address |
+|---|---|
+| DrawButtons `+0x214`, `8d bd f4 04 00 00` | Name row zero starts at this+0x4f4; the loop advances by 100. |
+| DrawButtons `+0x249`, `8b 84 95 d8 08 00 00` | Presence at this+0x8d8+4*gamer, equivalent to this+0x8dc+4*(gamer-1). |
+| DrawButtons `+0x1af3`, `8b 8c 85 dc 08 00 00` | Presence at this+0x8dc+4*fileIndex. |
+| ReadAll `+0x10` at RVA 0x1aec0, `8b 8c 86 dc 08 00 00` | The same zero-based presence base 0x8dc, independently of DrawButtons' register residues. |
+
+`integration/layout_evidence.txt` contains these disassemblies. Growing m_name
+from 96 to 100 shifts the following array once, to 0x4f4. Plain 100-byte name
+rows preserve all row-text addresses and stride while moving their end to
+0x8dc. Ten BOOLs then end at 0x904, so the invented m_900 gap is unnecessary;
+the filename buffer and every later member retain their offsets. The GAMER
+source index becomes m_gamer-1. No constants or method declarations change.
+The read-only SB2 header independently has m_name[100]/m_names[10][100], which
+supports the declaration form as ancestry, not as proof of SB1 layout. Its
+different filename dimensions are not transferred; SB1 keeps [256][100].
+The new whole-tree gate proves that this revision preserves the currently
+accepted code even in the other TUs that include event.h.
+
+### Compiler findings: controlled pointer/font continuation
+
+**[EVIDENCE] Reduced experiment:** `pointer_micro.py` emits eight independent
+C++ files under scratch/solsib/micro: baseline plus unsigned pointer difference,
+reversed subtraction, one shared row pointer, negative-condition font ternary,
+reversed-operand font ternary, a length local, and a pixmap local. Each uses a
+six-row loop, strcpy, a newline pointer difference/zero store, and three drawing
+calls, with only ordinary scalars/arrays and no project headers or padding.
+`pointer_return_micro.py` adds five independent copy-return/alias controls.
+All 13 files use msvc.py with SP3 `/W3 /GX /O2 /ML /Gd /Gy`, default compile
+slots and repository TMP/TEMP. Results/disassemblies are in the corresponding
+micro .json/.obj/.log files and pointer_micro_results.json/pointer_return_results.json.
+
+| Trigger / controlled family | Count and measured effect | Rule / classification |
+|---|---|---|
+| Pointer subtraction signedness, polarity, and local values | Reduced baseline section is 368 bytes. Unsigned difference, reversed subtraction, separate length local, and explicit pixmap local have identical raw function bytes. A shared row pointer shortens the section to 352 and removes redundant base arithmetic. Negative font ternaries generate SUB/NEG/SBB/AND/add rather than the target SETNE/DEC/AND; reversing operands also changes frame/register allocation. | VC5-SEM-01 / VC5-LOC-01 / BLUPI-REG-01; **unverified SB1 transfer**, measured micro evidence rather than oracle matches. |
+| Copy return/alias identity | Five reduced controls: index the strcpy return directly; store its return in dest; also draw from dest; alias text in dest for the store; also draw from that alias. Direct return indexing emits a 352-byte section; the other four emit 368 but change raw bytes/register scheduling. Both plain-alias controls emit identical bytes to each other. Return values and aliases are therefore not universally interchangeable for VC5 allocation, even though their addresses agree. | VC5-LOC-01 / VC5-ORD-01; **unverified generalization, positive micro evidence**, no universal base/index prediction. |
+| Apply reduced hypotheses to the full event TU | One shared-row candidate shrinks the section to 7,392 and regresses prefix to 2. Unsigned subtraction retains 78 differences. Three precomputed-font variants (new shared font, existing lg, existing bEnable) also retain 78. Five copy-return/alias candidates regress: sections 7,408 or 7,424, prefixes 2 or 6,310, 629..755 differences. None is retained. | BLUPI-REG-01 / VC5-LOC-01; **negative transfer to this target**. |
+| Newline pointer value flow | Four valid controls advance line2 before the call, before y, before the first split draw, or in the final draw argument; all retain 78. One initially generated early-increment candidate accidentally omitted the increment because its replacement assumed CRCRLF. That semantically invalid result is discarded; the corrected source was rerun and retains 78. | VC5-LOC-01 / VC5-ORD-01; **negative**, with the invalid control excluded. |
+| Independent statement order | Nine additional permutations of copy C, termination T, x assignment X, and y adjustment Y, constrained to C before T: CXTY, CYTX, CYXT, XCTY, XCYT, XYCT, YCTX, YCXT, YXCT. None improves 78: fixed differences 87..662; sections remain 7,424; prefixes 6,599 or 6,310. A shared x=330 assignment above the two branches also regresses to prefix 6,310 / 718 differences. Computing a length local before strcpy retains 78. | VC5-ORD-01; **negative for these exact orderings**. |
+| Font-expression identity across the three selected-title calls | Test all six mixed combinations between the previous all-ternary and all-arithmetic controls. Bits 0/1/2 select arithmetic at single-line/first split/second split calls. Masks 1..6 all emit the same 78-difference family; all arithmetic is also 78, all ternary was 97. This narrows the 19-byte improvement to the presence of an arithmetic comparison in this graph, but does not explain the target's remaining choices. | VC5-CTL-01 / BLUPI-REG-01; **blupi-specific source-form evidence, negative closure**. |
+| Induction local identity and origin | Four full-TU controls: a new block-local game index; a distinct function-root index; reuse existing lg; one-based loop with matching row/selection adjustment. The first three retain 78. One-based control regresses to prefix 452 / 7,440-byte section / 974 differences. No local-identity form closes the remaining bytes. | VC5-LOC-01 / BLUPI-REG-01; **negative transfer from the shared-index SIB rule**. |
+
+**[OPEN]** No new STRICT body was recovered. The additional 35 valid full-TU
+controls and 13 reduced sources have diminishing returns for the current
+hypothesis family. The target still uses EAX instead of ECX for the single-line
+selected-index load, and differs in reassociation, scheduling, and register
+choice in the split-title block. A new source/IR/liveness clue is needed before
+more equivalent-expression sweeps. The integration patch deliberately preserves
+the best 78-byte checkpoint and the already integrated eight-byte TreatEventBase
+checkpoint. All verification commands and compile campaigns have completed;
+no background process remains.
