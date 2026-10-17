@@ -1727,7 +1727,8 @@ void CEvent::PutTextInputBox(POINT pos)
 	LONG posD;
 
 	lg = GetTextWidth(m_textInput, 0);
-	posD = pos.x - lg / 2;
+	pos.x -= lg / 2;
+	posD = pos.x;
 	
 	if (0 < m_textHiliStart)
 	{
@@ -2748,11 +2749,16 @@ int CEvent::MousePosToSprite(POINT pos)
 
 	if (m_phase != WM_PHASE_PLAY &&
 		m_phase != WM_PHASE_PLAYTEST &&
-		m_phase != WM_PHASE_BUILD &&
-		m_phase != WM_PHASE_BYE &&
-		!MouseOnButton(pos))
+		m_phase != WM_PHASE_BUILD)
 	{
-		sprite = SPRITE_ARROW;
+		if (m_phase == WM_PHASE_BYE)
+		{
+			sprite = SPRITE_POINTER;
+		}
+		else if (!MouseOnButton(pos))
+		{
+			sprite = SPRITE_ARROW;
+		}
 	}
 	if (m_bWaitMouse)
 	{
@@ -3820,6 +3826,7 @@ void CEvent::DrawMap()
 BOOL CEvent::BuildDown(POINT pos, int fwKeys, BOOL bMix)
 {
 	POINT cel;
+	int icon;
 
 	if (pos.x < 0 || pos.x > LXIMAGE ||
 		pos.y < 0 || pos.y > LYIMAGE) return FALSE;
@@ -3837,43 +3844,38 @@ BOOL CEvent::BuildDown(POINT pos, int fwKeys, BOOL bMix)
 		}
 		if (GetState(WM_DECOR2) == 1) {
 			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor1(cel, GetMenu(WM_DECOR2), fwKeys, bMix);
+			icon = GetMenu(WM_DECOR2);
+			m_pDecor->PlaceDecor1(cel, icon, fwKeys, bMix);
 		}
 		if (GetState(WM_DECOR3) == 1) {
 			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor2(cel, GetMenu(WM_DECOR3), fwKeys, bMix);
+			icon = GetMenu(WM_DECOR3);
+			m_pDecor->PlaceDecor2(cel, icon, fwKeys, bMix);
 		}
 		if (GetState(WM_DECOR4) == 1) {
 			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor3(cel, GetMenu(WM_DECOR4), fwKeys, bMix);
+			icon = GetMenu(WM_DECOR4);
+			m_pDecor->PlaceDecor3(cel, icon, fwKeys, bMix);
 		}
 		if (GetState(WM_DECOR5) == 1) {
 			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor4(cel, GetMenu(WM_DECOR5), fwKeys, bMix);
+			icon = GetMenu(WM_DECOR5);
+			m_pDecor->PlaceDecor4(cel, icon, fwKeys, bMix);
 		}
 		if (GetState(WM_DECOR6) == 1) {
 			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor5(cel, GetMenu(WM_DECOR6), fwKeys, bMix);
+			icon = GetMenu(WM_DECOR6);
+			m_pDecor->PlaceDecor5(cel, icon, fwKeys, bMix);
 		}
 		if (GetState(WM_DECOR7) == 1) {
 			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor6(cel, GetMenu(WM_DECOR7), fwKeys, bMix);
+			icon = GetMenu(WM_DECOR7);
+			m_pDecor->PlaceDecor6(cel, icon, fwKeys, bMix);
 		}
 		if (GetState(WM_DECOR8) == 1) {
 			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor7(cel, GetMenu(WM_DECOR8), fwKeys, bMix);
-		}
-		if (GetState(WM_DECOR9) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor8(cel, GetMenu(WM_DECOR9), fwKeys, bMix);
-		}
-		if (GetState(WM_DECOR10) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor9(cel, GetMenu(WM_DECOR10), fwKeys, bMix);
-		}
-		if (GetState(WM_DECOR11) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->PlaceDecor10(cel, GetMenu(WM_DECOR11), fwKeys, bMix);
+			icon = GetMenu(WM_DECOR8);
+			m_pDecor->PlaceDecor7(cel, icon, fwKeys, bMix);
 		}
 	}
 	return TRUE;
@@ -4677,10 +4679,9 @@ BOOL CEvent::CopyMission(char *srcFileName, char *dstFileName)
 {
 	FILE *srcFile = NULL;
 	FILE *destFile = NULL;
-	size_t num;
-	BOOL bOK = TRUE;
+	int num;
+	BOOL bError = TRUE;
 	void *buffer = malloc(2560);
-
 	if (buffer)
 	{
 		srcFile = fopen(srcFileName, "rb");
@@ -4688,43 +4689,26 @@ BOOL CEvent::CopyMission(char *srcFileName, char *dstFileName)
 		destFile = fopen(dstFileName, "wb");
 		if (destFile)
 		{
-
-#if LEGACY_CODE && defined(_IOERR)
-			// original code relies on implementation-specific behavior.
-			// incompatible with modern toolsets.
-			do
+			num = 1;
+			while (num > 0)
 			{
 				num = fread(buffer, 1, 2560, srcFile);
-				if (srcFile->_flag & _IOERR) break;
-				if (num <= 0)
+				if (srcFile->_flag & _IOERR) goto error;
+				if (num > 0)
 				{
-					bOK = FALSE;
-					break;
+					fwrite(buffer, 1, num, destFile);
+					if (destFile->_flag & _IOERR) goto error;
 				}
-				fwrite(buffer, 1, num, destFile);
-			} while (!(destFile->_flag & _IOERR));
-#else
-			do
-			{
-				num = fread(buffer, 1, 2560, srcFile);
-				if (ferror(srcFile)) break; // *
-				if (num <= 0)
-				{
-					bOK = FALSE;
-					break;
-				}
-				fwrite(buffer, 1, num, destFile);
-			} while (!ferror(destFile)); // *
-#endif // _LEGACY
-
+			}
+			bError = FALSE;
 		}
 	}
+error:
 	if (srcFile) fclose(srcFile);
 die:
 	if (destFile) fclose(destFile);
 	if (buffer) free(buffer);
-	return bOK;
-	
+	return bError;
 }
 
 void CEvent::NetAdjustLobbyButtons()

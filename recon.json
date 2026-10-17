@@ -1376,6 +1376,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?MousePosToSprite@CEvent@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00018c70",
+      "size": 128,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?MouseSprite@CEvent@@QAEXUtagPOINT@@@Z",
       "rva": "0x00018cf0",
       "size": 80,
@@ -1514,9 +1520,21 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?CopyMission@CEvent@@SAHPAD0@Z",
+      "rva": "0x0001b150",
+      "size": 208,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?ChangeButtons@CEvent@@IAEXH@Z",
       "rva": "0x0001b220",
       "size": 2864,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?BuildDown@CEvent@@IAEHUtagPOINT@@HH@Z",
+      "rva": "0x0001bd50",
+      "size": 800,
       "tu": "src/event.cpp"
     },
     {
@@ -1637,6 +1655,12 @@
       "symbol": "?ChatSend@CEvent@@IAEXXZ",
       "rva": "0x0001cc10",
       "size": 352,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?PutTextInputBox@CEvent@@IAEXUtagPOINT@@@Z",
+      "rva": "0x0001cd70",
+      "size": 400,
       "tu": "src/event.cpp"
     },
     {

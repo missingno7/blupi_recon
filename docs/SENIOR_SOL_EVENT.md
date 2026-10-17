@@ -1,6 +1,13 @@
 # sol-event: event handler continuation
 
-**Status: partial.** [EVIDENCE] The integration candidate adds 13 STRICT
+**Current status: partial (round 2).** [EVIDENCE] The new deliverable is
+`scratch/sol-event/integration2/strict.patch`: **4 newly STRICT functions,
+1,506 unique original code bytes**, no header deltas, and all **382** active
+accepted entries preserved. `ChangePhase` remains MISMATCH. Full round-2
+evidence and compiler findings are appended below. The first-round record
+that follows is historical; its 13 gains were integrated in `18b6b58`.
+
+**Round 1: integrated.** [EVIDENCE] The integration candidate adds 13 STRICT
 functions, covering **2,882 unique original instruction bytes**, with no loss
 of the baseline's 69 STRICT event symbols. `ChangePhase` remains unfinished.
 No canonical source, manifest, comparator, compiler catalog, asset, reference
@@ -161,3 +168,92 @@ graph and the remaining SERVICE/SESSION and save/setup source forms. The frame
 and array ordering are no longer the initial blocker. PutTextInputBox and
 MousePosToSprite need new source/context evidence; the listed equivalent-form
 families have diminishing returns. The two parked handlers remain untouched.
+
+## Round 2: rebased continuation, 2026-10-17
+
+[EVIDENCE] Rebuilt the working candidate from current `src/event.cpp` and
+`src/event.h`, carrying only unfinished ChangePhase / PutTextInputBox /
+MousePosToSprite bodies from `runs/wip_final`. The latter two were initially
+identical to canonical. No old private `decor.h` was retained; the canonical
+file-scope SortGetType declaration was used. `round2_base/` records the initial
+inputs. All source outside the target bodies, including DrawButtons and
+TreatEventBase, stayed canonical. No canonical source or header was edited.
+
+[EVIDENCE] Deliver **`scratch/sol-event/integration2/strict.patch`** against
+HEAD `575b139eb3260cfa1b18b4955a55c2061231810b`. It changes only the following
+four bodies. ChangePhase and unsuccessful probes are excluded. `git apply
+--check` passes, and application to `patchcheck2/` reproduces the compiled
+event.cpp byte-for-byte. The patch preserves CP1252/CRLF.
+
+| Newly STRICT function | RVA | Original code bytes | COFF section bytes | Proven relocations |
+|---|---:|---:|---:|---:|
+| MousePosToSprite | `0x18c70` | 123 | 128 | 1 |
+| CopyMission | `0x1b150` | 195 | 208 | 10 |
+| BuildDown | `0x1bd50` | 799 | 800 | 33 |
+| PutTextInputBox | `0x1cd70` | 389 | 400 | 8 |
+
+[EVIDENCE] These are four distinct original ranges, totaling **1,506 unique
+code bytes**, with every relocation proven. Alignment padding is excluded.
+All 20 manifest TUs were compiled against the single current copied header
+set in `integration2/src/`. Every one of the **382 active accepted entries**
+retains its required status, RVA and size; no losses. Event comparator counts
+are **86 STRICT / 1 RELOC-UNVERIFIED / 22 MISMATCH**, including header bodies
+and candidate-only functions. Exact command, compiler log, all objects,
+comparator output and checked summary are in `integration2/verify_command.json`,
+`verify.log`, `objects/`, `results.json`, `verification_summary.json`.
+
+[EVIDENCE] **Header deltas: none.** The private event.h is byte-identical to
+canonical. CopyMission's `_flag` tests use the existing VC5 FILE definition
+(`_flag` at +0xc, `_IOERR` = 0x20), matching both oracle loads; no invented
+layout or declaration is needed. The return is TRUE on error and FALSE after
+EOF, as shown by target stack stores; no modern ferror compatibility branch
+is retained in this historical source.
+
+### Compiler findings
+
+All controls use the complete event TU, VC5 SP3 11.00.7022,
+`/W3 /GX /O2 /ML /Gd /Gy`, manifest defines and canonical headers. Each named
+run under `scratch/sol-event/runs/` contains source, object, oracle/candidate
+disassembly, and full verifier results. Diagnostics are never treated as
+STRICT evidence.
+
+| Trigger / original construct | Controlled variation and code effect | Strict result / rule / classification |
+|---|---|---|
+| BuildDown pushes bMix/fwKeys before its nested GetMenu call and includes three SB2-only placement arms | Remove absent WM_DECOR9..11 arms and assign the actually used `icon = GetMenu(...)` before each PlaceDecor1..7 call. Restores the oracle call/argument order (`r2_small`). | STRICT 799 B; source-arm repair is `VC5-SEM-01`; call staging is `VC5-ORD-01` / `VC5-LOC-02`, **confirmed-transferable**. |
+| PutTextInputBox emits SUB where target has NEG/ADD at +0x26 | `posD = pos.x + lg / -2` is inert. `pos.x -= lg / 2; posD = pos.x;` makes the actual point component the destination and reproduces all bytes (`r2_text_pos_write`). Dividing and negating lg separately remains inert; negating GetTextWidth before dividing changes earlier scheduling but does not match. | STRICT 389 B; `VC5-EXP-03`, `VC5-ORD-01`; **Blupi-specific** destination/value-flow finding, not a claim that equivalent negative arithmetic generally changes code. |
+| MousePosToSprite lacks the target JNE/JMP pair after the BYE comparison | Within the three-phase negative exclusion, retain an explicit BYE arm assigning SPRITE_POINTER, followed by else-if MouseOnButton (`r2_mouse_negative_else`). Positive ancestor-style outer arms recover the prefix but not the pair; goto and switch controls fail (`mouse4.py`). | STRICT 123 B; `VC5-CTL-01`, **confirmed-transferable** evidence for the conditional-arm structure. |
+| CopyMission do/while versions duplicate fread and rotate the loop, or eliminate the final signed count test | Use signed int num, initialize it to 1, and a pretested while with a positive-count write arm; error gotos bypass the EOF success store (`r2_copy_while_positive`). The equivalent initialized for version also matches. This restores src EBP, dest EBX, buffer EDI, count ESI and the single read path. | STRICT 195 B; `VC5-CTL-01`, `BLUPI-REG-01`, **confirmed-transferable** loop-source-form evidence. Signedness/error semantics are `VC5-SEM-01`. |
+| CopyMission alternative loop/error forms | EOF-break and positive/negative if/else do-loops, explicit back-label, size_t plus signed casts, and both compound tail-condition orders still duplicate reads or omit the retained count test. A pretested loop with an early EOF break has one read but removes the bottom count test and hoists 0x20 into BL (`r2_copy_for`). | MISMATCH controls; `VC5-CTL-01`, **negative** for these exact families. The initialized loop AND positive write arm are needed in the successful controls. |
+| ChangePhase gamer count/presence pointer spill slots are reversed | Reuse the root num for both door count and joystick-device count (`r2_shared_num`). Ten displacement bytes change: count +0x18 -> target +0x10, presence pointer +0x10 -> target +0x18. Body size stays 6,908 instruction bytes at this stage. | MISMATCH; `BLUPI-REG-01/02`, **Blupi-specific** scalar-identity evidence. This corrects an earlier progress claim that sharing num was inert; the fixed-offset diff count hid the ten raw changes. |
+| ChangePhase setup contains an extra pretest before its counted for loop | Remove the redundant outer `if (num > 0)` and retain the for's own test (`r2_phase_setup`). Restores XOR EBX before the joystick count call and the oracle setup loop, removing twelve instruction bytes. | MISMATCH; `VC5-CTL-01`, `BLUPI-REG-01`, **Blupi-specific** regional evidence. |
+| ChangePhase pagination calls use SETcc rather than branch/MOV Boolean flags | Initialize bHide FALSE and conditionally assign TRUE in SERVICE/SESSION and read/write design; materialize the previous-page and nonempty-file flags similarly (`r2_phase_bool`). Restores the target branch families; body reaches 6,922 instruction bytes / 6,928 section bytes. | MISMATCH; `VC5-CTL-01`, `VC5-ORD-01`, **Blupi-specific** regional evidence. |
+| Remaining ChangePhase register/scheduling residues | Shared root loop indices alter later code (`r2_shared_indices`). Sharing SearchPhase's index with i, moving index/music declarations to root, and UINT oldPhase are inert (`phase7.py`). Rounded-limit temporaries, predicate reversal, explicit state locals, ternary state arguments, and sibling-loop indices do not restore the complete body (`phase6.py`, `phase8.py`). | MISMATCH; `BLUPI-REG-01/02`, `VC5-LOC-01`, `VC5-EXP-06`; **negative** for the tested families. No artificial declarations were retained. |
+| Possible TU count sensitivity of ChangePhase | Earlier sampled top/before/end extern-count controls leave the then-current body identical (`context2/`). After the source repairs, all top counts 0..15 leave the complete raw body identical, SHA-256 `24f4baa3e63c8ea03fa44d40d36893cfcd437eb55f282fd50b09096fcf1f4d36` (`context3/`). Every probe is restored in finally. | MISMATCH; `VC5-CTX-01..04`, **negative bounded context evidence**, not proof that every possible context is inert. |
+
+### Unfinished ChangePhase and stopping point
+
+[EVIDENCE] Resume from **`runs/r2_wip_final/event.cpp`** (canonical private
+event.h alongside it). This contains the four new STRICT bodies plus the
+unfinished ChangePhase; current `scratch/sol-event/event.cpp` is the same WIP.
+Its frame and full array map match, and gamer scalar slots now match. The
+candidate has **6,922 instruction bytes**, versus **6,919** target bytes,
+and remains MISMATCH. Source-form repairs have not changed the first residue:
+at +0x84, zero is allocated to EBX rather than EDI, and the early PLAY constant
+gets the opposite register. The candidate retains zero across SearchPhase,
+loses the PLAY constant, and substitutes a four-byte-longer immediate compare
+there; its zero argument push saves one byte, producing the net +3. This is
+not an isolated three-byte patch opportunity.
+
+[OPEN] SERVICE/SESSION and design pagination retain different load/register
+scheduling despite the restored Boolean branches. Multiplayer host/string
+argument scheduling also differs. Target-ordered save and joystick regions
+now agree in their instruction shapes. The bounded declaration, scalar and
+expression families above have diminishing returns. Next work needs a new
+source-form/value-flow lead for these regions; further array-size guessing
+is not supported by the already correct frame and map.
+
+[EVIDENCE] SetDemo remains RELOC-UNVERIFIED with its four already-owned setter
+hits and no new incoming-reference proof. It is neither promoted nor counted.
+DrawButtons and TreatEventBase remain untouched, even where their existing
+compiled bodies mismatch. No game or ISO executable was run, no compiler
+catalog was edited, no git commit was made, and no background process remains.
