@@ -367,15 +367,15 @@
         }
       ],
       "keywords": "store order statement order scheduling",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "CEvent::DrawButtons",
+        "rva": "0x16f70",
+        "tu": "event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": "bounded",
+        "outcome": "A register-only ECX/EDX residue was NOT moved by top/before count probes 0-64 but was fixed by writing pos.x before pos.y; identical prefix grew 3,381 -> 4,886 bytes.",
+        "doc_ref": "docs/EVENT_TU.md#compiler-findings"
       },
       "legacy_ids": [
         "ORD-01",
@@ -2011,6 +2011,48 @@
         "flags": "/O2 /GX /ML /Gd /Gy",
         "compiles": 35,
         "outcome": "Rule measured in micro TUs; application to ChangePhase pending",
+        "doc_ref": "docs/EVENT_TU.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-REG-01",
+      "section": "registers",
+      "title": "A SIB base/index swap can be caused by the control-flow shape of another block in the same function",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "sib_order",
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Same effective address, SIB base and index registers swapped, early in a large function; equivalent address spellings do not change it.",
+      "construct": "Shape of other blocks in the same function (switch vs if-chain, block order), not the address expression itself.",
+      "explanation": "VC5 allocates registers function-wide; changing a later block's control-flow shape changed which register became base/index in an earlier loop. Wide TU count probes (end 0-64 step 1, 64-512 step 16; top/before 0-64) never flipped it, so it was not TU context here.",
+      "experiment": "After 2-4 genuine address spellings fail, rule out context with WIDE probes (end and top/before), then align other blocks of the same function to the target's shape (switch/if-chain, block order) and re-check the early SIB.",
+      "not_when": "Narrow count probes (e.g. 0-2) prove nothing; if a wide end probe flips it, treat it as back-end TU context instead.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/EVENT_TU.md#compiler-findings",
+          "tier": "PROVEN",
+          "counts": "CEvent::TreatEventBase +0xAC SIB matched after the Escape handling took the target if-chain shape; identical prefix 172 -> 730 bytes; context probes negative over the ranges above"
+        }
+      ],
+      "keywords": "sib base index swap register allocation function-wide switch if-chain shape",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::TreatEventBase",
+        "rva": "0x1d230",
+        "tu": "event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": "bounded",
+        "outcome": "prefix 172 -> 730",
         "doc_ref": "docs/EVENT_TU.md"
       },
       "legacy_ids": []
