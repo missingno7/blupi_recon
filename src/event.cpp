@@ -3866,7 +3866,7 @@ BOOL CEvent::NetEnumSessions()
 	BOOL enumSess;
 
 	MouseRelease();
-	enumSess = m_pNetwork->EnumProviders();
+	enumSess = m_pNetwork->EnumSessions();
 	MouseCapture();
 	return enumSess;
 }

@@ -47,9 +47,9 @@ The seven thunk entries are at RVAs `0x20450`, `0x23890`–`0x238a2`, `0x2793e`,
 
 `WinMain` is at RVA `0x1e30`. The PE entry at `0x24d40` parses the command line, gets the module handle, pushes the four WinMain arguments, and calls `0x401e30`; the callee reads the four stack arguments and returns with `ret 0x10`. The entry is labeled `WinMainCRTStartup` in the CSV.
 
-## [HYPOTHESIS] CRT boundary
+## [EVIDENCE] CRT boundary correction
 
-The game/CRT split is inferred at RVA `0x24140`, where Ghidra first recognizes `__global_unwind2`; following functions include `__local_unwind2`, `__abnormal_termination`, `__NLG_Notify1`, `_strncpy`, `__exit`, `__amsg_exit`, `__aulldiv`, `__aullrem`, and `_abort`. Kinds are assigned by function entry relative to this split, except Ghidra-marked thunks. The split is a useful linker-order boundary, not proof that every unnamed routine has a CRT source identity.
+The earlier `0x24140` split was too late. A VC5 SP3 compile of `VC\CRT\SRC\FOPEN.C` strictly matches `_fsopen` at `0x23af0` and `fopen` at `0x23b20`, with their helper relocations verified; `SPRINTF.C` strictly matches `sprintf` at `0x23b40`. Set the game coverage end to `0x23af0` (142,064 bytes from RVA `0x1000`). `oracle/tu_map.csv` now reclassifies entries `0x23af0`–`0x240c0` as CRT; the later `0x24140` runtime boundary remains a useful structural anchor, but not the first CRT entry. The existing `kind` labels in `oracle/functions.csv` retain their original inventory split.
 
 ## [EVIDENCE] Vtables and strings
 

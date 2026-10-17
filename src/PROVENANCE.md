@@ -9,6 +9,12 @@
 - misc.cpp: Planet Blupi v1.8.0-derived utility source. Its active AddUserPath folder literal is changed to c:\Speedy Blupi\ to match the SB1 path data.
 - sound.h, movie.h, misc.h, ddutil.h, and resource.h: Planet Blupi-derived declarations and support headers. sound.h remains without the candidate-only StopSound declaration to preserve the accepted UI TU context.
 
+## Network TU integration
+
+- network.cpp: SB2 reconstruction DirectPlay code (GPLv3), adjusted to SB1 evidence. `TraceErrorDP` uses the target error set/labels; `EnumSessions` initializes the descriptor fields in target store order; `Receive` compares the sender DPID with each player's stored DPID. Thirteen inventoried functions and both `CALLBACK` enumeration bodies are STRICT in the combined run; `JoinSession`, `CreateSession`, `Send`, and `Close` remain mismatches.
+- network.h: SB2-derived types with SB1 member order established by target offsets: `m_pDP` at `+0`, three lists at `+4..+0x1c`, `m_bHost` at `+0x1c`, `m_dpid` at `+0x20`, and players at `+0x24`. Both enumeration callback declarations use `CALLBACK`, matching their `ret 0x14` and `ret 0x10` bodies.
+- event.cpp: `CEvent::NetEnumSessions` calls `CNetwork::EnumSessions`. This corrects the candidate's stale `EnumProviders` call: the accepted body at `0x16920` relocates to `0x20bd0`, the verified `EnumSessions` entry. `CEvent::NetDraw` and `CEvent::DrawMap` compile to the same 48-byte body at `0x16e80`; accept it once under `NetDraw`, with `DrawMap` excluded from duplicate promotion.
+
 ## Pixmap core integration
 
 - pixmap.cpp: Planet Blupi-derived DirectDraw implementation, integrated from the core candidate. It yields 22 STRICT functions in the full multi-TU run, including CPixmap::~CPixmap.

@@ -57,21 +57,22 @@ public:
 	void FreeUnknownList();
 	BOOL IsHost();
 
-	NetPlayer		m_players[MAXNETPLAYER];
-	DPID			m_dpid;
-
 protected:
 	LPDIRECTPLAY2	m_pDP;
 	NamedGUIDList	m_providers;
 	NamedGUIDList	m_sessions;
 	NamedGUIDList	m_unknown;
 	BOOL			m_bHost;
+
+public:
+	DPID			m_dpid;
+	NetPlayer		m_players[MAXNETPLAYER];
 };
 
-static BOOL EnumProvidersCallback(LPGUID lpguidSP, LPSTR lpSTName,
+static BOOL CALLBACK EnumProvidersCallback(LPGUID lpguidSP, LPSTR lpSTName,
 	DWORD dwMajorVersion, DWORD dwMinorVersion, NamedGUIDList* lpContext);
 
-static BOOL EnumSessionsCallback(LPDPSESSIONDESC2 lpThisSD,
+static BOOL CALLBACK EnumSessionsCallback(LPDPSESSIONDESC2 lpThisSD,
 	LPDWORD lpdwTimeOut, DWORD dwFlags, NamedGUIDList* lpContext);
 
 void TraceErrorDP(HRESULT hErr);

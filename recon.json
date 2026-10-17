@@ -39,6 +39,9 @@
       "source": "src/movie.cpp"
     },
     {
+      "source": "src/network.cpp"
+    },
+    {
       "source": "src/pixmap.cpp"
     },
     {
@@ -579,6 +582,18 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?NetSendLobby@CEvent@@QAEXXZ",
+      "rva": "0x00016ce0",
+      "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?NetDraw@CEvent@@IAEXXZ",
+      "rva": "0x00016e80",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?AddCheatCode@@YAXPAD0@Z",
       "rva": "0x00016eb0",
       "size": 112,
@@ -732,6 +747,12 @@
       "symbol": "?ChatFlush@CEvent@@IAEXXZ",
       "rva": "0x0001cb20",
       "size": 32,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?ChatSend@CEvent@@IAEXXZ",
+      "rva": "0x0001cc10",
+      "size": 352,
       "tu": "src/event.cpp"
     },
     {
@@ -967,6 +988,96 @@
       "rva": "0x000205b0",
       "size": 32,
       "tu": "src/movie.cpp"
+    },
+    {
+      "symbol": "?TraceErrorDP@@YAXJ@Z",
+      "rva": "0x000205d0",
+      "size": 928,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "??0CNetwork@@QAE@XZ",
+      "rva": "0x00020970",
+      "size": 32,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "??1CNetwork@@QAE@XZ",
+      "rva": "0x00020990",
+      "size": 48,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?EnumProvidersCallback@@YGHPAU_GUID@@PADKKPAUNamedGUIDList@@@Z",
+      "rva": "0x000209c0",
+      "size": 112,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?EnumProviders@CNetwork@@QAEHXZ",
+      "rva": "0x00020a30",
+      "size": 80,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?GetProviderName@CNetwork@@QAEPADH@Z",
+      "rva": "0x00020a80",
+      "size": 48,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?CreateProvider@CNetwork@@QAEHH@Z",
+      "rva": "0x00020ab0",
+      "size": 112,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?FreeProviderList@CNetwork@@QAEXXZ",
+      "rva": "0x00020b20",
+      "size": 48,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?EnumSessionsCallback@@YGHPAUDPSESSIONDESC2@@PAKKPAUNamedGUIDList@@@Z",
+      "rva": "0x00020b50",
+      "size": 128,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?EnumSessions@CNetwork@@QAEHXZ",
+      "rva": "0x00020bd0",
+      "size": 176,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?GetSessionName@CNetwork@@QAEPADH@Z",
+      "rva": "0x00020c80",
+      "size": 48,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?FreeSessionList@CNetwork@@QAEXXZ",
+      "rva": "0x00020da0",
+      "size": 48,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?Receive@CNetwork@@QAEHPAXKPAK@Z",
+      "rva": "0x00020f10",
+      "size": 208,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?FreeUnknownList@CNetwork@@QAEXXZ",
+      "rva": "0x00021000",
+      "size": 48,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?IsHost@CNetwork@@QAEHXZ",
+      "rva": "0x00021030",
+      "size": 16,
+      "tu": "src/network.cpp"
     },
     {
       "symbol": "??1CPixmap@@QAE@XZ",
@@ -1426,6 +1537,11 @@
       "symbol": "$L32715",
       "va": "0x00401a29",
       "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x450; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "_IID_IDirectPlay2A",
+      "va": "0x0042c230",
+      "evidence": "DirectPlay IID data target verified in the network candidate comparison; docs/NETWAVE_TU.md"
     }
   ],
   "forced_locations": [
@@ -1498,6 +1614,10 @@
     {
       "symbol": "?ObjectDelete@CDecor@@QAEHUtagPOINT@@HH@Z",
       "reason": "[EVIDENCE] RVA 0x108a0 is owned and accepted under decnet.cpp; the identical decmove.cpp candidate is a duplicate source copy, not a second target function."
+    },
+    {
+      "symbol": "?DrawMap@CEvent@@QAEXXZ",
+      "reason": "[EVIDENCE] Same 48-byte body and target RVA 0x16e80 as CEvent::NetDraw; accept the shared code once under NetDraw while source identity remains ambiguous."
     }
   ]
 }

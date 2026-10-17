@@ -212,11 +212,11 @@
 0x16950,278,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?CreateButtons@CEvent@@IAEHXZ in src/event.cpp object.
 0x16a70,494,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x16c60,119,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x16ce0,78,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16ce0,78,event.cpp,anchored,sb2:event.cpp:CEvent::NetSendLobby,strict,"[EVIDENCE] Integrated STRICT code and relocation match for CEvent::NetSendLobby in src/event.cpp. At 0x16e80, DrawMap has the same body and target; only NetDraw is accepted."
 0x16d30,43,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x16d60,230,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x16e50,48,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x16e80,36,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x16e80,36,event.cpp,anchored,sb2:event.cpp:CEvent::NetDraw,strict,"[EVIDENCE] Integrated STRICT code and relocation match for CEvent::NetDraw in src/event.cpp. At 0x16e80, DrawMap has the same body and target; only NetDraw is accepted."
 0x16eb0,109,event.cpp,anchored,sb2:event.cpp:AddCheatCode,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (112 bytes, RELOC-UNVERIFIED); AddCheatCode; [EVIDENCE] integrated STRICT code and relocation match for ?AddCheatCode@@YAXPAD0@Z in src/event.cpp object."
 0x16f20,74,event.cpp,anchored,sb2:event.cpp:CEvent::DrawTextCenter,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (80 bytes, RELOC-UNVERIFIED); CEvent::DrawTextCenter; calls: 0x1f1f0,0x237a0; [EVIDENCE] integrated STRICT code and relocation match for ?DrawTextCenter@CEvent@@IAEXHHHH@Z in src/event.cpp object."
 0x16f70,7419,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
@@ -268,7 +268,7 @@
 0x1cb20,21,event.cpp,bracketed,sb2:event.cpp,strict,[EVIDENCE] bracketed by unique source anchors in TU block; [EVIDENCE] integrated STRICT code and relocation match for ?ChatFlush@CEvent@@IAEXXZ in src/event.cpp object.
 0x1cb40,76,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x1cb90,123,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
-0x1cc10,343,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x1cc10,343,event.cpp,anchored,sb2:event.cpp:CEvent::ChatSend,strict,"[EVIDENCE] Integrated STRICT code and relocation match for CEvent::ChatSend in src/event.cpp. At 0x16e80, DrawMap has the same body and target; only NetDraw is accepted."
 0x1cd70,389,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x1cf00,83,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x1cf60,586,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
@@ -313,23 +313,23 @@
 0x204a0,171,movie.cpp,anchored,pb:movie.cpp:CMovie::IsExist,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (176 bytes, RELOC-UNVERIFIED); CMovie::IsExist; calls: 0x1f360,0x23b20,0x23930; [EVIDENCE] integrated STRICT code and relocation match for ?IsExist@CMovie@@QAEHPAD@Z in src/movie.cpp object."
 0x20550,94,movie.cpp,anchored,pb:movie.cpp:CMovie::Play,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (96 bytes, STRICT); CMovie::Play; calls: 0x20250,0x203c0"
 0x205b0,18,movie.cpp,anchored,pb:movie.cpp:CMovie::Stop,strict,"[EVIDENCE] unique cmpfunc location from pb:movie.cpp (32 bytes, STRICT); CMovie::Stop; calls: 0x20200"
-0x205d0,916,network.cpp,inferred,sb2:network.cpp,none,"[HYPOTHESIS] placed by TU block/source order; DirectPlay error strings; calls: 0x23b40,0x1f010"
-0x20970,31,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x20990,36,network.cpp,inferred,sb2:network.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x20b20,0x20da0,0x21000"
-0x20a30,76,network.cpp,inferred,sb2:network.cpp,none,"[HYPOTHESIS] placed by TU block/source order; calls: 0x20b20,0x2389c"
-0x20a80,36,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x20ab0,111,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x238a2
-0x20b20,35,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x20bd0,163,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x20da0
-0x20c80,36,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x205d0,916,network.cpp,anchored,sb2:network.cpp:TraceErrorDP,strict,[EVIDENCE] Integrated STRICT code and relocation match for TraceErrorDP in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20970,31,network.cpp,anchored,sb2:network.cpp:CNetwork::CNetwork,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::CNetwork in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20990,36,network.cpp,anchored,sb2:network.cpp:CNetwork::~CNetwork,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::~CNetwork in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20a30,76,network.cpp,anchored,sb2:network.cpp:CNetwork::EnumProviders,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::EnumProviders in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20a80,36,network.cpp,anchored,sb2:network.cpp:CNetwork::GetProviderName,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::GetProviderName in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20ab0,111,network.cpp,anchored,sb2:network.cpp:CNetwork::CreateProvider,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::CreateProvider in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20b20,35,network.cpp,anchored,sb2:network.cpp:CNetwork::FreeProviderList,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::FreeProviderList in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20bd0,163,network.cpp,anchored,sb2:network.cpp:CNetwork::EnumSessions,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::EnumSessions in src/network.cpp; see docs/NETWAVE_TU.md.
+0x20c80,36,network.cpp,anchored,sb2:network.cpp:CNetwork::GetSessionName,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::GetSessionName in src/network.cpp; see docs/NETWAVE_TU.md.
 0x20cb0,237,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x205d0
-0x20da0,35,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x20da0,35,network.cpp,anchored,sb2:network.cpp:CNetwork::FreeSessionList,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::FreeSessionList in src/network.cpp; see docs/NETWAVE_TU.md.
 0x20dd0,234,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x205d0
 0x20ec0,77,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x205d0
-0x20f10,207,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x205d0
+0x20f10,207,network.cpp,anchored,sb2:network.cpp:CNetwork::Receive,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::Receive in src/network.cpp; see docs/NETWAVE_TU.md.
 0x20fe0,18,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x21000,35,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x21030,4,network.cpp,inferred,sb2:network.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x21000,35,network.cpp,anchored,sb2:network.cpp:CNetwork::FreeUnknownList,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::FreeUnknownList in src/network.cpp; see docs/NETWAVE_TU.md.
+0x21030,4,network.cpp,anchored,sb2:network.cpp:CNetwork::IsHost,strict,[EVIDENCE] Integrated STRICT code and relocation match for CNetwork::IsHost in src/network.cpp; see docs/NETWAVE_TU.md.
 0x21040,133,pixmap.cpp,bracketed,pb:pixmap.cpp:CPixmap::CPixmap,none,[EVIDENCE] first pixmap function after network TU boundary: 0x21030 size 4 aligns to 0x21040; target constructor body remains unmatched
 0x210d0,148,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::~CPixmap,strict,[EVIDENCE] unique strict 160-byte candidate body in clean combined verification
 0x21170,19,pixmap.cpp,anchored,pb:pixmap.cpp:CPixmap::SetDebug,strict,[EVIDENCE] unique strict 32-byte candidate body in clean combined verification
@@ -404,19 +404,19 @@
 0x238b0,133,text.cpp,inferred,pb:text.cpp,none,[HYPOTHESIS] placed by TU block/source order
 0x23930,119,text.cpp,inferred,pb:text.cpp,none,[HYPOTHESIS] placed by TU block/source order
 0x239b0,316,text.cpp,inferred,pb:text.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23af0,35,text.cpp,inferred,pb:text.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23b20,21,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x23af0
-0x23b40,104,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23bb0,14,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23bc0,326,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23d10,187,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order; imports: KERNEL32.dll
-0x23dd0,16,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23de0,45,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23e20,7,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23e30,86,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23e90,60,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23ed0,91,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23f30,42,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x23f60,202,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
-0x24030,124,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order; calls: 0x23e30
-0x240c0,127,wave.cpp,inferred,pb:wave.cpp,none,[HYPOTHESIS] placed by TU block/source order
+0x23af0,35,crt,anchored,vc5:libc:_fsopen,strict,[EVIDENCE] VC5 SP3 CRT FOPEN.C compiles STRICT at this entry as _fsopen; __getstream and __openfile relocations resolve exactly. First identified CRT function.
+0x23b20,21,crt,anchored,vc5:libc:fopen,strict,[EVIDENCE] VC5 SP3 CRT FOPEN.C compiles STRICT at this entry as fopen; its call binds to _fsopen at 0x23af0 and passes _SH_DENYNO (0x40).
+0x23b40,104,crt,anchored,vc5:libc:sprintf,strict,[EVIDENCE] VC5 SP3 CRT SPRINTF.C compiles STRICT at this entry as sprintf; both CRT helper relocations resolve exactly (docs/NETWAVE_TU.md).
+0x23bb0,14,crt,bracketed,vc5:libc:unresolved-wrapper,none,[EVIDENCE] Located after the first verified LIBC member; this short wrapper calls 0x424480. Exact CRT source identity remains open.
+0x23bc0,326,crt,bracketed,vc5:libc:fread,none,[EVIDENCE] LIBC FREAD.C has the same buffered-copy/_read/_filbuf flow; standalone body differs by six bytes (docs/NETWAVE_TU.md).
+0x23d10,187,crt,bracketed,vc5:libc:_ftime,similar,[EVIDENCE] VC5 SP3 FTIME.C is the source family; code is relocation-unverified because _timezone lacks a unique reconstructed definition (docs/NETWAVE_TU.md).
+0x23dd0,16,crt,bracketed,vc5:libc:unresolved-wrapper,none,[EVIDENCE] Located in the LIBC block; this short wrapper calls 0x4244f0. Exact CRT source identity remains open.
+0x23de0,45,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception funclet restores ExceptionList before transferring to a handler (docs/NETWAVE_TU.md).
+0x23e20,7,crt,bracketed,vc5:/GX-exception-support,none,[HYPOTHESIS] Seven-byte tail-transfer thunk adjacent to the /GX helper cluster; exact role is open.
+0x23e30,86,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] SEH unwind helper uses RtlUnwind and ExceptionList (docs/NETWAVE_TU.md).
+0x23e90,60,crt,anchored,vc5:libc:___CxxFrameHandler,similar,[EVIDENCE] VC5 CRT ___CxxFrameHandler; source comparison has four relocation bytes masked (docs/TOOLCHAIN.md).
+0x23ed0,91,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception-frame setup around __CallSettingFrame_12 (docs/NETWAVE_TU.md).
+0x23f30,42,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception-handler adapter calls the internal frame handler (docs/NETWAVE_TU.md).
+0x23f60,202,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception-frame setup and dispatch (docs/NETWAVE_TU.md).
+0x24030,124,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception dispatch/unwind helper (docs/NETWAVE_TU.md).
+0x240c0,127,crt,bracketed,vc5:/GX-exception-support,none,[EVIDENCE] VC5 /GX exception-frame chain search over 0x14-byte records (docs/NETWAVE_TU.md).

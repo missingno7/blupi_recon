@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "recon.json"
 BUILD = ROOT / "build" / "verify"
 ORACLE_TEXT_START = 0x1000
-GAME_TEXT_END = 0x24140
+GAME_TEXT_END = 0x23af0
 GAME_TEXT_SIZE = GAME_TEXT_END - ORACLE_TEXT_START
 
 
