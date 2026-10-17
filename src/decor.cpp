@@ -33,30 +33,30 @@ void CDecor::VoyageInit(POINT start, POINT end, int icon, int channel)
 	{
 		m_voyageTotal = 60;
 		m_nbVies--;
-		m_pSound->PlayImage(SOUND_NEW, end, -1);
+		m_pSound->PlayImage(SOUND_NEW, end, -1, 0);
 	}
 	if (icon == 21 && m_voyageChannel == CHELEMENT)
 	{
-		m_pSound->PlayImage(SOUND_EGG, start, -1);
+		m_pSound->PlayImage(SOUND_EGG, start, -1, 0);
 	}
 	if (icon == 6 && m_voyageChannel == CHELEMENT)
 	{
 		if (m_nbTresor == m_totalTresor - 1)
 		{
-			m_pSound->PlayImage(SOUND_LASTTRESOR, start, -1);
+			m_pSound->PlayImage(SOUND_LASTTRESOR, start, -1, 0);
 		}
 		else
 		{
-			m_pSound->PlayImage(SOUND_TRESOR, start, -1);
+			m_pSound->PlayImage(SOUND_TRESOR, start, -1, 0);
 		}
 	}
 	if (icon == GetIconPerso() && m_voyageChannel == CHBUTTON)
 	{
-		m_pSound->PlayImage(SOUND_PERSOTAKE, start, -1);
+		m_pSound->PlayImage(SOUND_PERSOTAKE, start, -1, 0);
 	}
 	if (icon == 177 && m_voyageChannel == CHELEMENT)
 	{
-		m_pSound->PlayImage(SOUND_TAKEGLU, start, -1);
+		m_pSound->PlayImage(SOUND_TAKEGLU, start, -1, 0);
 	}
 }
 
@@ -76,21 +76,21 @@ void CDecor::VoyageStep()
 			if (m_voyageIcon == 21 && m_voyageChannel == CHELEMENT)
 			{
 				m_nbVies++;
-				m_pSound->PlayImage(SOUND_JUMPEND, m_voyageEnd, -1);
+				m_pSound->PlayImage(SOUND_JUMPEND, m_voyageEnd, -1, 0);
 			}
 			if (m_voyageIcon == 6 && m_voyageChannel == CHELEMENT)
 			{
 				m_nbTresor++;
-				m_pSound->PlayImage(SOUND_JUMPEND, m_voyageEnd, -1);
+				m_pSound->PlayImage(SOUND_JUMPEND, m_voyageEnd, -1, 0);
 			}
 			if (m_voyageIcon == GetIconPerso() && m_voyageChannel == CHBUTTON)
 			{
 				m_blupiPosMagic.y++;
-				m_pSound->PlayImage(SOUND_JUMPEND, m_voyageEnd, -1);
+				m_pSound->PlayImage(SOUND_JUMPEND, m_voyageEnd, -1, 0);
 			}
 			if (m_voyageIcon == 177 && m_voyageChannel == CHELEMENT)
 			{
-				m_pSound->PlayImage(SOUND_JUMPEND, m_voyageEnd, -1);
+				m_pSound->PlayImage(SOUND_JUMPEND, m_voyageEnd, -1, 0);
 			}
 			m_voyageIcon = -1;
 		}
@@ -859,8 +859,8 @@ BOOL CDecor::CurrentWrite(int gamer, int mission)
 	pBuffer->blupiVent = m_blupiVent;
 	pBuffer->blupiSuspend = m_blupiSuspend;
 	pBuffer->blupiJumpAie = m_blupiJumpAie;
-	pBuffer->blupiShield = m_blupiShield;
-	pBuffer->blupiPower = m_blupiPower;
+	pBuffer->blupiShield = m_blupiPower;
+	pBuffer->blupiPower = m_blupiShield;
 	pBuffer->blupiCloud = m_blupiCloud;
 	pBuffer->blupiHide = m_blupiHide;
 	pBuffer->blupiInvert = m_blupiInvert;
@@ -992,8 +992,8 @@ success:
 	m_blupiVent = pBuffer->blupiVent;
 	m_blupiSuspend = pBuffer->blupiSuspend;
 	m_blupiJumpAie = pBuffer->blupiJumpAie;
-	m_blupiShield = pBuffer->blupiShield;
-	m_blupiPower = pBuffer->blupiPower;
+	m_blupiPower = pBuffer->blupiShield;
+	m_blupiShield = pBuffer->blupiPower;
 	m_blupiCloud = pBuffer->blupiCloud;
 	m_blupiHide = pBuffer->blupiHide;
 	m_blupiInvert = pBuffer->blupiInvert;
@@ -1197,7 +1197,7 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 			{
 				if (SearchDoor(i, &cel))
 				{
-					if (!m_doors[180 + i] || m_bCheatDoors)
+					if (!m_doors[i] || m_bCheatDoors)
 					{
 						m_decor[cel.x][cel.y].icon = -1;
 						index = MoveObjectFree();
@@ -1249,7 +1249,25 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 				{
 					if (!m_doors[mission + i] || m_bCheatDoors)
 					{
-						OpenDoor(cel);
+						m_decor[cel.x][cel.y].icon = -1;
+						index = MoveObjectFree();
+						m_moveObject[index].type = TYPE_DOOR;
+						m_moveObject[index].stepAdvance = 50;
+						m_moveObject[index].stepRecede = 1;
+						m_moveObject[index].timeStopStart = 0;
+						m_moveObject[index].timeStopEnd = 0;
+						m_moveObject[index].posStart.x = cel.x * DIMOBJX;
+						m_moveObject[index].posStart.y = cel.y * DIMOBJY;
+						m_moveObject[index].posEnd.x = cel.x * DIMOBJX;
+						m_moveObject[index].posEnd.y = cel.y * DIMOBJY - DIMOBJY;
+						m_moveObject[index].posCurrent.x = m_moveObject[index].posStart.x;
+						m_moveObject[index].posCurrent.y = m_moveObject[index].posStart.y;
+						m_moveObject[index].step = STEP_STOPSTART;
+						m_moveObject[index].time = 0;
+						m_moveObject[index].phase = 0;
+						m_moveObject[index].channel = CHOBJECT;
+						m_moveObject[index].icon = 0xb6;
+						PlaySound(SOUND_DOOR, m_moveObject[index].posStart, FALSE);
 						for (int j = 0; j < MAXTEAM; j++)
 						{
 							m_blupiStartPos[j] = newPosBlupi;
@@ -1264,9 +1282,6 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 
 void CDecor::OpenDoorsWin()
 {
-#ifndef LEGACY_CODE
-	if (m_mission + 1 < 0 || m_mission + 1 >= sizeof(m_doors)) return;
-#endif
 	m_doors[m_mission + 1] = 0;
 }
 

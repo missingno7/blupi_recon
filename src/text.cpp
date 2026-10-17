@@ -78,29 +78,10 @@ int GetCharWidth(char c, int font)
 
 void DrawText(CPixmap* pPixmap, POINT pos, char *pText, int font)
 {
-	char c;
-
-	c = *pText;
-	while (c != '\0') {
-		pText ++;
-		DrawChar(pPixmap, &pos, c, font);
-		c = *pText;
+	while (*pText != 0)
+	{
+		DrawChar(pPixmap, &pos, *pText++, font);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 // Affiche un texte penché.

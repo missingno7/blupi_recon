@@ -84,9 +84,9 @@
 #define CHMASK1			7
 #define CHLITTLE		7
 #define CHMAP			9
-#define CHBUTTON		10
+#define CHBUTTON		4
 #define CHGROUND		11
-#define CHJAUGE			12
+#define CHJAUGE			5
 #define CHTEXT			6
 #define CHBIGNUM		14
 
@@ -119,7 +119,7 @@
 
 // Actions :
 
-#define ACTION_STOP			0		// arrêt
+#define ACTION_STOP			1		// arrêt
 #define ACTION_STOPf		1		// arrêt fatigué
 #define ACTION_MARCHE		2		// marche
 #define ACTION_MARCHEf		3		// marche fatigué
@@ -384,8 +384,8 @@
 #define SPRITE_ARROWUR		9
 #define SPRITE_ARROWDL		10
 #define SPRITE_ARROWDR		11
-#define SPRITE_WAIT			12
-#define SPRITE_EMPTY		13
+#define SPRITE_WAIT			11
+#define SPRITE_EMPTY		12
 #define SPRITE_FILL			14
 
 
@@ -1837,3 +1837,10 @@ bool operator==(POINT a, const POINT& b)
 #endif
 
 #endif /* DEF_H */
+
+#ifdef DrawText
+#undef DrawText
+#endif
+#ifdef GetCharWidth
+#undef GetCharWidth
+#endif

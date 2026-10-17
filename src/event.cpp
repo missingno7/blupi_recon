@@ -7,19 +7,19 @@
 //#include <ddraw.h>
 #include <direct.h>
 #include <io.h>
-#include <def.h>
-#include <resource.h>
+#include "def.h"
+#include "resource.h"
+#include "network.h"
 //#include "pixmap.h"
 //#include "sound.h"
-#include <decor.h>
-#include <movie.h>
+#include "decor.h"
+#include "movie.h"
 //#include "button.h"
 //#include "menu.h"
 //#include "jauge.h"
-#include <event.h>
-#include <text.h>
-#include <misc.h>
-#include <network.h>
+#include "event.h"
+#include "text.h"
+#include "misc.h"
 
 #define DEF_TIME_DEMO  1000
 
@@ -1642,7 +1642,7 @@ BOOL CEvent::DrawButtons()
 			if (line2)
 			{
 				strcpy(res, m_filenameBuffer[i]);
-				res[line2 - res] = '\0'; // janky. pls verify
+				res[line2 - m_filenameBuffer[i]] = '\0';
 				pos.x = 330;
 				pos.y -= DIMTEXTY / 2;
 				DrawTextLeft(m_pPixmap, pos, res, m_fileIndex == i ? FONTSELECTED : FONTWHITE);
@@ -1703,12 +1703,6 @@ BOOL CEvent::DrawButtons()
 		}
 	}
 
-	// decomp: now that the decomp is looking convincingly like the retail game,
-	// we should clearly differentiate the two when sharing WIP screenshots/videos to reduce confusion.
-	{
-		DrawTextLeft(m_pPixmap, POINT(LXIMAGE - GetTextWidth((char*)"DECOMP -- " __DATE__), 0), (char*)"DECOMP -- " __DATE__, FONTGOLD);
-	}
-	///////
 
 	return TRUE;
 }

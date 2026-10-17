@@ -53,7 +53,8 @@
     {
       "source": "src/blupi.cpp",
       "defines": [
-        "SB1_GAME_API"
+        "SB1_GAME_API",
+        "SB1_EVENT_API"
       ]
     },
     {
@@ -105,6 +106,12 @@
       "symbol": "?GetNum@@YAHPAD@Z",
       "rva": "0x00001000",
       "size": 48,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "?UpdateFrame@@YAXXZ",
+      "rva": "0x000012e0",
+      "size": 528,
       "tu": "src/blupi.cpp"
     },
     {
@@ -444,6 +451,18 @@
       "tu": "src/decor.cpp"
     },
     {
+      "symbol": "?VoyageInit@CDecor@@QAEXUtagPOINT@@0HH@Z",
+      "rva": "0x00013d70",
+      "size": 384,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?VoyageStep@CDecor@@QAEXXZ",
+      "rva": "0x00013ef0",
+      "size": 352,
+      "tu": "src/decor.cpp"
+    },
+    {
       "symbol": "?VoyageDraw@CDecor@@QAEXXZ",
       "rva": "0x00014050",
       "size": 112,
@@ -462,6 +481,12 @@
       "tu": "src/decor.cpp"
     },
     {
+      "symbol": "?CurrentWrite@CDecor@@QAEHHH@Z",
+      "rva": "0x00014da0",
+      "size": 1584,
+      "tu": "src/decor.cpp"
+    },
+    {
       "symbol": "?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z",
       "rva": "0x00015c10",
       "size": 464,
@@ -471,6 +496,12 @@
       "symbol": "?SearchDoor@CDecor@@QAEHHPAUtagPOINT@@@Z",
       "rva": "0x00015de0",
       "size": 80,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?OpenDoorsWin@CDecor@@QAEXXZ",
+      "rva": "0x00016180",
+      "size": 32,
       "tu": "src/decor.cpp"
     },
     {
@@ -484,6 +515,12 @@
       "rva": "0x000161d0",
       "size": 80,
       "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "??1CEvent@@QAE@XZ",
+      "rva": "0x00016360",
+      "size": 128,
+      "tu": "src/event.cpp"
     },
     {
       "symbol": "?OutputNetDebug@CEvent@@QAEXPBD@Z",
@@ -609,6 +646,18 @@
       "symbol": "?MouseSprite@CEvent@@QAEXUtagPOINT@@@Z",
       "rva": "0x00018cf0",
       "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?WaitMouse@CEvent@@QAEXH@Z",
+      "rva": "0x00018d40",
+      "size": 112,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?HideMouse@CEvent@@QAEXH@Z",
+      "rva": "0x00018db0",
+      "size": 128,
       "tu": "src/event.cpp"
     },
     {
@@ -780,6 +829,12 @@
       "tu": "src/jauge.cpp"
     },
     {
+      "symbol": "?Draw@CJauge@@QAEXXZ",
+      "rva": "0x0001ee50",
+      "size": 256,
+      "tu": "src/jauge.cpp"
+    },
+    {
       "symbol": "?GetLevel@CJauge@@QAEHXZ",
       "rva": "0x0001ef50",
       "size": 16,
@@ -820,6 +875,18 @@
       "rva": "0x0001eff0",
       "size": 32,
       "tu": "src/menu.cpp"
+    },
+    {
+      "symbol": "??1CButton@@QAE@XZ",
+      "rva": "0x0001f010",
+      "size": 16,
+      "tu": "src/button.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "??1CMenu@@QAE@XZ",
+        "rva": "0x0001f010",
+        "tu": "src/menu.cpp"
+      }
     },
     {
       "symbol": "??1CMenu@@QAE@XZ",
@@ -903,6 +970,12 @@
       "symbol": "?AddUserPath@@YAXPAD@Z",
       "rva": "0x0001f560",
       "size": 304,
+      "tu": "src/misc.cpp"
+    },
+    {
+      "symbol": "?TraceErrorDD@@YAXJPADH@Z",
+      "rva": "0x0001f690",
+      "size": 2320,
       "tu": "src/misc.cpp"
     },
     {
@@ -1089,6 +1162,12 @@
       "symbol": "?SetDebug@CPixmap@@QAEXH@Z",
       "rva": "0x00021170",
       "size": 32,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?Flush@CPixmap@@QAEHXZ",
+      "rva": "0x00021520",
+      "size": 16,
       "tu": "src/pixmap.cpp"
     },
     {
@@ -1350,6 +1429,12 @@
       "tu": "src/text.cpp"
     },
     {
+      "symbol": "?DrawText@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "rva": "0x00023770",
+      "size": 48,
+      "tu": "src/text.cpp"
+    },
+    {
       "symbol": "?DrawTextCenter@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
       "rva": "0x000237a0",
       "size": 192,
@@ -1419,16 +1504,6 @@
       "evidence": "menu switch-table target recorded from static oracle disassembly in docs/UI_CLUSTER.md"
     },
     {
-      "symbol": "?DrawTextA@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
-      "va": "0x00423770",
-      "evidence": "Windows DrawText macro expands the candidate function name to DrawTextA; static oracle target in docs/UI_CLUSTER.md"
-    },
-    {
-      "symbol": "?GetCharWidthA@@YAHDH@Z",
-      "va": "0x00423610",
-      "evidence": "Windows GetCharWidth macro expands the candidate function name to GetCharWidthA; static oracle target in docs/UI_CLUSTER.md"
-    },
-    {
       "symbol": "$L34875",
       "va": "0x00402dd0",
       "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
@@ -1477,66 +1552,6 @@
       "symbol": "$L34836",
       "va": "0x0041f0af",
       "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
-    },
-    {
-      "symbol": "$L33233",
-      "va": "0x00401a40",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x21c; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L33234",
-      "va": "0x00401a64",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x2f2; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L33235",
-      "va": "0x00401a50",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x2f9; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L32727",
-      "va": "0x00401830",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x430; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L32728",
-      "va": "0x0040184b",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x434; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L32729",
-      "va": "0x00401866",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x438; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L32730",
-      "va": "0x00401881",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x43c; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L32702",
-      "va": "0x00401979",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x440; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L32704",
-      "va": "0x00401983",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x444; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L32708",
-      "va": "0x0040198d",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x448; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L32676",
-      "va": "0x0040190d",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x44c; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
-    },
-    {
-      "symbol": "$L32715",
-      "va": "0x00401a29",
-      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x450; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
     },
     {
       "symbol": "_IID_IDirectPlay2A",
@@ -1597,7 +1612,7 @@
   "promotion_exclusions": [
     {
       "symbol": "?SetDemo@CEvent@@QAEXHH@Z",
-      "reason": "[OPEN] candidate identity is ambiguous across four identical UI accessor/setter bodies; keep out until call-site evidence resolves it"
+      "reason": "[OPEN] 48-byte body has four identical oracle hits and no direct incoming relocation in any of the 18 built objects; no call-site witness currently resolves it"
     },
     {
       "symbol": "?PlayDown@CEvent@@IAEHUtagPOINT@@H@Z",

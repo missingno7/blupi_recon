@@ -563,6 +563,191 @@ def verify_data_target(pe: pefile.PE, coff: Coff, symbol: Symbol, addend: int,
     return "STRICT", "data section and initialized bytes match", entry
 
 
+def relocation_targets_pe(reloc: Relocation, section: Section, site_va: int,
+                          pe: pefile.PE) -> tuple[int, int, int] | None:
+    """Resolve one relocated field at an arbitrary PE VA, including read-only data."""
+    size = REL_SIZES.get(reloc.typ)
+    if size is None or reloc.typ not in (0x0006, 0x0007, 0x0014):
+        return None
+    field = pe_bytes(pe, site_va, size)
+    raw_addend = section.raw[reloc.offset:reloc.offset + size]
+    if field is None or len(raw_addend) != size:
+        return None
+    addend = int.from_bytes(raw_addend, "little", signed=True)
+    field_value = int.from_bytes(field, "little", signed=(reloc.typ == 0x0014))
+    if reloc.typ == 0x0014:
+        effective_va = site_va + 4 + field_value
+    elif reloc.typ == 0x0006:
+        effective_va = field_value & 0xFFFFFFFF
+    else:
+        effective_va = pe.OPTIONAL_HEADER.ImageBase + (field_value & 0xFFFFFFFF)
+    return effective_va - addend, effective_va, addend
+
+
+def verify_eh_sections(pe: pefile.PE, coff: Coff, obj_path: Path,
+                       start_section: Section, start_base: int,
+                       global_symbols: dict[str, int | None], imports: dict[str, int],
+                       oracle_function_vas: set[int]
+                       ) -> tuple[str, str, dict[str, Any]]:
+    """Check VC5 .text$x funclets and their .xdata tables as linked sections."""
+    anchors: dict[int, set[int]] = defaultdict(set)
+    for symbol in coff.symbols:
+        if symbol.section <= 0 or symbol.section > len(coff.sections):
+            continue
+        section = coff.sections[symbol.section - 1]
+        if not (section.name.lower().startswith(".text$") or section.name.lower().startswith(".xdata")):
+            continue
+        value = global_symbols.get(symbol_map_key(obj_path, symbol))
+        if value is not None:
+            anchors[symbol.section].add(value - symbol.value)
+    anchors[start_section.index].add(start_base)
+    pending = [start_section.index]
+    visited: set[int] = set()
+    unresolved = False
+    mismatch = False
+    checked_sections = []
+    relocation_details = []
+    while pending:
+        section_index = pending.pop()
+        if section_index in visited:
+            continue
+        visited.add(section_index)
+        section = coff.sections[section_index - 1]
+        bases = anchors.get(section_index, set())
+        if len(bases) != 1:
+            unresolved = True
+            continue
+        base_va = next(iter(bases))
+        expected_kind = "rdata" if section.name.lower().startswith(".xdata") else "text"
+        oracle_section, oracle_offset = pe_section_at(pe, base_va)
+        oracle_name = (oracle_section.Name.rstrip(b"\0").decode("ascii", "replace")
+                       if oracle_section else "<unmapped>")
+        actual = pe_bytes(pe, base_va, len(section.raw))
+        if (actual is None or section_kind(oracle_name) != expected_kind
+                or oracle_offset + len(section.raw) > max(oracle_section.Misc_VirtualSize,
+                                                         oracle_section.SizeOfRawData)):
+            mismatch = True
+            checked_sections.append({"section": section.name, "base": f"0x{base_va:08x}",
+                                     "oracle_section": oracle_name, "status": "MISMATCH"})
+            continue
+        fixed = bytearray(b"\1" * len(section.raw))
+        for reloc in section.relocations:
+            size = relocation_size(reloc.typ)
+            if size is None:
+                unresolved = True
+                continue
+            left = max(0, reloc.offset)
+            right = min(len(section.raw), reloc.offset + size)
+            if left < right:
+                fixed[left:right] = b"\0" * (right - left)
+        if any(fixed[i] and section.raw[i] != actual[i] for i in range(len(actual))):
+            mismatch = True
+        checked_sections.append({"section": section.name, "base": f"0x{base_va:08x}",
+                                 "oracle_section": oracle_name,
+                                 "fixed_bytes_match": not any(fixed[i] and section.raw[i] != actual[i]
+                                                               for i in range(len(actual)))})
+        for reloc in section.relocations:
+            symbol = coff.sym_by_index.get(reloc.symbol_index)
+            site_va = base_va + reloc.offset
+            target = relocation_targets_pe(reloc, section, site_va, pe)
+            detail: dict[str, Any] = {"section": section.name, "offset": reloc.offset,
+                                      "type": REL_NAMES.get(reloc.typ, f"0x{reloc.typ:04x}"),
+                                      "symbol": symbol.name if symbol else "<missing>"}
+            if symbol is None or target is None:
+                unresolved = True
+                detail.update({"status": "RELOC-UNVERIFIED", "reason": "unresolved section relocation"})
+                relocation_details.append(detail)
+                continue
+            symbol_va, effective_va, addend = target
+            key = symbol_map_key(obj_path, symbol)
+            if symbol.section == section.index:
+                expected_symbol_va = base_va + symbol.value
+            elif (symbol.section > 0 and symbol.section <= len(coff.sections)
+                  and symbol.section in anchors and len(anchors[symbol.section]) == 1):
+                target_section = coff.sections[symbol.section - 1]
+                if target_section.name.lower().startswith((".text$", ".xdata")):
+                    expected_symbol_va = next(iter(anchors[symbol.section])) + symbol.value
+                    if symbol.section not in visited:
+                        pending.append(symbol.section)
+                else:
+                    expected_symbol_va = global_symbols.get(key)
+            elif key in global_symbols:
+                expected_symbol_va = global_symbols[key]
+            else:
+                expected_symbol_va = imports.get(normalize_import(symbol.name))
+            if expected_symbol_va is None:
+                unresolved = True
+                detail.update({"status": "RELOC-UNVERIFIED", "reason": "no unique target binding"})
+            elif symbol_va != expected_symbol_va or effective_va != expected_symbol_va + addend:
+                mismatch = True
+                detail.update({"status": "MISMATCH", "expected": f"0x{expected_symbol_va:08x}",
+                               "actual": f"0x{symbol_va:08x}"})
+            elif (symbol.is_function or reloc.typ == 0x0014) and effective_va not in oracle_function_vas:
+                mismatch = True
+                detail.update({"status": "MISMATCH", "reason": "code relocation misses an oracle function start"})
+            else:
+                detail.update({"status": "STRICT", "target": f"0x{symbol_va:08x}"})
+            relocation_details.append(detail)
+    status = "MISMATCH" if mismatch else "RELOC-UNVERIFIED" if unresolved else "STRICT"
+    reason = ("VC5 exception sections and relocations match" if status == "STRICT" else
+              "VC5 exception section contains a mismatching byte or target" if mismatch else
+              "VC5 exception section has an unresolved relocation or placement")
+    return status, reason, {"exception_sections": checked_sections,
+                            "exception_relocations": relocation_details}
+
+
+def local_label_target(pe: pefile.PE, coff: Coff, symbol: Symbol, func: Function,
+                       base_offset: int, text_rva: int, image_base: int,
+                       symbol_va: int, effective_va: int, addend: int) -> tuple[bool, str]:
+    """Prove a compiler-local code label from its containing COFF section."""
+    if (not symbol.name.startswith("$L") or symbol.storage != 6
+            or symbol.section <= 0 or symbol.section > len(coff.sections)):
+        return False, "not a function-local code label"
+    section = coff.sections[symbol.section - 1]
+    if section_kind(section.name) != "text":
+        return False, "local label is not in a code section"
+
+    if symbol.section == func.section.index and func.start <= symbol.value < func.end:
+        expected_va = image_base + text_rva + base_offset + symbol.value - func.start
+        ok = symbol_va == expected_va and effective_va == expected_va + addend
+        return ok, "same-function section-relative label" if ok else "same-function label offset differs"
+
+    # VC5 exception funclets can live in a companion .text$x section. Their
+    # local label has no function symbol of its own, so verify the emitted code
+    # from that label through the end of its section at the address reached by
+    # the referring function. Relocation fields are checked by their own
+    # relocations and are omitted only from this fixed-byte comparison.
+    end = local_label_end(coff, symbol)
+    if not symbol.value < end <= len(section.raw):
+        return False, "local label has no identifiable code extent"
+    target_section, _ = pe_section_at(pe, symbol_va)
+    if target_section is None or target_section.Name.rstrip(b"\0") != b".text":
+        return False, "local label target is outside oracle .text"
+    expected = section.raw[symbol.value:end]
+    actual = pe_bytes(pe, symbol_va, len(expected))
+    if actual is None:
+        return False, "local label extent exceeds oracle .text"
+    fixed = bytearray(len(expected))
+    fixed[:] = b"\1" * len(expected)
+    for reloc in section.relocations:
+        size = relocation_size(reloc.typ)
+        left = max(symbol.value, reloc.offset)
+        right = min(end, reloc.offset + size)
+        if left < right:
+            fixed[left - symbol.value:right - symbol.value] = b"\0" * (right - left)
+    matches = all(not fixed[i] or expected[i] == actual[i] for i in range(len(expected)))
+    ok = matches and effective_va == symbol_va + addend
+    return ok, "companion local-label code bytes match" if ok else "companion local-label code differs"
+
+
+def local_label_end(coff: Coff, symbol: Symbol) -> int:
+    """Return the next symbol boundary for a local label in a code section."""
+    section = coff.sections[symbol.section - 1]
+    later = [other.value for other in coff.symbols
+             if other.section == symbol.section and other.value > symbol.value]
+    return min(later) if later else len(section.raw)
+
+
 def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: int, image_base: int,
                   pe: pefile.PE, coff: Coff, obj_path: Path, all_candidates: dict[str, list[int]],
                   function_defs: dict[str, list[Function]], data_defs: dict[str, list[tuple[Coff, Symbol]]],
@@ -585,6 +770,47 @@ def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: i
         symbol_va, effective_va, addend = target
         entry.update({"addend": addend, "resolved_symbol_va": f"0x{symbol_va:08x}",
                       "effective_target_va": f"0x{effective_va:08x}"})
+
+        # The x86 exception-chain head is an absolute FS:0 linker symbol, not
+        # an image data object. The oracle field and COFF symbol must both be
+        # exactly zero for this special binding.
+        if (symbol.name == "__except_list" and symbol.section == 0 and symbol.value == 0
+                and symbol.typ == 0 and reloc.typ == 0x0006):
+            ok = symbol_va == 0 and effective_va == 0
+            entry.update({"verified": ok, "status": "STRICT" if ok else "MISMATCH",
+                          "reason": "VC5 absolute FS:0 exception-chain symbol" if ok
+                          else "exception-chain absolute value is not zero"})
+            hard_mismatch |= not ok
+            unresolved |= not ok
+            reports.append(entry)
+            continue
+
+        if (symbol.name.startswith("$L") and symbol.storage == 6
+                and (symbol.section == func.section.index or symbol.name not in explicit)):
+            ok, reason = local_label_target(pe, coff, symbol, func, base_offset, text_rva,
+                                            image_base, symbol_va, effective_va, addend)
+            status = "STRICT" if ok else "MISMATCH"
+            if ok and symbol.section != func.section.index:
+                section = coff.sections[symbol.section - 1]
+                end = local_label_end(coff, symbol)
+                companion_relocs = [r for r in section.relocations
+                                    if symbol.value <= r.offset
+                                    and r.offset + relocation_size(r.typ) <= end]
+                helper = Function(func.symbol, section, symbol.value, end, companion_relocs)
+                companion_status, companion_reports = resolve_sites(
+                    helper, symbol_va - image_base - text_rva, exe_text, text_rva,
+                    image_base, pe, coff, obj_path, all_candidates, function_defs,
+                    data_defs, imports, explicit, global_symbols, oracle_function_vas)
+                entry["companion_relocations"] = companion_reports
+                if companion_status != "STRICT":
+                    status = companion_status
+                    reason += "; companion funclet relocation(s) " + companion_status
+            entry.update({"verified": status == "STRICT", "status": status, "reason": reason})
+            hard_mismatch |= status == "MISMATCH"
+            unresolved |= status != "STRICT"
+            reports.append(entry)
+            continue
+
         key = symbol_map_key(obj_path, symbol)
         observed = global_symbols.get(key)
         if key not in global_symbols or observed is None or observed != symbol_va:
@@ -660,6 +886,19 @@ def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: i
             entry.update({"verified": ok, "status": "STRICT" if ok else "RELOC-UNVERIFIED",
                           "reason": "oracle function entry bound for run" if ok else "target is not an oracle function entry"})
             unresolved |= not ok
+            reports.append(entry)
+            continue
+
+        if (symbol.section > 0 and symbol.section <= len(coff.sections)
+                and coff.sections[symbol.section - 1].name.lower().startswith(".xdata")):
+            eh_status, eh_reason, eh_detail = verify_eh_sections(
+                pe, coff, obj_path, coff.sections[symbol.section - 1],
+                symbol_va - symbol.value, global_symbols, imports, oracle_function_vas)
+            entry.update(eh_detail)
+            entry.update({"verified": eh_status == "STRICT", "status": eh_status,
+                          "reason": eh_reason})
+            hard_mismatch |= eh_status == "MISMATCH"
+            unresolved |= eh_status != "STRICT"
             reports.append(entry)
             continue
 
@@ -914,8 +1153,60 @@ def layout_warnings(obj_path: Path, locations: dict[tuple[str, int], tuple[int, 
     return warnings
 
 
+def bind_observed_symbols(loaded: list[tuple[Path, Coff, list[Function], dict[int, list[int]]]],
+                          locations: dict[tuple[str, int], tuple[int, str]],
+                          exe_text: bytes, text_rva: int, image_base: int,
+                          pe: pefile.PE) -> dict[str, int | None]:
+    observed: dict[str, set[int]] = defaultdict(set)
+    pending: list[tuple[Path, Coff, Section, int]] = []
+    queued: set[tuple[str, int, int]] = set()
+
+    def queue_section(obj_path: Path, coff: Coff, section: Section, base_va: int) -> None:
+        if not (section.name.lower().startswith(".text$")
+                or section.name.lower().startswith(".xdata")):
+            return
+        marker = (str(obj_path.resolve()), section.index, base_va)
+        if marker not in queued:
+            queued.add(marker)
+            pending.append((obj_path, coff, section, base_va))
+
+    for obj_path, coff, funcs, _hits_by_index in loaded:
+        for func in funcs:
+            location = locations.get((str(obj_path.resolve()), func.symbol.index))
+            if location is None:
+                continue
+            for reloc in func.relocs:
+                target = relocation_targets(reloc, func.section, location[0], exe_text,
+                                            text_rva, image_base, func.start)
+                symbol = coff.sym_by_index.get(reloc.symbol_index)
+                if target is not None and symbol is not None:
+                    observed[symbol_map_key(obj_path, symbol)].add(target[0])
+                    if (symbol.section > 0 and symbol.section <= len(coff.sections)
+                            and symbol.section != func.section.index):
+                        queue_section(obj_path, coff, coff.sections[symbol.section - 1],
+                                      target[0] - symbol.value)
+
+    while pending:
+        obj_path, coff, section, base_va = pending.pop()
+        for symbol in coff.symbols:
+            if (symbol.section == section.index and symbol.storage in (2, 3, 6)
+                    and symbol.value >= 0):
+                observed[symbol_map_key(obj_path, symbol)].add(base_va + symbol.value)
+        for reloc in section.relocations:
+            target = relocation_targets_pe(reloc, section, base_va + reloc.offset, pe)
+            symbol = coff.sym_by_index.get(reloc.symbol_index)
+            if target is None or symbol is None:
+                continue
+            observed[symbol_map_key(obj_path, symbol)].add(target[0])
+            if symbol.section > 0 and symbol.section <= len(coff.sections):
+                queue_section(obj_path, coff, coff.sections[symbol.section - 1],
+                              target[0] - symbol.value)
+    return {key: next(iter(values)) if len(values) == 1 else None
+            for key, values in observed.items()}
+
+
 def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, text_rva: int,
-                         at: dict[str, int]) -> tuple[dict[str, list[int]], dict[str, int | None],
+                         at: dict[str, int], explicit: dict[str, int]) -> tuple[dict[str, list[int]], dict[str, int | None],
                                                        dict[str, list[Function]], dict[str, list[tuple[Coff, Symbol]]],
                                                         dict[tuple[str, int], tuple[int, str]],
                                                         dict[tuple[str, int], dict[str, Any]],
@@ -970,28 +1261,134 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
                 location_issues[key] = (f"unique byte hit is mapped to {mapped_tu}; no same-TU order proof "
                                         "or cross-TU fold proof")
 
-    # Verified relocations from uniquely placed callers can distinguish a
-    # short helper whose identical body occurs at several oracle locations.
-    # This is placement evidence; a fold still needs a second object's body.
+    # Apply explicit target assertions before using calls as placement proof.
+    # Accepted functions are still checked for strict bytes and relocations
+    # below; forced mismatches therefore cannot become call witnesses.
+    for obj_path, _coff, funcs, hits_by_index in loaded:
+        obj_key = str(obj_path.resolve())
+        for func in funcs:
+            expected = at.get(func.name)
+            if expected is None:
+                continue
+            hit = expected - text_rva
+            if hit in hits_by_index.get(func.symbol.index, []):
+                key = (obj_key, func.symbol.index)
+                current = locations.get(key)
+                if current is None or current[0] != hit:
+                    locations[key] = (hit, "forced by --at")
+
+    # A located caller can prove an ambiguous direct callee when its bytes and
+    # all other relocations are strict. The unresolved REL32 itself is the
+    # placement witness, so do not require its target to be pre-bound.
     image_base = pe.OPTIONAL_HEADER.ImageBase
     oracle_function_vas = {image_base + rva for rva in oracle_function_starts()}
+    located_candidates: dict[str, list[int]] = defaultdict(list)
+    for obj_path, _coff, funcs, _hits in loaded:
+        for func in funcs:
+            location = locations.get((str(obj_path.resolve()), func.symbol.index))
+            if location is not None:
+                located_candidates[func.name].append(location[0])
+    located_candidates = {name: sorted(set(values)) for name, values in located_candidates.items()}
+    imports = import_map(pe)
+    initial_bindings = bind_observed_symbols(loaded, locations, exe_text, text_rva, image_base, pe)
     call_observations: dict[str, list[tuple[tuple[str, int], int]]] = defaultdict(list)
+    companion_witnesses: dict[tuple[str, int], set[tuple[str, int]]] = defaultdict(set)
+    # VC5 exception cleanup calls live in companion .text$x sections. Verify
+    # that whole linked section graph, then let its direct REL32s witness the
+    # placement of ambiguous function bodies referenced by the parent method.
+    for obj_path, coff, funcs, hits_by_index in loaded:
+        obj_key = str(obj_path.resolve())
+        for func in funcs:
+            caller_key = (obj_key, func.symbol.index)
+            location = locations.get(caller_key)
+            if location is None or location[0] not in hits_by_index.get(func.symbol.index, []):
+                continue
+            for reloc in func.relocs:
+                symbol = coff.sym_by_index.get(reloc.symbol_index)
+                if (symbol is None or not symbol.name.startswith("$L") or symbol.storage != 6
+                        or symbol.section <= 0 or symbol.section > len(coff.sections)
+                        or symbol.section == func.section.index):
+                    continue
+                section = coff.sections[symbol.section - 1]
+                if not section.name.lower().startswith(".text$"):
+                    continue
+                label_target = relocation_targets(reloc, func.section, location[0], exe_text,
+                                                  text_rva, image_base, func.start)
+                if label_target is None:
+                    continue
+                eh_status, _eh_reason, eh_detail = verify_eh_sections(
+                    pe, coff, obj_path, section, label_target[0] - symbol.value,
+                    initial_bindings, imports, oracle_function_vas)
+                if eh_status != "STRICT":
+                    continue
+                for detail in eh_detail["exception_relocations"]:
+                    name = detail.get("symbol", "")
+                    if detail.get("type") != "REL32" or detail.get("status") != "STRICT":
+                        continue
+                    definitions = function_defs.get(name, [])
+                    if len(definitions) != 1:
+                        continue
+                    target_va = int(detail["target"], 16)
+                    raw_hits = candidates_for(definitions[0], exe_text)
+                    if (target_va in oracle_function_vas
+                            and target_va - image_base - text_rva in raw_hits):
+                        call_observations[name].append((caller_key, target_va))
+                        companion_witnesses[caller_key].add((name, target_va))
     for obj_path, coff, funcs, _hits_by_index in loaded:
         obj_key = str(obj_path.resolve())
         for func in funcs:
             caller_key = (obj_key, func.symbol.index)
             location = locations.get(caller_key)
-            if location is None or location[1] not in ("unique", "placed by TU order"):
+            if location is None or location[1] not in ("unique", "placed by TU order",
+                                                        "placed by verified references", "forced by --at"):
                 continue
+            if location[0] not in _hits_by_index.get(func.symbol.index, []):
+                continue
+            caller_status, caller_relocations = resolve_sites(
+                func, location[0], exe_text, text_rva, image_base, pe, coff, obj_path,
+                located_candidates, function_defs, data_defs, imports, explicit,
+                initial_bindings, oracle_function_vas)
+            if caller_status == "MISMATCH":
+                continue
+            if caller_status != "STRICT":
+                unresolved = [r for r in caller_relocations if r.get("status") != "STRICT"]
+                call_witnesses_only = bool(unresolved)
+                for report in unresolved:
+                    defs = function_defs.get(report.get("symbol", ""), [])
+                    candidate_reference = (report.get("type") == "REL32"
+                                           or report.get("type") == "DIR32"
+                                           and len(defs) == 1 and defs[0].symbol.is_function)
+                    if (report.get("status") != "RELOC-UNVERIFIED"
+                            or not candidate_reference or len(defs) != 1):
+                        call_witnesses_only = False
+                        break
+                    raw_hits = sorted(set(candidates_for(defs[0], exe_text)))
+                    target_va = int(report.get("effective_target_va", "0"), 16)
+                    direct_witness = (target_va in oracle_function_vas
+                                      and target_va - image_base - text_rva in raw_hits)
+                    companion_witness = (report.get("symbol", ""), target_va) in companion_witnesses[caller_key]
+                    if (len(raw_hits) <= 1 or not (direct_witness or companion_witness)):
+                        call_witnesses_only = False
+                        break
+                if not call_witnesses_only:
+                    continue
             for reloc in func.relocs:
                 symbol = coff.sym_by_index.get(reloc.symbol_index)
-                if symbol is None or symbol.name not in function_defs or reloc.typ != 0x0014:
+                if (symbol is None or symbol.name not in function_defs
+                        or reloc.typ not in (0x0006, 0x0014)
+                        or reloc.typ == 0x0006 and not symbol.is_function):
                     continue
                 if len(function_defs[symbol.name]) != 1:
                     continue
+                definition = function_defs[symbol.name][0]
+                raw_hits = sorted(set(candidates_for(definition, exe_text)))
+                if not raw_hits:
+                    continue
                 target = relocation_targets(reloc, func.section, location[0], exe_text, text_rva,
                                             image_base, func.start)
-                if target is not None and target[2] == 0:
+                if (target is not None and target[2] == 0
+                        and target[1] in oracle_function_vas
+                        and target[1] - image_base - text_rva in raw_hits):
                     call_observations[symbol.name].append((caller_key, target[1]))
     for name, observations in call_observations.items():
         defs = function_defs.get(name, [])
@@ -1008,13 +1405,13 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
             continue
         targets = {target for _caller, target in observations}
         callers = {caller for caller, _target in observations}
-        if len(targets) != 1 or len(callers) < 2:
+        if len(targets) != 1 or not callers:
             continue
         target_va = next(iter(targets))
         target_offset = target_va - image_base - text_rva
         raw_hits = candidates_for(definition, exe_text)
         if (target_va in oracle_function_vas and target_offset in raw_hits):
-            locations[key] = (target_offset, "placed by verified call targets")
+            locations[key] = (target_offset, "placed by verified references")
     folded: dict[tuple[str, int], dict[str, Any]] = {}
     coff_by_key = {str(obj_path.resolve()): coff for obj_path, coff, _funcs, _hits in loaded}
     hits_by_key = {(str(obj_path.resolve()), func.symbol.index): hits_by_index[func.symbol.index]
@@ -1030,7 +1427,7 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
             continue
         targets = {target for _caller, target in observations}
         callers = {caller for caller, _target in observations}
-        if len(targets) != 1 or len(callers) < 2:
+        if len(targets) != 1 or not callers:
             continue
         target_va = next(iter(targets))
         offset = target_va - image_base - text_rva
@@ -1070,21 +1467,6 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
                                     f"independently located in {owner_tu}"}
             location_issues.pop(key, None)
             break
-    # Apply explicit manifest assertions after independent byte/order/call
-    # proofs so the report retains the actual proof basis when they agree.
-    for obj_path, _coff, funcs, hits_by_index in loaded:
-        obj_key = str(obj_path.resolve())
-        for func in funcs:
-            expected = at.get(func.name)
-            if expected is None:
-                continue
-            hit = expected - text_rva
-            if hit not in hits_by_index.get(func.symbol.index, []):
-                continue
-            key = (obj_key, func.symbol.index)
-            current = locations.get(key)
-            if current is None or current[0] != hit:
-                locations[key] = (hit, "forced by --at")
     for obj_path, _coff, funcs, _hits_by_index in loaded:
         for func in funcs:
             location = locations.get((str(obj_path.resolve()), func.symbol.index))
@@ -1092,23 +1474,7 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
                 candidates[func.name].append(location[0])
     candidates = {name: sorted(set(values)) for name, values in candidates.items()}
 
-    observed: dict[str, set[int]] = defaultdict(set)
-    image_base = pe.OPTIONAL_HEADER.ImageBase
-    for obj_path, coff, funcs, hits_by_index in loaded:
-        for func in funcs:
-            location = locations.get((str(obj_path.resolve()), func.symbol.index))
-            if location is None:
-                continue
-            base = location[0]
-            for reloc in func.relocs:
-                target = relocation_targets(reloc, func.section, base, exe_text, text_rva, image_base, func.start)
-                symbol = coff.sym_by_index.get(reloc.symbol_index)
-                if target is None or symbol is None:
-                    continue
-                observed[symbol_map_key(obj_path, symbol)].add(target[0])
-    global_symbols: dict[str, int | None] = {}
-    for key, values in observed.items():
-        global_symbols[key] = next(iter(values)) if len(values) == 1 else None
+    global_symbols = bind_observed_symbols(loaded, locations, exe_text, text_rva, image_base, pe)
     return candidates, global_symbols, dict(function_defs), dict(data_defs), locations, folded, location_issues
 
 
@@ -1132,7 +1498,7 @@ def main() -> int:
     imports = import_map(pe)
     object_paths = [path.resolve() for path in args.objects]
     shared_candidates, global_symbols, function_defs, data_defs, locations, folded, location_issues = collect_global_state(
-        object_paths, pe, exe_text, text_rva, at)
+        object_paths, pe, exe_text, text_rva, at, explicit)
     oracle_function_vas = {pe.OPTIONAL_HEADER.ImageBase + rva for rva in oracle_function_starts()}
     all_results = []
     for obj_path in object_paths:
@@ -1154,7 +1520,7 @@ def main() -> int:
         print(f"{obj_path.name}: functions={len(result['functions'])} wildcard-hit={wildcard} exact-byte-functions={exact_bytes} "
               f"strict={counts['STRICT']} folded={counts['FOLDED']} reloc-unverified={counts['RELOC-UNVERIFIED']} mismatch={counts['MISMATCH']} "
               f"locations(unique={placement_counts['unique']}, placed by TU order={placement_counts['placed by TU order']}, "
-              f"placed by verified calls={placement_counts['placed by verified call targets']}, "
+              f"placed by verified references={placement_counts['placed by verified references']}, "
               f"forced={placement_counts['forced by --at']}, ambiguous={placement_counts['ambiguous']})")
         for warning in result["layout_warnings"]:
             print(f"  layout warning: {warning}")

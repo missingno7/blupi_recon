@@ -48,7 +48,7 @@ remain `STRICT`.
 ## Comparator statuses
 
 - **STRICT** means one proved code location matches every non-relocation byte;
-  the location can be unique by bytes, placed by TU order or verified calls, or
+  the location can be unique by bytes, placed by TU order or verified references, or
   anchored by an accepted `--at` assertion;
   each relocation has one run-wide symbol binding; imports resolve to their
   IAT slots; calls to reconstructed functions land at their unique matched
@@ -56,9 +56,9 @@ remain `STRICT`.
   referenced data lands in the expected PE section with identical initialized
   bytes.
 - **FOLDED** means the candidate body matches exactly, an object from another
-  TU independently emits that same body, and verified call relocations from at
-  least two placed caller objects land on the shared oracle body. A map entry or
-  raw oracle reference alone cannot establish folding. Calls bind to the owner
+  TU independently emits that same body, and verified function references from
+  one or more placed caller objects land on the shared oracle body. A map entry
+  or raw oracle reference alone cannot establish folding. Calls bind to the owner
   address. The manifest records the owner symbol/RVA; folded code is reported
   separately, excluded from the originating TU's owned-byte count, and counted
   once under its owner.
@@ -68,26 +68,37 @@ remain `STRICT`.
   differs, or a forced accepted RVA no longer matches.
 
 The comparator reports each location as `unique`, `placed by TU order`,
-`placed by verified call targets`, `forced by --at`, or unresolved. For
+`placed by verified references`, `forced by --at`, or unresolved. For
 identical-byte hits it uses the nearest unique locations in the same object's
 function order. Same-TU object order takes precedence over a stale TU-map
 boundary. A TU boundary and one unique neighbour can prove a placement
 when the function extent and 16-byte `/O2` alignment fit the observed gap,
 allowing intervening unlocated function sections to have been dead-stripped;
-otherwise the function stays ambiguous. A helper can also be placed when
-multiple uniquely located callers target the same candidate, which is an
-oracle function start.
-Only selected locations contribute relocation bindings. A conflict between
-selected bindings is a mismatch. The JSON and console report adjacent object
-functions whose oracle gap is not just 16-byte alignment padding.
+otherwise the function stays ambiguous. A uniquely located caller can also
+place an identical-byte candidate when its code bytes and every other
+relocation are STRICT, and its direct call or function-address relocation lands
+on that candidate at an oracle function start. Only selected locations contribute
+relocation bindings. A conflict between selected bindings is a mismatch. The
+JSON and console report adjacent object functions whose oracle gap is not just
+16-byte alignment padding.
 
 The report gives function code size separately from trailing `/O2` alignment
 padding. Padding is not counted as function body coverage. Folded functions do
 not generate TU-order layout warnings.
 
-The UI cluster's compiler-generated switch labels are listed as explicit
-`symbol_mappings` in `recon.json`; their addresses were checked against static
-oracle disassembly and are described in [docs/UI_CLUSTER.md](UI_CLUSTER.md).
+Compiler-generated UI switch labels that cannot be derived from their function
+section remain explicit `symbol_mappings` in `recon.json`. Ordinary function
+local labels resolve from section-relative offsets. For VC5 exception handlers,
+the verifier also compares companion `.text$x` funclet bytes and checks their
+relocations plus linked `.xdata$x` bytes and relocations. The absolute
+`__except_list` symbol is checked as `FS:0`. These checks preserve relocation
+fields for separate target validation; they do not treat masked bytes as a
+match.
+
+Call placement needs an actual direct relocation in a STRICT caller. If no
+built object references an ambiguous method, the verifier leaves it unresolved
+even when the body bytes are identical; for example, `CEvent::SetDemo` remains
+excluded because the current object set has no direct incoming relocation.
 
 The current known data exception is `__FILE__`: `msvc.py` passes an absolute
 source path, producing `D:\Prog\blupi_recon\src\sound.cpp`, while the oracle

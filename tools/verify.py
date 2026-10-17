@@ -197,18 +197,18 @@ def report(results: list[dict[str, Any]], unit_order: list[str]) -> tuple[dict[s
         counts = {key: sum(f["status"] == key for f in functions)
                   for key in ("STRICT", "FOLDED", "RELOC-UNVERIFIED", "MISMATCH")}
         bases = {key: sum(f.get("placement_basis") == key for f in functions)
-                 for key in ("unique", "placed by TU order", "placed by verified call targets", "forced by --at")}
+                 for key in ("unique", "placed by TU order", "placed by verified references", "forced by --at")}
         unresolved_locations = sum(f.get("placement_basis") in ("ambiguous", "unlocated") for f in functions)
         intervals = intervals_by_owner[unit]
         covered = union_size(intervals)
         location_counts = (f"{bases['unique']}/{bases['placed by TU order']}/"
-                           f"{bases['placed by verified call targets']}/{bases['forced by --at']}/"
+                           f"{bases['placed by verified references']}/{bases['forced by --at']}/"
                            f"{unresolved_locations}")
         print(f"{unit:<22}  {len(functions):>9}  {counts['STRICT']:>6}  {counts['FOLDED']:>6}  "
               f"{counts['RELOC-UNVERIFIED']:>10}  {counts['MISMATCH']:>8}  "
               f"{location_counts:>16}  "
               f"{covered:>5} / {GAME_TEXT_SIZE}")
-    print("Location counts U/P/C/F/A = unique / placed by TU order / placed by verified calls / forced by --at / unresolved.")
+    print("Location counts U/P/C/F/A = unique / placed by TU order / placed by verified references / forced by --at / unresolved.")
     for owner, intervals in sorted(folded_owner_intervals.items()):
         covered = union_size(intervals)
         print(f"folded owner {owner}: {covered} game .text bytes")
