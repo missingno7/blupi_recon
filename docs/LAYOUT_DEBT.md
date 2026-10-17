@@ -222,3 +222,178 @@ accepted-header gate. Their inherited SB2 behaviors are not certified by member
 renaming. There is no remaining blocker to reviewing/integrating this five-file
 proposal and accepting BlupiStep. Final checks found no compiler/Python worker
 left running; no background campaign is intentionally retained.
+
+## Follow-up 2: CDecor allocation tail — unresolved
+
+[EVIDENCE] The first-round layout and BlupiStep have been integrated. This
+follow-up snapshots the new canonical tree in `scratch/layout/tail-baseline/`.
+The manifest has 361 active entries (358 STRICT, 3 FOLDED). A full shared-header
+copy under `scratch/layout/integration2/src/` passes that complete gate. No
+canonical input or catalog was edited in this follow-up.
+
+[EVIDENCE] **DoInit is still MISMATCH.** Its 2,801-byte oracle body / 2,816-byte
+compared extent differs only at +9a3/+9a4/+9a5, inside the immediate of the
+`push` at RVA 2892. Oracle allocation is 258d4. The present SP3 sizeof(CDecor)
+is **dbd8**, not dbec; the present gap is **17cfc = 97,532 bytes**. The earlier
+approximate dbec figure would give 97,512. This distinction is measured rather
+than adjusted through a source constant. The 235 DoInit relocations are not
+certified by the fixed-byte near match.
+
+### Static access and computed-address audit
+
+[EVIDENCE] `scratch/layout/tail_scan.py` scans every operand in all **407
+inventory functions before the CRT boundary at 238b0: 39,693 instructions**,
+including all **154 functions in the six CDecor TU blocks**. Capstone decodes
+every byte of those inventory function bodies. Output:
+`build/layout/tail-scan/scan.json`. The initial raw scan over all 579 oracle
+functions, including CRT, is also retained as `build/layout/tail-raw-scan.json`.
+
+[EVIDENCE] There are **24 based-memory displacement hits >=d208 and <40000**
+in game functions, all in CurrentWrite (14da0, 12) and CurrentRead (153d0, 12).
+They are accesses to the **separately malloc'd DescGameFile buffer**, not the
+CDecor object. At 14dfd the target pushes d490, calls malloc at 14e02, and
+saves the returned pointer in EBX; at 15429 it allocates the same file buffer.
+CurrentWrite keeps CDecor in EBP. Its `rep stosd` at 14e20 zeros d490 bytes
+through **EDI=EBX**, while subsequent source addresses use EBP. The largest
+false-positive file displacement is d3c4. No direct based-memory displacement
+at or beyond the current class end dbd8 was found.
+
+[EVIDENCE] `scratch/layout/tail_cfg.py` additionally follows register copies,
+LEA, add/sub, global g_pDecor loads (VA 47e74c), CFG branches/backedges and VC5
+indexed switch tables. After switch expansion, all 39,693 decoded instructions
+are reached. It records **4,856 possible this-derived memory/address uses**,
+including indexed forms and addresses accumulated before dereference, and
+**39 this-rooted bulk-copy/fill instructions**. None has a retained base anchor
+>=d208. The highest explicit recovered anchor is d07c at 83ea, an element
+address in the existing last-decor-index array. Output:
+`build/layout/tail-scan/cfg-aliases.json`.
+
+[OPEN] This CFG pass is triage, not a complete pointer-range proof: stack-spill
+alias recovery, arbitrary pointer loads, returned-pointer summaries and numeric
+index bounds are not modeled. Widened index expressions keep their base anchor.
+Negative output therefore does not prove that no conceivable indirect access
+exists. Raw operands, target pseudocode and the following loop checks provide
+the concrete evidence; no new member is inferred solely from a taint label.
+
+[EVIDENCE] The audit also inspected inventory gaps. There are 381 gaps totaling
+5,528 bytes; nine contain something besides alignment. Their code portions
+include the window procedure at 1610, timer callback at 1c50, small constructor
+at 29f0 and network callbacks at 209c0/20b50; others contain switch tables.
+A bytewise candidate scan is retained in
+`build/layout/tail-scan/gap-bytewise-hits.json`. Its apparent large operands
+decode from instruction interiors or table bytes: e.g. 2a0f lies inside the
+real `mov [eax+dc],ecx` at 2a0a. No validated tail access was recovered there.
+Gap extents are in `build/layout/tail-scan/gaps.json`.
+
+### Bulk arrays and constructor/destructor constraints
+
+[EVIDENCE] All 45 CDecor-block MOVS/STOS instructions were inspected, including
+the six involving only stack/file buffers. Their families are:
+
+| Runtime storage | Evidenced range/size | Representative target sites |
+|---|---|---|
+| decor / bigDecor grids | 10..4e30 / 4e30..9c50, 20,000 bytes each | 14e49/14e5c copy out; 15491/154a4 copy in |
+| MoveObject[200] and record temporaries | 9c50..c1d0, 200 x 48 bytes; 48-byte copies | 14cbb clear; 13ae8, 13b4e, 13c6d..13c92 |
+| rank/link caisse arrays | 200 ints each at c284/c5a8 | 14f0d/14f2c, 15555/15574 |
+| FIFO / start positions | 10 POINTs at c97c; 4 POINTs at c9cc | 15155/15168, 15797/157b0 |
+| mission/notification strings | c218[100]; four 100-byte notifications at cb9c | 8550/8557, 114df/114e7, 11554/11560 |
+| doors[100] | cdd4..ce9c, 200 bytes | 3b7b, 15271/158c1, 16210/16214 |
+| lastDecorIndexes initialization | cee8..d208, **200 dwords = 800 bytes** | constructor 3930..3945 |
+| DescGameFile local heap buffer | d490 bytes on a separate allocation | 14dfd/14e20, 15429/1543f |
+
+[EVIDENCE] Constructor 3910 (STRICT, 158 body / 160 compared bytes) constructs
+only its two CJauge elements at cd30, stride 30; it clears the 200 indices with
+`lea edi,[esi+cee8]; mov ecx,c8; rep stosd`. The last byte of that clear is
+**d207**. Destructor 39b0 (STRICT, 22 / 32) destroys only those two jauges.
+These bodies are compatible with extra trivial/uninitialized members, but
+identify neither their element types nor their dimensions. The constructor's
+clear proves an initialized extent, not that no longer unused array could exist.
+
+[EVIDENCE] `scratch/layout/tail_measure.py` emits a separate, diagnostic offset
+table through the required whole-tree verifier. It changes no class declaration.
+`build/layout/tail-size-probe/layout.json` records:
+
+| Current declaration | Offset | Size | SB1 tail evidence |
+|---|---:|---:|---|
+| m_lastDecorIndexes[200] | cee8 | 320 | Clear of exactly 200 dwords and editor element accesses |
+| m_blupiTimeNoAsc | d208 | 4 | Inherited compatibility member; no target offset evidence recovered |
+| m_balleTraj | d20c | 4e3 | Inherited 1,251-byte SB2 bitmap; no target offset evidence recovered |
+| m_moveTraj | d6ef | 4e3 | Same limitation |
+| m_detectIcon | dbd4 | 4 | Inherited compatibility member; no target offset evidence recovered |
+
+[EVIDENCE] The known index declaration ends at d208. Existing unproved tail
+declarations occupy 9d0 = 2,512 bytes including alignment; target capacity after
+that initialized extent is **258d4 - d208 = 186cc = 100,044 bytes**. Treating
+the current compatibility members as a proved prefix of a new 97,532-byte tail
+would introduce an additional unsupported layout assumption.
+
+### Ancestor comparison and rejected size-only partitions
+
+[EVIDENCE] The read-only SB2 reconstruction ends its class with:
+`m_lastDecorIndexes[200]`, `int reserve[11]`, `BYTE dummy[100000]`.
+Removing the current compatibility tail and borrowing those placeholders would
+give the exact arithmetic:
+
+`cee8 + 200*4 + 11*4 + 100000 = 258d4`.
+
+[HYPOTHESIS] This coincidence may explain where a prior reconstruction chose
+its size placeholder. It does **not** establish 11 original int fields, a
+100,000-byte original member, or their purposes. SB2's README explicitly
+describes a binary reconstruction with defects/missing features; its dummy
+declaration is not an independently recovered SB1 member. No filler variant
+was compiled or proposed as a match.
+
+[EVIDENCE] Planet Blupi v1.8.0 has an undo **pointer** m_pUndoDecor near the
+start of CDecor; UndoOpen mallocs its grid and UndoCopy/UndoBack memcpy that
+separate allocation (`external/planetblupi/src/decor.cxx`, UndoOpen..IsUndo).
+Its m_decorMem grid is also near the class start, not a tail continuation.
+Its real tail contains m_cheminWork, m_cheminNbPos, m_cheminPos/m_cheminRank
+and fill-search state. The original-style local v1.7.0 `decor.h` was also read
+through `git show` and saved under `build/layout/pb17-decor.h`; it has the undo
+pointer and path/fill tail, with no 100,000-byte dummy. PB field existence does
+not establish their presence or layout in SB1.
+
+[HYPOTHESIS; unsupported] With SB1's 100x100 grid and measured Cellule size 2,
+five grids use 100,000 bytes. One POINT grid plus one Cellule grid also uses
+100,000 bytes. Eleven more ints would make either partition fit 100,044 bytes.
+Neither interpretation has a corresponding address, copy, count or editor-undo
+operation in the recovered target evidence. Choosing between them by the size
+operand alone would manufacture source members. PB's path-work byte grid would
+be 10,000 bytes under SB1 dimensions, not a uniquely determined remainder.
+
+[EVIDENCE] Demo buffers have another evidenced owner: accepted CEvent::DemoPlayStart
+at 1c7e0 uses m_pDemoBuffer and a **separate 40,000-byte allocation**
+(MAXDEMO=10000, DemoEvent two shorts). Canonical event.h/event.cpp agree with
+that STRICT body. No evidence moves those records into CDecor.
+
+### Deliverable status and verification
+
+[EVIDENCE] `scratch/layout/integration2/audit.json` and
+`build/layout/tail-final/` retain the complete 20-TU CLI, objects, results
+and accepted gate. A second whole-tree diagnostic run (`tail-size-probe`)
+also preserves the entire accepted set. No new strict bytes are claimed.
+BlupiStep remains STRICT; DoInit remains the three-byte allocation near miss.
+
+[OPEN] **No evidence-backed C++ tail proposal is available.** The requested
+`scratch/layout/integration2/integration.patch` is deliberately empty and its
+README marks it **partial / not an integration change**. The accompanying
+`src/decor.h` is an unchanged canonical snapshot, and `tail-constraints.json`
+records measured sizes plus the missing evidence. There is no substituted size,
+opaque byte array, fake undo buffer, or acceptance claim to integrate.
+
+[OPEN] Closing DoInit now requires independent member/type evidence (for example
+original headers, debug types, or an actual target-derived tail-access/copy
+pattern). The allocation operand proves requested storage capacity; by itself
+it cannot name or partition unaccessed storage. Further array-size permutations
+would only satisfy that operand and are not a valid matching investigation.
+
+### Compiler findings — tail follow-up
+
+- **Size operand is genuine layout debt.** Trigger: three bytes in DoInit's
+  `new CDecor` immediate. Original/candidate: allocation 258d4 versus the
+  unchanged canonical class's measured dbd8. SP3 `/W3 /GX /O2 /ML /Gd /Gy`,
+  complete 20-TU copies; both the normal run and diagnostic offset-table run
+  preserve all 361 accepted entries. DoInit remains MISMATCH with 2,816-byte
+  extent and 235 relocations not certified by this near match. No artificial
+  header/context or allocation override was tested. `VC5-SEM-01`.
+  **Classification: blupi-specific evidence; no new compiler transformation.**
