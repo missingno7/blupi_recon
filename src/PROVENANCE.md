@@ -215,3 +215,9 @@ previous strict `VoyageStep`/`CurrentWrite` source forms.
 - `CPixmap::Create`: `SetDisplayMode(dim.x, dim.y, bTrueColor ? 16 : 8)` uses the parameter (the oracle reads the register holding it, not the member) and `m_dim = dim;` in Planet Blupi order; this removed the global zero-register promotion (597 -> 4 differing bytes; still one scheduling swap at +0x12d).
 - `AddCDPath` (misc.cpp): SB1 drops the `daniel` special case and tests five prefixes (data, image, image08, image16, movie) before adding `..\` (oracle strings); Planet Blupi branch structure. Still 3 regions (branch layout of the merged copy tails).
 - `CEvent::ChangePhase`: best known body from the Sol WIP (if-chain instead of the SB2 `switch`, DOQUIT close check, SETUPp in the music list, demo worlds 200-219, MESS_LEAVE on cancel); 1,879/2,029 oracle instructions align, remaining residue is the function-wide ebx/edi assignment of the promoted 0 / WM_PHASE_PLAY constants.
+
+## Follow-up 22: icon atlases (sol-relink)
+
+[EVIDENCE] `pixtables.h` now carries SB1 values for `table_icon_blupi` (291 icons, RVA `0x78dd8`), `table_icon_object` (246, `0x79b80`) and `table_icon_element` (187, `0x7a710`), keeping the SB2 schema (count, then x/y, offset x/y, width/height per icon). Their numeric initializers are taken from target `.data`; each array ends before the next independently anchored table, and all 8,694 bytes match without masking. `dectables.cpp` includes `pixtables.h` so the tables are defined. Clean `verify.py --accept`: zero regressions, all emitted function sections unchanged. Recovery procedure: `scratch/sol-relink/recover_atlas.py`; tooling and data coverage: [docs/RELINK.md](../docs/RELINK.md).
+
+[OPEN] `table_icon_explo` has count 54 in the oracle, but 54 full rows would overlap the MouseHotSpot table at `0x7b260`; the SB2 initializer was replaced by its extern declaration until SB1's real extent is established.

@@ -1,0 +1,294 @@
+# Full relink and initialized data (sol-relink, 2026-10-17)
+
+## Result
+
+[EVIDENCE] `tools/relink.py` builds the 20 manifest TUs serially through
+`msvc.py`, then invokes the pinned SP3 linker without executing the result.
+The canonical link stops with **16 distinct multiply defined symbols and
+10 unresolved symbols**. The delivered data-only candidate reduces the latter
+to **seven**. Neither run produces a successful `BLUPI.EXE`; there is no
+whole-image match or measured linked section shift to report. Failure removes
+any partial image/empty map rather than leaving a stale successful artifact.
+
+[EVIDENCE] All **402 active accepted entries (399 STRICT, three FOLDED)**
+retain their gate result, address and size in the available sandbox check.
+Sound has the documented historical-path INCOMPLETE exception. Measured
+object-code coverage is **110,720 / 141,488 bytes**, 208 below the authoritative
+110,928-byte figure because `CreateSoundBuffer` cannot prove its path literal
+here. No newly STRICT function is claimed. All **718 emitted function
+sections**, including unmatched/header bodies, have identical raw payloads
+before and after the proposed data change.
+
+## Reproduce
+
+[EVIDENCE] From the repository root, with the repo-local interpreter:
+
+```powershell
+.pyenv\python.exe tools\relink.py
+.pyenv\python.exe tools\relink.py --link-only
+.pyenv\python.exe tools\datacmp.py --comparison build/relink/results.json --csv-out build/relink/data.csv
+```
+
+[EVIDENCE] `relink.py` writes objects, isolated compile logs, linker transcript,
+response file and input/tool/library hashes under `build/relink/`. It uses
+manifest flags `/W3 /GX /O2 /ML /Gd /Gy`, manifest defines and DirectX headers;
+`sound.cpp` goes through the existing `msvc.py --build-path` mechanism only.
+`--link-only` reuses those objects. `--objects-dir` accepts a separate verified
+object run. `--linker 7255|1592|1691|1197` selects other documented 5.10
+candidates while keeping SP3 LIBC; `--opt ref,noicf` and `--order manifest`
+support controlled future comparisons. No alternate linker is claimed to
+solve a source-definition failure.
+
+[EVIDENCE] `relink.py` calls the existing verifier's comparator, CRT-evidence
+and regression-check functions on its objects before attempting the link,
+writing `results.json`, `gate.json` and `verify.log`. A real accepted-function
+regression prevents linking. The two supplemental CRT evidence objects are
+never link inputs. The source
+candidate was evaluated using the required CLI:
+
+```powershell
+.pyenv\python.exe tools\verify.py --tu src/dectables.cpp=scratch/sol-relink/atlas/dectables.cpp --build-dir sol-relink-data
+git apply --check scratch/sol-relink/atlas/atlas.patch
+```
+
+[EVIDENCE] The verifier exited zero with its expected sound INCOMPLETE note.
+Its generated directory was subsequently moved into the assigned
+`build/relink/atlas-gate/`; `results-original.json` retains the original report,
+and a fresh comparison at the archived object paths again has no regressions.
+The original verifier transcript is `scratch/sol-relink/atlas-gate.log`.
+
+```powershell
+.pyenv\python.exe tools\datacmp.py --objects-dir build/relink/atlas-gate/objects --comparison build/relink/atlas-gate/results.json --source-dir scratch/sol-relink/atlas --json-out build/relink/data-atlas.json --csv-out build/relink/data-atlas.csv
+.pyenv\python.exe tools\relink.py --objects-dir build/relink/atlas-gate/objects --out-dir build/relink/atlas-link
+```
+
+## Exact link command and order
+
+[EVIDENCE] The command is:
+
+```text
+C:\tools\msvc5_sp3\VC\BIN\LINK.EXE @D:\Prog\blupi_recon\build\relink\link.rsp
+```
+
+[EVIDENCE] `link.rsp` contains the following arguments, one per line. Object
+filenames retain manifest indices, but their link order follows the observed
+TU blocks in `oracle/tu_map.csv`, not the manifest's historical insertion
+order. The two reconstruction-only data TUs have no oracle code block and
+remain at the tail in manifest order. Their original data ownership/order is
+OPEN; this ordering is not presented as a recovered original project file.
+
+```text
+/nologo
+/machine:i386
+/subsystem:windows,4.0
+/entry:WinMainCRTStartup
+/base:0x400000
+/align:4096
+/fixed
+/incremental:no
+/nodefaultlib
+/opt:ref
+/opt:icf
+/out:D:\Prog\blupi_recon\build\relink\BLUPI.EXE
+/map:D:\Prog\blupi_recon\build\relink\BLUPI.map
+D:\Prog\blupi_recon\build\relink\objects\10_blupi.obj
+D:\Prog\blupi_recon\build\relink\objects\00_button.obj
+D:\Prog\blupi_recon\build\relink\objects\01_ddutil.obj
+D:\Prog\blupi_recon\build\relink\objects\14_decblock.obj
+D:\Prog\blupi_recon\build\relink\objects\15_decdesign.obj
+D:\Prog\blupi_recon\build\relink\objects\17_decblupi.obj
+D:\Prog\blupi_recon\build\relink\objects\11_decnet.obj
+D:\Prog\blupi_recon\build\relink\objects\16_decmove.obj
+D:\Prog\blupi_recon\build\relink\objects\12_decor.obj
+D:\Prog\blupi_recon\build\relink\objects\13_event.obj
+D:\Prog\blupi_recon\build\relink\objects\02_jauge.obj
+D:\Prog\blupi_recon\build\relink\objects\03_menu.obj
+D:\Prog\blupi_recon\build\relink\objects\04_misc.obj
+D:\Prog\blupi_recon\build\relink\objects\05_movie.obj
+D:\Prog\blupi_recon\build\relink\objects\06_network.obj
+D:\Prog\blupi_recon\build\relink\objects\07_pixmap.obj
+D:\Prog\blupi_recon\build\relink\objects\08_sound.obj
+D:\Prog\blupi_recon\build\relink\objects\09_text.obj
+D:\Prog\blupi_recon\build\relink\objects\18_dectables.obj
+D:\Prog\blupi_recon\build\relink\objects\19_obstacle.obj
+C:\tools\msvc5_sp3\VC\LIB\LIBC.LIB
+C:\tools\msvc5_sp3\VC\LIB\OLDNAMES.LIB
+C:\tools\msvc5_sp3\VC\LIB\kernel32.lib
+C:\tools\msvc5_sp3\VC\LIB\user32.lib
+C:\tools\msvc5_sp3\VC\LIB\gdi32.lib
+C:\tools\msvc5_sp3\VC\LIB\winmm.lib
+C:\tools\dx6sdk\lib\dsound.lib
+C:\tools\dx6sdk\lib\ddraw.lib
+C:\tools\dx6sdk\lib\dplayx.lib
+C:\tools\dx6sdk\lib\dxguid.lib
+```
+
+[EVIDENCE] SP3 recognizes `/OPT:REF` and `/OPT:ICF`. An initial
+`/FILEALIGN:512` argument was rejected as unrecognized and removed; 512 is the
+documented controlled-probe default, not an option silently presumed applied.
+`/ALIGN:4096` is recognized but emits LNK4108. The startup **symbol** is used;
+forcing numerical entry RVA `0x24d40` would conceal layout errors. The final
+RVA must emerge naturally after source sizes, extraction and folding match.
+
+[HYPOTHESIS] Import-library order follows the oracle descriptor order:
+KERNEL32, USER32, GDI32, WINMM, DSOUND, DDRAW, DPLAYX. The earlier controlled
+5.10 test distinguishes descriptor order from the DLL-sorted IAT. Full-game
+descriptor/IAT equality cannot be checked until a successful link exists.
+
+## Link blockers and section comparison
+
+[EVIDENCE] The 16 duplicate names are the 14 ordinary POINT operators in
+`def.h` (emitted in 17 TUs), plus `GetBlupiChannelActual` and
+`GetBlupiChannelStandard` defined in both decblock and decblupi. `/Gy` places
+the ordinary operators in COMDAT sections with selection 1 (NODUPLICATES);
+`/OPT:REF,ICF` does not make these duplicate definitions legal. No
+`/FORCE:MULTIPLE`, unresolved stubs, aliases, object editing or forced RVAs
+were used. Header/linkage repair must pass the shared-header regression gate.
+
+[EVIDENCE] The seven unresolved names after the data patch are
+`CPixmap::BackgroundCache(int,const char*,POINT,POINT,BOOL)`, the eight-argument
+`CPixmap::CacheAll`, `CPixmap::GetTrueColorBack`,
+`CPixmap::GetTrueColorDecor`, `CDecor::DecorNextAction`, the **two-argument**
+`CDecor::PlaySoundA(int,POINT)`, and `table_icon_explo`. The three-argument
+PlaySound body exists; the extra two-argument declaration has no body.
+`OLDNAMES.LIB` resolves the initial `_ftime` and `_mkdir` failures without a
+source change. Removing unused VFW/OLE/ADVAPI/COMDLG library inputs adds no
+new unresolved symbols. Logs and exact decorated names are in each
+`build.json` and `link.log`.
+
+| Section | Oracle RVA / virtual bytes | Measured state |
+|---|---|---|
+| `.text` | `0x1000` / `0x2af93` | [EVIDENCE] object-code gate passes; linked layout unavailable. Game/CRT boundary `0x238b0` and startup `0x24d40` remain targets. |
+| `.rdata` | `0x2c000` / `0x1372` | [EVIDENCE] 16 game-object bytes exact: APP_GUID at `0x2c2c0`. Imports/IAT, linked CRT constants and final offsets OPEN. |
+| `.data` | `0x2e000` / `0x51e1c` | [EVIDENCE] `0x50800` file-backed initialized bytes; object payload coverage below. Linked symbol order/offsets and the `0x161c` virtual tail OPEN. |
+| `.rsrc` | `0x80000` / `0x5b88` | [OPEN] deliberately omitted; no original resource bytes copied. |
+
+[EVIDENCE] No linked section shift is inferred from a failing map. In
+particular, missing DecorNextAction at `0x5670` is already documented in
+LAYOUT_ORDER.md, including its peer regression; that investigation was not
+repeated here. Several source bodies/order/linkage decisions remain nonfinal.
+
+[HYPOTHESIS] With the retained sections known, each changed function's aligned
+size changes subsequent TU addresses; dead stripping and ICF alter the set of
+retained sections as well. The accumulated `.text` extent moves `.rdata` only
+when it crosses a 4096-byte boundary, and `.data` follows the aligned `.rdata`
+end. Changed data order moves string/table/global VAs and therefore relocated
+code fields even in independently STRICT bodies. Summing unstripped COFF
+sections cannot establish those final shifts. On a successful link,
+`layout.json` records section deltas, exact same-section-offset equality,
+import/IAT order and each accepted function's mapped RVA delta and raw linked
+equality. Shifted equality is never labeled a whole-image strict match.
+
+## Initialized-data comparison and coverage
+
+[EVIDENCE] `datacmp.py` reports each initialized COFF symbol's location, span,
+location evidence, status and byte equality in JSON/optional CSV. It uses
+independently placed fixed-byte-equal code references, existing manifest
+address evidence, or a unique full-payload hit in the corresponding PE section
+at natural alignment. Conflicting/ambiguous observations remain unresolved.
+The current code bytes are rechecked before reusing a comparison location.
+
+[EVIDENCE] Ordinary numeric source array sizes are used only after their full
+packed initializer matches the COFF prefix; this removes inter-symbol padding
+from those arrays. Other extents are explicitly labeled COFF spans, with the
+existing comparator's count-prefix/string-terminator rules. Some spans can
+include compiler padding. Every counted interval matches in full. Coverage
+is the **union** of oracle intervals, excluding ambiguous duplicate locations,
+uninitialized symbols, virtual zero-fill and raw file padding beyond section
+virtual size. The denominator includes CRT/import data even though this
+object run supplies game definitions only; it is not a game-only data total.
+
+[EVIDENCE] Relocations are encoded using independently established targets
+before full byte comparison. Unknown/unsupported pointers are
+RELOC-UNVERIFIED and contribute nothing. The tool never reads a pointer field
+and then uses that same value to certify itself. `--image EXE --map MAP`
+additionally reports linked symbol locations/deltas and actual linked payload
+equality; this requires the corresponding game objects for symbol sizes.
+
+| Input | `.data` exact / 329,728 | `.rdata` exact / 4,978 | Unique initialized total / 334,706 |
+|---|---:|---:|---:|
+| Canonical objects | 258,116 (78.28%) | 16 (0.32%) | **258,132 (77.12%)** |
+| Three-atlas candidate | 266,810 (80.92%) | 16 (0.32%) | **266,826 (79.72%)** |
+
+[EVIDENCE] Final reports: `build/relink/data.json` (452 EXACT symbols) and
+`data-atlas.json` (455 EXACT). The large exact phase-table span at `0x345d0`
+is 226,688 bytes. Other anchors include `table_blupi` at `0x2f198` (9,280),
+`table_decor_quart` at `0x31aa0` (7,584), and `table_char` at `0x7b530` (1,536).
+The sole located MISMATCH is the expected sound source-path literal. Fifteen
+ambiguous and four unlocated definitions add no coverage. In particular the
+unreferenced global `table_width[128]`, unlike GetCharWidth's separate local
+byte tables, has no proven target location; it is not silently treated as the
+target font-width data. `IID_IDirectPlay2A` is reported as absent from the game
+objects; DXGUID.LIB supplies it for linking, so this is not an unresolved link
+symbol or a request to duplicate its definition in source.
+
+## Proposed data patch and extent limit
+
+[EVIDENCE] Delivery: `scratch/sol-relink/atlas/atlas.patch`, applicable with
+plain `git apply` (check already passed), changes only `src/pixtables.h` and
+`src/dectables.cpp`. Source/manifest/shared headers have not been edited.
+The existing SB2-derived header's three ordinary short-array initializers are
+reconstructed as typed numeric rows, using its established schema: count,
+then x/y, offset x/y, width/height for each icon. No original machine-code or
+resource bytes enter source. Existing ancestry/license provenance applies.
+
+| Array | Proven RVA | SB2 count -> SB1 count | Payload bytes |
+|---|---:|---:|---:|
+| `table_icon_blupi` | `0x78dd8` | 336 -> 291 | 3,494 |
+| `table_icon_object` | `0x79b80` | 441 -> 246 | 2,954 |
+| `table_icon_element` | `0x7a710` | 289 -> 187 | 2,246 |
+
+[EVIDENCE] Each array ends before the next independently anchored atlas.
+All 8,694 bytes match without masking; addresses come from existing strict
+pixmap-reference evidence in recon.json/CORE_CLUSTER.md. Hashes, element
+counts, schema and recovery procedure are in `atlas/evidence.json` and
+`scratch/sol-relink/recover_atlas.py`. `dectables.cpp` includes the corrected
+data header; it has no functions. No declaration ABI/member/offset changes
+are proposed. The pixtables header delta consists of those initializer/count
+corrections and replacement of the unsupported explo initializer by its
+existing extern declaration.
+
+[OPEN] `table_icon_explo` is 54 in the oracle count field, versus the inherited
+100. Treating it as 54 complete six-short rows would consume 650 bytes through
+`0x7b262`. Independently STRICT MouseHotSpot references locate its 32-byte
+int table at **`0x7b260`**, where the word is 95. The naive extraction would
+borrow that neighbour's low halfword as the last icon height. This was detected
+before delivery; no such definition or overlap contributes candidate coverage.
+The patch removes the wrong SB2 initializer and leaves the symbol undefined.
+Whether SB1 had a short initializer, count bug, or another source declaration
+requires further evidence; none is chosen merely to close the link.
+
+## Compiler findings and validation
+
+- [EVIDENCE; VC5-SEM-01; confirmed-transferable] Trigger: inherited atlas
+  counts/coordinates differ and all four definitions are missing from objects.
+  Replacing three SB2 initializers with independently located SB1 numeric rows
+  and including their data header in the data-only TU yields 8,694 exact bytes,
+  zero accepted-function regressions and all 718 raw function sections
+  unchanged, under manifest SP3 flags/headers with no PCH. This is source-data
+  reconstruction, not a register-allocation workaround or a new compiler rule.
+- [EVIDENCE; BLUPI-LNK-01; negative] Trigger: /Gy ordinary external POINT
+  definitions conflict across TUs. `/OPT:REF /OPT:ICF` still reports LNK2005
+  for selection-1 COMDATs; demonstrated empty-body folding does not license
+  duplicate ordinary definitions. No source inline/static experiment was
+  performed and no header change is proposed from this observation alone.
+- [EVIDENCE; linker option/library finding; Blupi-specific] SP3 ignores
+  `/FILEALIGN:512`; it was removed. Explicit SP3 OLDNAMES.LIB resolves
+  `_ftime`/`_mkdir`, reducing 12 initial unresolved names to ten before the
+  data patch. These results do not identify the exact historical link command.
+
+[EVIDENCE] `scratch/sol-relink/check_tools.py` passes focused checks for
+overlap-union counting, BSS exclusion, unknown/known/wrong pointer handling,
+correct/wrong linked map addresses, VC5 map parsing, a static oracle
+self-comparison of section reporting, and every raw game function section.
+The fixture checks do not constitute a successful game relink. `git apply --check`
+passes. No game executable, linked image or ISO program was executed; no
+commit or background process was created. Compiler catalog edits were not
+made by this worker.
+
+[OPEN] Next: integrate the three-array patch through the supervisor's normal
+gate; resolve the duplicate definitions and six missing method bodies/ABIs
+without losing accepted matches; establish explo's physical extent. Then rerun
+the natural full link and measure CRT extraction/folding, DLL/IAT order and
+section shifts. Resource reconstruction and exact 5.10 linker patch remain
+separate open items.
