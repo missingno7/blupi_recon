@@ -235,3 +235,41 @@ the source form. Inert so far: c-variable / `!` / pre-increment / `+= 1` forms o
 (+0x19c6, `mov ecx,[m_fileIndex]; cmp ecx,esi` vs oracle eax) is a compare-only load, so code generation's scratch
 choice decides it, not the rotor. [OPEN] Locate that scratch picker in c2.exe (it also chooses TreatEventBase's toggle
 load). The rest of the residue is split-title scheduling (`m_pPixmap` load placement), i.e. source form.
+
+## Round 5: code-generation scratch picker ([EVIDENCE], tools/c2trace)
+
+Found by diffing (function, return value) streams of two traced runs (tools/c2trace/retlog.py) that differ only in the
+toggle registers: `0x42b2c4 pick(liveset=ecx, byteonly=edx)` returned 2 vs 3 for the toggle load.
+
+- Second rotor: index of the last scratch pick at 0x4911a8, list length at 0x4911a4 (8: the list at 0x491100 extended
+  with callee-saved registers). Reset to n-1 at the start of every basic block (0x42b70f), so each block's first pick
+  scans from eax.
+- Scan from last+1, wrapping. Pass 1 takes only registers already used in the function (descriptor byte +5 flag 0x10,
+  set when a temp is given that register), pass 2 any register; registers in the live set are skipped, and with
+  `byteonly` anything above ebx. The pick stores its index back. Fallback (0x42b2fa): first free from the start.
+- Users: loads folded into a compare (`mov r,[m]; test/cmp r`) and similar code-generation temporaries. They never
+  touch the temp rotor (0x491120) or the busy table (read/write watchpoints).
+- Consequence: a compare-only load takes the first non-live register in its block, unless an earlier scratch pick
+  in the same block moved the index. A value whose live range covers the compare in IR order (for example a constant
+  assigned by an earlier statement) pushes the load to the next register.
+
+### Validated on DrawButtons +0x19c6 (prediction confirmed)
+
+The block's first scratch pick (`mov r,[m_fileIndex]; cmp r,esi`) should start at eax; the oracle has eax, the candidate
+ecx, so eax had to be live in the candidate's IR. The constant 330 of `pos.x = 330;`, written as a statement inside the
+NULL branch right before the call, was holding it. Writing `pos.x = 330;` once before `strchr` (the else branch keeps
+its own assignments) removes exactly the +0x19c6/+0x19ce regions: 65 -> 63 differing bytes, regions 10 -> 8, no other
+change. Removing the else branch's second `pos.x = 330` aligns the split-title region further (2295/2304 equal) but
+keeps 330 in esi instead of rematerialising it; the title region is the source worker's (scratch/sol-srcres).
+
+### TreatEventBase hypotheses, checked against the mechanisms
+
+- H3 (toggle load as a rotating temp) is excluded: the toggle load is a scratch pick, the block's first, so it takes
+  the first non-live register; eax holds m_rankCheat and the result's register is live, so the load simply follows the
+  toggle result (assignment 21). It cannot carry the missing step.
+- H2 (TreatTextInput `lParam` not rotating) is excluded: only a preference could do that, and the preference pass needs
+  the temp to be copied into a register-holding value; it is only pushed. With eax busy at that load, the rotor state
+  after assignment 20 is edx whatever came before, so the missing step lies strictly between assignments 20 and 21.
+- H1 remains: the only value there that a rotor would place in the oracle's register is the terminator byte load (edx).
+  c2 folded it in every tested form (comparison, `!`, casts, pointer, named local, assignment inside the condition,
+  repeated test), so the original form is still [OPEN].

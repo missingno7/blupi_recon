@@ -63,6 +63,7 @@ for _name, _res, _args in [
     getattr(K, _name).restype, getattr(K, _name).argtypes = _res, _args
 
 DBG_CONTINUE, DBG_NOT_HANDLED = 0x00010002, 0x80010001
+WATCH_RW = False  # True: hardware watchpoints trigger on reads as well as writes
 BP_CODES = {0x80000003, 0x4000001F}   # native / WOW64 breakpoint
 SS_CODES = {0x80000004, 0x4000001E}   # native / WOW64 single step
 
@@ -72,6 +73,18 @@ class Process:
 
     def __init__(self, handle):
         self.h = handle
+        self.orig = {}       # armed breakpoint -> original byte
+        self.oneshot = set()  # breakpoints removed after their first hit
+
+    def arm(self, addr, oneshot=False):
+        """Add a breakpoint from inside a hit handler (no effect if one is already armed there)."""
+        if addr in self.orig:
+            return False
+        self.orig[addr] = self.rd(addr, 1)
+        self.wr(addr, b"\xcc")
+        if oneshot:
+            self.oneshot.add(addr)
+        return True
 
     def rd(self, addr, n):
         buf = ctypes.create_string_buffer(n)
@@ -112,7 +125,7 @@ def run(capdir: Path, breakpoints, on_hit, watch=(), on_watch=None):
                             0x2 | 0x400, ctypes.create_unicode_buffer(envblock), None, ctypes.byref(si), ctypes.byref(pi)):
         raise OSError(ctypes.get_last_error())
     proc = Process(pi.hProcess)
-    orig, rearm, armed = {}, {}, False
+    orig, rearm, armed = proc.orig, {}, False
     ev = DEBUG_EVENT()
 
     def context(tid, flags_):
@@ -145,7 +158,7 @@ def run(capdir: Path, breakpoints, on_hit, watch=(), on_watch=None):
                         dr7 = 0
                         for i, a in enumerate(list(watch)[:4]):
                             ctx.Dr[i] = a
-                            dr7 |= (1 << (2 * i)) | (0b1101 << (16 + 4 * i))
+                            dr7 |= (1 << (2 * i)) | ((0b1111 if WATCH_RW else 0b1101) << (16 + 4 * i))
                         ctx.Dr[5] = dr7
                         commit(ht, ctx)
                 elif ec in BP_CODES and addr in orig:
@@ -153,8 +166,12 @@ def run(capdir: Path, breakpoints, on_hit, watch=(), on_watch=None):
                     ctx.Eip = addr
                     proc.wr(addr, orig[addr])
                     on_hit(proc, ctx, addr)
-                    ctx.EFlags |= 0x100  # single-step, then re-arm
-                    rearm[ev.Tid] = addr
+                    if addr in proc.oneshot:
+                        proc.oneshot.discard(addr)
+                        del orig[addr]
+                    else:
+                        ctx.EFlags |= 0x100  # single-step, then re-arm
+                        rearm[ev.Tid] = addr
                     commit(ht, ctx)
                 elif ec in SS_CODES:
                     if ev.Tid in rearm:
@@ -202,4 +219,32 @@ def assigns(capdir: Path, perturb=None):
     for f in funcs:
         for a in f:
             a["path"] = "pref" if a["pref"] == a["reg"] and a["pref"] else ("rotor" if a["flag"] else "first")
+    return funcs, obj
+
+
+SCRATCH = 0x42b2c4                     # pick(liveset=ecx, byteonly=edx): code-generation scratch register
+SCRATCH_LAST, SCRATCH_N = 0x4911a8, 0x4911a4
+SCRATCH_EXITS = (0x42b3a6, 0x42b3b9)   # eax = chosen register (rotating exits)
+SCRATCH_FALLBACK = 0x46c46c            # no register found
+
+
+def scratches(capdir: Path, perturb=None):
+    """Trace every scratch pick. Returns (functions, obj); per function a list of dicts {last, n, byte, reg}.
+    PERTURB=(function, pick, slots) shifts the last-pick index by SLOTS before that pick (diagnostic only)."""
+    funcs = []
+
+    def hit(p, ctx, addr):
+        if addr == FUNC_MARK:
+            funcs.append([])
+        elif addr == SCRATCH and funcs:
+            f, k = len(funcs) - 1, len(funcs[-1])
+            n = p.u32(SCRATCH_N)
+            if perturb and (f, k) == tuple(perturb[:2]) and n:
+                last = p.u32(SCRATCH_LAST)
+                p.wr(SCRATCH_LAST, (((last % n) + perturb[2]) % n).to_bytes(4, "little"))
+            funcs[-1].append({"last": p.u32(SCRATCH_LAST), "n": n, "byte": ctx.Edx, "reg": None})
+        elif addr in SCRATCH_EXITS and funcs and funcs[-1]:
+            funcs[-1][-1]["reg"] = REG.get(ctx.Eax, ctx.Eax)
+
+    obj = run(capdir, [FUNC_MARK, SCRATCH, *SCRATCH_EXITS], hit)
     return funcs, obj

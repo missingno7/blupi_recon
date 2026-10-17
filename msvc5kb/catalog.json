@@ -2479,6 +2479,129 @@
         "doc_ref": "docs/COMPILER_STUDY.md"
       },
       "legacy_ids": []
+    },
+    {
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "blupi_status": "validated",
+      "legacy_ids": [],
+      "id": "BLUPI-REG-06",
+      "section": "registers",
+      "title": "c2.exe temp assignment: preference, then rotor (0x491120), then first free; rotor reset per function",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Scratch-register differences (eax/ecx/edx) in otherwise identical code; inserting or removing an unrelated load shifts choices with period 3.",
+      "construct": "Number and kind of compiler temps (tuple-defined values) allocated before the site, in block (layout) order.",
+      "explanation": "c2.exe SP3 0x435c37 gives each temp defined by a tuple a register: a recorded preference (copy from/to a register-holding value; set by the pass at 0x42ac33) if free and non-interfering; otherwise, when the flag at 0x48fb60 is set, the first free non-interfering register at or after the rotor pointer 0x491120 over the list eax, ecx, edx, after which the pointer moves to the slot after the chosen one; otherwise first free from eax. Only this rotor path moves the pointer (hardware watchpoint). The pointer resets to eax per function (0x42a90e). Loads folded into compares never pass through it.",
+      "experiment": "tools/c2trace: `capture`, `assigns NAME SYMBOL` (path/register per temp), then `shift NAME SYMBOL RVA`; a MATCH at assignment K means the original had one rotor step more/less just before K; `map` locates K in the code. In-memory rotor shifts are diagnostics, never source.",
+      "not_when": "Values held in callee-saved registers (global colouring, color.c), compare-only loads (BLUPI-REG-07) and forced registers (call results, idiv, shift counts) are outside this mechanism.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-4",
+          "tier": "PROVEN",
+          "counts": "micro corpus + event.cpp traces"
+        }
+      ],
+      "keywords": "rotor round robin temp register assignment preference c2 0x435c37 0x491120 eax ecx edx",
+      "blupi_evidence": {
+        "function": "TreatEventBase",
+        "rva": "0x1d230",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 150,
+        "outcome": "residue located to one rotor step between assignments 20 and 21",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      }
+    },
+    {
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "blupi_status": "validated",
+      "legacy_ids": [],
+      "id": "BLUPI-REG-07",
+      "section": "registers",
+      "title": "Compare-only loads use a per-block scratch rotor (0x4911a8): first non-live register from the last pick",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "`mov r,[mem]; cmp/test r` differs only in r; the load is the first of its basic block and the oracle has eax while the candidate skips to ecx/edx (or the reverse).",
+      "construct": "Which values are live in IR order at the compare: a constant or value assigned by an earlier statement keeps its register busy; evaluation order inside the statement matters.",
+      "explanation": "c2.exe SP3 0x42b2c4 picks code-generation scratch registers: index of the last pick at 0x4911a8 (reset to n-1 at every basic block, so a block starts at eax), list of n=8 registers at 0x491100. Pass 1 takes only registers already used in the function (descriptor flag 0x10), pass 2 any; live registers are skipped, byte operations exclude registers above ebx. It never touches the temp rotor.",
+      "experiment": "Identify the block's earlier scratch picks; check which register is live at the compare in IR order (statement order, not schedule). Move the assignment that holds the register (e.g. a repeated `pos.x = 330;`) to before the block and re-probe.",
+      "not_when": "Loads that are real temps (used by more than the compare) follow BLUPI-REG-06.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-5",
+          "tier": "PROVEN",
+          "counts": "micro + DrawButtons"
+        }
+      ],
+      "keywords": "scratch register compare-only load per block rotor 0x42b2c4 0x4911a8 live set code generation",
+      "blupi_evidence": {
+        "function": "DrawButtons",
+        "rva": "0x16f70",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 12,
+        "outcome": "predicted and fixed the +0x19c6/+0x19ce register regions by moving pos.x = 330 before strchr",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      }
+    },
+    {
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "blupi_status": "validated",
+      "legacy_ids": [],
+      "id": "BLUPI-REG-08",
+      "section": "registers",
+      "title": "Preference pass: a temp copied into a register-holding value prefers that register",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "A setcc/toggle result lands in the rotor's register in one context but in a specific register in another (e.g. `m = !m; b = m;`).",
+      "construct": "What the temp is copied into: a callee-saved local (b) or an intermediate value already in a scratch register.",
+      "explanation": "c2.exe SP3 0x42ac33 (store at 0x42b051) sets lr+0x2c to the register descriptor of the destination of a copy; 0x435c37 takes it if free and non-interfering, without moving the rotor. If the preferred register is busy (e.g. the callee-saved local is live), the rotor decides.",
+      "experiment": "c2trace `assigns`: path 'pref' and the pref column show it; the micro copy build/c2/cheatlab.py reproduces the TreatEventBase toggle.",
+      "not_when": "Preferences for esp are never recorded; preferences only cover registers 1-8.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-4",
+          "tier": "PROVEN",
+          "counts": "micro"
+        }
+      ],
+      "keywords": "preference coalescing copy register descriptor 0x42ac33 0x42b051 toggle setcc",
+      "blupi_evidence": {
+        "function": "micro cheat matcher",
+        "rva": "-",
+        "tu": "-",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 20,
+        "outcome": "mechanism established",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      }
     }
   ]
 }
