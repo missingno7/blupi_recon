@@ -587,9 +587,9 @@ protected:
 	BOOL		m_bCheatDoors;		// opendoors
 	BOOL		m_bSuperBlupi;		// megablupi
 	BOOL        m_bDrawSecret;  	// showsecret
-	BOOL        m_bBuildOfficialMissions; 	// xmission/xnjttjpo
 	BOOL        m_bNetPacked;		// netpacked
 	BOOL        m_bNetMovePredict;  // ynosmooth
+	BOOL        m_bNetDebug;
 	BOOL		m_bJoystick;
 	int			m_bDemoPlay;
 	int         m_mission;

@@ -5,6 +5,7 @@
 #include <decor.h>
 #include <misc.h>
 #include <dectables.h>
+#include <stdio.h>
 
 POINT CDecor::ScreenPosToCelPos(POINT pos)
 {
@@ -73,125 +74,185 @@ void __cdecl PlaceDecor(int *pCel, int *pTable, int *pLastIndex, int fwKeys, BOO
 
 void CDecor::PlaceDecor1(POINT cel, int index, int fwKeys, BOOL bMix)
 {
-	m_liftEnd = -1;
-
-	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
-	int *pIconBig = (int *)&m_bigDecor[cel.x][cel.y].icon;
-
-	if (!IsValidCel(cel)) return;
-
-	// Tree
-	if (index == 0) PlaceDecor(pIconBig, table_366b0, &m_lastDecorIndexes[0], fwKeys, bMix, TRUE);
-
-	 // Palmtree
-	if (index == 1) PlaceDecor(pIconBig, table_366c0, &m_lastDecorIndexes[1], fwKeys, bMix, TRUE);
-
-	// Decorative plant
-	if (index == 2) PlaceDecor(pIconBig, table_366d8, &m_lastDecorIndexes[2], fwKeys, bMix, TRUE);
-
-	// Marine plant
-	if (index == 3)	*pIcon = Object::Marine_1;
-
-	// House
-	if (index == 4) PlaceDecor(pIconBig, table_366e8, &m_lastDecorIndexes[3], fwKeys, bMix, TRUE);
-
-	// Mechanical background
-	if (index == 5) PlaceDecor(pIconBig, table_366f8, &m_lastDecorIndexes[4], fwKeys, bMix, TRUE);
-
-	// Kid's stuff background
-	if (index == 6) PlaceDecor(pIconBig, table_36710, &m_lastDecorIndexes[5], fwKeys, bMix, TRUE);
-
-	// Green slime 2
-	if (index == 7) PlaceDecor(pIconBig, table_36748, &m_lastDecorIndexes[6], fwKeys, bMix, TRUE);
-
-	// Element for Palace
-	if (index == 8) PlaceDecor(pIconBig, table_36520, &m_lastDecorIndexes[7], fwKeys, bMix, TRUE);
-
-	// Support
-	if (index == 9) PlaceDecor(pIcon, table_36670, &m_lastDecorIndexes[8], fwKeys, bMix, TRUE);
-
-	// Spider's web
-	if (index == 10) PlaceDecor(pIcon, table_366a0, &m_lastDecorIndexes[9], fwKeys, bMix, TRUE);
+    m_liftEnd = -1;
+    int icon;
+    if (cel.x >= 0 && cel.x < 100 && cel.y >= 0 && cel.y < 100)
+    {
+        if (index == 0)
+        {
+            icon = m_bigDecor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_366b0, &m_lastDecorIndexes[20], fwKeys, bMix, TRUE);
+            m_bigDecor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 1)
+        {
+            icon = m_bigDecor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_366c0, &m_lastDecorIndexes[21], fwKeys, bMix, TRUE);
+            m_bigDecor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 2)
+        {
+            icon = m_bigDecor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_366d8, &m_lastDecorIndexes[22], fwKeys, bMix, TRUE);
+            m_bigDecor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 3) m_bigDecor[cel.x][cel.y].icon = 0xcb;
+        if (index == 4)
+        {
+            icon = m_bigDecor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_366e8, &m_lastDecorIndexes[23], fwKeys, bMix, TRUE);
+            m_bigDecor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 5)
+        {
+            icon = m_bigDecor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_366f8, &m_lastDecorIndexes[24], fwKeys, bMix, TRUE);
+            m_bigDecor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 6)
+        {
+            icon = m_bigDecor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36710, &m_lastDecorIndexes[25], fwKeys, bMix, TRUE);
+            m_bigDecor[cel.x][cel.y].icon = (short)icon;
+        }
+    }
 }
 
 void CDecor::PlaceDecor2(POINT cel, int index, int fwKeys, BOOL bMix)
 {
-	m_liftEnd = -1;
-
-	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
-
-	if (!IsValidCel(cel)) return;
-
-	m_iconLift = index;
-
-	// Square tech-blocks
-	if (index == 0) PlaceDecor(pIcon, table_36418, &m_lastDecorIndexes[10], fwKeys, bMix, TRUE);
-	
-	// Special tech-blocks
-	if (index == 1) PlaceDecor(pIcon, table_36458, &m_lastDecorIndexes[11], fwKeys, bMix, TRUE);
-	
-	// Triangular tech-blocks
-	if (index == 2) PlaceDecor(pIcon, table_36488, &m_lastDecorIndexes[12], fwKeys, bMix, FALSE);
-
-	// Secret tech-block
-	if (index == 3) PlaceDecor(pIcon, table_364a0, &m_lastDecorIndexes[13], fwKeys, bMix, FALSE);
-
-	// Mechanical square
-	if (index == 4) PlaceDecor(pIcon, table_364b0, &m_lastDecorIndexes[14], fwKeys, bMix, TRUE);
-
-	// Special mechanical
-	if (index == 5) PlaceDecor(pIcon, table_364d0, &m_lastDecorIndexes[15], fwKeys, bMix, FALSE);
-
-	// Secret mechanical
-	if (index == 6) PlaceDecor(pIcon, table_364e8, &m_lastDecorIndexes[16], fwKeys, bMix, FALSE);
-
-	// Pipes
-	if (index == 7) *pIcon = Object::Pipes_1;
-
-	AdaptBorder(cel);
+    m_liftEnd = -1;
+    int icon;
+    if (cel.x >= 0 && cel.x < 100 && cel.y >= 0 && cel.y < 100)
+    {
+        m_iconLift = index;
+        if (index == 0)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36418, &m_lastDecorIndexes[0], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 1)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36458, &m_lastDecorIndexes[1], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 2)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36488, &m_lastDecorIndexes[2], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 3)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_364a0, &m_lastDecorIndexes[3], fwKeys, bMix, TRUE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 4)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_364b0, &m_lastDecorIndexes[4], fwKeys, bMix, TRUE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 5)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_364d0, &m_lastDecorIndexes[5], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 6)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_364e8, &m_lastDecorIndexes[6], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 7)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_364f8, &m_lastDecorIndexes[7], fwKeys, bMix, TRUE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 8)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36510, &m_lastDecorIndexes[8], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 9)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36520, &m_lastDecorIndexes[9], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        AdaptBorder(cel);
+    }
 }
 
 void CDecor::PlaceDecor3(POINT cel, int index, int fwKeys, BOOL bMix)
 {
-	m_liftEnd = -1;
-
-	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
-
-	if (!IsValidCel(cel)) return;
-
-	m_iconLift = index + 20;
-
-	// Square rock
-	if (index == 0) PlaceDecor(pIcon, table_36530, &m_lastDecorIndexes[20], fwKeys, bMix, FALSE);
-
-	// Triangular rock
-	if (index == 1) PlaceDecor(pIcon, table_36538, &m_lastDecorIndexes[21], fwKeys, bMix, FALSE);
-
-	// Secret rock
-	if (index == 2) PlaceDecor(pIcon, table_36548, &m_lastDecorIndexes[22], fwKeys, bMix, FALSE);
-
-	// Cave
-	if (index == 3) *pIcon = rand() % 2 ? Object::Cave_1 : Object::Cave_2;
-
-	// Secret cave
-	if (index == 4) *pIcon = Object::CaveSecret;
-
-	// Cheese
-	if (index == 5) *pIcon = Random(Object::CheeseSquare_1, Object::CheeseSquare_4);
-
-	// Secret cheese
-	if (index == 6) *pIcon = Object::CheeseSecret;
-
-	// Green slime 2
-	if (index == 7) *pIcon = Object::Slime_1;
-
-	// Grass
-	if (index == 8) PlaceDecor(pIcon, table_365d0, &m_lastDecorIndexes[23], fwKeys, bMix, FALSE);
-
-	// Water
-	if (index == 9) PlaceDecor(pIcon, table_36630, &m_lastDecorIndexes[24], fwKeys, bMix, FALSE);
-
-	AdaptBorder(cel);
+    m_liftEnd = -1;
+    int icon;
+    if (cel.x >= 0 && cel.x < 100 && cel.y >= 0 && cel.y < 100)
+    {
+        m_iconLift = index + 20;
+        if (index == 0)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36530, &m_lastDecorIndexes[10], fwKeys, bMix, TRUE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 1)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36538, &m_lastDecorIndexes[11], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 2)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36548, &m_lastDecorIndexes[12], fwKeys, bMix, TRUE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 3)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36550, &m_lastDecorIndexes[13], fwKeys, bMix, TRUE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 4)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_36570, &m_lastDecorIndexes[14], fwKeys, bMix, TRUE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 5)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_365a8, &m_lastDecorIndexes[15], fwKeys, bMix, TRUE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 6)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_365d0, &m_lastDecorIndexes[16], fwKeys, bMix, TRUE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 7)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_365d8, &m_lastDecorIndexes[17], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 8)
+        {
+            icon = m_decor[cel.x][cel.y].icon;
+            ::PlaceDecor(&icon, table_365f0, &m_lastDecorIndexes[18], fwKeys, bMix, FALSE);
+            m_decor[cel.x][cel.y].icon = (short)icon;
+        }
+        if (index == 9) m_decor[cel.x][cel.y].icon = 0xd6;
+        AdaptBorder(cel);
+    }
 }
 
 void CDecor::PlaceDecor4(POINT cel, int index, int fwKeys, BOOL bMix)
@@ -868,4 +929,58 @@ char* CDecor::GetMissionTitle()
 void CDecor::SetMissionTitle(char *str)
 {
 	strcpy(m_missionTitle, str);
+}
+
+
+int CDecor::GetRegion() { return m_region; }
+void CDecor::SetRegion(int region) { m_region = region; }
+int CDecor::GetMusic() { return m_music; }
+void CDecor::SetMusic(int music) { m_music = music; }
+POINT CDecor::GetDim() { return m_dimDecor; }
+void CDecor::SetDim(POINT dim) { m_dimDecor = dim; }
+int CDecor::GetNbVies() { return m_nbVies; }
+void CDecor::SetNbVies(int nbVies) { m_nbVies = nbVies; }
+BOOL CDecor::GetPause() { return m_bPause; }
+void CDecor::ChangePause(BOOL bPause) { m_bPause = bPause; }
+void CDecor::GetDoors(short *out)
+{
+    for (int i = 0; i < 100; i++) out[i] = m_doors[i];
+}
+void CDecor::SetDoors(short *in)
+{
+    for (int i = 0; i < 100; i++) m_doors[i] = in[i];
+}
+void CDecor::SetAllMissions(BOOL bAllMissions)
+{
+    m_bCheatDoors = bAllMissions;
+    AdaptDoors(m_bPrivate, m_mission);
+}
+BOOL CDecor::GetSuperBlupi() { return m_bSuperBlupi; }
+void CDecor::SetSuperBlupi(BOOL bSuperBlupi) { m_bSuperBlupi = bSuperBlupi; }
+BOOL CDecor::GetDrawSecret() { return m_bDrawSecret; }
+void CDecor::SetDrawSecret(BOOL bDrawSecret) { m_bDrawSecret = bDrawSecret; }
+BOOL CDecor::GetNetPacked() { return m_bNetPacked; }
+void CDecor::SetNetPacked(BOOL bNetPacked) { m_bNetPacked = bNetPacked; }
+BOOL CDecor::GetNetMovePredict() { return m_bNetMovePredict; }
+void CDecor::SetNetMovePredict(BOOL bNetMovePredict) { m_bNetMovePredict = bNetMovePredict; }
+void CDecor::SetMulti(BOOL multi) { m_bMulti = multi; }
+void CDecor::SetTeam(int team) { m_team = team; }
+
+BOOL CDecor::GetNetDebug()
+{
+    return m_bNetDebug;
+}
+void CDecor::SetNetDebug(BOOL bNetDebug)
+{
+    m_bNetDebug = bNetDebug;
+    if (bNetDebug) remove("debug.txt");
+}
+
+void CDecor::OutputNetDebug(char *text)
+{
+    char textbuffer[100];
+    if (!m_bNetDebug) return;
+    sprintf(textbuffer, " / snd=%d(%d) rcv=%d(%d)", m_netPacketsSent,
+        m_netPacketsSent2, m_netPacketsReceived, m_netPacketsReceived2);
+    strcat(text, textbuffer);
 }

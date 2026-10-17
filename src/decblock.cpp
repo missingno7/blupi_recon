@@ -3,6 +3,59 @@
 #include <misc.h>
 #include <obstacle.h>
 #include <dectables.h>
+
+CDecor::CDecor()
+{
+	int i;
+
+	m_hWnd = NULL;
+	m_pSound = NULL;
+	m_pPixmap = NULL;
+	for (i = 0; i < 200; i++) m_lastDecorIndexes[i] = 0;
+	m_lastRegion = -1;
+	m_iconLift = 0;
+	m_time = 0;
+	m_bCheatDoors = FALSE;
+	m_bSuperBlupi = FALSE;
+	m_bDrawSecret = FALSE;
+	m_bNetPacked = FALSE;
+	m_bNetMovePredict = TRUE;
+	m_bNetDebug = FALSE;
+	m_bMulti = FALSE;
+	m_team = 0;
+	m_netPacketsSent = 0;
+	m_netPacketsSent2 = 0;
+	m_netPacketsReceived = 0;
+	m_netPacketsReceived2 = 0;
+}
+
+CDecor::~CDecor()
+{
+}
+
+void CDecor::Create(HWND hWnd, CSound* pSound, CPixmap* pPixmap, CNetwork* pNetwork)
+{
+	m_hWnd = hWnd;
+	m_pSound = pSound;
+	m_pPixmap = pPixmap;
+	m_pNetwork = pNetwork;
+	m_keyPress = 0;
+	m_lastKeyPress = 0;
+	m_bJoystick = FALSE;
+	m_bHelicoMarch = FALSE;
+	m_bHelicoStop = FALSE;
+	m_bJeepMarch = FALSE;
+	m_bJeepStop = FALSE;
+	InitDecor();
+
+	m_jauges[JAUGE_AIR].Create(m_hWnd, m_pPixmap, m_pSound, POINT(184, 450), 1, FALSE);
+	m_jauges[JAUGE_AIR].SetHide(TRUE);
+	m_jauges[JAUGE_POWER].Create(m_hWnd, m_pPixmap, m_pSound, POINT(312, 450), 3, FALSE);
+	m_jauges[JAUGE_POWER].SetHide(TRUE);
+	NetMessageIndexFlush();
+	NotifFlush();
+}
+
 void CDecor::InitGamer()
 {
 	m_nbVies = 3;
@@ -167,6 +220,47 @@ int CDecor::IsTerminated()
 	return m_term;
 }
 
+void CDecor::MoveStep()
+{
+	MoveObjectStep();
+
+	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST) {
+		BlupiStep();
+		NetAdjustToLift();
+		NotifStep();
+	}
+
+	if (m_phase == WM_PHASE_BUILD)
+	{
+		if (m_keyPress & KEY_RIGHT)
+		{
+			m_posDecor.x += 50;
+			int limit = (m_dimDecor.x != 0) ? (MAXCELX * DIMOBJX - LXIMAGE) : 0;
+			if (m_posDecor.x > limit) m_posDecor.x = limit;
+			m_posCelHili.x = -1;
+		}
+		if (m_keyPress & KEY_LEFT)
+		{
+			m_posDecor.x -= 50;
+			if (m_posDecor.x < 0) m_posDecor.x = 0;
+			m_posCelHili.x = -1;
+		}
+		if (m_keyPress & KEY_DOWN)
+		{
+			m_posDecor.y += 50;
+			int limit = (m_dimDecor.y != 0) ? (MAXCELY * DIMOBJY - LYIMAGE) : 0;
+			if (m_posDecor.y > limit) m_posDecor.y = limit;
+			m_posCelHili.x = -1;
+		}
+		if (m_keyPress & KEY_UP)
+		{
+			m_posDecor.y -= 50;
+			if (m_posDecor.y < 0) m_posDecor.y = 0;
+			m_posCelHili.x = -1;
+		}
+	}
+}
+
 int CDecor::GetBlupiChannelActual()
 {
 	if (m_bMulti && m_blupiChannel == 2 && m_team > 0) {
@@ -224,6 +318,36 @@ void CDecor::PlaySound(int sound, POINT pos, BOOL bLocal)
 	if (sound == SOUND_HELICOLOW) m_bHelicoStop = TRUE;
 	if (sound == SOUND_JEEPHIGH) m_bJeepMarch = TRUE;
 	if (sound == SOUND_JEEPLOW) m_bJeepStop = TRUE;
+}
+
+void CDecor::StopSound(int sound)
+{
+	m_pSound->StopSound(sound);
+
+	if (sound == SOUND_HELICOHIGH) m_bHelicoMarch = FALSE;
+	if (sound == SOUND_HELICOLOW) m_bHelicoStop = FALSE;
+	if (sound == SOUND_JEEPHIGH) m_bJeepMarch = FALSE;
+	if (sound == SOUND_JEEPLOW) m_bJeepStop = FALSE;
+}
+
+void CDecor::ChangePhase(int phase)
+{
+	m_phase = phase;
+
+	if (phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST) {
+		int channel = -1;
+		if (m_bHelicoMarch) channel = SOUND_HELICOHIGH;
+		if (m_bHelicoStop) channel = SOUND_HELICOLOW;
+		if (m_bJeepMarch) channel = SOUND_JEEPHIGH;
+		if (m_bJeepStop) channel = SOUND_JEEPLOW;
+		if (channel != -1) m_pSound->PlayImage(channel, POINT(LXIMAGE / 2, LYIMAGE / 2), -1);
+	}
+	else {
+		if (m_bHelicoMarch) m_pSound->StopSound(SOUND_HELICOHIGH);
+		if (m_bHelicoStop) m_pSound->StopSound(SOUND_HELICOLOW);
+		if (m_bJeepMarch) m_pSound->StopSound(SOUND_JEEPHIGH);
+		if (m_bJeepStop) m_pSound->StopSound(SOUND_JEEPLOW);
+	}
 }
 
 void CDecor::AdaptMotorVehicleSound(POINT pos)

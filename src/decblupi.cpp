@@ -4069,7 +4069,6 @@ void CDecor::BlupiAddFifo(POINT pos)
 
 BOOL CDecor::DecorDetect(RECT rect, BOOL bCaisse)
 {
-	m_detectIcon = -1;
 	if (rect.left < 0 || rect.top < 0)
 	{
 		return TRUE;
@@ -4087,12 +4086,7 @@ BOOL CDecor::DecorDetect(RECT rect, BOOL bCaisse)
 	{
 		return TRUE;
 	}
-	if (m_blupiHelico ||
-		m_blupiOver ||
-		m_blupiBalloon ||
-		m_blupiEcrase ||
-		m_blupiNage ||
-		m_blupiSurf)
+	if (m_blupiHelico || m_blupiSkate || m_blupiNage)
 	{
 		if (m_dimDecor.y == 0)
 		{
@@ -4121,7 +4115,7 @@ BOOL CDecor::DecorDetect(RECT rect, BOOL bCaisse)
 			if (num6 >= 0 && num6 < 100 && num7 >= 0 && num7 < 100)
 			{
 				int icon = m_decor[num6][num7].icon;
-				if (icon >= 0 && icon < MAXQUART && (!m_blupiHelico || icon != 214) && (m_blupiOver || icon != 214) && (icon != 324 || m_time / 4 % 20 < 18))
+				if (icon >= 0 && icon < MAXQUART && (!m_blupiHelico || icon != 214))
 				{
 					num6 = j % 4;
 					num7 = i % 4;
@@ -4134,8 +4128,7 @@ BOOL CDecor::DecorDetect(RECT rect, BOOL bCaisse)
 						RECT tinyRect;
 						if (IntersectRect(&tinyRect, &src, &rect))
 						{
-							m_detectIcon = icon;
-							return TRUE;
+								return TRUE;
 						}
 					}
 
@@ -4157,7 +4150,6 @@ BOOL CDecor::DecorDetect(RECT rect, BOOL bCaisse)
 		RECT tinyRect;
 		if (IntersectRect(&tinyRect, &src, &rect))
 		{
-			m_detectIcon = m_moveObject[num8].icon;
 			return TRUE;
 		}
 	}
@@ -4296,41 +4288,26 @@ int CDecor::IsWorld(POINT pos)
 
 char CDecor::GetTypeBarre(POINT pos)
 {
-	POINT pos2 = pos;
-	pos.x += 30;
-	pos.y += 22;
-	if (pos.y % 64 > 44)
+	int x = pos.x + 30;
+	int y = pos.y + 22;
+	if (y % 64 < 45 && x >= 0 && x < 6400 && y >= 0 && y < 6400)
 	{
-		return 0;
+		int icon = m_decor[x / DIMOBJX][y / DIMOBJY].icon;
+		if (icon == 138 || icon == 202)
+		{
+			if (y >= 6336) return 1;
+			icon = m_decor[x / DIMOBJX][y / DIMOBJY + 1].icon;
+			if (IsPassIcon(icon)) return 2;
+			RECT rect;
+			rect.left = pos.x + 12;
+			rect.right = pos.x + 48;
+			rect.top = pos.y + 58;
+			rect.bottom = pos.y + 59;
+			if (DecorDetect(rect, TRUE)) return 2;
+			return 1;
+		}
 	}
-	if (pos.x < 0 || pos.x >= 6400 || pos.y < 0 || pos.y >= 6400)
-	{
-		return 0;
-	}
-	int icon = m_decor[pos.x / DIMOBJX][pos.y / DIMOBJY].icon;
-	if (icon != 138 && icon != 202)
-	{
-		return 0;
-	}
-	if (pos.y >= 6336)
-	{
-		return 1;
-	}
-	icon = m_decor[pos.x / DIMOBJX][pos.y / DIMOBJY + 1].icon;
-	if (IsPassIcon(icon))
-	{
-		return 2;
-	}
-	RECT rect;
-	rect.left = pos2.x + 12;
-	rect.right = pos2.x + 48;
-	rect.top = pos2.y + 58;
-	rect.bottom = pos2.y + 59;
-	if (DecorDetect(rect, TRUE))
-	{
-		return 2;
-	}
-	return 1;
+	return 0;
 }
 
 BOOL CDecor::IsLave(POINT pos)

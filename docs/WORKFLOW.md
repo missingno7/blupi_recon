@@ -107,6 +107,15 @@ TUs. Explicit mappings for external data are also constrained to one oracle
 lands exactly at the end of the named initialized object and the object's bytes
 match in full.
 
+When a data symbol has one definition in the run but no reference has pinned
+its address yet, `cmpfunc.py` can bind it by payload only if its initialized
+bytes occur exactly once at natural alignment in the corresponding oracle
+section. The complete payload is still checked at that address. Count-prefixed
+numeric `table_` arrays use their declared element count to exclude only COFF
+alignment padding from the data extent. This lets ordinary initialized source
+tables prove relocations without hardcoded VA mappings; the result JSON records
+payload-based bindings.
+
 Call placement needs an actual direct relocation in a STRICT caller. If no
 built object references an ambiguous method, the verifier leaves it unresolved
 even when the body bytes are identical; for example, `CEvent::SetDemo` remains

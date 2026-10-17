@@ -6,6 +6,196 @@
 #include <misc.h>
 #include <dectables.h>
 
+void CDecor::NetDataFlush()
+{
+	for (int i = 0; i < MAXNETPLAYER; i++)
+	{
+		m_netBlupiIcon[i] = -1;
+		m_netTimes[i] = 0;
+		m_netTimeSincePacket[i] = 0;
+		m_netVitesses[i].x = 0;
+		m_netVitesses[i].y = 0;
+	}
+	m_netPacketsSent = 0;
+	m_netPacketsSent2 = 0;
+	m_netPacketsReceived = 0;
+	m_netPacketsReceived2 = 0;
+	m_netPacketIcon = -1;
+	NetMessageIndexFlush();
+}
+
+void CDecor::NetSendBarePacket(BYTE type, short num)
+{
+	char data[4];
+	data[0] = 4;
+	data[1] = type;
+	data[2] = num & 0xff;
+	data[3] = num >> 8;
+	m_pNetwork->Send(&data, 4, DPSEND_GUARANTEED);
+}
+
+void CDecor::DoNetSmooth(int player)
+{
+	POINT start, end;
+	RECT rect;
+
+	if (m_bNetMovePredict && m_netBlupiIcon[player] != -1)
+	{
+		if (m_netTimeSincePacket[player] < 5)
+		{
+			start = m_netBlupiPos[player];
+			end = start + m_netVitesses[player];
+			rect = RECT(start.x + 12, start.y + 11, start.x + DIMBLUPIX - 12, start.y + DIMBLUPIY - 2);
+			TestPath(rect, start, &end);
+			m_netBlupiPos[player] = end;
+		}
+		m_netTimeSincePacket[player]++;
+	}
+}
+
+void CDecor::NetAdjustToLift()
+{
+	for (int i = 0; i < MAXNETPLAYER; i++)
+	{
+		if (m_netBlupiPos[i].x != -1 && m_netTransports[i] >= 0 && m_netTransports[i] < MAXMOVEOBJECT)
+		{
+			m_netBlupiPos[i].y = m_moveObject[m_netTransports[i]].posCurrent.y - (DIMBLUPIY - 2);
+		}
+	}
+}
+
+void CDecor::NetAscenseurSynchro(int index, short step)
+{
+	int i;
+	MoveObject* mob = &m_moveObject[index];
+
+	mob->step = step;
+	mob->time = 0;
+	for (i = 0; i < MAXMOVEOBJECT; i++)
+	{
+		MoveObject* otherMob = &m_moveObject[i];
+		if (i != index && otherMob->type == mob->type)
+		{
+			if (otherMob->stepAdvance == mob->stepAdvance &&
+				otherMob->stepRecede == mob->stepRecede &&
+				otherMob->timeStopStart == mob->timeStopStart &&
+				otherMob->timeStopEnd == mob->timeStopEnd)
+			{
+				otherMob->step = step;
+				otherMob->time = 0;
+			}
+		}
+	}
+}
+
+void CDecor::NetPlayerCollide(POINT pos, int* out)
+{
+	int i;
+	RECT rect1;
+	RECT rect2;
+	RECT rect3;
+
+	rect2.left = pos.x + 16;
+	rect2.top = pos.y + 11;
+	rect2.right = pos.x + DIMBLUPIX - 16;
+	rect2.bottom = pos.y + DIMBLUPIY - 2;
+
+	for (i = 0; i < MAXNETPLAYER; i++)
+	{
+		if (m_netBlupiIcon[i] != -1)
+		{
+			if (m_netBlupiSec[i] != SEC_HIDE)
+			{
+				rect1.left = m_netBlupiPos[i].x + 16;
+				rect1.top = m_netBlupiPos[i].y + 11;
+				rect1.right = m_netBlupiPos[i].x + DIMBLUPIX - 16;
+				rect1.bottom = m_netBlupiPos[i].y + DIMBLUPIY - 2;
+			}
+			if (IntersectRect(&rect3, &rect1, &rect2))
+			{
+				*out = i;
+				return;
+			}
+		}
+	}
+	*out = -1;
+}
+
+void CDecor::NetMessageIndexFlush()
+{
+	m_netMessageIndex1 = 0;
+	m_netMessageIndex2 = 0;
+	m_netMessageIndex3 = 0;
+}
+
+BOOL CDecor::NetMessagePush(NetMessage* message)
+{
+	if (m_netMessageIndex1 == MAXNETMESSAGE) return FALSE;
+	CopyMemory(&m_netMessages[m_netMessageIndex2], message, sizeof(NetMessage));
+	m_netMessageIndex1++;
+	m_netMessageIndex2++;
+	if (m_netMessageIndex2 == MAXNETMESSAGE) m_netMessageIndex2 = 0;
+	return TRUE;
+}
+
+BOOL CDecor::NetMessagePop(NetMessage* out_msg)
+{
+	if (m_netMessageIndex1 == 0) return FALSE;
+	CopyMemory(out_msg, &m_netMessages[m_netMessageIndex3], sizeof(NetMessage));
+	m_netMessageIndex1--;
+	m_netMessageIndex3++;
+	if (m_netMessageIndex3 == MAXNETMESSAGE) m_netMessageIndex3 = 0;
+	return TRUE;
+}
+
+void CDecor::NotifFlush()
+{
+	for (int i = 0; i < MAXNOTIF; i++)
+	{
+		m_notifText[i][0] = '\0';
+	}
+	m_notifTime = 0;
+}
+
+void CDecor::NotifPop()
+{
+	for (int i = 0; i < MAXNOTIF - 1; i++)
+	{
+		strcpy(m_notifText[i], m_notifText[i + 1]);
+	}
+	m_notifText[MAXNOTIF - 1][0] = '\0';
+	m_notifTime = NOTIFDELAY;
+}
+
+void CDecor::NotifPush(char* str)
+{
+	int i;
+	for (i = 0; i < MAXNOTIF; i++)
+	{
+		if (m_notifText[i][0] != '\0') break;
+	}
+	if (i >= MAXNOTIF)
+	{
+		NotifPop();
+		i = MAXNOTIF - 1;
+	}
+	strcpy(m_notifText[i], str);
+	m_notifTime = NOTIFDELAY;
+	m_pSound->PlayImage(SOUND_TRESOR, POINT(LXIMAGE / 2, LYIMAGE / 2), -1);
+}
+
+void CDecor::NotifStep()
+{
+	if (m_notifTime == 0)
+	{
+		NotifPop();
+	}
+	else
+	{
+		m_notifTime--;
+	}
+}
+
 void CDecor::MoveObjectPollution()
 {
 	POINT pos = m_blupiPos;
@@ -2344,9 +2534,10 @@ void CDecor::MoveObjectPriority(int rank)
 		}
 		if (i <= rank)
 		{
-			MoveObject tempMob = m_moveObject[rank];
-			m_moveObject[rank] = m_moveObject[i];
-			m_moveObject[i] = tempMob;
+			MoveObject tempMob;
+			MoveObjectCopy(&tempMob, &m_moveObject[rank]);
+			MoveObjectCopy(&m_moveObject[rank], &m_moveObject[i]);
+			MoveObjectCopy(&m_moveObject[i], &tempMob);
 			if (m_moveObject[rank].type == TYPE_CAISSE || m_moveObject[i].type == TYPE_CAISSE)
 			{
 				UpdateCaisse();

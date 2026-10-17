@@ -108,6 +108,12 @@
       "defines": [
         "SB1_GAME_API"
       ]
+    },
+    {
+      "source": "src/dectables.cpp"
+    },
+    {
+      "source": "src/obstacle.cpp"
     }
   ],
   "accepted_functions": [
@@ -310,6 +316,18 @@
       "tu": "src/ddutil.cpp"
     },
     {
+      "symbol": "??0CDecor@@QAE@XZ",
+      "rva": "0x00003910",
+      "size": 160,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "??1CDecor@@QAE@XZ",
+      "rva": "0x000039b0",
+      "size": 32,
+      "tu": "src/decblock.cpp"
+    },
+    {
       "symbol": "?InitGamer@CDecor@@QAEXXZ",
       "rva": "0x00003b60",
       "size": 32,
@@ -382,6 +400,12 @@
       "tu": "src/decblock.cpp"
     },
     {
+      "symbol": "?StopSound@CDecor@@QAEXH@Z",
+      "rva": "0x00005880",
+      "size": 80,
+      "tu": "src/decblock.cpp"
+    },
+    {
       "symbol": "?AdaptMotorVehicleSound@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x000058d0",
       "size": 128,
@@ -418,6 +442,24 @@
       "tu": "src/decdesign.cpp"
     },
     {
+      "symbol": "?PlaceDecor1@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00005c20",
+      "size": 608,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor2@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00005e80",
+      "size": 880,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor3@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x000061f0",
+      "size": 832,
+      "tu": "src/decdesign.cpp"
+    },
+    {
       "symbol": "?GetMissionTitle@CDecor@@QAEPADXZ",
       "rva": "0x00008520",
       "size": 16,
@@ -430,6 +472,162 @@
       "tu": "src/decdesign.cpp"
     },
     {
+      "symbol": "?GetRegion@CDecor@@QAEHXZ",
+      "rva": "0x00008560",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetRegion@CDecor@@QAEXH@Z",
+      "rva": "0x00008570",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetMusic@CDecor@@QAEHXZ",
+      "rva": "0x00008580",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetMusic@CDecor@@QAEXH@Z",
+      "rva": "0x00008590",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetDim@CDecor@@QAE?AUtagPOINT@@XZ",
+      "rva": "0x000085a0",
+      "size": 32,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetDim@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x000085c0",
+      "size": 32,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetNbVies@CDecor@@QAEHXZ",
+      "rva": "0x000085e0",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetNbVies@CDecor@@QAEXH@Z",
+      "rva": "0x000085f0",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetPause@CDecor@@QAEHXZ",
+      "rva": "0x00008600",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?ChangePause@CDecor@@QAEXH@Z",
+      "rva": "0x00008610",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetDoors@CDecor@@QAEXPAF@Z",
+      "rva": "0x00008620",
+      "size": 48,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetDoors@CDecor@@QAEXPAF@Z",
+      "rva": "0x00008650",
+      "size": 48,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetAllMissions@CDecor@@QAEXH@Z",
+      "rva": "0x00008680",
+      "size": 32,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetSuperBlupi@CDecor@@QAEHXZ",
+      "rva": "0x00008d40",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetSuperBlupi@CDecor@@QAEXH@Z",
+      "rva": "0x00008d50",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetDrawSecret@CDecor@@QAEHXZ",
+      "rva": "0x00008d60",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetDrawSecret@CDecor@@QAEXH@Z",
+      "rva": "0x00008d70",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetNetPacked@CDecor@@QAEHXZ",
+      "rva": "0x00008d80",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetNetPacked@CDecor@@QAEXH@Z",
+      "rva": "0x00008d90",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetNetMovePredict@CDecor@@QAEHXZ",
+      "rva": "0x00008da0",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetNetMovePredict@CDecor@@QAEXH@Z",
+      "rva": "0x00008db0",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetNetDebug@CDecor@@QAEHXZ",
+      "rva": "0x00008dc0",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetNetDebug@CDecor@@QAEXH@Z",
+      "rva": "0x00008dd0",
+      "size": 32,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?OutputNetDebug@CDecor@@QAEXPAD@Z",
+      "rva": "0x00008df0",
+      "size": 112,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetMulti@CDecor@@QAEXH@Z",
+      "rva": "0x00008e60",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetTeam@CDecor@@QAEXH@Z",
+      "rva": "0x00008e70",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
       "symbol": "?GetPosDecor@CDecor@@QAE?AUtagPOINT@@U2@@Z",
       "rva": "0x0000f540",
       "size": 112,
@@ -439,6 +637,12 @@
       "symbol": "?BlupiAddFifo@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x0000f5b0",
       "size": 144,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?DecorDetect@CDecor@@QAEHUtagRECT@@H@Z",
+      "rva": "0x0000f640",
+      "size": 640,
       "tu": "src/decblupi.cpp"
     },
     {
@@ -472,6 +676,18 @@
       "tu": "src/decblupi.cpp"
     },
     {
+      "symbol": "?IsPassIcon@CDecor@@QAEHH@Z",
+      "rva": "0x00010330",
+      "size": 64,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsBlocIcon@CDecor@@QAEHH@Z",
+      "rva": "0x00010370",
+      "size": 64,
+      "tu": "src/decblupi.cpp"
+    },
+    {
       "symbol": "?NetStopCloud@CDecor@@QAEXH@Z",
       "rva": "0x00010670",
       "size": 64,
@@ -500,6 +716,42 @@
       "rva": "0x000109c0",
       "size": 64,
       "tu": "src/decnet.cpp"
+    },
+    {
+      "symbol": "?NetMessageIndexFlush@CDecor@@QAEXXZ",
+      "rva": "0x000113a0",
+      "size": 32,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetMessagePush@CDecor@@QAEHPAUNetMessage@@@Z",
+      "rva": "0x000113c0",
+      "size": 96,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetMessagePop@CDecor@@QAEHPAUNetMessage@@@Z",
+      "rva": "0x00011420",
+      "size": 112,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?NotifFlush@CDecor@@QAEXXZ",
+      "rva": "0x00011490",
+      "size": 32,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?NotifPop@CDecor@@QAEXXZ",
+      "rva": "0x000114b0",
+      "size": 96,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?NotifStep@CDecor@@QAEXXZ",
+      "rva": "0x000115a0",
+      "size": 32,
+      "tu": "src/decmove.cpp"
     },
     {
       "symbol": "?AscenseurSynchro@CDecor@@QAEXH@Z",
@@ -730,6 +982,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?RestoreGame@CEvent@@QAEXXZ",
+      "rva": "0x000166b0",
+      "size": 64,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?FlushInput@CEvent@@QAEXXZ",
       "rva": "0x000166f0",
       "size": 32,
@@ -814,6 +1072,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?GetWorld@CEvent@@QAEHXZ",
+      "rva": "0x000191b0",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?IsPrivate@CEvent@@QAEHXZ",
       "rva": "0x000191e0",
       "size": 16,
@@ -835,6 +1099,12 @@
       "symbol": "?GetPhase@CEvent@@QAEIXZ",
       "rva": "0x0001ae20",
       "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?MovieToStart@CEvent@@QAEXXZ",
+      "rva": "0x0001ae70",
+      "size": 80,
       "tu": "src/event.cpp"
     },
     {
@@ -1016,6 +1286,18 @@
       "rva": "0x0001f010",
       "size": 16,
       "tu": "src/button.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "??1CMenu@@QAE@XZ",
+        "rva": "0x0001f010",
+        "tu": "src/menu.cpp"
+      }
+    },
+    {
+      "symbol": "??1CJauge@@QAE@XZ",
+      "rva": "0x0001f010",
+      "size": 16,
+      "tu": "src/jauge.cpp",
       "status": "folded",
       "into": {
         "symbol": "??1CMenu@@QAE@XZ",

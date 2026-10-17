@@ -725,16 +725,14 @@ void CEvent::SetMenu(int button, int menu)
 
 void CEvent::RestoreGame()
 {
-	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST)
+	if (m_phase != WM_PHASE_PLAY && m_phase != WM_PHASE_PLAYTEST)
 	{
-		HideMouse(TRUE);
-	}
-	else
-	{
+		HideMouse(FALSE);
+		WaitMouse(TRUE);
 		WaitMouse(FALSE);
-		DisableMouse(TRUE);
-		DisableMouse(FALSE);  // force le changement de sprite !
+		return;
 	}
+	DisableMouse(TRUE);
 }
 
 void CEvent::FlushInput()
@@ -3010,7 +3008,7 @@ int CEvent::SearchPhase(UINT phase)
 int CEvent::GetWorld()
 {
 	if (m_bPrivate) return m_private;
-	if (m_bMulti)	return m_multi+200;
+	if (m_bMulti)	return m_multi+100;
 	else			return m_mission;
 }
 

@@ -502,6 +502,14 @@ def data_extent(coff: Coff, symbol: Symbol, addend: int) -> tuple[int, bytes] | 
             content += b"\0" * (end - target_offset - len(content))
     else:
         content = b"\0" * (end - target_offset)
+    # The numerically named dectables arrays are count-prefixed int tables.
+    # Their next COFF symbol can be separated by compiler alignment padding;
+    # use the declared element count to keep that padding out of the payload.
+    if re.fullmatch(r"\?table_[0-9a-f]{5}@@3PAHA", symbol.name, re.IGNORECASE) and len(content) >= 4:
+        count = struct.unpack_from("<i", content, 0)[0]
+        meaningful_size = (count + 1) * 4
+        if 0 <= count and meaningful_size <= len(content):
+            content = content[:meaningful_size]
     return target_offset, content
 
 
@@ -1266,6 +1274,69 @@ def bind_observed_symbols(loaded: list[tuple[Path, Coff, list[Function], dict[in
             for key, values in observed.items()}
 
 
+def bind_unique_data_symbols(data_defs: dict[str, list[tuple[Coff, Symbol]]], pe: pefile.PE,
+                             global_symbols: dict[str, int | None]) -> dict[str, dict[str, Any]]:
+    """Bind unobserved initialized symbols only when their full payload has one section hit."""
+    evidence: dict[str, dict[str, Any]] = {}
+    image_base = int(pe.OPTIONAL_HEADER.ImageBase)
+    for name, definitions in data_defs.items():
+        key = "global:" + name
+        # Observed references, including conflicting observations, outrank a
+        # content search. The payload check will then validate the actual target.
+        if key in global_symbols or len(definitions) != 1:
+            continue
+        coff, symbol = definitions[0]
+        if symbol.section <= 0 or symbol.section > len(coff.sections):
+            continue
+        object_section = coff.sections[symbol.section - 1]
+        kind = section_kind(object_section.name)
+        if kind not in ("rdata", "data"):
+            continue
+        extent = data_extent(coff, symbol, 0)
+        if extent is None:
+            continue
+        start, expected = extent
+        if not expected:
+            continue
+        if any(start <= reloc.offset < start + len(expected)
+               and reloc.offset + relocation_size(reloc.typ) > start
+               for reloc in object_section.relocations):
+            continue
+        alignment = 2 if symbol.name.endswith("@@3PAFA") else 4
+        matches: list[tuple[Any, int]] = []
+        expected_name = {"rdata": ".rdata", "data": ".data"}[kind]
+        for oracle_section in pe.sections:
+            oracle_name = oracle_section.Name.rstrip(b"\0").decode("ascii", "replace")
+            if oracle_name != expected_name:
+                continue
+            raw = oracle_section.get_data()
+            offset = 0
+            while True:
+                offset = raw.find(expected, offset)
+                if offset < 0:
+                    break
+                if offset % alignment == 0:
+                    matches.append((oracle_section, offset))
+                    if len(matches) > 1:
+                        break
+                offset += 1
+            if len(matches) > 1:
+                break
+        if len(matches) != 1:
+            continue
+        oracle_section, offset = matches[0]
+        target_va = image_base + int(oracle_section.VirtualAddress) + offset
+        global_symbols[key] = target_va
+        evidence[name] = {
+            "target_va": f"0x{target_va:08x}",
+            "object_section": object_section.name,
+            "oracle_section": expected_name,
+            "data_size": len(expected),
+            "proof": "unique exact initialized-payload hit at natural alignment",
+        }
+    return evidence
+
+
 def derive_crt_data_evidence(evidence_paths: list[Path],
                              locations: dict[tuple[str, int], tuple[int, str]],
                              global_symbols: dict[str, int | None], pe: pefile.PE,
@@ -1349,7 +1420,8 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
                                                        dict[str, list[Function]], dict[str, list[tuple[Coff, Symbol]]],
                                                         dict[tuple[str, int], tuple[int, str]],
                                                         dict[tuple[str, int], dict[str, Any]],
-                                                        dict[tuple[str, int], str]]:
+                                                        dict[tuple[str, int], str],
+                                                        dict[str, dict[str, Any]]]:
     loaded: list[tuple[Path, Coff, list[Function], dict[int, list[int]]]] = []
     candidates: dict[str, list[int]] = defaultdict(list)
     function_defs: dict[str, list[Function]] = defaultdict(list)
@@ -1618,7 +1690,9 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
     candidates = {name: sorted(set(values)) for name, values in candidates.items()}
 
     global_symbols = bind_observed_symbols(loaded, locations, exe_text, text_rva, image_base, pe)
-    return candidates, global_symbols, dict(function_defs), dict(data_defs), locations, folded, location_issues
+    data_payload_bindings = bind_unique_data_symbols(data_defs, pe, global_symbols)
+    return (candidates, global_symbols, dict(function_defs), dict(data_defs), locations, folded,
+            location_issues, data_payload_bindings)
 
 
 def main() -> int:
@@ -1644,8 +1718,11 @@ def main() -> int:
     object_paths = [path.resolve() for path in args.objects]
     evidence_paths = [path.resolve() for path in args.evidence_object]
     all_paths = object_paths + evidence_paths
-    shared_candidates, global_symbols, function_defs, data_defs, locations, folded, location_issues = collect_global_state(
+    (shared_candidates, global_symbols, function_defs, data_defs, locations, folded,
+     location_issues, data_payload_bindings) = collect_global_state(
         all_paths, pe, exe_text, text_rva, at, explicit)
+    if data_payload_bindings:
+        print(f"unique initialized-data payload bindings: {len(data_payload_bindings)}")
     crt_data_evidence = derive_crt_data_evidence(
         evidence_paths, locations, global_symbols, pe, exe_text, text_rva,
         pe.OPTIONAL_HEADER.ImageBase)
@@ -1657,6 +1734,17 @@ def main() -> int:
                                 oracle_function_vas, locations, folded, location_issues,
                                 crt_data_evidence)
         result["layout_warnings"] = layout_warnings(obj_path, locations, text_rva, folded)
+        coff = Coff(obj_path)
+        used_data_symbols = {
+            symbol.name
+            for section in coff.sections
+            for reloc in section.relocations
+            if (symbol := coff.sym_by_index.get(reloc.symbol_index)) is not None
+        }
+        result["data_payload_bindings"] = {
+            name: detail for name, detail in data_payload_bindings.items()
+            if name in used_data_symbols
+        }
         all_results.append(result)
         counts = Counter()
         placement_counts = Counter()

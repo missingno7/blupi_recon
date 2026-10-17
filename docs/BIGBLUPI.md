@@ -2,7 +2,7 @@
 
 ## Current result
 
-[EVIDENCE] The oracle inventory has one `FUN_00409280` body, 25,269 bytes, at RVA `0x9280`; forced comparisons place the candidate at that entry. Its `functions.csv` end field is `0xf535` (exclusive), consistent with the size. The current candidate is 29,488 bytes, frame `0xbc`, raw prefix 2, and `MISMATCH`; it is 4,219 bytes over the target. The target frame is `0xa4`. No new STRICT function was produced; the decblupi TU retains its seven accepted STRICT bodies and two relocation-unverified bodies.
+[EVIDENCE] The oracle inventory has one `FUN_00409280` body, 25,269 bytes, at RVA `0x9280`; forced comparisons place the candidate at that entry. Its `functions.csv` end field is `0xf535` (exclusive), consistent with the size. The current point-scoped candidate is 29,200 bytes, frame `0xbc`, raw prefix 2, and `MISMATCH`; it is 3,931 bytes over the target. The target frame is `0xa4`. No new STRICT function was produced; the decblupi TU retains its seven accepted STRICT bodies and two relocation-unverified bodies.
 
 [EVIDENCE] All candidate verification used VC5 SP3, `/O2 /GX /ML /Gd /Gy`, the full decblupi TU and all run objects, with `--build-dir bigblupi`; `cmpfunc.py` forced `?BlupiStep@CDecor@@QAEXXZ=0x9280`. `scratch/bigblupi/decblupi.cpp` and its private header are the only source inputs changed for this work. The full run leaves the existing accepted functions unchanged.
 
@@ -29,12 +29,14 @@ Raw prefix is byte equality from entry. The first mismatch remains the stack-all
 | Replace SB2 FIFO gate with target predicate; remove its helper chain | 30,112 | 2 | `0xbc` | MISMATCH |
 | Remove unmatched `IsSwitch` / `ActiveSwitch` branch | 29,520 | 2 | `0xbc` | MISMATCH |
 | Match oracle `MockeryDetect` caller eligibility gate | **29,488** | **2** | **`0xbc`** | **MISMATCH** |
+| Supervisor's canonical refresh from `src/decblupi.cpp` | 29,216 | 2 | `0xbc` | MISMATCH |
+| Scope sibling `tinyPoint` temporaries without moving later source lines | **29,200** | **2** | **`0xbc`** | **MISMATCH** |
 
-[EVIDENCE] Replacing the pruned action switch with ordered independent `if` blocks added 304 bytes. That shape matches the oracle's direct compare chain; its cost is retained. The current body is 4,219 bytes larger than the oracle.
+[EVIDENCE] Replacing the pruned action switch with ordered independent `if` blocks added 304 bytes. That shape matches the oracle's direct compare chain; its cost is retained. The current body is 3,931 bytes larger than the oracle.
 
 ## Frame map
 
-The raw-access tables are from Capstone over the oracle bytes and current SP3 COFF body. “First” is the instruction offset from function entry (add `0x9280` for an oracle RVA); each listed operand is 4 bytes. Modes are `R`/`W` and `A` for address-only `lea`. Displacements are literal `[esp+N]` operands, including call arguments and reused storage. Candidate symbol locations below come from `build/tmp/bigblupi_final.cod`, expressed relative to entry ESP (`E-N`).
+The raw-access tables are from Capstone over the oracle bytes and current SP3 COFF body. “First” is the instruction offset from function entry (add `0x9280` for an oracle RVA); each listed operand is 4 bytes. Modes are `R`/`W` and `A` for address-only `lea`. Displacements are literal `[esp+N]` operands, including call arguments and reused storage. Candidate symbol locations below come from the source-annotated SP3 listing, expressed relative to entry ESP (`E-N`).
 
 ### Oracle raw `[esp+N]` operands
 
@@ -64,35 +66,37 @@ The raw-access tables are from Capstone over the oracle bytes and current SP3 CO
 
 | Operand | Bytes | Access | First | Uses |
 |---|---:|---|---:|---:|
-| `+0x10` | 4 | RWA | `0x0048` | 120 |
+| `+0x10` | 4 | RWA | `0x0048` | 124 |
 | `+0x14` | 4 | RW | `0x004c` | 114 |
 | `+0x18` | 4 | RWA | `0x0040` | 21 |
 | `+0x1c` | 4 | RWA | `0x0044` | 35 |
 | `+0x20` | 4 | RW | `0x01fb` | 16 |
-| `+0x24` | 4 | RW | `0x3539` | 7 |
-| `+0x28` | 4 | RW | `0x01d2` | 15 |
-| `+0x2c` | 4 | RW | `0x0217` | 7 |
-| `+0x30` | 4 | WA | `0x021e` | 5 |
-| `+0x34` | 4 | RW | `0x0225` | 4 |
-| `+0x38` | 4 | W | `0x0233` | 5 |
-| `+0x3c` | 4 | RW | `0x010e` | 7 |
-| `+0x40` | 4 | RWA | `0x0a5f` | 9 |
-| `+0x44` | 4 | RWA | `0x0026` | 16 |
-| `+0x48` | 4 | RWA | `0x0625` | 7 |
-| `+0x4c` | 4 | RWA | `0x01ce` | 9 |
-| `+0x50` | 4 | RW | `0x0495` | 7 |
-| `+0x54` | 4 | RWA | `0x31c2` | 11 |
+| `+0x24` | 4 | RW | `0x50d5` | 7 |
+| `+0x28` | 4 | RW | `0x01d2` | 7 |
+| `+0x2c` | 4 | WA | `0x021e` | 9 |
+| `+0x30` | 4 | RW | `0x0225` | 5 |
+| `+0x34` | 4 | W | `0x0233` | 4 |
+| `+0x38` | 4 | RW | `0x01fb` | 12 |
+| `+0x3c` | 4 | W | `0x30d0` | 1 |
+| `+0x40` | 4 | RWA | `0x01c4` | 14 |
+| `+0x44` | 4 | RWA | `0x010e` | 17 |
+| `+0x48` | 4 | RWA | `0x01ce` | 16 |
+| `+0x4c` | 4 | R | `0x34a4` | 5 |
+| `+0x50` | 4 | R | `0x34aa` | 6 |
+| `+0x54` | 4 | RWA | `0x30b0` | 5 |
 | `+0x58` | 4 | RWA | `0x01a7` | 10 |
 | `+0x64` | 4 | RWA | `0x0030` | 4 |
-| `+0x68` | 4 | A | `0x6f16` | 2 |
+| `+0x68` | 4 | A | `0x6dfa` | 2 |
 
 [EVIDENCE] The target Ghidra locals are `local_a4`, `local_a0`, `local_9c`, `local_98`, `local_94`, `local_90`, `local_8c`, `local_88`, `local_84[2]`, `local_7c`, `local_74`, `local_70`, `local_6c`, `local_68`, and `local_64[100]`. The first fourteen span the target's 64-byte local region before the 100-byte notification buffer. Pseudocode roles: endpoint x/y; index/pointer; three flags; saved point; an 8-byte output; and five scalar scratch values. The target buffer is addressed at raw `+0x50` (effective entry-ESP address `E-0x64`).
 
-[EVIDENCE] The current SP3 listing has frame allocation `0xbc`; its fixed prologue consumes `0xcc` bytes including saved registers. Candidate locals are `POINT end` at `E-0xbc` (8); `bIsOpen` at `E-0xb4` (4); `bIsOpen2` at `E-0xb0` (4); `bAirStart` at `E-0xac` (4); `POINT tinyPoint` at `E-0xa8` (8); `RECT rect` at `E-0xa0` (16); `num`/`num27` at `E-0x90` (4, same slot); `bNear` at `E-0x8c` (4); `bLastBlupiAir` and scoped `POINT tinyPoint2` at `E-0x88` (sharing storage by lifetime); `POINT blupiPos` and compiler temporaries at `E-0x78`; `lastBlupiAction` at `E-0x68` (4); and `char str[100]` at `E-0x64`. The candidate buffer operand is raw `+0x68`, resolving to the same effective address `E-0x64` as the target buffer at raw `+0x50`.
+[EVIDENCE] The current SP3 listing has frame allocation `0xbc`; its fixed prologue consumes `0xcc` bytes including saved registers. Candidate locals are `POINT end` at `E-0xbc` (8); `bIsOpen` at `E-0xb4` (4); `bIsOpen2` at `E-0xb0` (4); `bLastBlupiAir`, scoped `POINT tinyPoint2`, and several sibling scoped `POINT tinyPoint` temporaries at `E-0xac` (point temporaries occupy 8 bytes and share the first dword with `bLastBlupiAir` by lifetime; union extent 8); `RECT rect` at `E-0xa4` (16); `bAirStart` at `E-0x94` (4); `bNear` at `E-0x8c` (4); `num`/`num27` and one scoped `POINT tinyPoint` at `E-0x88` (the point occupies 8 bytes and shares the first dword with `num` by lifetime); `POINT blupiPos` and compiler temporaries at `E-0x78`; `lastBlupiAction` at `E-0x68` (4); and `char str[100]` at `E-0x64`. `icon` has no stack symbol in the listing. The candidate buffer operand is raw `+0x68`, resolving to `E-0x64`; the target buffer operand is raw `+0x50`, also resolving to `E-0x64`.
 
-[EVIDENCE] The original `0xc4` candidate frame was eight dwords above the target. Scoping `tinyPoint2` to two sibling blocks removed two dwords, leaving a 24-byte/six-dword extent difference (`0xbc` vs `0xa4`). The candidate local extent below `str` is 88 bytes versus the target's 64 bytes. `str[100]` is the only source array in candidate `BlupiStep`; no other candidate arrays need ordering under BLUPI-LOC-01, and both notification buffers start at the same effective stack address.
+[EVIDENCE] The supervisor's refreshed canonical candidate is six dwords above the target (`0xbc` vs `0xa4`). Scoping sibling point temporaries leaves the frame unchanged but reduces the body by 16 bytes (29,216 to 29,200). The current candidate's local extent below `str` is 88 bytes versus the target's 64 bytes. `str[100]` is the only source array in candidate `BlupiStep`; no other candidate arrays need ordering under BLUPI-LOC-01, and both notification buffers start at the same effective stack address.
 
-[OPEN] The remaining six dwords are not yet attributable to six named SB2-only locals. Extent accounting gives a narrower lead: candidate named stack objects occupy 72 bytes after lifetime sharing; target pseudocode locals occupy 60 bytes in a 64-byte region. Candidate has 16 bytes of unoccupied gaps (two 8-byte holes, `E-0x80..E-0x78` and `E-0x70..E-0x68`); the target has a 4-byte gap. Thus 12 bytes of the delta are extra holes and 12 bytes are extra named-object extent. The 12-byte object delta could be `RECT rect` (16 bytes versus an 8-byte output) plus one 4-byte local that the target keeps in a register or shares, but that identity is unproven. Keep this as an unresolved frame map rather than deleting locals or changing types on size alone.
+[EVIDENCE] Extent accounting for the current candidate gives 68 bytes of distinct named stack storage after lifetime sharing and 20 bytes of holes within the 88-byte local region. The target pseudocode names 60 bytes of locals in its 64-byte region, leaving 4 bytes unused. The candidate holes are `E-0x90..E-0x8c` (4 bytes), `E-0x80..E-0x78` (8), and `E-0x70..E-0x68` (8): 16 bytes more gap than the target. The remaining 8-byte difference is named-object extent; `RECT rect` is the only 16-byte source local, while the target pseudocode has an 8-byte `local_84[2]` scratch aggregate. This is a plausible two-dword excess, but the aggregate mapping is not proven. The 4-dword padding difference is caused by current local layout; its specific source lifetime cause is unresolved.
+
+[OPEN] The raw target table gives every decoded `[esp+N]` access (width, access mode, first instruction, and use count), and the candidate table is regenerated from the verified object. The candidate currently has 17 dwords of named storage versus 15 named target dwords. `end`, the two entry-zero flags, `bLastBlupiAir`, and `lastBlupiAction` all have plausible target live-value counterparts from their initialization/use patterns, so they are not established as SB2-only. The two extra named dwords and the four dwords of excess holes have not been assigned confidently to specific source locals. A probe that split the RECT into 19 use-block locals cut 32 bytes from code but increased the frame `0xbc -> 0xc4`; it was reverted. Do not delete or retag a local solely to force the frame.
 
 ## Control-flow and behavior map
 
@@ -151,6 +155,8 @@ The raw-access tables are from Capstone over the oracle bytes and current SP3 CO
 ## Compiler findings
 
 - `[VC5-LOC-03; confirmed candidate effect, SB1 transfer unverified]` Trigger: eight-dword frame excess. Moving `POINT tinyPoint2` from function scope into its two sibling use blocks changed its stack slot to a shared lifetime slot and reduced allocation `0xc4 -> 0xbc` (8 bytes); code size stayed 30,432. SP3 `/O2`, full decblupi TU, `/GX /ML /Gd /Gy`; whole function remained MISMATCH. `kb.py hints BlupiStep` returned keyword matches only. The remaining six dwords are not accounted for yet.
+- `[VC5-LOC-03; negative scope probe, SB1 transfer unverified]` Scoping sibling `POINT tinyPoint` temporaries with line-preserving block declarations reduced `BlupiStep` by 16 bytes (29,216 to 29,200) but left the frame at `0xbc` and raw prefix at 2; full decblupi TU stayed MISMATCH with accepted functions strict. No local extent was reclaimed by this probe.
+- `[VC5-LOC-03; negative scope probe, SB1 transfer unverified]` Splitting the long-lived rectangle into 19 block-local `RECT` declarations reduced code 32 bytes but expanded frame `0xbc -> 0xc4`; reverted. This use-block split did not satisfy the target's frame reuse pattern.
 - `[BLUPI-LOC-01; no ordering probe needed]` Candidate has only one source array in `BlupiStep`, `char str[100]`; there is no second candidate array to reorder by ascending size or sibling scope. It occupies the same effective stack address as the target notification buffer. The target pseudocode's `local_84[2]` is an 8-byte output, not a second source array in this candidate.
 - `[VC5-SEM-01; Blupi-specific source correction]` Trigger: candidate's FIFO save-position gate contained SB2-only helper checks. Replacing it with the exact oracle predicate/queue operation reduced code by 304 bytes (30,416 to 30,112), frame and prefix unchanged. Flags/TU: VC5 SP3, full decblupi TU, `/O2 /GX /ML /Gd /Gy`; full function remained MISMATCH. Evidence: oracle pseudocode lines 2869-2878 and offsets `+0xc904/+0xc908/+0xc90c/+0xc930/+0xc900/+0xc978/+0xc97c/+0xc980`.
 - `[VC5-SEM-01; Blupi-specific, counterpart absent in this function]` Trigger: SB2 branch called `IsSwitch`/`ActiveSwitch`, used tile IDs 384/385, and assigned action `0x52`. Removing it reduced code by 592 bytes (30,112 to 29,520), frame/prefix unchanged. Oracle body has no action `0x52`, corresponding helper call, or those icon values; function remains MISMATCH. Whether SB1 reaches a similar effect through another path is open.
@@ -162,4 +168,4 @@ The raw-access tables are from Capstone over the oracle bytes and current SP3 CO
 
 ## Next alignment steps
 
-[OPEN] Resolve the remaining six-dword frame extent from local live ranges, then align the first differing instructions after the prologue. The target 16-action order and movement tables/callees are established; continue removing only candidate blocks that have no oracle counterpart by table, offsets, callees, sounds, or action values. The five queue-field names/offsets above are a precise header delta for infra to integrate across TUs; no canonical header was edited here.
+[OPEN] Resolve the six-dword frame excess by matching candidate local lifetimes/slots to the 15 target dwords and four-byte target gap; the tested point and rectangle scope families did not produce that layout. Once the frame is `0xa4`, align from the prologue forward. The target's 16-action compare order, movement tables, and major callees are mapped; continue removing only SB2 blocks lacking an oracle counterpart by tables, offsets, callees, sounds, or action values, and reconstruct any differing switch/teleporter behavior from the oracle bytes. The five queue-field names/offsets above are a precise header delta for infra to integrate across TUs; no canonical header was edited here.

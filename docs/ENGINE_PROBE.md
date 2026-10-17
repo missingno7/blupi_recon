@@ -1,4 +1,4 @@
-﻿# SB engine probes
+# SB engine probes
 
 ## Method
 
@@ -345,3 +345,35 @@
 [EVIDENCE] The canonical manifest remains untouched by this worker. The refreshed `src/` candidates have 38 unique strict bodies across decblock (13), decblupi (7), decmove (11 unique), and decdesign (7), totaling 3,877 bytes. The decmove object also emits the identical `ObjectDelete` body accepted under decnet; it is counted once. The former zero-hit decblock result is superseded by the oracle-first table above. The 26-function block behavior maps to SB2 `decor.cpp` methods, but the assigned SB1 TU filename/source generation remains a hypothesis; no map edit is proposed.
 
 [OPEN] `PlayPrepare` (768–784/703), `GetBlupiInfo` (80/67), and `MoveObjectPollution` (480/439; 496 with a local `POINT`) remain mismatches. `AdaptMotorVehicleSound`, `ScreenPosToCelPos`, `SetIconLiftAndStuff`, and `PlaceDecor` are now STRICT in canonical `src/`. `CDecor::Build` has a compiled SB2 behavior candidate with the frame/local mismatch recorded above; other constructor/Create/LoadImages/InitDecor/DrawInfo/DecorNextAction and tick/input bodies still need oracle-derived source. The mid-large functions at `0x11bd0`, `0x4350`, `0x6530`, `0x7360`, `0x7b20`, and `0x86a0` remain open. The CDecor allocation tail is sized but semantically unpartitioned; see the proposed opaque tail delta above. The `decblock`/`decdesign` boundary remains `0x5a20`, and no `oracle/tu_map.csv` change was made by this worker.
+
+## Engine9 mid-size assigned functions (2026-10-17)
+
+[EVIDENCE] Candidates were built with VC5 SP3 using `/O2 /GX /ML /Gd /Gy` and the complete translation-unit object set under `--build-dir engine9`. Scratch sources are `scratch/engine9/decblock.cpp`, `decdesign.cpp`, `decblupi.cpp`, and `decmove.cpp`; no canonical source or header was edited. The private `decor.h` delta is recorded below. There are no new STRICT matches among the assigned functions.
+
+| Target RVA / body bytes | Candidate and outcome | Prefix / structural evidence |
+|---|---|---|
+| `decblock 0x3b80 / 744` | SB2-derived `InitDecor` behavior was attempted in scratch but did not compile against the canonical headers; no comparison result. [HYPOTHESIS] this target corresponds to `InitDecor`. | Missing SB2-only members `m_blupiFront`, `m_blupiBullet`, `m_blupiCle`, `m_blupiPerso`, and `m_blupiDynamite` block direct transfer. |
+| `decblock 0x3e90 / 703` | Prior `PlayPrepare` probe: candidate 768 B after a 784 B first variant; MISMATCH. No new change in this pass. | Target 200-record forward walk was reconstructed; the target-supported six-type randomization list remains. See the earlier compiler finding above. |
+| `decblock 0x5270 / 1,010` | SB2-derived `DrawInfo` behavior was attempted in scratch but did not compile against the canonical headers; no comparison result. [HYPOTHESIS] this target corresponds to `DrawInfo`. | In addition to absent fields above, SB2 references `FONTWHITE`, `FONTGOLD`, and `DrawTextCenter`, which are not declared in this TU context. |
+| `decdesign 0x5c20 / 595` | Candidate span 608 B; fixed/code bytes match, `RELOC-UNVERIFIED`. | The six `table_366b0`…`table_36710` data relocations resolve to their target VAs but have no unique reconstructed definitions. `PlaceDecor` helper calls resolve to `0x405ba0`. |
+| `decdesign 0x5e80 / 877` | Candidate span 880 B; fixed/code bytes match, `RELOC-UNVERIFIED`. | Ten table data relocations are unverified; `PlaceDecor` calls and `AdaptBorder` at `0x4144d0` resolve. |
+| `decdesign 0x61f0 / 825` | Candidate span 832 B; fixed/code bytes match, `RELOC-UNVERIFIED`. | Nine table data relocations are unverified; `PlaceDecor` calls and `AdaptBorder` resolve. |
+| `decdesign 0x8e80 / 1,020` | No edit: the target map assignment is provisional, and its behavior resembles `BlupiSearchIcon` in the unowned `decblupi.cpp`. | Target pseudocode calls `0x5800` and `0xfe20`; source identity/TU placement remains open. |
+| `decblupi 0xf640 / 640` | `DecorDetect` candidate is 640 B, fixed/code bytes match, `RELOC-UNVERIFIED`. | Only `table_decor_quart` at `0x431aa0` is unverified; both `IntersectRect` import relocations resolve. |
+| `decmove 0x115c0 / 591` | Forced `MoveObjectStep` comparison: candidate 400 B, MISMATCH. | 2-byte prefix (`83 ec`); stack reservation differs (`08` candidate, `10` target). |
+| `decmove 0x11810 / 946` | Forced `MoveObjectStepLine` comparison: candidate 1,344 B, MISMATCH. | 3-byte prefix; both reserve `0x44`, then candidate loads the argument before saving registers while target saves registers first. |
+| `decmove 0x13320 / 532` | Current `MockeryDetect` variant is 544 B, MISMATCH; previous single-sample baseline was 512 B. | First 19 bytes match. Target pseudocode samples at y+94 and y+158 and accepts seven types; the two-sample candidate is closer in behavior but still exceeds target size. |
+| `decmove 0x135e0 / 538` | Forced `MoveObjectDetect` comparison: candidate 608 B, MISMATCH. | 3-byte prefix; both reserve `0x40`, then candidate reads the first argument from `[esp+0x48]` while target reads `[esp+0x44]`. |
+
+[EVIDENCE] `PlaceDecor1/2/3` stage each short cell icon through an `int` local for the shared `PlaceDecor(int*)` helper. Target-derived indices and destinations are applied, including `PlaceDecor1` indices 20–25 and its `m_bigDecor` store. Their distinct target bodies total 2,297 unique bytes; all fixed/code bytes compare equal, but the 25 table data relocations lack unique definitions, so none qualifies as STRICT. `DecorDetect` adds another 640 target bytes with fixed/code bytes equal but one unresolved table relocation. Total: 2,937 original body bytes code-equal, 0 STRICT, 4 `RELOC-UNVERIFIED` functions.
+
+[EVIDENCE] Private header delta: `scratch/engine9/decor.h` moves `m_blupiOver` from before `m_blupiJeep` to after `m_blupiSurf`. The target accesses `m_blupiHelico`, `m_blupiNage`, and `m_blupiSurf` at `+0xc90c`, `+0xc91c`, and `+0xc920`; the resulting `DecorDetect` body matches the target code bytes. This stays scratch-only for shared-header integration. Existing strict peers in the decblupi verification remain strict (`GetPosDecor`, `BlupiAddFifo`, `TestPath`, and the three `MoveObject*` sound/action helpers).
+
+## Engine9 compiler findings
+
+- [EVIDENCE; partial, `VC5-SEM-01`, Blupi-specific] In the three `PlaceDecor` bodies, replacing direct short-pointer helper calls with one shared `int` staging local, then correcting target-supported indices and store destinations, produced code-equal fixed bytes at 0x5c20, 0x5e80, and 0x61f0. VC5 SP3 `/O2 /GX /ML /Gd /Gy`, full TU; 25 data relocations remain unresolved, so strict equality is not established.
+- [EVIDENCE; partial, `VC5-SEM-01`, Blupi-specific] For `DecorDetect`, removing source filters/writes absent from target pseudocode and applying the private member-order correction produced the exact 640-byte code body. The `table_decor_quart` definition is still unresolved; result remains `RELOC-UNVERIFIED`.
+- [EVIDENCE; negative, `VC5-SEM-01`, Blupi-specific] For `MockeryDetect`, the inherited one-sample form emitted 512 B; the target-derived two-sample/type-filter form emitted 544 B against a 532-byte target. The entry prefix is 19 bytes, but the size and later instruction layout remain different. A scalar-return variant grew to 560 B. These tested forms are not a complete fix.
+- [EVIDENCE; structural, `VC5-ORD-01` hypothesis only] The `MoveObjectStepLine` forced diff has the same `0x44` frame but different argument-load/register-save order after the first three bytes. No statement-order rewrite was tested; this remains a source-form lead, not a compiler rule confirmed by this function.
+
+[OPEN] Resolve the 26 table data definitions before claiming strict equality for the four code-equal bodies; reconstruct or identify the `decblock` sources at 0x3b80 and 0x5270; continue `PlayPrepare` from the existing 768/703 negative probe; establish the owner/source identity of 0x8e80; then continue from the recorded movement prefixes and frame/argument-load differences. No shared-header integration is proposed by this worker.
