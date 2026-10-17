@@ -171,3 +171,134 @@ supervisor's normal process. Continue Build's source-region reconstruction;
 then reassess the isolated, strict DecorNextAction addition together with
 GetBlupiInfo. The peer gate is a real blocker to that addition, not a reason
 to normalize its load bytes. No background process was started or left running.
+
+
+## Follow-up from 575b139: no additional accepted match
+
+### Outcome and artifacts
+
+[EVIDENCE] Refreshed both owned .cpp files and the private decor.h directly
+from canonical at HEAD 575b139. No accepted section above was rewritten.
+Other workers subsequently integrated event/button/network/text/decnet changes;
+final HEAD is ce064e6. The owned .cpp files and decor.h are byte-identical
+between these two revisions. Their scratch copies finish byte-identical to
+current canonical, with CRLF preserved. No canonical source or header changed.
+
+[EVIDENCE] **Zero newly accepted functions and zero new code bytes.** The
+fresh final full-manifest run exits 0 and preserves all 391 active accepted
+entries. Its span total is 106,080 / 141,488, entirely the supervisor's
+accepted tree. Evidence: `scratch/sol-decblock/round2/final-baseline.log`,
+`final-baseline/results.json`, owned objects/disassemblies and
+`followup-audit.json`. The complete final objects remain in
+`build/verify-soldecblock/`.
+
+[EVIDENCE] `round2/integration.patch` is empty: there is no accepted-safe
+source change to integrate. Its no-op check is
+`git apply --check --allow-empty scratch/sol-decblock/round2/integration.patch`.
+`round2/blocked-action.patch` is a source-only diagnostic patch against
+ce064e6; ordinary `git apply --check` passes. It contains the recovered action
+table/body but **must not be treated as a passing integration**. It adds the
+already-reported STRICT DecorNextAction (0x5670, 269 body bytes, six proven
+relocations) and regresses GetBlupiInfo. This function is not credited again.
+The patch contains no documentation file. Both patches also have root-level
+copies with `followup-` names to distinguish them from the prior integrated
+`integration.patch`.
+
+[EVIDENCE] A fresh action-only test at current HEAD, `r22-current-head-action`,
+still exits 1 solely for GetBlupiInfo, with four fixed operand-load bytes
+swapped. Restoring canonical sources makes its 67-byte body STRICT again.
+The accepted header and all existing strict bodies are left intact. Header
+deltas proposed for integration: **none**. DoInit and ReadConfig were untouched.
+
+### Compiler findings: follow-up
+
+All trials used pinned VC5 SP3, manifest `/W3 /GX /O2 /ML /Gd /Gy`, no PCH,
+and the mandatory `verify.py --build-dir soldecblock`. Commands ran serially;
+no parallel shell campaign or direct compiler invocation was used. Hints and
+BLUPI-CTX-01/02, VC5-CTX-02, BLUPI-REG-02 and VC5-LOC-03 were consulted.
+Each labeled directory below retains the exact sources, private header,
+owned objects, disassemblies, metrics and full result JSON; its sibling .log
+contains the verifier transcript. Header trials change only the private
+header used by the two owned substitutions, so they are not claims of a
+whole-tree modified-header solution.
+
+- [EVIDENCE; VC5-CTX-01..04 / BLUPI-CTX-01; negative] The target-proven
+  four-word CDecor::PlaySound body supports testing a single three-argument
+  declaration with default FALSE instead of the unsupported two-argument
+  overload (`h02`). This changes GetBlupiInfo from four fixed differences to
+  two, but remains MISMATCH. Removing unsupported no-arg MoveStep and one-arg
+  Build declarations together (`h03`) returns to four differences; either
+  alone with the PlaySound correction (`h04`, `h05`) leaves two. Removing the
+  inherited unused save-path placeholder and the unsupported three-argument
+  CurrentWrite overload (`h16`) leaves four. None closes the peer gate; no
+  declaration-count recipe or original header order is inferred. All these
+  private header changes are reverted.
+- [EVIDENCE; VC5-LOC-03 / VC5-ORD-01; negative] DecorNextAction with its local
+  POINT initialized before the action-zero guard (`r01`) changes the body
+  269 -> 267 and worsens the match; GetBlupiInfo still has four differences.
+  Moving the verified table definition to TU top (`r09`) is byte-inert for
+  both bodies. A for-loop walking variable-length table records (`r14`),
+  component loads instead of the posDecor POINT copy (`r20`), and separate
+  x/y clamp-limit locals (`r21`) each preserve STRICT DecorNextAction but
+  leave GetBlupiInfo's four load bytes wrong. These are genuine source-form
+  controls, not filler declarations. The original matching action form is
+  retained only in the blocked diagnostic candidate.
+- [EVIDENCE; BLUPI-REG-01 / BLUPI-REG-02; negative for strict Build] A scoped
+  origin POINT shared by the three temporary-image DrawIcon calls (`r06`)
+  changes Build from 3846 to 3840 instruction bytes, score 1489 -> 1205.
+  It keeps the first fixed mismatch at +0xca and leaves GetBlupiInfo two
+  bytes wrong with DecorNextAction present. Without that body (`r19`), a
+  different OR load pair is wrong. Combining it with the defaulted PlaySound
+  trial (`h17`) also leaves two differences. The lower score is not a strict
+  repair and this candidate is not integrated.
+- [EVIDENCE; VC5-ORD-01 / BLUPI-REG-02; negative] Shared origin plus direct
+  per-mode player calls (`r07`) gives a 3893-byte Build, score 1845. Moving
+  the shield y adjustment ahead of the table expression (`r10`) is byte-inert.
+  Shared normal rendering after the effect chain, inline effect expressions
+  and the scoped origin (`r11`) gives 3884 / score 1581; exchanging the two
+  genuinely used point identities and their declaration order (`r12`) leaves
+  that score/size, changes spill slots to incoming-argument storage, and still
+  preserves both cloud coordinates where the oracle spills only x. None is
+  retained. These trials were not repetitions of the old dummy-count sweep.
+- [EVIDENCE; VC5-CTL-03; negative] Initializing the actual fread count to zero,
+  reading it under nested non-null guards, then testing only count and saved
+  length (`r08`) gives CurrentRead 1576 versus 1564 bytes and FileExist 552
+  versus 540. It introduces a persistent EDI read-count value and still puts
+  error cleanup at the tail. This differs from the prior explicit pointer-
+  validity guard and bOk tests, but is also non-STRICT. Reverted.
+- [EVIDENCE; BLUPI-REG-02 / VC5-LOC-03; negative] AdaptBorder walking and
+  restoring its incoming coordinate (`r13`) gives 112 versus 114 bytes and
+  changes its saved-register roles. Four independent named neighbor points
+  (`r18`) are byte-identical to the existing helper-expression form: still
+  eight register/SIB differences and score 29. Reverted.
+- [EVIDENCE; VC5-LOC-03 / VC5-ORD-01; negative] DrawMap's fixed mouse point,
+  Build rectangle and both map rectangles expressed as const aggregates
+  (`r15`) retain the target 0x28 frame rather than the enlarged frame from
+  earlier mutable-rectangle trials. The body becomes 802 versus 805 bytes;
+  score 221 versus baseline 193, first fixed difference +0x238. The drawing
+  tail and restore-register sequence still differ. Reverted.
+
+### What the remaining Build size gap actually locates
+
+[EVIDENCE] Both baseline and target contain **44 call instructions**. Target
+normal code ends at +0xd94 before its cold Power/Cloud/Hide blocks; baseline
+candidate normal code ends at +0xd8f. Thus five of the 20 missing candidate
+bytes precede the cold blocks; the cold tails differ by the other 15 bytes
+(390 versus 375). The first five-byte displacement is already present after
+the background pass; the oracle materializes an additional 480-valued register
+before/around the inner loop. The cold tail differs in icon-load/push sharing,
+point preservation and zero-coordinate construction. All examined variants
+leave these regions unresolved.
+
+[OPEN] The size difference does not independently prove a missing gameplay
+operation: the call inventory is already complete. These measurements locate
+where a new source-region hypothesis must explain code, and avoid inventing
+an extra feature simply to add 20 bytes. Build remains baseline 3846 / frame
+0x44 / score 1489 in the accepted-safe final source.
+
+[OPEN] No genuine declaration, type, or source-region repair was found that
+keeps GetBlupiInfo strict with DecorNextAction. The new header/source controls
+above are exhausted at diminishing returns; repeating the old local spelling
+or dummy-count families is not justified. Next useful work requires a new
+source/CFG or independently evidenced header hypothesis. No commit or
+background process is left by this pass.
