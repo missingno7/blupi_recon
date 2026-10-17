@@ -173,6 +173,12 @@
       "tu": "src/button.cpp"
     },
     {
+      "symbol": "?Draw@CButton@@QAEXXZ",
+      "rva": "0x00002b40",
+      "size": 336,
+      "tu": "src/button.cpp"
+    },
+    {
       "symbol": "?GetState@CButton@@QAEHXZ",
       "rva": "0x00002c90",
       "size": 16,
@@ -826,6 +832,12 @@
       "symbol": "?NetStopCloud@CDecor@@QAEXH@Z",
       "rva": "0x00010670",
       "size": 64,
+      "tu": "src/decnet.cpp"
+    },
+    {
+      "symbol": "?ObjectStart@CDecor@@QAEHUtagPOINT@@HHH@Z",
+      "rva": "0x000106b0",
+      "size": 496,
       "tu": "src/decnet.cpp"
     },
     {
@@ -2018,9 +2030,21 @@
       "tu": "src/network.cpp"
     },
     {
+      "symbol": "?JoinSession@CNetwork@@QAEHHPAD@Z",
+      "rva": "0x00020cb0",
+      "size": 240,
+      "tu": "src/network.cpp"
+    },
+    {
       "symbol": "?FreeSessionList@CNetwork@@QAEXXZ",
       "rva": "0x00020da0",
       "size": 48,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?CreateSession@CNetwork@@QAEHPAD0@Z",
+      "rva": "0x00020dd0",
+      "size": 240,
       "tu": "src/network.cpp"
     },
     {
@@ -2417,6 +2441,12 @@
       "symbol": "?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z",
       "rva": "0x00023660",
       "size": 80,
+      "tu": "src/text.cpp"
+    },
+    {
+      "symbol": "?DrawChar@@YAXPAVCPixmap@@PAUtagPOINT@@EH@Z",
+      "rva": "0x000236b0",
+      "size": 144,
       "tu": "src/text.cpp"
     },
     {

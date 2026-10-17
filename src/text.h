@@ -16,7 +16,7 @@ extern
 void DrawText(CPixmap *pPixmap, POINT pos, char *pText, int font=0);
 
 extern
-void DrawChar(CPixmap* pPixmap, POINT* pos, char c, int font);
+void DrawChar(CPixmap* pPixmap, POINT* pos, unsigned char c, int font);
 
 extern
 void DrawCharSingle(CPixmap *pPixmap, POINT pos, int rank, int font);

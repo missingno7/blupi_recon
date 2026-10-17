@@ -33,9 +33,9 @@ BOOL CDecor::ObjectStart(POINT pos, int type, int speed, BOOL bMulti)
 	MoveObjectStepIcon(index);
 	if (speed != 0)
 	{
+		int dist = 0;
 		POINT tinyPoint = pos;
 		int num2 = speed;
-		int dist = 0;
 		if (num2 > 50)
 		{
 			num2 -= 50;

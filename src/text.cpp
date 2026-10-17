@@ -341,7 +341,7 @@ void DrawTextLeft(CPixmap* pPixmap, POINT pos, char *pText, int font)
 
 #include "texttables.h"
 
-void DrawChar(CPixmap* pPixmap, POINT* pos, char c, int font)
+void DrawChar(CPixmap* pPixmap, POINT* pos, unsigned char c, int font)
 {
 	POINT pos0;
 	POINT pos1;

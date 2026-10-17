@@ -175,8 +175,8 @@ BOOL CNetwork::JoinSession(int index, char* pPlayerName)
 		return FALSE;
 	}
 
+	ZeroMemory(&name, sizeof(name));
 	name.dwSize = sizeof(name);
-	name.dwFlags = 0;
 	name.lpszShortNameA = pPlayerName;
 	name.lpszLongNameA = NULL;
 	hr = m_pDP->CreatePlayer(&m_dpid, &name, NULL, NULL, 0, 0);
@@ -209,11 +209,11 @@ BOOL CNetwork::CreateSession(char* pSessionName, char* pPlayerName)
 
 	ZeroMemory(&desc, sizeof(desc));
 
-	desc.guidApplication = APP_GUID;
-	desc.lpszSessionNameA = pSessionName;
 	desc.dwSize = sizeof(desc);
 	desc.dwFlags = DPSESSION_KEEPALIVE | DPSESSION_MIGRATEHOST;
+	desc.guidApplication = APP_GUID;
 	desc.dwMaxPlayers = MAXNETPLAYER;
+	desc.lpszSessionNameA = pSessionName;
 
 	hr = m_pDP->Open(&desc, DPOPEN_CREATE);
 	if (hr != DP_OK)
@@ -223,8 +223,8 @@ BOOL CNetwork::CreateSession(char* pSessionName, char* pPlayerName)
 	}
 	else
 	{
+		ZeroMemory(&name, sizeof(name));
 		name.dwSize = sizeof(name);
-		name.dwFlags = 0;
 		name.lpszShortNameA = pPlayerName;
 		name.lpszLongNameA = NULL;
 		hr = m_pDP->CreatePlayer(&m_dpid, &name, NULL, NULL, 0, 0);

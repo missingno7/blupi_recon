@@ -125,7 +125,6 @@ void CButton::Draw()
 {
 	int			i;
 	POINT		pos;
-	RECT		rect;
 
 	if ( m_bMinimizeRedraw && !m_bRedraw )  return;
 	m_bRedraw = FALSE;
@@ -138,7 +137,14 @@ void CButton::Draw()
 	}
 	else
 	{
-		m_pPixmap->DrawIcon(-1, CHBUTTON+m_type, m_bDemo?5:4, m_pos);
+		if ( m_bDemo )
+		{
+			m_pPixmap->DrawIcon(-1, CHBUTTON+m_type, 5, m_pos);
+		}
+		else
+		{
+			m_pPixmap->DrawIcon(-1, CHBUTTON+m_type, 4, m_pos);
+		}
 	}
 
 	if ( m_nbMenu == 0 )  return;
