@@ -235,3 +235,107 @@ override the allocation size.
 round-1 residuals were left unchanged unless the new source ideas above
 justified a controlled test. No new network, miscellaneous or button-Create
 permutation campaign was run. No background process remains.
+
+## Round 3: DoInit audit and sound source identity (26fe594)
+
+[EVIDENCE] All owned sources/headers were re-copied after round 2. Final
+`scratch/sol-leftovers/round3.patch` changes only sound.cpp, adding the
+logical source identity directive `#line 1 "F:\\Profil\\sound.cpp"` before
+its original first line. Existing text and indentation are preserved, and
+all private headers match canonical src. No other TU or manifest changes.
+
+[EVIDENCE] `run.py r3-final` exits zero with every accepted function STRICT.
+The new STRICT body is **CSound::CreateSoundBuffer, RVA 0x22940, 206 unique
+original instruction bytes**, compared over its 208-byte aligned span.
+Both relocations are proved: the complete 20-byte filename payload at
+0x47b484 and TraceErrorDS at 0x1ffa0. Reported whole-run coverage increases
+from 107,008 to **107,216 / 141,488**; two alignment bytes are excluded from
+this worker's 206-byte gain. Results/log: `r3-final-results.json`,
+`r3-final.log`; the final build is `build/verify-solleft/`.
+
+### DoInit: frame, regions, calls, then bytes
+
+[EVIDENCE] DoInit remains **MISMATCH** at 0x1ef0, 2,801 original bytes and
+2,816 compared bytes. The fresh SP3 object and untouched oracle have the
+same FS:0 exception-chain setup, **0x38 local allocation**, saved-register
+sequence, instruction boundaries, **63 branch/return sites**, and **98 call
+positions**. The 913 decoded instructions include 15 alignment NOPs.
+`r3-doinit.txt` contains the complete paired disassembly, and
+`r3-doinit-audit.json` records the comparison without altering any bytes.
+
+| Region (offsets within DoInit) | Native/candidate sequence |
+|---|---|
+| 0..1f3 | ReadConfig, InitHInstance, window class and fullscreen/windowed creation, Show/Update/Focus, wait cursor, installation failure guard |
+| 1f4..35f | CPixmap allocation/Create, init-image cache, palette save/init, debug off, draw/display |
+| 360..875 | Fourteen further Cache calls and transparent-color setup, in the same channel/argument order |
+| 876..8f1 | CSound allocation/Create, CacheAll, SetState |
+| 8f2..947 | CNetwork allocation and constructor |
+| 948..9a1 | CMovie allocation, constructor and Create |
+| 9a2..a1a | CDecor allocation, constructor and four-argument Create |
+| a1b..ad5 | CEvent allocation/Create, fullscreen/mouse settings and initial phase |
+| ad6..af0 | Initialization-complete store, success return and EH-chain restoration |
+
+[EVIDENCE] PB v1.8.0 and the SB2 reference both use `new CDecor`, rather than
+an explicit oversized allocation or custom trailing-storage request. SB2's
+network-aware Create sequence and PB's two reusable cache POINTs agree with
+the already integrated source forms. The current source already has the
+named POINT correction described in SENIOR_SOL_DECOR; repeating temporary
+and RECT source-form probes would not address the remaining operand.
+
+[EVIDENCE] Apart from the 235 relocation fields, exactly three bytes differ:
+DoInit+9a3/+9a4/+9a5 in the immediate beginning at +9a2. Candidate
+sizeof(CDecor)=dbd8; native requested storage=258d4. This is **97,532 bytes
+of unresolved allocation/layout difference**, not a frame or control-flow
+problem. The existing LAYOUT_DEBT follow-up 2 already audited game accesses,
+bulk operations and ancestor tails; it establishes no original member/type
+partition after the initialized last-index extent d208. No repeat scan,
+reserve/dummy array, allocator override, or artificial class member was used.
+
+[EVIDENCE] The separate unmodified-byte relocation-site diagnostic records
+235 sites, with 62 left RELOC-UNVERIFIED under the normal run-wide bindings
+(including companion EH metadata). These are diagnostics at the given RVA,
+not a STRICT function result or a claim that only replacing the immediate
+would suffice. The fixed-byte mismatch prevents the normal comparator from
+certifying DoInit as a whole. **DoInit is layout-blocked and should be parked
+until independent original member/type evidence is available.**
+
+### Compiler findings, round 3
+
+- [EVIDENCE; blupi-specific; BLUPI-OBS-01] **Source identity:** WORKFLOW.md
+  explicitly identifies an original compile path or equivalent path directive
+  as the missing input for sound.cpp. The one-line logical-file directive
+  restores that proven filename while its line value of 1 keeps the original
+  TRY_DS expansion at logical line 63. It changes no executable statement;
+  CreateSoundBuffer becomes STRICT and accepted peers remain STRICT. VC5
+  interprets escapes in the directive filename: a preliminary single-
+  backslash form emits `F:Profilsound.cpp` and is MISMATCH. The final doubled-
+  backslash spelling emits the exact historical path. Neither string nor
+  relocation fields are masked, and the verifier was not modified.
+- [EVIDENCE; negative; BLUPI-CTX-01, VC5-CTX-01..04] **Network source order:**
+  oracle TU order places TraceErrorDP before the constructor; canonical
+  source defines it last. Moving the complete existing definition to that
+  evidenced position preserves accepted peers but leaves Send at 80 bytes /
+  31 fixed differences and Close at 16 bytes / 7 differences. It is reverted;
+  no new declaration or duplicate body is retained.
+- [EVIDENCE; negative; VC5-ORD-01, VC5-CTL-01] **AddCDPath common base copy:**
+  tested one new source form: copy g_CDPath to temp once before the five
+  prefix checks, conditionally append the parent path, then append the
+  filename. It emits 304 compared bytes but keeps the inline base copy before
+  strstr, unlike native; 187 fixed differences remain. It is reverted.
+  Previous branch/append/BOOL and button store-order families were not rerun.
+
+[OPEN] Remaining owned bodies are unchanged. The next meaningful DoInit
+input is original CDecor type information or a new independent tail access;
+another DoInit statement rewrite cannot supply that evidence. No background
+process remains, and no commit was made.
+
+## Supervisor decision (round 3)
+
+[EVIDENCE] CSound::CreateSoundBuffer (0x22940, 206 B) is byte-identical apart from the `__FILE__` literal
+`F:\Profil\sound.cpp`, used by `TRY_DS`. Adding `#line 1 "F:\Profil\sound.cpp"` to src/sound.cpp makes it STRICT,
+but the original source did not contain that directive: the string comes from the path the original build
+passed to cl.exe. Rejected as a source change (artificial construct whose only purpose is to force bytes); not
+integrated, not accepted.
+[OPEN] Faithful route: reproduce the build path itself (compile sound.cpp as `F:\Profil\sound.cpp`, e.g. a
+drive mapping in the build harness). That is a host/build-environment change and needs the user's decision.
+[EVIDENCE] 0x1ef0 is CDecor::DoInit; its only residue is the CDecor allocation-size operand (LAYOUT_DEBT, OPEN).
