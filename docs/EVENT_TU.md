@@ -1,18 +1,18 @@
 # Event translation unit reconstruction
 
-**Status: partial.** The current scratch candidate has 52 STRICT symbol results, 2 RELOC-UNVERIFIED, and 55 MISMATCH. Those STRICT results occupy 48 unique target RVAs and cover 3,085 unique original event-body bytes after folded/alias duplicates are counted once. The exact SB1 phase table remains intact. The current residuals are DrawButtons, ReadInput, TreatEventBase, and ChangePhase.
+**Status: partial.** After refreshing from integrated `src/event.cpp`, the current scratch candidate has 54 STRICT symbols, 1 RELOC-UNVERIFIED symbol, and 54 MISMATCH symbols. STRICT bodies occupy 50 unique target RVAs and 3,232 unique original function-body bytes; the matching candidate spans total 3,584 bytes. The exact SB1 phase table remains intact. Current large-handler residuals are DrawButtons, ReadInput, TreatEventBase, and ChangePhase.
 
 ## Scope and comparison
 
-[EVIDENCE] The target block is `0x16220`-`0x1d230`, with 86 mapped functions and 34,724 Ghidra body bytes. The integrated source is `src/event.cpp`; this worker candidate is `scratch/tu/event.cpp`, derived mainly from SB2 `event.cpp`. Non-overridden headers are 19 byte-identical copies of canonical `src/` headers under `scratch/tu/event_include/current_src/`; only `def.h` and `network.h` are included from `scratch/tu/event_include/sb1_event/`. This explicitly avoids stale flat `scratch/tu` header copies. `src/` has the full game TU set and one canonical header set.
+[EVIDENCE] The target block is `0x16220`-`0x1d230`, with 86 mapped functions and 34,724 Ghidra body bytes. The integrated source is `src/event.cpp`; this worker candidate is `scratch/tu/event.cpp`, derived mainly from SB2 `event.cpp`. Its active quoted includes resolve to 19 byte-identical canonical header copies under `scratch/tu/event_include/current_src/`; stale flat `scratch/tu` headers and the older private SB1 override directory are not used. `src/` has the full game TU set and one canonical header set.
 
-[EVIDENCE] The latest candidate was evaluated with `.pyenv\python.exe tools\verify.py --tu src/event.cpp=scratch\tu\event.cpp --build-dir event_clean`, using VC5 SP3 (11.00.7022), `/O2 /GX /ML /Gd /Gy`, and `nullptr=0`. The isolated build compiled the candidate with all other reconstructed objects. The run reports one accepted-function regression outside this worker: `CEvent::NetEnumSessions` resolves `CNetwork::EnumProviders` to `0x20bd0`, while the oracle relocation expects `0x20a30` after `network.cpp` integration.
+[EVIDENCE] The scratch candidate was refreshed byte-for-byte from the integrated `src/event.cpp` before the current round. Its active quoted includes point to 19 freshly synchronized copies of canonical `src/*.h` under `scratch/tu/event_include/current_src/`; there are no private header overrides in this run. The final rerun resynchronized late canonical changes to `def.h`, `pixmap.h`, and `sound.h`; the latter is included transitively by `decor.h`. Verification used VC5 SP3 (11.00.7022), `/O2 /GX /ML /Gd /Gy`, and `nullptr=0`.
 
 ```powershell
-.pyenv\python.exe tools\verify.py --tu src/event.cpp=scratch\tu\event.cpp --build-dir event_clean
+.pyenv\python.exe tools\verify.py --tu src/event.cpp=scratch\tu\event.cpp --build-dir event_sound_refresh
 ```
 
-[EVIDENCE] The current event object reports 109 candidate functions: 52 STRICT, 2 RELOC-UNVERIFIED, 55 MISMATCH, and no FOLDED status. There are 48 unique STRICT target RVAs totaling 3,085 original function-body bytes; the duplicate aliases at `0x16e80` and `0x1b030` are counted once.
+[EVIDENCE] The isolated run reports 109 event candidate functions: 54 STRICT, 1 RELOC-UNVERIFIED, 54 MISMATCH, and no FOLDED status. There are 50 unique STRICT target RVAs totaling 3,232 original function-body bytes; candidate spans account for 3,584 matched bytes. The shared bodies at `0x16e80` and `0x1b030` are each counted once.
 
 [EVIDENCE] A merge experiment using current `src/` headers plus about 73 SB2 declarations failed with over 100 compiler errors: phase/text identifiers and duplicate cases, `POINT`/`RECT` constructor differences, and changed `CDecor`, `CPixmap`, and read/write APIs. It was discarded; no `src/` header was edited.
 [EVIDENCE] The focused hybrid-header compile reproduced concrete conflicts: `src/def.h` macros `CHBACK`, `CHOBJECT`, `WM_UPDATE`, `WM_DECOR1`-`WM_DECOR5`, and `WM_WRITE0`-`WM_WRITE9` expand inside same-named SB2 `def.h` enum declarations; `src/movie.h` has no include guard and conflicts with its inclusion through candidate `event.h`; `CNetwork` and `DPID` are undeclared when `event.h` precedes `network.h`. `src/pixmap.h` also declares four-argument `CPixmap::Create`, versus six arguments in the SB2 copy; the SB2 declarations for `CDecor::GetDoors/SetDoors(short*)` were absent from the earlier canonical header and have since been integrated. Keep one `def.h` and integrate measured SB1 constants/layout instead of including both versions.
@@ -58,7 +58,7 @@
 
 [EVIDENCE] The current canonical `src/decor.h` already declares `GetDoors(short*)`, `SetDoors(short*)`, and `short m_doors[100]`. Target functions at `0x8620` and `0x8650` copy 100 16-bit entries from/to `this+0xcdd4`; the byte size and following offsets are unchanged.
 
-[EVIDENCE] The current `src/def.h` already defines `WM_DECOR1`-`WM_DECOR8`; its final phase override block yields the target SB1 values (including `INSERT=0x607`, `GAMER=0x609`, `BYE=0x614`, `DOQUIT=0x634`, `INTRO1/INTRO2=0x635/0x636`). The remaining event-specific delta is `SPRITE_WAIT: 12 to 11` and `SPRITE_EMPTY: 13 to 12`. A private copy with only those two changes makes `WaitMouse` and `HideMouse` STRICT. The private `def.h` differs from canonical `src/def.h` by only these two constants; infra should integrate them globally.
+[EVIDENCE] The canonical `src/def.h` now contains the target phase values (`INSERT=0x607`, `GAMER=0x609`, `BYE=0x614`, `DOQUIT=0x634`, `INTRO1/INTRO2=0x635/0x636`) and cursor values `SPRITE_WAIT=11`, `SPRITE_EMPTY=12`; `WaitMouse` and `HideMouse` are STRICT with these headers. No event-specific `event.h` or `def.h` delta remains for infra to integrate. Canonical `event.h` also carries `Phase::backName[32]`, mission slots at `+0x6d1c/+0x6d20/+0x6d24`, `CButton[40]` at `+0x6e70`, and `CMenu` at `+0x9498`. The current `sound.h` exposes the real `PlayImage` and `PlaySoundDS` overloads used by the synchronized include set.
 
 ## Phase table
 
@@ -68,74 +68,70 @@
 
 ## Strict function matches
 
-[EVIDENCE] The current run has 48 unique strict target RVAs and 3,085 unique original body bytes. Candidate symbol spans can include bytes beyond Ghidra body boundaries; the table lists original body bytes. `NetDraw`/`DrawMap` share one STRICT body at `0x16e80` (36 bytes), and `BuildUp`/`PlayDown`/`PlayMove`/`PlayUp` share one STRICT body at `0x1b030` (8 bytes); each shared body is counted once.
+[EVIDENCE] The current run has 50 unique strict target RVAs and 3,232 unique original function-body bytes. Candidate spans can extend beyond Ghidra body boundaries; the table reports both target body bytes and candidate symbol span. `NetDraw`/`DrawMap` share the body at `0x16e80` (36 bytes), and `BuildUp`/`PlayDown`/`PlayMove`/`PlayUp` share the body at `0x1b030` (8 bytes); aliases are counted once.
 
-| Candidate function | Target RVA | Original body bytes | Candidate symbol bytes checked |
+| Candidate function | Target RVA | Original body bytes | Candidate symbol bytes |
 |---|---:|---:|---:|
-| `OutputNetDebug` | `0x163e0` | 84 | 96 |
-| `GetMousePos` | `0x16440` | 59 | 64 |
-| `SetFullScreen` | `0x16480` | 13 | 16 |
-| `SetMouseType` | `0x16490` | 13 | 16 |
-| `GetButtonIndex` | `0x16500` | 80 | 80 |
-| `GetState` | `0x16550` | 48 | 48 |
-| `SetState` | `0x16580` | 47 | 48 |
-| `SetEnable` | `0x165b0` | 47 | 48 |
-| `SetHide` | `0x165e0` | 47 | 48 |
-| `GetMenu` | `0x16610` | 48 | 48 |
-| `SetMenu` | `0x16640` | 47 | 48 |
-| `SetIconMenu` | `0x16670` | 52 | 64 |
-| `FlushInput` | `0x166f0` | 24 | 32 |
-| `NetCreate` | `0x168f0` | 41 | 48 |
-| `NetEnumSessions` | `0x16920` | 34 | 48 |
-| `CreateButtons` | `0x16950` | 278 | 288 |
-| `NetSendLobby` | `0x16ce0` | 78 | 80 |
+| `CEvent::~CEvent` | `0x16360` | 113 | 128 |
+| `CEvent::OutputNetDebug` | `0x163e0` | 84 | 96 |
+| `CEvent::GetMousePos` | `0x16440` | 59 | 64 |
+| `CEvent::SetFullScreen` | `0x16480` | 13 | 16 |
+| `CEvent::SetMouseType` | `0x16490` | 13 | 16 |
+| `CEvent::GetButtonIndex` | `0x16500` | 80 | 80 |
+| `CEvent::GetState` | `0x16550` | 48 | 48 |
+| `CEvent::SetState` | `0x16580` | 47 | 48 |
+| `CEvent::SetEnable` | `0x165b0` | 47 | 48 |
+| `CEvent::SetHide` | `0x165e0` | 47 | 48 |
+| `CEvent::GetMenu` | `0x16610` | 48 | 48 |
+| `CEvent::SetMenu` | `0x16640` | 47 | 48 |
+| `CEvent::SetIconMenu` | `0x16670` | 52 | 64 |
+| `CEvent::FlushInput` | `0x166f0` | 24 | 32 |
+| `CEvent::NetCreate` | `0x168f0` | 41 | 48 |
+| `CEvent::NetEnumSessions` | `0x16920` | 34 | 48 |
+| `CEvent::CreateButtons` | `0x16950` | 278 | 288 |
+| `CEvent::NetSendLobby` | `0x16ce0` | 78 | 80 |
+| `CEvent::NetDraw` | `0x16e80` | 36 | 48 |
 | `AddCheatCode` | `0x16eb0` | 109 | 112 |
-| `DrawTextCenter` | `0x16f20` | 74 | 80 |
-| `MouseSprite` | `0x18cf0` | 68 | 80 |
-| `WaitMouse` | `0x18d40` | 111 | 112 |
-| `HideMouse` | `0x18db0` | 121 | 128 |
-| `DisableMouse` | `0x18e30` | 111 | 112 |
-| `MouseOnButton` | `0x190d0` | 153 | 160 |
-| `SearchPhase` | `0x19170` | 50 | 64 |
-| `IsPrivate` | `0x191e0` | 7 | 16 |
-| `IsMulti` | `0x191f0` | 7 | 16 |
-| `SetMission` | `0x19250` | 59 | 64 |
-| `GetPhase` | `0x1ae20` | 7 | 16 |
-| `BuildUp` | `0x1b030` | 8 | 16 |
-| `MouseRelease` | `0x1b040` | 19 | 32 |
-| `MouseCapture` | `0x1b060` | 19 | 32 |
-| `IsMouseRelease` | `0x1b080` | 7 | 16 |
-| `BuildMove` | `0x1c070` | 55 | 64 |
-| `StopMovie` | `0x1c210` | 82 | 96 |
-| `IsMovie` | `0x1c270` | 7 | 16 |
-| `ClearGamer` | `0x1c600` | 79 | 80 |
-| `SetNbVies` | `0x1c650` | 13 | 16 |
-| `GetSpeed` | `0x1c660` | 7 | 16 |
-| `SetSpeed` | `0x1c670` | 23 | 32 |
-| `DemoRecStart` | `0x1c690` | 94 | 96 |
-| `DemoPlayStop` | `0x1c9a0` | 92 | 96 |
-| `DemoRecEvent` | `0x1cac0` | 87 | 96 |
-| `ChatFlush` | `0x1cb20` | 21 | 32 |
-| `ChatSend` | `0x1cc10` | 343 | 352 |
-| `GetLastMousePos` | `0x1d1b0` | 24 | 32 |
-| `TreatEvent` | `0x1d1d0` | 89 | 96 |
-
-[EVIDENCE] `CreateButtons` is strict at `0x16950`; its target body is 278 bytes; the candidate symbol span checked is 288 bytes, ten beyond the Ghidra body boundary. `TreatEvent` is strict at `0x1d1d0` (89 original body bytes). `NetSendLobby` and `ChatSend` are now strict after unique body and callee evidence was supplied.
+| `CEvent::DrawTextCenter` | `0x16f20` | 74 | 80 |
+| `CEvent::MouseSprite` | `0x18cf0` | 68 | 80 |
+| `CEvent::WaitMouse` | `0x18d40` | 111 | 112 |
+| `CEvent::HideMouse` | `0x18db0` | 121 | 128 |
+| `CEvent::DisableMouse` | `0x18e30` | 111 | 112 |
+| `CEvent::MouseOnButton` | `0x190d0` | 153 | 160 |
+| `CEvent::SearchPhase` | `0x19170` | 50 | 64 |
+| `CEvent::IsPrivate` | `0x191e0` | 7 | 16 |
+| `CEvent::IsMulti` | `0x191f0` | 7 | 16 |
+| `CEvent::SetMission` | `0x19250` | 59 | 64 |
+| `CEvent::GetPhase` | `0x1ae20` | 7 | 16 |
+| `CEvent::CurrentWrite` | `0x1afc0` | 97 | 112 |
+| `CEvent::BuildUp` | `0x1b030` | 8 | 16 |
+| `CEvent::MouseRelease` | `0x1b040` | 19 | 32 |
+| `CEvent::MouseCapture` | `0x1b060` | 19 | 32 |
+| `CEvent::IsMouseRelease` | `0x1b080` | 7 | 16 |
+| `CEvent::BuildMove` | `0x1c070` | 55 | 64 |
+| `CEvent::StopMovie` | `0x1c210` | 82 | 96 |
+| `CEvent::IsMovie` | `0x1c270` | 7 | 16 |
+| `CEvent::ClearGamer` | `0x1c600` | 79 | 80 |
+| `CEvent::SetNbVies` | `0x1c650` | 13 | 16 |
+| `CEvent::GetSpeed` | `0x1c660` | 7 | 16 |
+| `CEvent::SetSpeed` | `0x1c670` | 23 | 32 |
+| `CEvent::DemoRecStart` | `0x1c690` | 94 | 96 |
+| `CEvent::DemoPlayStop` | `0x1c9a0` | 92 | 96 |
+| `CEvent::DemoRecEvent` | `0x1cac0` | 87 | 96 |
+| `CEvent::ChatFlush` | `0x1cb20` | 21 | 32 |
+| `CEvent::ChatSend` | `0x1cc10` | 343 | 352 |
+| `CEvent::GetLastMousePos` | `0x1d1b0` | 24 | 32 |
+| `CEvent::TreatEvent` | `0x1d1d0` | 89 | 96 |
 
 ## Current unresolved and alias classifications
 
-[EVIDENCE] Current status comes from `event_clean`; only the following two event symbols remain RELOC-UNVERIFIED in that run. The other current requested cases are mismatches or duplicate aliases, not strict evidence for a separate target body.
+[EVIDENCE] In `event_sound_refresh`, only `SetDemo` is RELOC-UNVERIFIED. Its 48-byte body has four byte-identical hits at `0x16580`, `0x165b0`, `0x165e0`, and `0x16640`, all owned by strict setter wrappers. The verifier reports `function location is ambiguous` before using its `CButton::SetDemo` relocation to choose among them. This is a precise comparator location-selection limitation; do not count it as a separate strict body.
 
-| Candidate | Current result | Classification and evidence |
-|---|---|---|
-| `CEvent::~CEvent` | RELOC-UNVERIFIED at `0x16360` | Target body is 113 bytes; the candidate span is 128 bytes. Function calls resolve (`WriteInfo`, `CMenu::~CMenu`, `CButton` destruction, array destructor). Remaining DIR32 relocations are a local `$L37050` to `0x42bf89` and three `__except_list` references (`resolved_symbol_va=0`). `cmpfunc.py` cannot verify external data targets without a unique reconstructed definition, even though the non-relocated bytes and code-call targets match. |
-| `SetDemo` | RELOC-UNVERIFIED, four hits | Its 48-byte candidate body hits `0x16580`, `0x165b0`, `0x165e0`, and `0x16640`, which are already strict wrappers (`SetState`, `SetEnable`, `SetHide`, `SetMenu`). The comparator reports `function location is ambiguous` before using the candidate `CButton::SetDemo` call relocation to disambiguate those wrappers. Do not count it as a strict function. |
-| `CheckWorld1` | MISMATCH with `REQUIRE_CD=TRUE` | The canonical SB1 configuration produces a 128-byte body with no hit. A scratch-only `REQUIRE_CD=FALSE` variant becomes a 16-byte unconditional-true body but is RELOC-UNVERIFIED at both `0x13b0c` and `0x21520`, outside the event block. This is a config mismatch/duplicate-body ambiguity, not evidence for a strict event mapping. |
-| `NetEnumSessions` | MISMATCH at `0x16920` in the full run | The event candidate's `CNetwork::EnumProviders` relocation resolves to `0x20bd0`, while the oracle expects `0x20a30`. This began after `network.cpp` was integrated and is a cross-TU accepted-function regression for infra to resolve; no event-source change was made for it. |
+[EVIDENCE] `CEvent::~CEvent` is now STRICT at `0x16360` (113 target body bytes, 128 candidate bytes). The current verifier proves the local `$L37042` bytes, treats all three `__except_list` relocations as the VC5 absolute `FS:0` exception-chain symbol, and verifies the destructor/helper call targets. The earlier external-data verifier limitation is cleared; no tool change is requested.
 
-[EVIDENCE] The prior relocation-unverified set is now classified: `OutputNetDebug`, `AddCheatCode`, `DrawTextCenter`, `MouseOnButton`, `SearchPhase`, `NetCreate`, `BuildMove`, `StopMovie`, and `ClearGamer` are STRICT; `PlayDown`/`PlayMove`/`PlayUp` are STRICT aliases of the same 8-byte `BuildUp` body; `NetEnumSessions` is the cross-TU MISMATCH above; `MovieToStart` is MISMATCH; `CEvent::~CEvent` and `SetDemo` remain RELOC-UNVERIFIED; `CheckWorld1` is MISMATCH under the SB1 macro. `RestoreGame` is also MISMATCH. `NetDraw` and `DrawMap` are additional names sharing one STRICT 36-byte body at `0x16e80` and must be counted once.
+[EVIDENCE] `NetEnumSessions` is STRICT at `0x16920`; its `CNetwork::EnumSessions` relocation resolves to `0x20bd0`, which matches the oracle. `CheckWorld1` remains a MISMATCH under canonical `REQUIRE_CD=TRUE`; the scratch-only `FALSE` variant yields a 16-byte unconditional-true body with duplicate hits at `0x13b0c` and `0x21520`, both outside the event block. `MovieToStart` and `RestoreGame` remain mismatches.
 
-[OPEN] The destructor data-symbol limitation is precisely the verifier gap to route to infra. `__except_list` has no image target VA, and `$L37050` has no unique reconstructed data definition; do not edit `tools/`. `SetDemo` has a separate ambiguous-location limitation: the comparator does not use call relocations to disambiguate multiple identical masked bodies. No case is caused by unresolved `__FILE__`/`__LINE__` data.
+[OPEN] The remaining verifier limitation in the current event run is `SetDemo`'s ambiguous identical-body location. There is no remaining destructor or `__FILE__`-like data limitation.
 
 ## Per-function target status
 
@@ -144,7 +140,7 @@ This inventory includes the current event run and the cross-TU/alias overrides a
 | Target function / RVA | Oracle body bytes | Candidate status |
 |---|---:|---|
 | `FUN_00416220` / `0x16220` | 319 | NO HIT |
-| `CEvent::~CEvent` / `0x16360` | 113 | RELOC-UNVERIFIED: `~CEvent` |
+| `CEvent::~CEvent` / `0x16360` | 113 | STRICT: `~CEvent` (128-byte candidate span) |
 | `CEvent::OutputNetDebug` / `0x163e0` | 84 | STRICT: `OutputNetDebug` |
 | `CEvent::GetMousePos` / `0x16440` | 59 | STRICT: `GetMousePos` |
 | `CEvent::SetFullScreen` / `0x16480` | 13 | STRICT: `SetFullScreen` |
@@ -162,7 +158,7 @@ This inventory includes the current event run and the cross-TU/alias overrides a
 | `CEvent::FlushInput` / `0x166f0` | 24 | STRICT: `FlushInput` |
 | `FUN_00416710` / `0x16710` | 479 | MISMATCH (forced): `ReadInput` |
 | `CEvent::NetCreate` / `0x168f0` | 41 | STRICT: `NetCreate` |
-| `CEvent::NetEnumSessions` / `0x16920` | 34 | MISMATCH: cross-TU `EnumProviders` relocation |
+| `CEvent::NetEnumSessions` / `0x16920` | 34 | STRICT: `NetEnumSessions` |
 | `FUN_00416950` / `0x16950` | 278 | STRICT: `CreateButtons` |
 | `FUN_00416A70` / `0x16a70` | 494 | NO HIT |
 | `FUN_00416C60` / `0x16c60` | 119 | NO HIT |
@@ -194,7 +190,7 @@ This inventory includes the current event run and the cross-TU/alias overrides a
 | `CEvent::MovieToStart` / `0x1ae70` | 77 | MISMATCH (forced): `MovieToStart` |
 | `FUN_0041AEC0` / `0x1aec0` | 146 | NO HIT |
 | `FUN_0041AF60` / `0x1af60` | 87 | NO HIT |
-| `FUN_0041AFC0` / `0x1afc0` | 97 | NO HIT |
+| `FUN_0041AFC0` / `0x1afc0` | 97 | STRICT: `CurrentWrite` |
 | `FUN_0041B030` / `0x1b030` | 8 | STRICT shared body: `BuildUp` / `PlayDown` / `PlayMove` / `PlayUp` (count once) |
 | `FUN_0041B040` / `0x1b040` | 19 | STRICT: `MouseRelease` |
 | `FUN_0041B060` / `0x1b060` | 19 | STRICT: `MouseCapture` |
@@ -230,21 +226,19 @@ This inventory includes the current event run and the cross-TU/alias overrides a
 | `FUN_0041D1D0` / `0x1d1d0` | 89 | STRICT: `TreatEvent` |
 | `FUN_0041D230` / `0x1d230` | 6616 | MISMATCH (forced): `TreatEventBase` |
 
-## Large handlers: earlier and current measurements
+## Large handlers: current measurements
 
-| Function | Target body | Candidate body | Current finding |
+| Function | Target body | Candidate span | Current finding |
 |---|---:|---:|---|
-| `CreateButtons` | 278 B | 288 B | Strict; removing the SB2-only icon-menu increment matched. |
-| `DrawButtons` | 7,419 B | 7,648 B | Still +229 B. The scratch candidate removes the non-target `DECOMP -- __DATE__` draw (removed 48 B) and fixes the split-line buffer index from `line2-res` to `line2-m_filenameBuffer[i]` (+48 B); the net span is unchanged, but the pointer arithmetic now follows the target pseudocode. The prologue still differs: target reserves `0xe4` and keeps `this` in EBP; candidate reserves `0xdc` and keeps `this` in EBX. |
-| `ReadInput` | 479 B | 480 B | Still +1 B in span, but not a one-byte code difference: target and candidate diverge from about offset `0x114` through the return. Signed joystick-axis casts fixed four condition mismatches. Target loads button state into AL and uses dword key-mask operations; candidate uses DL and several byte masks. Explicit `BYTE buttons`, mask spelling, and button-three store variants remained mismatches (480 B); a local-temp form was 464 B and also mismatched. |
-| `LoadImageFromDisc` | — | 176 B | Candidate-only helper; target image-cache work is inline in `ChangePhase` under the target `ChangePhase [LoadImages]` path. |
-| `TreatEventBase` | 6,616 B | 6,880 B | Current residual +264 B with canonical headers and `m_players +0x24`. The first host player-slot availability compare/branch still differs. Indexed do/goto, indexed while, and pointer-loop source variants all remained 6,880 B and mismatched. |
-| `ChangePhase` | 6,919 B | 6,848 B | Still 71 B shorter. Correcting the gamer door buffer to 100 shorts matches the target 16-bit loop. Moving that live buffer to function scope changes the frame from `0x39c` to `0x464`; target is `0x45c`, leaving an 8-byte frame difference. |
-| `TreatEvent` | 89 B | 96 B | Strict wrapper at `0x1d1d0`; target body-byte coverage remains 89 B. |
+| `CreateButtons` | 278 B | 288 B | STRICT at `0x16950`. |
+| `DrawButtons` | 7,419 B | 7,648 B | Still +229 B. The prologue and `0xe4` frame match. Reusing local `pos` for the background and following text call makes the early target setup (`mov edi,2; mov esi,edi`) match; the first fixed-byte divergence is at `+0x13f`, where RECT temporary values are assigned to different registers/stack slots. All fixed bytes before that point match apart from relocations. |
+| `ReadInput` | 479 B | 480 B | Still +1 B in total span, but not a one-byte code difference. Target and candidate first differ in a downstream branch displacement at `+0x22`; the first substantive button-mask difference is at `+0x114`: target loads the low byte into AL and tests AL, while candidate uses DL. Signed axis casts fixed four condition mismatches; earlier BYTE, mask, temp-store, and TU-context probes remain negative. |
+| `LoadImageFromDisc` | n/a | 176 B | Candidate-only helper; target image-cache work is inline in `ChangePhase` under the target `[LoadImages]` path. |
+| `TreatEventBase` | 6,616 B | 6,880 B | Residual +264 B. Target's player-slot loop forms the base pointer before the first byte test and uses pointer stepping; candidate checks the first indexed field before forming the pointer. Indexed do/goto, indexed while, and pointer-loop trials have all remained 6,880 B. |
+| `ChangePhase` | 6,919 B | 6,848 B | Residual -71 B. The prologue now matches the target `0x45c` frame after moving the 12-byte lobby packet into `WM_PHASE_DP_CANCELMULTI` scope. The early-exit comparison now uses target phase `0x634`. The first divergence is at `+0x1c`: candidate `str` `[esp+0x10c]`, target `str` `[esp+0xa8]`. Controlled local-array probes document behavior but do not predict the target's mixed slot map. |
+| `TreatEvent` | 89 B | 96 B | STRICT at `0x1d1d0`; 89 target body bytes. |
 
-[EVIDENCE] Latest isolated verification (`event_clean`) results for the requested large handlers: `CreateButtons` 278/288 STRICT; `DrawButtons` 7,419/7,648 MISMATCH; `ReadInput` 479/480 MISMATCH; `TreatEventBase` 6,616/6,880 MISMATCH; `ChangePhase` 6,919/6,848 MISMATCH; `TreatEvent` 89/96 STRICT. `LoadImageFromDisc` remains candidate-only (176 B); target cache work is inline in `ChangePhase`.
-
-[EVIDENCE] For `TreatEventBase`, indexed do/goto, indexed while, and pointer loop variants all emitted 6,880-byte bodies; the early player-search compare remained different. The latest source retains the original indexed do/goto form. These loop-form trials were negative under VC5 SP3 `/O2 /GX /ML /Gd /Gy`.
+[EVIDENCE] Fresh isolated verification (`event_sound_refresh`) gives `DrawButtons` 7,648/7,419 MISMATCH, `ReadInput` 480/479 MISMATCH, `TreatEventBase` 6,880/6,616 MISMATCH, and `ChangePhase` 6,848/6,919 MISMATCH. `ChangePhase` now has the exact target frame and early-exit phase value; its first mismatch is the local string-buffer stack offset. `TreatEvent` and `CreateButtons` remain STRICT.
 
 ## Compiler findings
 
@@ -265,11 +259,52 @@ This inventory includes the current event run and the cross-TU/alias overrides a
 
 | Trigger | Source change and measured effect | Strict result | Rule / classification |
 |---|---|---|---|
-| Four UI helpers missed under canonical headers | `NetSendLobby`/`ChatSend` match with canonical `network.h`; private `SPRITE_WAIT=11` and `SPRITE_EMPTY=12` (canonical `12/13`) make `WaitMouse`/`HideMouse` match. | STRICT at `0x16ce0`/78, `0x18d40`/111, `0x18db0`/121, `0x1cc10`/343 original bytes; 653 unique bytes total. | `VC5-SEM-01`; SB1 layout/constant evidence. |
+| Four UI helpers missed before header integration | Canonical `network.h` plus integrated `SPRITE_WAIT=11` and `SPRITE_EMPTY=12` restore `NetSendLobby`, `ChatSend`, `WaitMouse`, and `HideMouse`. | STRICT at `0x16ce0`/78, `0x18d40`/111, `0x18db0`/121, and `0x1cc10`/343 original bytes; 653 unique bytes total. | `VC5-SEM-01`; SB1 layout/constant evidence. |
 | `DrawButtons` included a development overlay and undefined pointer subtraction | Removed `DECOMP -- __DATE__`; changed split index to `line2 - m_filenameBuffer[i]` per the target copy into a local buffer. The removal saves 48 candidate bytes; the corrected indexing adds 48. | Still 7,648/7,419 B and MISMATCH; source now follows target behavior more closely. | `VC5-SEM-01`; blupi-specific semantic correction. |
+| `ChangePhase` frame exceeded target by 8 bytes | Moved `char netData[12]` from function scope into the `WM_PHASE_DP_CANCELMULTI` case block. | Frame changed `0x464` -> target `0x45c`; body remains 6,848/6,919 B, with the next mismatch at the string-buffer offset. | `VC5-LOC-03`; blupi-specific scope/lifetime evidence. |
+| `ChangePhase` early-exit used the wrong configured phase | Replaced the `BYE_SCREEN` conditional (`WM_PHASE_BYE=0x614` in this build) with the target `WM_PHASE_DOQUIT=0x634` check. | The compare immediate now matches target; function remains 6,848/6,919 B. | `VC5-SEM-01`; blupi-specific behavior. |
+| `DrawButtons` built the same `(2,2)` point as two separate temporaries | Reused existing `pos` for the background draw and following text draw; assigned the RECT fields through the existing local. | Target setup through byte `+0x13e` now matches aside from relocations; first fixed divergence is RECT staging at `+0x13f`; body remains 7,648/7,419 B. | `VC5-LOC-01`; unverified source-form/local-reuse probe. |
+
+### `TreatEventBase` isolated worker follow-up
+
+[EVIDENCE] The isolated candidate is `scratch/ev_treateventbase/event.cpp`, derived from the current `src/event.cpp` and changed only within `CEvent::TreatEventBase`. At RVA `0x1d230` it remains MISMATCH at 6,880 candidate bytes versus 6,616 target bytes; all 54 previously strict event functions remain strict in the verification run.
+
+[EVIDENCE] Replacing the indexed search loop with a counted `for` loop and explicit `goto` exits reproduces the target scan bytes from `+0x81` through `+0x94`. The first fixed-byte divergence moved from `+0x37` (55-byte prefix) to `+0xac` (172-byte prefix), a gain of 117 bytes. The first remaining byte is in a commuted SIB address for a player record (`candidate 0x10`, target `0x02`); both encode the same effective address.
+
+[EVIDENCE] Three store spellings—`(&m_players[i])->field`, `base + sizeof(NetPlayer) * i`, and `sizeof(NetPlayer) * i + base`—all compiled to the same 6,880-byte body and retained the `+0xac` SIB difference. A pointer-walk loop changed the body to 6,832 bytes and moved the first fixed difference back to `+0x37`; it did not preserve the target loop layout or establish a matching SIB form.
+
+[EVIDENCE] `vc5probe.py probe` with VC5 SP3, `/W3 /GX /O2 /ML /Gd /Gy`, and extern counts 0, 1, and 2 produced the same result at `end`, `top`, and `before:TreatEventBase`: every body remained MISMATCH at 6,880 bytes, with candidate SIB bytes `10 25` versus target `02 25` at `+0xac`. The tested TU-count placements did not flip the SIB order.
+
+[OPEN] Proposed `VC5-CTX-05` (unverified): VC5 back-end counter context may select SIB base/index order. Counts 0-2 at end/top/before did not flip the SB1 encoding, and the tested address spellings were codegen-inert. Neither hypothesis explains the swap yet; do not promote it to the catalog until an SB1 probe or source form flips the SIB encoding while preserving the preceding target loop.
+
+[EVIDENCE] The target pseudocode clears `m_rankCheat` and `m_posCheat` on every keydown path that does not return from completed cheat/text input; the initial candidate cleared them only on an active-cheat letter mismatch. Moving the reset after the cheat-input block removes the fixed differences at `+0x6cc` through `+0x6f2`; the next nearby mismatch is register selection for the HWND load at `+0x6f3`. The body remains 6,880/6,616 B and MISMATCH.
+
+[EVIDENCE] The target Escape path maps `WM_PHASE_GAMEREAD` (`0x632`) to `WM_PHASE_STOP` (`0x62e`). The candidate case was in the group that returns to `WM_PHASE_GAMER`; moving it into the STOP group matches target behavior. The forced function comparison remains MISMATCH at 6,880/6,616 B with the first fixed difference still at `+0xac`.
+
+[EVIDENCE] Rewriting the Escape phase `switch` as a source-level `if/else if` chain was tested against the target's direct phase comparisons. It increased the body to 6,992 bytes, moved the first fixed mismatch to `+0x2da`, and still produced a different comparison order; the isolated candidate retains the switch. The rank-0 boolean assignment-order rewrite was codegen-inert; its first register/store-order mismatch remains at `+0x41a`.
 
 [EVIDENCE] No dummy declarations, padding, unused code, forced bytes, or assembly were added. The candidate is scratch-only; target code and headers in `src/` were not changed.
 
+## VC5 local array layout
+
+[EVIDENCE] Controlled probes are under `scratch/ev_changephase/micro/`; each `.cpp` is an independent minimal translation unit with `probe` (the EH pair also emits its throwing helper and destructor), and each corresponding object/disassembly is under `build/ev_changephase_micro/obj/` and `scratch/ev_changephase/micro/disasm/`. The compiler was VC5 SP3 11.00.7022 with `/W3 /GX /O2 /ML /Gd /Gy`, `/DWIN32 /DNDEBUG /D_WINDOWS /Dnullptr=0`, `/c`; no project headers were included. `sink(void*)` remained external so array addresses had observable escapes. Frame figures are the `sub esp, imm` allocation; probe byte counts are COFF function bytes.
+
+| Factor and exact pair | Count / conditions | Frame and observed slots | Result |
+|---|---|---|---|
+| Declaration order: `decl_forward` vs `decl_reverse` | Same seven function-scope objects: `char[12]`, `char[28]`, `char[100]`, `char[260]`, `char[100]`, `char[404]`, `short[100]`; sink order fixed. | Both `0x450` frame / 128 function bytes. By variable in sink order: offsets `0, 0x0c, 0x8c, 0x1b8, 0x28, 0x2bc, 0xf0`. | Reversing all seven declarations changed no slot or code byte. |
+| First-use order: `use_forward` vs `use_reverse` | Same declarations and seven calls; only the call order was reversed. | Both `0x450` / 128 bytes. Each variable kept its forward-case address; the reversed LEA sequence was `0xf0, 0x2bc, 0x8c, 0x1b8, 0x28, 0x0c, 0`. | Placement did not sort by first reference. |
+| Scope depth: function scope vs one enclosing block | Same seven declarations and calls, all in one nested block in the second source. Also moved each array alone into its `if (selector)` block while keeping that branch/call site fixed in both variants (14 objects across seven function/block pairs). | One enclosing block: both `0x450` / 128 bytes. Each conditional function/block pair: both `0x450` / 144 bytes, with the same seven per-variable slots. | Scope depth alone did not move a slot in these shapes. |
+| Disjoint lifetimes: `overlap` vs `disjoint_blocks` | Same seven objects and sink order. First source has all seven function-scope; second places each declaration and its sink call in a separate sequential sibling block. Separate controls use sibling `char[12]` + `char[28]`, then `char[12]` + `char[100]`. | Main pair: `0x450` / 128 bytes vs `0x1bc` / 112 bytes. The 12- and 28-byte arrays stay at `0` and `0x0c`; the five arrays sized 100, 260, 100, 404, and 200 all use `0x28`. Small controls use distinct `0` and `0x0c` slots (frames `0x28` and `0x70`). | Five of seven objects share the 404-byte slot; the frame shrinks by 660 bytes. In these probes the two small arrays do not share, even with a disjoint 100-byte local. |
+| Case scope: `switch_case` | Seven braced `case` arms, one object per arm, selected by `selector`; same sizes as above. | `0x1bc` frame / 224 function bytes. After accounting for the saved `esi`, the 12- and 28-byte slots are `0` and `0x0c`; the five larger objects all use `0x28`. | Same 5-of-7 sharing pattern as sibling blocks; case-local scope does not make the two small slots share. |
+| Size: `size_res_100` vs `size_res_101` | One function-scope `char[100]` changed to `char[101]`; all other objects and uses fixed. | Frame `0x450` -> `0x454`; function stays 128 bytes. The enlarged object rounds to 104 bytes; later slots shift by 4 (`str 0x1b8->0x1bc`, scratch `0x2bc->0x2c0`, door `0xf0->0xf4`). | Stack allocation is 4-byte aligned; the added byte consumes four frame bytes. |
+| Address escape: `address_local` vs `address_passed` | `volatile char res[100]` is indexed in both; second source additionally passes `res` to `sink`. | Both `0x450` frame; `res` stays at normalized `0x28`; function bytes `128` -> `144`. | Passing the address added a call but did not change local placement. |
+| Destructor/EH: `try_no_destructor` vs `try_with_destructor` | Same seven arrays, `try/catch`, and throwing `mayThrow()` call. Second source adds `Guard` with a user destructor inside the `try`; `/GX` in both. | Both probe functions 208 bytes; frame `0x450` -> `0x454`. `.text$x` grows 10 -> 18 bytes and `.xdata$x` grows 88 -> 96; a 16-byte destructor function is emitted. Array slots after the guard shift by 4. | A live destructor adds an EH cleanup state and one four-byte frame slot. |
+| Aggregate type: `scratch_array` vs `scratch_struct` | Same seven objects; only `char scratch[404]` becomes `struct Scratch { char bytes[404]; } scratch`, and the same first-byte address is passed. | Both `0x450` / 128 bytes; all seven slots identical. | Plain aggregate vs array made no layout or code-size difference. |
+
+[EVIDENCE] The target map is `netData +0x1c`, `data +0x28`, `res +0x44`, `str +0xa8`, `text +0x1ac`, shared scratch `+0x210`, and `door +0x3a4`. A target-shaped scope partition (function-scope `str/text/res/door`; block-scope `netData/data/scratch`) compiled to offsets by sink order `netData 0`, `data 0x0c`, `res 0x8c`, `str 0x1b8`, `text 0x28`, `scratch 0x2bc`, `door 0xf0`; it does not predict the target map. The micro rule established here is limited: in the all-function-scope probe, storage follows ascending array size (ties stayed stable under declaration and use reversal); large arrays in the tested sibling/case scopes share a slot, while the two small arrays do not. It does not explain the target's mixed local ordering.
+
+[EVIDENCE] Candidate object `13_event.obj` currently maps `netData +0x14`, `data +0x28`, `res +0x44`, `text +0xa8`, `str +0x10c`, scratch `+0x210`, and `door +0x3a4`. Thus `data`, `res`, scratch, and `door` match their target slots; `netData` is 8 bytes early and the 100-byte `text`/260-byte `str` slots are in the opposite order. Moving each declaration individually between function and block scope in the micro probes did not reorder slots; the target-shaped partition also failed. No source change is justified by these measurements. The first forced instruction divergence remains at ChangePhase `+0x1c` when the initial log call forms the `str` pointer.
+
 ## Remaining work
 
-[OPEN] Continue from the first unresolved handler difference: inspect `DrawButtons` local live ranges/prologue and the button-mask instruction pattern in `ReadInput`, then revisit `TreatEventBase` and `ChangePhase` using current canonical offsets. Route the `NetEnumSessions` relocation regression and destructor external-data symbols to infra; leave `SetDemo` and `CheckWorld1` out of strict counts until unique target evidence exists.
+[OPEN] Continue front-to-back from `DrawButtons` RECT staging, the remaining `ChangePhase` local map (`netData` and the `str`/`text` slots), and the `TreatEventBase` player-slot loop; the controlled VC5 probes narrow local-array behavior but do not explain the target's mixed-scope ordering. Revisit `ReadInput` only if a new source-form hypothesis is supported by target evidence. `SetDemo` remains ambiguous and `CheckWorld1` remains a config mismatch; the destructor and `NetEnumSessions` relocation cases are resolved in the integrated run.

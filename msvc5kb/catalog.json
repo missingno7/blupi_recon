@@ -1972,6 +1972,48 @@
         "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-7"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LOC-01",
+      "section": "locals",
+      "title": "Local arrays: function-scope arrays are laid out by ascending size; sibling-block arrays share one slot",
+      "tier": "MICRO",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "displacement_differs",
+          "frame_differs"
+        ]
+      },
+      "symptom": "Stack displacements of local buffers differ (e.g. [esp+0x10c] vs [esp+0xa8]) although frame size matches.",
+      "construct": "Which scope each array is declared in, and which arrays live in disjoint sibling blocks.",
+      "explanation": "VC5 SP3 /O2 /GX (35 isolated probes): function-scope arrays are placed in ascending size order independent of declaration or first-use order; arrays declared in sibling blocks/cases share one slot sized to the largest; small (12/28-byte) arrays keep separate slots; passing an address or using a struct of equal size does not move a slot; a destructor in a throwing try adds a 4-byte slot.",
+      "experiment": "Map every target [esp+N] buffer to a source variable; group them into ascending runs; each run is one scope level (function scope first, then inner block groups); declare buffers accordingly and recompile.",
+      "not_when": "Scalar spills and register-allocated locals follow other rules; the rule is measured on VC5 SP3 /O2 only and inner-block group ordering is still a hypothesis.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/EVENT_TU.md#vc5-local-array-layout",
+          "tier": "MICRO",
+          "counts": "35 isolated probes (scratch/ev_changephase/micro/), VC5 SP3 cl 11.00.7022 /O2 /GX"
+        }
+      ],
+      "keywords": "stack slot local array buffer layout ascending size scope block share frame",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::ChangePhase (target map consistent with function-scope ascending run + inner block run)",
+        "rva": "0x19310",
+        "tu": "event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 35,
+        "outcome": "Rule measured in micro TUs; application to ChangePhase pending",
+        "doc_ref": "docs/EVENT_TU.md"
+      },
+      "legacy_ids": []
     }
   ]
 }
