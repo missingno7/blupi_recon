@@ -564,12 +564,7 @@ BOOL CDecor::CurrentRead(int gamer, int mission, int *pMission, BOOL *pbPrivate)
 
 	nb = fread(pBuffer, sizeof(DescGameFile), 1, file);
 	if (nb < 1) goto error;
-	if (pBuffer->lg == sizeof(DescGameFile)) goto success;
-error:
-	if (pBuffer != NULL) free(pBuffer);
-	if (file != NULL) fclose(file);
-	return FALSE;
-success:
+	if (pBuffer->lg != sizeof(DescGameFile)) goto error;
 
 	majRev = pBuffer->majRev;
 	minRev = pBuffer->minRev;
@@ -672,6 +667,11 @@ success:
 	free(pBuffer);
 	fclose(file);
 	return TRUE;
+
+error:
+	if (pBuffer != NULL) free(pBuffer);
+	if (file != NULL) fclose(file);
+	return FALSE;
 }
 
 BOOL CDecor::FileExist(int gamer, int rank, char* name)
@@ -692,13 +692,7 @@ BOOL CDecor::FileExist(int gamer, int rank, char* name)
 
 	nb = fread(pBuffer, sizeof(DescGameFile), 1, file);
 	if (nb < 1) goto error;
-	if (pBuffer->lg == sizeof(DescGameFile)) goto success;
-error:
-	if (pBuffer != NULL) free(pBuffer);
-	if (file != NULL) fclose(file);
-	return FALSE;
-
-success:
+	if (pBuffer->lg != sizeof(DescGameFile)) goto error;
 		open = 0;
 		for (i = 0; i < sizeof(pBuffer->doors) / sizeof(pBuffer->doors[0]); i++)
 		{
@@ -732,6 +726,11 @@ success:
 	free(pBuffer);
 	fclose(file);
 	return TRUE;
+
+error:
+	if (pBuffer != NULL) free(pBuffer);
+	if (file != NULL) fclose(file);
+	return FALSE;
 }
 
 BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)

@@ -1185,6 +1185,18 @@
       "tu": "src/decor.cpp"
     },
     {
+      "symbol": "?CurrentRead@CDecor@@QAEHHHPAH0@Z",
+      "rva": "0x000153d0",
+      "size": 1568,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?FileExist@CDecor@@QAEHHHPAD@Z",
+      "rva": "0x000159f0",
+      "size": 544,
+      "tu": "src/decor.cpp"
+    },
+    {
       "symbol": "?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z",
       "rva": "0x00015c10",
       "size": 464,
