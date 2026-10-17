@@ -471,3 +471,14 @@ dectables.cpp, empty obstacle.cpp; docs/LINK_CONTEXT.md). Gate: GetBlupiInfo and
   objects emit them after, whether `static` or not and whether defined before or after (prototype). [OPEN]
 - `.rdata` growth and the `.data` deficit are the next layout items to explain (imports, CRT constants, uninitialized
   data). The ordering items above are free of any accepted-function byte change.
+
+### DirectX SDK version and GUID definitions ([EVIDENCE])
+
+The diagnostic link's extra `.rdata` (+5,884 bytes) is dxguid.lib's single object (6,064 bytes, every DirectX GUID).
+The oracle instead holds ten DirectPlay GUIDs at 0x2c220..0x2c2bf, in dplay.h declaration order, immediately before
+network.cpp's `APP_GUID` (0x2c2c0): IID_IDirectPlay2, 2A, 3, 3A, CLSID_DirectPlay, DPSPGUID_IPX/TCPIP/SERIAL/MODEM,
+IID_IDirectPlay. That is the DX6 dplay.h list **without IID_IDirectPlay4/4A** (VC5's own DPLAY.H is DirectX 3 and has
+only IID_IDirectPlay). So network.cpp defined `INITGUID` before including a **DirectX 5 SDK** dplay.h, and dxguid.lib
+was not linked. The manifest's `C:	ools\dx6sdk\INCLUDE` is therefore not the original header set; DX5 headers are not
+available locally. [OPEN] Rebuild with DX5 SDK headers; their smaller declaration sets also change the counter
+context of every TU that includes ddraw.h/dsound.h/dplay.h (docs/LINK_CONTEXT.md).

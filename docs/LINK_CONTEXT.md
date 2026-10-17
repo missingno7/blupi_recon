@@ -101,3 +101,10 @@ externs would satisfy both, but the 44 have identical evidence status, so choosi
   35 declared methods have no body, mostly SB2-only), or for decmove-specific SB1 content before MockeryDetect.
 - An authentic, byte-preserving replacement of DrawMap's remaining two RECT arguments is still open; the shared
   helper-removal count effect and accepted-function regressions are now measured above.
+
+## New evidence: DirectX 5 SDK headers (2026-10-18)
+
+[EVIDENCE] The oracle's `.rdata` GUIDs show the original compiled against DirectX 5 SDK headers with `INITGUID` in
+network.cpp (docs/RELINK.md, "DirectX SDK version"). Our manifest uses DX6 headers, which declare more (DirectPlay4,
+DirectDraw4/7-era, DirectSound additions) in every TU that includes ddraw.h, dsound.h or dplay.h. All windows above
+were measured with DX6 headers; they must be re-measured with DX5 headers before any context conclusion is final.
