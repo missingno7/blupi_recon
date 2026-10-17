@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -88,11 +89,21 @@ def tool_hash_paths(tree_name: str) -> tuple[Path, Path, Path]:
     return tuple(found)  # type: ignore[return-value]
 
 
+def run_compiles(commands: list[list[str]]) -> list[subprocess.CompletedProcess]:
+    """Run independent single-TU compiles concurrently; each object is still built fresh."""
+    def run(command: list[str]) -> subprocess.CompletedProcess:
+        return subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                              text=True, encoding="mbcs", errors="replace")
+    with ThreadPoolExecutor(max_workers=max(1, min(len(commands), os.cpu_count() or 1))) as pool:
+        return list(pool.map(run, commands))
+
+
 def compile_units(manifest: dict[str, Any], substitutions: dict[str, Path]) -> list[tuple[str, Path]]:
     tool = manifest["toolchain"]
     obj_dir = BUILD / "objects"
     obj_dir.mkdir(parents=True)
     results: list[tuple[str, Path]] = []
+    jobs: list[tuple[str, Path, list[str]]] = []
     for index, unit in enumerate(manifest["translation_units"]):
         canonical = unit["source"]
         source = substitutions.get(canonical, ROOT / canonical)
@@ -112,8 +123,8 @@ def compile_units(manifest: dict[str, Any], substitutions: dict[str, Path]) -> l
         for flag in tool.get("flags", []):
             command.extend(["--flag", flag])
         print(f"compile {canonical} <- {source}")
-        run = subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             text=True, encoding="mbcs", errors="replace")
+        jobs.append((canonical, obj, command))
+    for (canonical, obj, _command), run in zip(jobs, run_compiles([job[2] for job in jobs])):
         if run.returncode:
             print(run.stdout, end="")
             raise RuntimeError(f"compile failed for {canonical} (exit {run.returncode})")
