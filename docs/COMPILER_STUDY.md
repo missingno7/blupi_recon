@@ -177,3 +177,38 @@ Using the Blood II phase model (one TU-wide symbol counter; front-end and back-e
   `-off#`, `-db#`, `-il#`, `-noblend`, ...) has no IR or allocation dump switch.
 - [OPEN] The rotor's implementation was not located by text search of the decompilation; reading color.c needs
   chunk reassembly (or a dynamic trace of c2.exe, which is a toolchain binary, not game code).
+
+## Round 4: c2.exe temp-register assignment, traced ([EVIDENCE])
+
+Method: cl.exe `/B2` runs a stand-in pass 2 (build/c2/dyn/c2stub.c, VC6-built helper) that copies the IL files and
+`MSC_CMD_FLAGS`, then calls the real SP3 c2.exe. A small WOW64 debugger (build/c2/dbg.py, ctypes) re-runs c2.exe on
+the captured IL with breakpoints and hardware watchpoints. Nothing on disk is modified; the traced run writes the
+same object as a normal compile. Differential hit counts over 4/5/6-load micro TUs located the state.
+
+- The rotor is a pointer at 0x491120 into the register list at 0x491100 (eax, ecx, edx; slot 3 holds 4 and ends
+  the scan). It is reset to eax at the start of every function (0x42a90e).
+- `0x435c37 assign(temp, tuple)` gives a temp its register, in this order:
+  1. preference: a copy tuple (op 1) from a real register (1-8, not esp) records that register; some op 0x12
+     (address) tuples record one too. A free, non-interfering preferred register is taken without touching the rotor;
+  2. rotor (when the flag at 0x48fb60 is set): the first register at or after the pointer that is not busy
+     (0x491180[r]) and does not interfere (bitset 0x491140[r]); the pointer moves to the slot after it, wrapping;
+  3. otherwise first free from eax.
+  Only this rotor path writes 0x491120 (hardware watchpoint over all of event.cpp).
+- `0x42aa3c` calls it for every temp a tuple defines; `0x42a99f` frees a register at the temp's last use. Loads that
+  are folded into a compare (`mov dl,[m]; test dl,dl`, toggle loads) never pass through it: code generation picks
+  their register later. That is why they look "first free" and never advance the rotor.
+- Register numbering: 1 eax, 2 ecx, 3 edx, 4 ebx, 5 esp, 6 ebp, 7 esi, 8 edi.
+
+### TreatEventBase, located by rotor perturbation
+
+Shifting the rotor pointer in memory at one assignment of TreatEventBase (59 assignments; diagnostic only) and
+diffing the function against the oracle: a shift of +1 or +2 slots at assignment 21 gives **0 differing bytes**;
+every other position leaves differences. Assignment 20 is the `lParam` argument of `TreatTextInput` (+0x35f, ecx),
+assignment 21 the toggle result at +0x41a (candidate edx, oracle ecx; the toggle load then follows by code-generation
+choice). The PostMessage `m_hWnd` load (+0x6f3) is assignment 28; 22-27 take preferred registers and leave the rotor
+alone. So the original has exactly one rotor step more (or, equivalently, one less) between the TreatTextInput
+argument and the toggle result, with identical bytes. Consistent explanations: the terminator test
+`cheat_code[m_rankCheat][m_posCheat] == 0` (the only value in that span that would get the same register, edx, from
+the rotor) was a real temp in the original, or the `lParam` argument took a non-rotating path (still ecx). [OPEN]
+the source form. Inert so far: c-variable / `!` / pre-increment / `+= 1` forms of the test, `message` vs
+`WM_KEYDOWN`, local copies of `lParam` and of the call result.
