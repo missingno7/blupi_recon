@@ -1,9 +1,7 @@
 #ifndef MISC_H
 #define MISC_H
 
-#ifdef SB1_GAME_API
 #include <windows.h>
-#endif
 
 // misc.h
 //

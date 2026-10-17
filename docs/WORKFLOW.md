@@ -139,6 +139,46 @@ zero, since PE file padding can precede that zero-fill range.
 
 ## Integrated engine and event TUs
 
-The manifest compiles the SB2-derived game candidates with per-TU `SB1_GAME_API`; `event.cpp` also uses `SB1_EVENT_API` for its measured event declarations, phase/resource values, and overloads. These defines keep the event/game declarations out of unrelated accepted TUs. The event header uses `Phase::backName[32]`, removes the three SB2-only `CEvent` fields before `m_oldMousePos`, and forward-declares `CNetwork` so the original header order can be retained. Evidence and per-file deltas are recorded in [src/PROVENANCE.md](../src/PROVENANCE.md).
+The event header uses `Phase::backName[32]`, removes the three SB2-only `CEvent` fields before `m_oldMousePos`, and forward-declares `CNetwork` so the original header order can be retained. Evidence and per-file deltas are recorded in [src/PROVENANCE.md](../src/PROVENANCE.md).
+
+### Build-context debt
+
+The original was one VC5 project, but the current manifest still gives some TUs
+different preprocessor views of shared class headers. That preserves accepted
+matches, but it is not evidence of an authentic original header context. Each
+remaining block below was unguarded by itself and checked with a full combined
+build against the accepted set. The listed status changes are the regressions.
+
+| Guarded block | TUs that currently see it | Result if all including TUs see it |
+|---|---|---|
+| `button.h`: `CButton::SetDemo(BOOL)` (`SB1_EVENT_API`) | `blupi.cpp`, `event.cpp` | `CButton::MouseMove` (`0x2fd0`, `button.cpp`) becomes MISMATCH. |
+| `decor.h`: `CDecor::CurrentWrite(int,int,BOOL)` (`SB1_EVENT_API`) | `blupi.cpp`, `event.cpp` | `CButton::MouseMove` (`0x2fd0`) and `CDecor::GetBlupiInfo` (`0x57b0`, `decblock.cpp`) become MISMATCH. |
+| `pixmap.h`: six-argument `CPixmap::Create` (`SB1_EVENT_API`) | `blupi.cpp`, `event.cpp` | `CButton::MouseMove` (`0x2fd0`) and `CDecor::GetBlupiInfo` (`0x57b0`) become MISMATCH. |
+| `pixmap.h`: `BackgroundCache` (`SB1_GAME_API`) | `pixmap.cpp`, `blupi.cpp`, `decnet.cpp`, `decor.cpp`, `event.cpp`, `decblock.cpp`, `decdesign.cpp`, `decmove.cpp`, `decblupi.cpp` | `CButton::MouseMove` (`0x2fd0`) becomes MISMATCH. |
+| `pixmap.h`: `DrawMap` and `QuickIcon` (`SB1_GAME_API`) | same game TUs as `BackgroundCache` | `CButton::MouseMove` (`0x2fd0`) becomes MISMATCH. |
+| `sound.h`: `PlayMusic(HWND,int)` (`SB1_EVENT_API`) | `blupi.cpp`, `event.cpp` | `CButton::MouseMove` (`0x2fd0`) and `CDecor::GetBlupiInfo` (`0x57b0`) become MISMATCH. |
+
+No evidence-backed declaration or ordering correction has yet restored these
+functions with one shared header view. The gates remain temporary reconstruction
+debt; do not treat their current strict results as proof of an authentic build
+context. The next investigation needs target-supported declarations or a
+documented original include structure, not probe declarations.
+
+The other audited blocks were made unconditional after clean full verifies:
+
+| Resolved block | TUs that previously saw it | Result |
+|---|---|---|
+| `misc.h`: `<windows.h>` (`SB1_GAME_API`) | `pixmap.cpp`, `blupi.cpp`, `decnet.cpp`, `decor.cpp`, `event.cpp`, `decblock.cpp`, `decdesign.cpp`, `decmove.cpp`, `decblupi.cpp` | No accepted-status change. |
+| `def.h`: SB1 phase constant overrides (`SB1_EVENT_API`) | `blupi.cpp`, `event.cpp` | No function status changed. |
+| `resource.h`: SB1 event resource IDs (`SB1_EVENT_API`) | `blupi.cpp`, `event.cpp` | No function status changed. |
+| `text.h`: `FONTGOLD` and `FONTSELECTED` (`SB1_EVENT_API`) | `blupi.cpp`, `event.cpp` | No function status changed. |
+| `pixmap.h`: `CacheAll`, benchmark and true-colour accessors (`SB1_EVENT_API`) | `blupi.cpp`, `event.cpp` | No accepted-status change after merging duplicate `GetTrueColorDecor` declarations. |
+| `pixmap.h`: game-only `GetTrueColorDecor` (`!SB1_EVENT_API && SB1_GAME_API`) | `pixmap.cpp`, `decnet.cpp`, `decor.cpp`, `decblock.cpp`, `decdesign.cpp`, `decmove.cpp`, `decblupi.cpp` | The overlapping declaration could not be unguarded alone; the event declaration is now the single shared declaration. The merged form has no accepted-status change. |
+
+The combined pixmap block test initially failed compilation because both
+conditional branches declared `GetTrueColorDecor()`. Removing the duplicate
+game-only declaration and making the event API block unconditional resolved
+that collision. These changes remove those former gates from the listed
+headers; the six debt rows above are the only remaining source gates.
 
 `forced_locations` supplies evidence-backed `--at` comparisons for identical bodies whose TU placement is established; all code bytes and relocations still pass the comparator. `symbol_mappings` names compiler-generated local switch destinations only where their target addresses are statically established. `promotion_exclusions` keeps ambiguous event aliases and duplicate `ObjectDelete` output from becoming extra accepted functions. The latter body is owned by `decnet.cpp` at `0x108a0`; it is counted once even though `decmove.cpp` also emits an identical candidate.

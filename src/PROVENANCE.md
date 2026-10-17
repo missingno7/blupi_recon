@@ -58,7 +58,7 @@
 
 - `event.cpp` and the SB2-derived `event.h` compatibility layout are GPLv3 ancestry. `Phase::backName[32]` and the CEvent offsets in the compatibility header follow the SB1 target; the SB2-only `m_menuIndex`, `m_menuDecor[11]`, and `m_9840[32]` fields are omitted so `m_oldMousePos` is at `+0x9810`. The phase table is the worker's exact SB1 table.
 - `sound.h` retains the event call-compatible `PlayMusic(HWND,int)` overload and distinct `PlayImage` declarations: the three-argument form used by the PB-derived sound TU and the four-argument game form. The target `VoyageInit` pushes five stack words to the callee at `0x230c0`, which returns with `ret 0x14`; `decor.cpp` passes the fourth word explicitly so VC5 selects that ABI without changing the other TUs' declaration context.
-- Compile-context adaptations are scoped by manifest defines: `SB1_GAME_API` supplies game-candidate `CPixmap`, `CSound`, and `CDecor` signatures; `SB1_EVENT_API` supplies event-only `CButton::SetDemo`, the event `CPixmap`/`CSound`/`CDecor` overloads, and the SB1 event phase/resource constants. `event.h` has a guard and forward-declares `CNetwork`; `event.cpp` includes `network.h` after `event.h`, so DPID and the full network declaration are available before method definitions. This preserves the source include order without importing duplicate SB2 enums or changing unrelated TUs.
+- Current per-TU compile-context gates are listed under `Build-context debt`: `SB1_EVENT_API` gates `CButton::SetDemo`, the three-argument `CDecor::CurrentWrite`, the six-argument `CPixmap::Create`, and `CSound::PlayMusic(HWND,int)`; `SB1_GAME_API` gates the pixmap `BackgroundCache`, `DrawMap`, and `QuickIcon` declarations. Phase/resource values and the pixmap cache/true-colour declarations are now unconditional. `event.h` has a guard and forward-declares `CNetwork`; `event.cpp` includes `network.h` after `event.h`, so DPID and the full network declaration are available before method definitions.
 - **[EVIDENCE]** The integrated shared-header run reports 54 STRICT event names and 3,584 unique event code bytes. The three `Play*` names alias `BuildUp` at one RVA; only `BuildUp` is accepted. `NetSendLobby`, `WaitMouse`, `HideMouse`, and `ChatSend` are strict in the integrated source. `CEvent::~CEvent` is strict after verifying its `__except_list` absolute `FS:0` references, `.text$x` funclet bytes/relocations, and linked `.xdata$x` exception table. The exception cleanup's `CButton::~CButton` function-address relocations bind its identical 16-byte body to the independently matched `CMenu::~CMenu` owner at `0x1f010`, so it is reported FOLDED and counted under the menu TU.
 - **[OPEN]** `SetDemo` remains excluded: its 48-byte body has four identical-byte hits and none of the 18 built objects contains a direct incoming relocation to its symbol, so call-based placement has no witness. The identical `PlayDown`/`PlayMove`/`PlayUp` aliases are excluded. `CheckWorld1` has duplicate bodies outside the event block. Integrated functions that still mismatch are intentionally not accepted.
 
@@ -101,7 +101,7 @@
 **[EVIDENCE]** The clean combined verifier reports 309 accepted STRICT functions and 3 FOLDED functions, with 39,264 reported game `.text` bytes covered out of 141,488. The six new STRICT functions are the five event methods above and `CSound::Create`.
 ## Follow-up 14
 
-**[EVIDENCE]** The sweepb round 2 integration adds STRICT `CDecor::GetBlupiInfo` (`0x57b0`), engine-side `CDecor::NetSendBarePacket` (`0x10a60`), and `CDecor::IsSurfWater` (`0x10210`). `GetBlupiInfo` is 67 oracle bytes (80-byte candidate span); the packet routine is 45 oracle bytes (48-byte span); `IsSurfWater` is 115 oracle bytes (128-byte span). The candidate `LoadImages` reconstruction is retained as non-strict best-known source (183 oracle bytes, 192 candidate bytes); `<stdio.h>` supports its `sprintf` calls. `CPixmap::GetTrueColorDecor` is declared for game-only builds because `LoadImages` calls it; its getter body is evidenced at `0x22dc0`. The declaration is excluded when `SB1_EVENT_API` is active, where the same member is already declared. The final clean build and promotion gate report 312 accepted STRICT functions plus 3 FOLDED functions, covering 39,520 / 141,488 game `.text` bytes; all earlier accepted functions remain STRICT.
+**[EVIDENCE]** The sweepb round 2 integration adds STRICT `CDecor::GetBlupiInfo` (`0x57b0`), engine-side `CDecor::NetSendBarePacket` (`0x10a60`), and `CDecor::IsSurfWater` (`0x10210`). `GetBlupiInfo` is 67 oracle bytes (80-byte candidate span); the packet routine is 45 oracle bytes (48-byte span); `IsSurfWater` is 115 oracle bytes (128-byte span). The candidate `LoadImages` reconstruction is retained as non-strict best-known source (183 oracle bytes, 192 candidate bytes); `<stdio.h>` supports its `sprintf` calls. At that integration stage, `CPixmap::GetTrueColorDecor` had a game-only declaration and an overlapping event declaration. Follow-up 16 merged these into one unconditional member declaration; its getter body remains evidenced at `0x22dc0`. The final clean build and promotion gate report 312 accepted STRICT functions plus 3 FOLDED functions, covering 39,520 / 141,488 game `.text` bytes; all earlier accepted functions remain STRICT.
 ## Follow-up 15
 
 **[EVIDENCE]** The mida integration adds six STRICT `CEvent` methods: constructor (`0x16220`, 319 oracle bytes / 320-byte emitted span), `EventButtons` (`0x18ea0`, 547 / 560), `StartMovie` (`0x1c0b0`, 349 / 352), `WriteInfo` (`0x1c280`, 413 / 416), `ReadInfo` (`0x1c420`, 475 / 480), and `DemoPlayStart` (`0x1c7e0`, 447 / 448).
@@ -111,3 +111,32 @@
 **[EVIDENCE]** `CEvent` calls the four-argument `CSound::PlaySoundDS`. A shared `friend class CEvent;` in `sound.h` changes VC5 TU context and regresses accepted `GetBlupiInfo`, while declaring the playback/buffer helpers `public` (no added declaration) keeps every accepted function strict with no per-TU switch. The access level is not observable in the binary (only in decorated names), so `public` is the evidence-backed choice; the earlier TU-scoped `SB1_EVENT_SOUND_ACCESS` friend was removed by the supervisor.
 
 **[EVIDENCE]** The final clean build and promotion gate report 318 accepted STRICT functions plus 3 FOLDED functions, covering 42,096 / 141,488 game `.text` bytes.
+
+## Build-context debt
+
+**[EVIDENCE]** The `SB1_GAME_API`/`SB1_EVENT_API` header audit tested each
+conditional block with a full multi-TU verify. The following shared class
+declarations still need per-TU visibility to preserve accepted functions:
+
+| Remaining block | Current macro-enabled TUs | Accepted regression when unguarded |
+|---|---|---|
+| `button.h`: `CButton::SetDemo(BOOL)` | `blupi.cpp`, `event.cpp` (`SB1_EVENT_API`) | `CButton::MouseMove` at `0x2fd0` mismatches. |
+| `decor.h`: `CDecor::CurrentWrite(int,int,BOOL)` | `blupi.cpp`, `event.cpp` (`SB1_EVENT_API`) | `CButton::MouseMove` at `0x2fd0`; `CDecor::GetBlupiInfo` at `0x57b0`. |
+| `pixmap.h`: six-argument `CPixmap::Create` | `blupi.cpp`, `event.cpp` (`SB1_EVENT_API`) | `CButton::MouseMove` at `0x2fd0`; `CDecor::GetBlupiInfo` at `0x57b0`. |
+| `pixmap.h`: `BackgroundCache` | `pixmap.cpp`, `blupi.cpp`, `decnet.cpp`, `decor.cpp`, `event.cpp`, `decblock.cpp`, `decdesign.cpp`, `decmove.cpp`, `decblupi.cpp` (`SB1_GAME_API`) | `CButton::MouseMove` at `0x2fd0` mismatches. |
+| `pixmap.h`: `DrawMap` and `QuickIcon` | same game TUs as `BackgroundCache` (`SB1_GAME_API`) | `CButton::MouseMove` at `0x2fd0` mismatches. |
+| `sound.h`: `PlayMusic(HWND,int)` | `blupi.cpp`, `event.cpp` (`SB1_EVENT_API`) | `CButton::MouseMove` at `0x2fd0`; `CDecor::GetBlupiInfo` at `0x57b0`. |
+
+**[OPEN]** These switches preserve matches but are not evidence for an
+authentic one-project header view. The isolated probes and `kb.py hints` found
+no target-supported declaration/order fix for the listed regressions. No
+per-TU switch has been removed by guessing; the next resolution needs proven
+missing declarations or a supported original include structure.
+
+**[EVIDENCE]** The other audited guarded blocks were made unconditional and
+each passed a clean full verify with no accepted-status change: `misc.h`'s
+`<windows.h>` include, `def.h`'s phase constants, `resource.h`'s SB1 resource
+IDs, `text.h`'s `FONTGOLD`/`FONTSELECTED`, and `pixmap.h`'s event cache,
+benchmark, and true-colour declarations. `pixmap.h` now has one shared
+`GetTrueColorDecor()` declaration; this replaces the overlapping event/game
+declarations. The remaining per-TU defines guard only the blocks listed above.

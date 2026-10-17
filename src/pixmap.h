@@ -55,19 +55,12 @@ public:
 	BOOL	DrawMap(int channel, RECT src, RECT dest);
 	void	QuickIcon(int channel, int rank, POINT pos);
 #endif
-#ifdef SB1_EVENT_API
 	BOOL	CacheAll(BOOL cache, HWND hWnd, BOOL bFullScreen, BOOL bTrueColor, BOOL bTrueColorDecor, int mouseType, const char *pFilename, int region);
 	BOOL	GetBenchmarkSuccess();
 	void	SetTrueColorBack(BOOL bTrueColor);
 	void	SetTrueColorDecor(BOOL bTrueColorDecor);
 	BOOL	GetTrueColorBack();
 	BOOL	GetTrueColorDecor();
-#endif
-#ifndef SB1_EVENT_API
-#ifdef SB1_GAME_API
-	BOOL	GetTrueColorDecor();
-#endif
-#endif
 
 	BOOL	BuildIconMask(int channelMask, int rankMask,
 						  int channel, int rankSrc, int rankDst);

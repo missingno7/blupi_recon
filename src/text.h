@@ -9,10 +9,8 @@
 #define FONTSLIM	2
 #define FONTLITTLE	10
 
-#ifdef SB1_EVENT_API
 #define FONTGOLD 1
 #define FONTSELECTED 2
-#endif
 
 extern
 void DrawText(CPixmap *pPixmap, POINT pos, char *pText, int font=0);

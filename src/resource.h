@@ -284,7 +284,6 @@
 #endif
 
 
-#ifdef SB1_EVENT_API
 /* SB1 event resource IDs follow the candidate resource header. */
 #define TX_CHOOSEGAMER 148
 #define TX_COLORDEP 164
@@ -316,6 +315,5 @@
 #define TX_SETTING 160
 #define TX_SOUNDVOL 162
 #define TX_WRITENAME 172
-#endif
 
 #endif /* RESOURCE_H */

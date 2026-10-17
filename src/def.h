@@ -1699,7 +1699,6 @@ bool operator==(POINT a, const POINT& b)
 	return a.x == b.x && a.y == b.y;
 }
 
-#ifdef SB1_EVENT_API
 /* The event TU uses the phase sequence confirmed against the SB1 phase table. */
 #undef WM_PHASE_INIT
 #define WM_PHASE_INIT 1524
@@ -1835,7 +1834,6 @@ bool operator==(POINT a, const POINT& b)
 #define WM_PHASE_INTRO1 1589
 #undef WM_PHASE_INTRO2
 #define WM_PHASE_INTRO2 1590
-#endif
 
 #endif /* DEF_H */
 
