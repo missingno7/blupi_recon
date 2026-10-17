@@ -273,3 +273,18 @@ keeps 330 in esi instead of rematerialising it; the title region is the source w
 - H1 remains: the only value there that a rotor would place in the oracle's register is the terminator byte load (edx).
   c2 folded it in every tested form (comparison, `!`, casts, pointer, named local, assignment inside the condition,
   repeated test), so the original form is still [OPEN].
+
+### Argument aggregates: CDecor::DrawMap ([EVIDENCE])
+
+- Planet-Blupi-style local aggregates for `Build(clip, pos)` match the oracle's argument construction (fields promoted
+  to registers, constants loaded before the stores) without growing the 0x28 frame; the reconstruction's
+  `RECT(...)`/`POINT(...)` helper macros (inline MAKE_RECT) do not (integrated, 120 -> 66 bytes).
+- For `m_pPixmap->DrawMap(8, src, dst)`: a local `src` (522x400) is promoted like the oracle but c2 also reserves a
+  dead 16-byte frame slot (0x38); a local `dst` alone, or all four aggregates in one block, folds the constants into
+  the copies instead (frame 0x28). Tested: separate/one block, declaration order, function scope, field assignment,
+  reuse of `clip`, copy-then-modify, a RECT array (0x48). [OPEN] the form that promotes `src` without a slot.
+
+### CPixmap::Create +0x12d ([EVIDENCE], negative)
+
+The 4-byte residue is a Pentium scheduling swap (`sbb edi,edi` vs the vtable load). Inert: `!= 0`, reversed and
+`== FALSE` ternaries, parentheses, a local `depth`; an if/else with two calls changes the code.
