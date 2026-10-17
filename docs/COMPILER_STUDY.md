@@ -228,3 +228,10 @@ the source form. Inert so far: c-variable / `!` / pre-increment / `+= 1` forms o
   function: unsigned/int/pointer/c-variable/`<= 0` spellings of the terminator test; `!= 0` and `msg` forms of the
   TreatTextInput call; `== 1`, `!= 0`, braces and reversed if/else forms of the toggle; `int c`, `>= 0` rank test
   and dropping `bEnable = FALSE` (these change code).
+
+### DrawButtons ([EVIDENCE], tools/c2trace)
+
+341 temp assignments. Rotor shifts at assignment 234 or later change nothing in the function. The first residue
+(+0x19c6, `mov ecx,[m_fileIndex]; cmp ecx,esi` vs oracle eax) is a compare-only load, so code generation's scratch
+choice decides it, not the rotor. [OPEN] Locate that scratch picker in c2.exe (it also chooses TreatEventBase's toggle
+load). The rest of the residue is split-title scheduling (`m_pPixmap` load placement), i.e. source form.
