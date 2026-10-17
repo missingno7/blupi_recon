@@ -227,6 +227,12 @@
       "tu": "src/button.cpp"
     },
     {
+      "symbol": "?MouseDown@CButton@@IAEHUtagPOINT@@@Z",
+      "rva": "0x00002f70",
+      "size": 96,
+      "tu": "src/button.cpp"
+    },
+    {
       "symbol": "?MouseMove@CButton@@IAEHUtagPOINT@@@Z",
       "rva": "0x00002fd0",
       "size": 208,

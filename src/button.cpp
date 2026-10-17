@@ -346,16 +346,14 @@ BOOL CButton::Detect(POINT pos)
 
 BOOL CButton::MouseDown(POINT pos)
 {
-	if ( Detect(pos) )
-	{
-		m_mouseState = 1;
-		m_bMouseDown = TRUE;
-		m_bRedraw    = TRUE;
+	if ( !Detect(pos) ) return FALSE;
 
-		m_pSound->PlayImage(SOUND_CLICK, pos);
-		return TRUE;
-	}
-	return FALSE;
+	m_mouseState = 1;
+	m_bMouseDown = TRUE;
+	m_bRedraw    = TRUE;
+
+	m_pSound->PlayImage(SOUND_CLICK, pos, -1, 0);
+	return TRUE;
 }
 
 BOOL CButton::MouseMove(POINT pos)
