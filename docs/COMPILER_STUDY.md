@@ -111,3 +111,6 @@ source difference nearby.
 - Conclusion: the original TU differs in the number/kind of definitions before GetBlupiInfo in a way not yet
   identified. The non-inline POINT operators in def.h are a reconstruction convenience (they would also clash at
   link time) and are recorded for cleanup, but they are not the cause here.
+- [EVIDENCE] Removing the 14 POINT operator helpers from def.h compiles every TU (none uses them) but regresses four
+  accepted functions (IsDeepWater, MockeryDetect, MoveObjectSort, QuickIcon): their context currently depends on
+  those definitions, which therefore stand in for some genuine original context. Kept until that is identified.
