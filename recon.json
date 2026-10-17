@@ -922,6 +922,12 @@
       "tu": "src/decor.cpp"
     },
     {
+      "symbol": "??0CEvent@@QAE@XZ",
+      "rva": "0x00016220",
+      "size": 320,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "??1CEvent@@QAE@XZ",
       "rva": "0x00016360",
       "size": 128,
@@ -1102,6 +1108,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?EventButtons@CEvent@@IAEHIIJ@Z",
+      "rva": "0x00018ea0",
+      "size": 560,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?MouseOnButton@CEvent@@IAEHUtagPOINT@@@Z",
       "rva": "0x000190d0",
       "size": 160,
@@ -1186,6 +1198,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?StartMovie@CEvent@@QAEHPAD@Z",
+      "rva": "0x0001c0b0",
+      "size": 352,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?StopMovie@CEvent@@QAEXXZ",
       "rva": "0x0001c210",
       "size": 96,
@@ -1195,6 +1213,18 @@
       "symbol": "?IsMovie@CEvent@@QAEHXZ",
       "rva": "0x0001c270",
       "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?WriteInfo@CEvent@@IAEHH@Z",
+      "rva": "0x0001c280",
+      "size": 416,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?ReadInfo@CEvent@@IAEHH@Z",
+      "rva": "0x0001c420",
+      "size": 480,
       "tu": "src/event.cpp"
     },
     {
@@ -1225,6 +1255,12 @@
       "symbol": "?DemoRecStart@CEvent@@IAEXXZ",
       "rva": "0x0001c690",
       "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?DemoPlayStart@CEvent@@IAEHXZ",
+      "rva": "0x0001c7e0",
+      "size": 448,
       "tu": "src/event.cpp"
     },
     {
@@ -1828,13 +1864,13 @@
       "tu": "src/pixmap.cpp"
     },
     {
-      "symbol": "?ReadData@CSound@@IAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z",
+      "symbol": "?ReadData@CSound@@QAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z",
       "rva": "0x00022a10",
       "size": 304,
       "tu": "src/sound.cpp"
     },
     {
-      "symbol": "?CreateBufferFromWaveFile@CSound@@IAEHHPAD@Z",
+      "symbol": "?CreateBufferFromWaveFile@CSound@@QAEHHPAD@Z",
       "rva": "0x00022b40",
       "size": 240,
       "tu": "src/sound.cpp"
@@ -1918,13 +1954,13 @@
       "tu": "src/sound.cpp"
     },
     {
-      "symbol": "?PlaySoundDS@CSound@@IAEHHHHH@Z",
+      "symbol": "?PlaySoundDS@CSound@@QAEHHHHH@Z",
       "rva": "0x00022f00",
       "size": 192,
       "tu": "src/sound.cpp"
     },
     {
-      "symbol": "?PlaySoundDS@CSound@@IAEHHHH@Z",
+      "symbol": "?PlaySoundDS@CSound@@QAEHHHH@Z",
       "rva": "0x00022fc0",
       "size": 144,
       "tu": "src/sound.cpp"

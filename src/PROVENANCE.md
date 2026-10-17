@@ -102,3 +102,12 @@
 ## Follow-up 14
 
 **[EVIDENCE]** The sweepb round 2 integration adds STRICT `CDecor::GetBlupiInfo` (`0x57b0`), engine-side `CDecor::NetSendBarePacket` (`0x10a60`), and `CDecor::IsSurfWater` (`0x10210`). `GetBlupiInfo` is 67 oracle bytes (80-byte candidate span); the packet routine is 45 oracle bytes (48-byte span); `IsSurfWater` is 115 oracle bytes (128-byte span). The candidate `LoadImages` reconstruction is retained as non-strict best-known source (183 oracle bytes, 192 candidate bytes); `<stdio.h>` supports its `sprintf` calls. `CPixmap::GetTrueColorDecor` is declared for game-only builds because `LoadImages` calls it; its getter body is evidenced at `0x22dc0`. The declaration is excluded when `SB1_EVENT_API` is active, where the same member is already declared. The final clean build and promotion gate report 312 accepted STRICT functions plus 3 FOLDED functions, covering 39,520 / 141,488 game `.text` bytes; all earlier accepted functions remain STRICT.
+## Follow-up 15
+
+**[EVIDENCE]** The mida integration adds six STRICT `CEvent` methods: constructor (`0x16220`, 319 oracle bytes / 320-byte emitted span), `EventButtons` (`0x18ea0`, 547 / 560), `StartMovie` (`0x1c0b0`, 349 / 352), `WriteInfo` (`0x1c280`, 413 / 416), `ReadInfo` (`0x1c420`, 475 / 480), and `DemoPlayStart` (`0x1c7e0`, 447 / 448).
+
+**[EVIDENCE]** `PutTextInputBox` and `NetAdjustLobbyButtons` retain mida's target-informed source updates as best-known non-strict reconstructions. They remain MISMATCH (400 candidate / 389 target bytes and 512 / 494 respectively), but the clean combined gate preserves every accepted function.
+
+**[EVIDENCE]** `CEvent` calls the four-argument `CSound::PlaySoundDS`. A shared `friend class CEvent;` in `sound.h` changes VC5 TU context and regresses accepted `GetBlupiInfo`, while declaring the playback/buffer helpers `public` (no added declaration) keeps every accepted function strict with no per-TU switch. The access level is not observable in the binary (only in decorated names), so `public` is the evidence-backed choice; the earlier TU-scoped `SB1_EVENT_SOUND_ACCESS` friend was removed by the supervisor.
+
+**[EVIDENCE]** The final clean build and promotion gate report 318 accepted STRICT functions plus 3 FOLDED functions, covering 42,096 / 141,488 game `.text` bytes.

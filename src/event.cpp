@@ -522,12 +522,16 @@ CEvent::CEvent()
 	m_joyIndex = 0;
 	m_bFullScreen = TRUE;
 	m_mouseType = MOUSETYPEGRA;
-	m_index = -1;
-	m_rankCheat = -1;
-	m_nbVies = 3;
+	m_saveIndex = -1;
 	m_mission = 1;
 	m_private = 1;
 	m_multi = 1;
+	m_index = -1;
+	m_rankCheat = -1;
+	m_speed = 1;
+	m_bMovie = TRUE;
+	m_bHiliInfoButton = TRUE;
+	m_nbVies = 3;
 	m_phase = 0;
 	m_bPrivate = FALSE;
 	m_bMulti = FALSE;
@@ -540,14 +544,11 @@ CEvent::CEvent()
 	m_mouseSprite = 0;
 	m_bWaitMouse = FALSE;
 	m_bHideMouse = FALSE;
-	m_bShowMouse = FALSE;
 	m_bDisableMouse = FALSE;
+	m_bShowMouse = FALSE;
 	m_bMouseRelease = FALSE;
 	m_posCheat = 0;
-	m_speed = 1;
-	m_bMovie = TRUE;
 	m_bAllMissions = FALSE;
-	m_bHiliInfoButton = TRUE;
 	m_movieToStart[0] = '\0';
 	m_bDemoRec = FALSE;
 	m_bDemoPlay = FALSE;
@@ -1745,13 +1746,13 @@ void CEvent::PutTextInputBox(POINT pos)
 	}
 	if (m_textHiliStart < m_textHiliEnd)
 	{
-		textHili = m_textHiliEnd -= m_textHiliStart;
+		textHili = m_textHiliEnd - m_textHiliStart;
 		memcpy(textInput, m_textInput + m_textHiliStart, textHili);
 		textInput[textHili] = 0;
 		pos.x = posD;
 		pos.y = pos.y;
 		DrawTextLeft(m_pPixmap, pos, textInput, 2);
-		lg += GetTextWidth(textInput, 0);
+		posD += GetTextWidth(textInput, 0);
 	}
 	if (m_textCursorIndex % 16 < 8)
 	{
@@ -2932,7 +2933,7 @@ BOOL CEvent::EventButtons(UINT message, WPARAM wParam, LPARAM lParam)
 	int			i, lg, oldx, res;
 	UINT uid;
 
-	pos = GetMousePos();
+	pos = ConvLongToPos(lParam);
 	m_textToolTips[0] = 0;
 	m_textToolTips2[0] = 0;
 	oldx = m_posToolTips.x;
@@ -4048,9 +4049,9 @@ BOOL CEvent::StartMovie(char* pFilename)
 	strcpy(filename + strlen(filename) - 4, ".blp");
 	m_pSound->Cache(SOUND_MOVIE, filename);
 
-	if (m_pMovie->Play(m_hWnd, rect, pFilename)) return FALSE;
+	if (!m_pMovie->Play(m_hWnd, rect, pFilename)) return FALSE;
 	m_bRunMovie = TRUE;
-	m_pSound->Play(SOUND_MOVIE, 0, 0);
+	m_pSound->PlaySoundDS(SOUND_MOVIE, 0, 0, 0);
 	return TRUE;
 }
 
@@ -4160,13 +4161,9 @@ BOOL CEvent::DemoPlayStart()
 	if (m_pDemoBuffer == NULL)  return FALSE;
 	memset(m_pDemoBuffer, 0, MAXDEMO * sizeof(DemoEvent));
 
-	sprintf(filename, "data\\demo%.3d.blp", m_demoNumber + 300);
+	sprintf(filename, "data\\demo%.3d.blp", m_demoNumber + 200);
 	file = fopen(filename, "rb");
-	if (file == NULL)
-	{
-		DemoPlayStop();
-		return FALSE;
-	}
+	if (file == NULL) return FALSE;
 
 	nb = fread(&header, sizeof(DemoHeader), 1, file);
 	if (nb < 1)
@@ -4178,7 +4175,7 @@ BOOL CEvent::DemoPlayStart()
 	m_demoEnd = fread(m_pDemoBuffer, sizeof(DemoEvent), MAXDEMO, file);
 	fclose(file);
 
-	mission = m_demoNumber + 300;
+	mission = m_demoNumber + 200;
 	m_bPrivate = TRUE;
 	m_private = mission;
 
@@ -4190,7 +4187,11 @@ BOOL CEvent::DemoPlayStart()
 	if (!m_bDemoPlay)
 	{
 		music = m_pDecor->GetMusic();
-		if (music > 0) m_pSound->PlayMusic(m_hWnd, music);
+		if (music > 0)
+		{
+			sprintf(filename, "sound\\music%.3d.blp", music - 1);
+			m_pSound->PlayMusic(m_hWnd, filename);
+		}
 	}
 	m_demoTime = 0;
 	m_demoIndex = 0;
@@ -4297,13 +4298,13 @@ BOOL CEvent::WriteInfo(int gamer)
 	info.majRev = 1;
 	info.minRev = 0;
 	strcpy(info.name, m_name);
-	info.mission = m_mission;
 	info.prive = m_private;
+	info.mission = m_mission;
 	info.multi = m_multi;
 	info.nbVies = m_nbVies;
 	info.speed = m_speed;
-	info.bHiliInfoButton = m_bHiliInfoButton;
 	info.bMovie = m_bMovie;
+	info.bHiliInfoButton = m_bHiliInfoButton;
 	info.bBuildOfficialMissions = m_bBuildOfficialMissions;
 
 	info.audioVolume = m_pSound->GetAudioVolume();
@@ -4354,15 +4355,14 @@ BOOL CEvent::ReadInfo(int gamer)
 		strcpy(m_name, info.name);
 
 	m_private = info.prive;
+	m_mission = info.mission;
 	m_multi = info.multi;
 	m_nbVies = info.nbVies;
-	m_bMovie = info.bMovie;
-	m_mission = info.mission;
-	m_bHiliInfoButton = info.bHiliInfoButton;
 	m_speed = info.speed;
+	m_bMovie = info.bMovie;
+	m_bHiliInfoButton = info.bHiliInfoButton;
 	m_bBuildOfficialMissions = info.bBuildOfficialMissions;
 
-	m_pDecor->SetBuildOfficialMissions(info.bBuildOfficialMissions);
 	m_pSound->SetAudioVolume(info.audioVolume);
 	m_pSound->SetMidiVolume(info.midiVolume);
 	m_pDecor->SetDoors(info.doors);
@@ -4833,20 +4833,21 @@ die:
 
 void CEvent::NetAdjustLobbyButtons()
 {
-	int nbReady = 0;
-	int button = WM_BUTTON11;
 	BOOL allReady = TRUE;
-
-	for (int i = 0; i < MAXNETPLAYER; i++)
+	int nbReady = 0;
+	int offset = 0;
+	int button = WM_BUTTON11;
+	do
 	{
-		if (m_pNetwork->m_players[i].bIsPresent)
+		if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->bIsPresent)
 		{
 			SetHide(button - 10, FALSE);
 			SetHide(button, FALSE);
-			SetEnable(button - 10, m_pNetwork->m_players[i].dpid == m_pNetwork->m_dpid && !m_pNetwork->m_players[i].ready);
-			int icon = m_pNetwork->m_players[i].team + 108;
+			SetEnable(button - 10, ((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid && !((NetPlayer*)((char*)m_pNetwork->m_players + offset))->ready);
+			SetEnable(button, ((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid);
+			int icon = ((NetPlayer*)((char*)m_pNetwork->m_players + offset))->team + 108;
 			SetIconMenu(button - 10, &icon, 1);
-			if (m_pNetwork->m_players[i].ready)
+			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->ready)
 			{
 				icon = 91;
 				SetIconMenu(button, &icon, 1);
@@ -4864,8 +4865,9 @@ void CEvent::NetAdjustLobbyButtons()
 			SetHide(button - 10, TRUE);
 			SetHide(button, TRUE);
 		}
-		++button;
-	}
+		offset += sizeof(NetPlayer);
+		button++;
+	} while (button < WM_BUTTON11 + MAXNETPLAYER);
 
 	if (m_pNetwork->IsHost())
 	{

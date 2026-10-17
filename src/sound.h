@@ -47,7 +47,7 @@ public:
 	void	AdaptVolumeMusic();
 	void	SetSuspendSkip(int nb);
 
-protected:
+public:
 	BOOL	CreateSoundBuffer(int dwBuf, DWORD dwBufSize, DWORD dwFreq, DWORD dwBitsPerSample, DWORD dwBlkAlign, BOOL bStereo);
 	BOOL	ReadData(LPDIRECTSOUNDBUFFER lpDSB, FILE* pFile, DWORD dwSize, DWORD dwPos);
 	BOOL	CreateBufferFromWaveFile(int dwBuf, char *pFileName);
