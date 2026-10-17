@@ -731,6 +731,8 @@ def compile_and_score(source: Path, object_path: Path, function: str, rva: int,
                                                        for p in tool.get("include_dirs", [])]]
     command = [sys.executable, str(ROOT / "tools" / "msvc.py"), str(source),
                "--tree", tool["tree"], "--out", str(object_path), "--log-dir", str(worker)]
+    if unit.get("build_path"):
+        command.extend(["--build-path", unit["build_path"]])
     for path in include_dirs:
         command.extend(["--include", str(path.resolve())])
     for definition in tool.get("defines", []) + unit.get("defines", []):

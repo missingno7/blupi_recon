@@ -339,3 +339,6 @@ integrated, not accepted.
 [OPEN] Faithful route: reproduce the build path itself (compile sound.cpp as `F:\Profil\sound.cpp`, e.g. a
 drive mapping in the build harness). That is a host/build-environment change and needs the user's decision.
 [EVIDENCE] 0x1ef0 is CDecor::DoInit; its only residue is the CDecor allocation-size operand (LAYOUT_DEBT, OPEN).
+
+[EVIDENCE] Resolved 2026-10-17: the build harness now compiles sound.cpp as `F:\Profil\sound.cpp` (temporary
+logon-session drive mapping, docs/BUILD_PATH.md). CreateSoundBuffer is STRICT with src/sound.cpp unchanged.

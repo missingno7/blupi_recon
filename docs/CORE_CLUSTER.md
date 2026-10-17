@@ -73,7 +73,7 @@
 
 | Function | Oracle RVA | Oracle bytes | COFF bytes | Status | Evidence / cause |
 |---|---:|---:|---:|---|---|
-| `CSound::CreateSoundBuffer` | 0x22940 | 206 | 208 | RELOC-UNVERIFIED | [EVIDENCE] body matches at this location; `__FILE__` data differs (`F:\Profil\sound.cpp` is the oracle path). |
+| `CSound::CreateSoundBuffer` | 0x22940 | 206 | 208 | STRICT | [EVIDENCE] strict when compiled under the historical build path `F:\Profil\sound.cpp` (docs/BUILD_PATH.md, 2026-10-17); earlier runs from the repo path were RELOC-UNVERIFIED on the `__FILE__` literal only. |
 | `CSound::ReadData` | 0x22A10 | 290 | 304 | STRICT | [EVIDENCE] full body and relocation match; verified call targets place `OutputDebug` at `0x1F010`. |
 | `CSound::CreateBufferFromWaveFile` | 0x22B40 | 236 | 240 | STRICT | [EVIDENCE] full candidate body and relocations match the located oracle body. |
 | `CSound::StopAllSounds` | — | — | 112 | MISMATCH | [EVIDENCE] no unique target body found; oracle bodies at `0x22F00`/`0x22FC0` have playback-call signatures, not this zero-argument method. |

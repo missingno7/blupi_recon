@@ -51,7 +51,8 @@
       "source": "src/pixmap.cpp"
     },
     {
-      "source": "src/sound.cpp"
+      "source": "src/sound.cpp",
+      "build_path": "F:\\Profil\\sound.cpp"
     },
     {
       "source": "src/text.cpp"
@@ -2280,6 +2281,12 @@
       "rva": "0x00022910",
       "size": 48,
       "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?CreateSoundBuffer@CSound@@QAEHHKKKKH@Z",
+      "rva": "0x00022940",
+      "size": 208,
+      "tu": "src/sound.cpp"
     },
     {
       "symbol": "?ReadData@CSound@@QAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z",

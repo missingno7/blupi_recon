@@ -18,6 +18,11 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "recon.json"
 BUILD = ROOT / "build" / "verify"
+# Translation units compiled without their historical build path (recon.json "build_path"), e.g. inside the Codex
+# sandbox, which may not define the temporary drive. Their accepted functions are only checked for identical code
+# bytes (RELOC-UNVERIFIED is tolerated: the __FILE__ payload differs) and --accept is refused.
+DEGRADED: dict[str, str] = {}
+UNAVAILABLE_MARKER = "buildpath: UNAVAILABLE"
 ORACLE_TEXT_START = 0x1000
 GAME_TEXT_END = 0x238b0
 GAME_TEXT_SIZE = GAME_TEXT_END - ORACLE_TEXT_START
@@ -114,6 +119,8 @@ def compile_units(manifest: dict[str, Any], substitutions: dict[str, Path]) -> l
         command = [sys.executable, str(ROOT / "tools" / "msvc.py"), str(source),
                    "--tree", tool["tree"], "--out", str(obj), "--cwd", str(ROOT),
                    "--log-dir", str(BUILD / "logs")]
+        if unit.get("build_path"):
+            command.extend(["--build-path", unit["build_path"]])
         includes = [ROOT / "src"] + [Path(p) for p in tool.get("include_dirs", [])]
         if source.parent != ROOT / "src":
             includes.insert(0, source.parent)
@@ -131,6 +138,10 @@ def compile_units(manifest: dict[str, Any], substitutions: dict[str, Path]) -> l
         if run.returncode:
             print(run.stdout, end="")
             raise RuntimeError(f"compile failed for {canonical} (exit {run.returncode})")
+        marker = next((line for line in run.stdout.splitlines() if line.startswith(UNAVAILABLE_MARKER)), None)
+        if marker:
+            DEGRADED[canonical] = marker
+            print(f"warning: {canonical} compiled WITHOUT its historical build path: {marker}")
         results.append((canonical, obj))
     return results
 
@@ -328,6 +339,9 @@ def accepted_regressions(manifest: dict[str, Any], by_unit: dict[str, list[dict[
                             Path(expected_owner.get("tu", "")).name.lower())
                         and (not expected_owner.get("symbol")
                              or observed_owner.get("symbol") == expected_owner["symbol"]))
+        if (tu in DEGRADED and expected_status == "STRICT" and func["status"] == "RELOC-UNVERIFIED"
+                and rva_ok and size_ok):
+            continue  # code bytes identical; only the build-path-dependent payload is unproven here
         if func["status"] != expected_status or not rva_ok or not size_ok or not owner_ok:
             errors.append(f"{tu}: {accepted['symbol']} status={func['status']} "
                           f"rva={records[0]['rva'] if records else 'none'} size={func['code_size']}"
@@ -442,6 +456,14 @@ def main() -> int:
             for error in regressions:
                 print(f"  {error}")
             return 1
+        if DEGRADED:
+            print("\nNOTE: regression gate INCOMPLETE - compiled without the historical build path:")
+            for unit, marker in DEGRADED.items():
+                print(f"  {unit}: {marker}")
+            print("  Its accepted functions were checked for identical code bytes only. Run verify.py outside the"
+                  " sandbox (with the drive letter free) for the authoritative gate.")
+            if args.accept:
+                raise ValueError("--accept refused: historical build path unavailable")
         if args.accept:
             promote(manifest, by_unit)
         return 0

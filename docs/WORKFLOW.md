@@ -47,6 +47,12 @@ substituted candidate cannot be promoted. Newly verified folded bodies are
 recorded with `status: "folded"` and an `into` owner; ordinary accepted bodies
 remain `STRICT`.
 
+`src/sound.cpp` carries `"build_path": "F:\\Profil\\sound.cpp"` in `recon.json`: its `__FILE__` literal is
+the original developer's path. `msvc.py --build-path` maps `F:` temporarily for that one compile and always
+removes the mapping again. It never touches an existing `F:`. Where the mapping is impossible (Codex sandbox, or
+`F:` in use), the verifier prints `NOTE: regression gate INCOMPLETE`, checks that TU's accepted functions for
+identical code bytes only, and refuses `--accept`. See [BUILD_PATH.md](BUILD_PATH.md).
+
 ## Comparator statuses
 
 - **STRICT** means one proved code location matches every non-relocation byte;

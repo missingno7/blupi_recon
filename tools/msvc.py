@@ -93,6 +93,9 @@ def main() -> int:
     parser.add_argument("--cwd", type=Path, default=ROOT, help="compiler working directory")
     parser.add_argument("--log-dir", type=Path, default=ROOT / "build" / "match" / "logs",
                         help="directory for the compile transcript")
+    parser.add_argument("--build-path",
+                        help="historical absolute path to compile the source as (sets __FILE__), e.g. "
+                             r"F:\Profil\sound.cpp; the drive is mapped temporarily (tools/buildpath.py)")
     args = parser.parse_args()
 
     source = args.source.resolve()
@@ -134,8 +137,22 @@ def main() -> int:
     command += [f"/D{definition}" for definition in args.define]
     command += args.flag
 
-    with compile_slot():
-        return _compile(args, compiler_bin, env, command, output, tree, temp_dir)
+    if not args.build_path:
+        with compile_slot():
+            return _compile(args, compiler_bin, env, command, output, tree, temp_dir)
+    import buildpath
+    try:
+        # Drive lock and mapping first, slot second: waiting for the drive never holds a compile slot.
+        with buildpath.historical_path(source, args.build_path) as historical:
+            command[3] = historical
+            with compile_slot():
+                return _compile(args, compiler_bin, env, command, output, tree, temp_dir)
+    except (buildpath.DriveInUse, buildpath.MappingDenied) as exc:
+        # Same code, real path: only __FILE__ differs. verify.py keys on this exact marker and reports the gate as
+        # incomplete for this TU instead of treating the __FILE__ payload as a regression.
+        print(f"{buildpath.UNAVAILABLE_MARKER} {args.build_path}: {exc}")
+        with compile_slot():
+            return _compile(args, compiler_bin, env, command, output, tree, temp_dir)
 
 
 def _compile(args, compiler_bin, env, command, output, tree, temp_dir) -> int:
