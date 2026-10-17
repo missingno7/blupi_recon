@@ -76,7 +76,7 @@ public:
 	void	ReadInput();
 	void	TryInsert();
 	//void	SomethingUserMissions(LPCSTR lpFileName, LPCSTR thing);
-	BOOL	CopyMission(char* pMission, char* pFile);
+	static BOOL	CopyMission(char* pMission, char* pFile);
 	void	RestoreGame();
 
 	int		GetButtonIndex(int button);
@@ -92,7 +92,7 @@ public:
 	int		GetMenu(int button);
 	void	SetMenu(int button, int menu);
 	BOOL	IsMouseRelease();
-	void	AddUserExportPath(char* dst, char* pFileName);
+	static void	AddUserExportPath(char* dst, char* pFileName);
 
 	void	ChangePause(BOOL bPause, BOOL bMulti);
 	void	NetSendLobby();

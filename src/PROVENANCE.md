@@ -144,3 +144,13 @@ reports their observed status separately, and does not fail the gate for
 them. A later `--accept` reactivates a withdrawn function only when its
 candidate becomes STRICT or FOLDED, moving the withdrawal record to
 `withdrawal_history` instead of discarding that history.
+## Follow-up 18: event helper ABI and ChangeButtons
+
+**[EVIDENCE]** Integrated only `CEvent::ChangeButtons` from the sol-sib candidate. It matches the 2,854-byte
+oracle body at `0x1b220`; the object span is 2,864 bytes including 10 alignment NOPs, and all 83 relocations
+are verified. The source correction shares one player-index local across the commuted SIB expressions, as
+confirmed by the worker micro-experiment. Evidence: `docs/SOLSIB.md`.
+
+**[EVIDENCE]** `CEvent::CopyMission(char*, char*)` and `CEvent::AddUserExportPath(char*, char*)` are now
+declared `static`, matching their caller-cleanup ABI at oracle helpers `0x1b150` and `0x1b090`. The shared
+`event.h` declaration change was checked with a full-tree verification because several TUs include it.

@@ -1168,6 +1168,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?ChangeButtons@CEvent@@IAEXH@Z",
+      "rva": "0x0001b220",
+      "size": 2864,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?BuildMove@CEvent@@IAEHUtagPOINT@@H@Z",
       "rva": "0x0001c070",
       "size": 64,

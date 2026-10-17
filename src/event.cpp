@@ -4397,9 +4397,8 @@ BOOL CEvent::PlayUp(POINT pos, int fwKeys)
 
 void CEvent::ChangeButtons(int message)
 {
+	int playerId;
 	char netData[12];
-	char file[256];
-	char out[256];
 
 	if (m_phase == WM_PHASE_GAMER && message >= WM_BUTTON1 && message <= WM_BUTTON10)
 	{
@@ -4551,7 +4550,7 @@ void CEvent::ChangeButtons(int message)
 	{
 		if (message >= WM_BUTTON1 && message <= WM_BUTTON4)
 		{
-			int playerId = message - WM_BUTTON1;
+			playerId = message - WM_BUTTON1;
 			m_pNetwork->m_players[playerId].team++;
 			if (m_pNetwork->m_players[playerId].team >= MAXTEAM)
 			{
@@ -4575,7 +4574,7 @@ void CEvent::ChangeButtons(int message)
 		}
 		if (message >= WM_BUTTON11 && message <= WM_BUTTON14)
 		{
-			int playerId = message - WM_BUTTON11;
+			playerId = message - WM_BUTTON11;
 			m_pNetwork->m_players[playerId].ready = !m_pNetwork->m_players[playerId].ready;
 			if (m_pNetwork->IsHost())
 			{
@@ -4599,6 +4598,8 @@ void CEvent::ChangeButtons(int message)
 	if (m_phase == WM_PHASE_READDESIGN)
 	{
 		BOOL bBuild;
+		char out[256];
+		char file[256];
 		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
 		{
 			m_fileIndex = m_filePageOffset + message - WM_BUTTON1;
@@ -4619,18 +4620,22 @@ void CEvent::ChangeButtons(int message)
 			CopyMission(file, out);
 			ChangePhase(WM_PHASE_INFO);
 		}
-		SetHide(WM_BUTTON10, m_filePageOffset == 0);
-		SetHide(WM_BUTTON11, m_filePageOffset + 6 >= 6 * (m_nbFiles + 5) / 6);
+		BOOL bHide = FALSE;
+		if (m_filePageOffset == 0) bHide = TRUE;
+		SetHide(WM_BUTTON10, bHide);
+		bHide = FALSE;
+		if (m_filePageOffset + 6 >= ((m_nbFiles + 5) / 6) * 6) bHide = TRUE;
+		SetHide(WM_BUTTON11, bHide);
 		for (int k = 0; k < 6; k++)
 		{
-			if (m_filePageOffset + k >= m_nbFiles)
-			{
-				SetHide(k + WM_BUTTON1, 1);
-			}
-			else
+			if (m_filePageOffset + k < m_nbFiles)
 			{
 				SetHide(k + WM_BUTTON1, 0);
 				SetState(k + WM_BUTTON1, m_filePageOffset + k == m_fileIndex);
+			}
+			else
+			{
+				SetHide(k + WM_BUTTON1, 1);
 			}
 		}
 	}
@@ -4644,13 +4649,19 @@ void CEvent::ChangeButtons(int message)
 		if (message == WM_BUTTON11) m_filePageOffset += 12;
 		if (message == WM_PHASE_DOWRITEDESIGN)
 		{
-			AddUserExportPath(file, m_textInput);
-			m_pDecor->GetMissionPath(out, m_gamer, GetWorld(), !m_bBuildOfficialMissions);
-			CopyMission(out, file);
+			char str[256];
+			char filename[256];
+			AddUserExportPath(str, m_textInput);
+			m_pDecor->GetMissionPath(filename, m_gamer, GetWorld(), !m_bBuildOfficialMissions);
+			CopyMission(filename, str);
 			ChangePhase(WM_PHASE_INFO);
 		}
-		SetHide(WM_BUTTON10, m_filePageOffset == 0);
-		SetHide(WM_BUTTON11, m_filePageOffset + 12 >= 12 * ((m_nbFiles + 11) / 12));
+		BOOL bHide = FALSE;
+		if (m_filePageOffset == 0) bHide = TRUE;
+		SetHide(WM_BUTTON10, bHide);
+		bHide = FALSE;
+		if (m_filePageOffset + 12 >= 12 * ((m_nbFiles + 11) / 12)) bHide = TRUE;
+		SetHide(WM_BUTTON11, bHide);
 	}
 	if (m_phase == WM_PHASE_GAMEREAD || m_phase == WM_PHASE_GAMEREADp)
 	{
@@ -4664,12 +4675,12 @@ void CEvent::ChangeButtons(int message)
 			}
 			SetEnable(WM_BUTTON20, GetState(m_fileIndex + WM_BUTTON1));
 		}
-		if (message == WM_BUTTON20 && CurrentWrite(m_fileIndex))
+		if (message == WM_BUTTON20 && CurrentRead(m_fileIndex))
 			ChangePhase(WM_PHASE_PLAY);
 	}
 	if (m_phase == WM_PHASE_GAMEWRITE)
 	{
-		if (message == WM_BUTTON1 && WM_BUTTON6)
+		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
 		{
 			m_fileIndex = message - WM_BUTTON1;
 			ReadAll();
@@ -4686,20 +4697,19 @@ void CEvent::ChangeButtons(int message)
 	}
 	if (m_phase == WM_PHASE_SETUP || m_phase == WM_PHASE_SETUPp)
 	{
-		int volume = m_pSound->GetAudioVolume();
-		int midi = m_pSound->GetMidiVolume();
 		if (message == WM_BUTTON1)
 		{
-			if (volume > 0)
-				m_pSound->SetAudioVolume(volume - 1);
+			int volume = m_pSound->GetAudioVolume();
+			if (volume > 0) m_pSound->SetAudioVolume(volume - 1);
 		}
 		if (message == WM_BUTTON2)
 		{
-			if (volume < 20)
-				m_pSound->SetAudioVolume(volume + 1);
+			int volume = m_pSound->GetAudioVolume();
+			if (volume < 20) m_pSound->SetAudioVolume(volume + 1);
 		}
 		if (message == WM_BUTTON3)
 		{
+			int midi = m_pSound->GetMidiVolume();
 			if (midi > 0)
 			{
 				m_pSound->SetMidiVolume(midi - 1);
@@ -4708,40 +4718,19 @@ void CEvent::ChangeButtons(int message)
 		}
 		if (message == WM_BUTTON4)
 		{
+			int midi = m_pSound->GetMidiVolume();
 			if (midi < 20)
 			{
 				m_pSound->SetMidiVolume(midi + 1);
 				m_pSound->SuspendMusic();
 			}
 		}
-		if (message == WM_BUTTON5 && m_pPixmap->GetTrueColorBack())
-		{
-			m_pPixmap->SetTrueColorBack(FALSE);
-			SetState(WM_BUTTON5, 1);
-			SetState(WM_BUTTON6, 0);
-		}
-		if (message == WM_BUTTON6 && !m_pPixmap->GetTrueColorBack())
-		{
-			m_pPixmap->SetTrueColorBack(TRUE);
-			SetState(WM_BUTTON5, 0);
-			SetState(WM_BUTTON6, 1);
-		}
-		if (message == WM_BUTTON13 && m_pPixmap->GetTrueColorDecor())
-		{
-			m_pPixmap->SetTrueColorDecor(FALSE);
-			SetState(WM_BUTTON13, 1);
-			SetState(WM_BUTTON14, 0);
-		}
-		if (message == WM_BUTTON14 && !m_pPixmap->GetTrueColorDecor())
-		{
-			m_pPixmap->SetTrueColorDecor(TRUE);
-			SetState(WM_BUTTON13, 0);
-			SetState(WM_BUTTON14, 1);
-		}
+		if (message == WM_BUTTON5) m_bMovie = FALSE;
+		if (message == WM_BUTTON6) m_bMovie = TRUE;
 		if (message >= WM_BUTTON7 && message <= WM_BUTTON12)
 		{
 			m_joyIndex = message - WM_BUTTON7;
-			if (message > WM_BUTTON7) m_joyID = m_joyIDList[message - WM_BUTTON7];
+			if (m_joyIndex > 0) m_joyID = m_joyIDList[m_joyIndex - 1];
 		}
 	}
 }
