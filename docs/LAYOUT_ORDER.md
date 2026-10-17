@@ -156,3 +156,168 @@ game/ISO was executed; no commit or background process is left.
 the decblock context conflict, plus callback linkage/section-order evidence.
 The nine remaining warnings cannot be removed by the tested whole-definition
 order correction alone.
+
+## Round 2: bounded context follow-up (2026-10-17)
+
+[EVIDENCE] Fresh base: `6ad87f16ec0e0c93307fd938e7dc3a13cbc679eb`.
+All `src/` inputs were copied anew to `scratch/sol-layout/r2/src/` and
+`r2/candidate/`. The final candidates are again byte-identical to that fresh
+snapshot. Canonical sources, headers, manifest, assets, reference repositories
+and compiler catalog are unchanged. The source-only delivery
+`scratch/sol-layout/r2/delivery/layout-context.patch` is **empty**, checked with
+`git apply --check --allow-empty`. This round changes only this report.
+
+### Gate and limits
+
+[EVIDENCE] There were **25 serial verify runs**: initial canonical baseline,
+parked/action control, 22 controlled variations and final canonical gate.
+Every run used `--build-dir sollayout`, pinned SP3, manifest
+`/W3 /GX /O2 /ML /Gd /Gy`, canonical defines, no PCH, default job/slot limits
+and repo-local TMP/TEMP through verify.py/msvc.py. No direct compiler call,
+filler declaration, padding, assembly or background campaign was used.
+The available source-backed context leads reached diminishing returns before
+the approximate 30-run ceiling; further arbitrary permutations were not run.
+
+[EVIDENCE] The final gate exits **0** with all **396 active accepted entries
+(393 STRICT, three FOLDED)** preserved. Sound has the expected INCOMPLETE
+historical-path note and passes accepted code-byte checks. New STRICT gains:
+**none**. Warnings remain **9**: network 4, event 4, decblock 1.
+There are no proposed header deltas.
+
+[EVIDENCE] Each experimental event TU uses HEAD's complete source plus only
+the exact parked ChangePhase definition from
+`scratch/sol-event3/delivery/event.cpp`; each experimental decblock TU adds
+the exact recovered DecorNextAction definition/table from
+`scratch/sol-build/action-reference.cpp`. A per-run audit proves every
+function definition unchanged from that control, including all parked and
+accepted peer bodies. These diagnostic additions are not delivered.
+
+| Parked function | RVA / instruction bytes | Result across all 22 variations |
+|---|---|---|
+| ChangePhase | `0x19310` / target 6,919 | Candidate 6,922; section 6,928; 4,664 fixed differences, first `+0x84`; complete raw payload identical to control |
+| DrawButtons | `0x16f70` / 7,419 | Section 7,424; 65 fixed differences, first `+0x19c7`; complete raw payload identical |
+| TreatEventBase | `0x1d230` / 6,616 | Section 7,072 including switch data; eight fixed differences, first `+0x41b`; complete raw payload identical; additional relocation discrepancy below |
+| DecorNextAction | `0x5670` / 269 | STRICT in every diagnostic run; 272-byte section and all six relocations verified; complete raw payload identical |
+| GetBlupiInfo with DecorNextAction present | `0x57b0` / 67 | Four fixed differences in control; two in seven variations below, never zero; 80-byte section; always MISMATCH |
+
+[EVIDENCE] Every diagnostic run exits 1 solely for accepted GetBlupiInfo.
+No other accepted peer regresses. Removing the diagnostic action addition
+restores GetBlupiInfo STRICT in the final unchanged canonical candidate.
+The large shifted-byte ChangePhase count and relocation-excluded difference
+counts are diagnostics, not partial strict coverage.
+
+### Tested arrangements and header deltas
+
+[EVIDENCE] Ancestry inputs were read-only SB2 `event.h`, `decor.h`,
+`network.h/.cpp`, `decor.cpp`, `decblock.cpp`, and `dectables.h`, plus PB
+v1.8.0 `event.h/.cpp` and `decor.h/.cpp` fetched from the local git object
+store. Their source/header arrangements are hypotheses for SB1, not proof
+that SB1 used the same declarations. Method reorders preserve each complete
+declaration, access section, member-field layout and declaration set.
+
+| Runs | Ordinary context variation | Result versus parked/action control |
+|---|---|---|
+| `02`, `03` | In private event.h, order common method declarations by PB ancestry, or by recovered SB1 definition order within each access section | All five target payloads identical |
+| `04`, `05`, `06` | In private decor.h, use PB common-method order, recovered source/TU order, or move GetBlupiInfo's existing declaration beside its SB1 decblock peers before PlaySound | All five target payloads identical |
+| `07`, `08` | Restore SB2 event.cpp's network.h-last include order; then also restore PB's explicit ddraw/pixmap/sound/button/menu/jauge includes | All five target payloads identical |
+| `09`, `10` | Restore SB2 decor core include order, retaining required SB1 headers; compare PB's explicit core includes | `09`: GetBlupiInfo 4 -> 2, first `+0x2e`; `10`: unchanged four. Other target payloads identical |
+| `11`, `19` | Move the action table definition to the TU tail with a nearby extern declaration, or to the existing dectables.cpp data TU using the already present ancestral dectables.h declaration | All five target payloads identical; full initialized table and action relocations remain STRICT |
+| `12` | Move the two static CALLBACK prototypes from private network.h to network.cpp immediately before their existing definitions, preserving signatures/linkage | GetBlupiInfo 4 -> 2, first `+0x2e`; other targets identical; complete network function sequence/payloads identical |
+| `13`, `21` | Combine private callback prototypes with SB2 decor include order, or with just its event.h include | GetBlupiInfo still two differences, now first `+0xe`; no strict repair |
+| `14`, `15` | Add the actual SB2 decor event.h include after misc.h, or after dectables.h | GetBlupiInfo 4 -> 2, first `+0x2e`; isolates the include responsible for `09` |
+| `16`, `18`, `23` | Move unchanged DescInfo typedef near its first serializer use; group it with file-format types before CEvent in private event.h; combine header placement with the SB2 decor event.h include | `16`/`18`: unchanged four; `23`: two, first `+0x2e`. All parked event payloads identical |
+| `17` | Use the oracle-proven 22-row cheat table extent and omit the three unsupported SB2 tail literals, without changing any function body | Event payloads identical; the 25-iteration loop remains wrong; diagnostic table change reverted |
+| `20` | Move the complete unchanged phase-table definition to immediately before GetButtonIndex, its first user | All five target payloads identical |
+| `22` | Move existing GetCel/GetVector/SortGetType free prototypes before CDecor, leaving declarations and inline bodies unchanged | All five target payloads identical |
+
+[EVIDENCE] Tested header changes are limited to the event.h/decor.h method
+reorders, GetBlupiInfo prototype position, network.h prototype removal with
+the same prototypes moved into network.cpp, unchanged DescInfo placement in
+event.h, and decor.h free-prototype position. No member field, constant,
+signature, access level or ABI is changed. All private headers are restored
+byte-for-byte to fresh src/ in the delivery. No trial header is proposed for
+shared integration; passing unrelated canonical TUs is not claimed as a
+whole-tree test of those private trial headers.
+
+### Remaining warnings: no supported order correction
+
+[EVIDENCE] The two static callback definitions already precede their callers
+in the source, as in SB2 ancestry; both original CALLBACK signatures are
+target-proven. Round 1's before/after definition move and this round's private
+prototype placement both leave the ordered network function payloads
+identical, with the same four warnings. Moving the source further cannot be
+justified from these warnings. Original linker/COMDAT packaging or linkage
+details remain OPEN; changing static linkage without evidence is not a fix.
+
+[EVIDENCE] Event's four overlaps still identify duplicate source placeholders:
+DrawMap shares NetDraw's `0x16e80` body, and three Play* names share BuildUp's
+`0x1b030` body. The extra names remain promotion-excluded. They do not prove
+four distinct original definitions at those addresses; sorting them again
+cannot remove overlap. Their original identities remain OPEN. No artificial
+alias or folding claim is introduced to silence the warnings.
+
+[EVIDENCE] Decblock's one gap is still the absent `0x5670` action body.
+Its correctly positioned diagnostic definition is STRICT but blocks the peer
+gate. This is incomplete reconstruction/context, not an out-of-order body.
+
+### New evidence: the eight-byte TreatEventBase score omits a real residue
+
+[EVIDENCE] The oracle loop at `0x1d230 + 0x3b2` starts its cheat-table pointer
+at VA `0x434480`, advances by 15 bytes per iteration, and compares at `+0x3bf`
+against VA `0x4345ca`. The difference is **330 bytes / 22 rows**. The source's
+first 22 rows match all 330 oracle bytes exactly. Six zero alignment bytes
+follow; the fully matched phase table starts at RVA `0x345d0`.
+
+[EVIDENCE] The candidate loop's relocation at `+0x3c0` has addend **375**
+(`25 * 15`), while the oracle requires **330**. The source explicitly loops
+to 25 and retains three SB2-only tail rows: IOVERCRAFT, UDYNAMITE, WELLKEYS.
+Thus even correcting the eight fixed register bytes would not make this
+function STRICT. Merely truncating the initializer to 22 rows does not change
+the compiled loop, its addend or any parked event payload. That diagnostic
+change is reverted, and the loop body is deliberately untouched under this
+round's instruction. No raw original bytes were copied into source.
+
+### Compiler findings
+
+- [EVIDENCE; VC5-CTX-01..04 / BLUPI-CTX-01/02; negative]
+  Trigger: order correction previously reduced DrawButtons 78 -> 65.
+  Variation: ancestor/source-ordered existing member declarations, original
+  explicit includes, real typedef/table/prototype placement and removal of
+  three unsupported initializer literals. All 22 controls leave every parked
+  event raw function payload identical. The two alternate data-TU/table
+  arrangements also leave both decblock target payloads identical. This
+  rules out the tested ordinary arrangements, not all possible TU context.
+- [EVIDENCE; VC5-CTX-01..04 / BLUPI-CTX-01; Blupi-specific]
+  Trigger: authentic DecorNextAction addition swaps two GetBlupiInfo OR-load
+  pairs. Adding SB2's genuine event.h include, or making its static network
+  callback prototypes private to their defining TU, changes four fixed bytes
+  to two at unchanged 67 instruction bytes. Combined arrangements change
+  which pair is wrong but never yield STRICT. No extra placeholder declaration
+  or arbitrary count sweep was used. All other accepted peers pass; none of
+  these incomplete gains is retained.
+- [EVIDENCE; VC5-SEM-01; confirmed-transferable]
+  Trigger: relocation-excluded scoring concealed the cheat-loop bound.
+  Candidate `i < 25` produces a relocation addend 375; the oracle uses 330
+  and has exactly the matching 22-row data before the next array. The
+  table-only 22-row control leaves code unchanged, proving that moving or
+  trimming literals does not fix this source-level loop-bound residue.
+  TreatEventBase remains MISMATCH; body correction is outside this round.
+- [EVIDENCE; callback packaging case from Round 1; negative]
+  Moving the two existing static CALLBACK prototypes into their defining
+  source changes decblock context but neither network code bytes nor function
+  emission order. The four layout warnings persist. No new universal ordering
+  rule or original-linkage claim follows from this result.
+
+[EVIDENCE] `r2/runs/<label>/` retains exact candidates, all private headers,
+command/exit records, complete verifier logs, objects, results and target
+metrics. `r2/delivery/audit.json` indexes all 25 runs, their trial header
+deltas and sole accepted regression, verifies every parked definition and
+raw event payload, checks the cheat-table/loop evidence, and audits the final
+396-entry gate. `r2/delivery/verify.log` and `results.json` preserve the final
+canonical build. No catalog edit, commit or background process remains.
+
+[OPEN] Next useful work is the explicit 22-row/22-iteration cheat correction
+in a round permitting body changes, followed by the two known scalar-register
+regions; and independent source/header evidence for the decblock context
+conflict. Further already-inert member-order or literal-order permutations
+are not supported by this sweep.
