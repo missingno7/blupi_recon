@@ -1316,6 +1316,11 @@
           "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#cmp_relax",
           "tier": "CORPUS",
           "counts": "O1 188/191 changed; O2 258/261 changed"
+        },
+        {
+          "ref": "blupi_recon:docs/DECOR_TU.md#compiler-findings",
+          "tier": "PROVEN",
+          "counts": "CurrentWrite STRICT at 0x14da0 (1,574 target bytes; 14 relocations) after a contiguous start-direction memcpy and signed int fwrite test; CurrentRead and FileExist cleanup variants remain mismatches."
         }
       ],
       "keywords": "constant condition offset struct layout",
