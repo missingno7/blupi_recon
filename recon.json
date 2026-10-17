@@ -468,6 +468,12 @@
       "tu": "src/decdesign.cpp"
     },
     {
+      "symbol": "?PlaceDecor6@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00007b20",
+      "size": 2080,
+      "tu": "src/decdesign.cpp"
+    },
+    {
       "symbol": "?PlaceDecor7@CDecor@@QAEXUtagPOINT@@HHH@Z",
       "rva": "0x00008340",
       "size": 480,

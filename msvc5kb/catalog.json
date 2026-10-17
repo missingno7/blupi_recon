@@ -171,15 +171,15 @@
         }
       ],
       "keywords": "member reload cache alias local",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
-        "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "function": "CDecor::PlaceDecor6",
+        "rva": "0x7b20",
+        "tu": "decdesign.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": "bounded",
+        "outcome": "STRICT after replacing explicit scalar caches with repeated coordinate expressions (direct member access); explicit caches prevented matching",
+        "doc_ref": "docs/SENIOR_SOL_DECDESIGN_2.md"
       },
       "legacy_ids": [
         "MEM-01",

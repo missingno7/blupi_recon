@@ -813,7 +813,6 @@ void CDecor::PlaceDecor6(POINT cel, int index, int fwKeys, BOOL bMix)
 {
 	m_liftEnd = -1;
 	int rank, icon, type;
-	int posX, posY;
 	if (!IsValidCel(cel)) return;
 
 	if (index == 0)
@@ -890,9 +889,7 @@ void CDecor::PlaceDecor6(POINT cel, int index, int fwKeys, BOOL bMix)
 
 	if (index == 8)
 	{
-		posX = cel.x * DIMOBJX + 2;
-		posY = cel.y * DIMOBJY + 6;
-		rank = MoveObjectSearch(POINT(posX, posY), -1);
+		rank = MoveObjectSearch(POINT(cel.x * DIMOBJX + 2, cel.y * DIMOBJY + 6), -1);
 		if (rank != -1 && bMix)
 		{
 			type = m_moveObject[rank].type + 1;
@@ -908,8 +905,8 @@ void CDecor::PlaceDecor6(POINT cel, int index, int fwKeys, BOOL bMix)
 		m_moveObject[rank].stepRecede = 1;
 		m_moveObject[rank].timeStopStart = 0;
 		m_moveObject[rank].timeStopEnd = 0;
-		m_moveObject[rank].posStart.x = posX;
-		m_moveObject[rank].posStart.y = posY;
+		m_moveObject[rank].posStart.x = cel.x * DIMOBJX + 2;
+		m_moveObject[rank].posStart.y = cel.y * DIMOBJY + 6;
 		m_moveObject[rank].posEnd = m_moveObject[rank].posStart;
 		m_moveObject[rank].posCurrent = m_moveObject[rank].posStart;
 		m_moveObject[rank].step = STEP_STOPSTART;
