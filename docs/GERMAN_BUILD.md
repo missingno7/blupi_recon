@@ -28,3 +28,16 @@ Static comparison of the English oracle (`assets/Speedy Blupi/BLUPI.EXE`) with t
 - `build/german/resource_string_diff.csv`: changed string IDs and texts.
 - `scratch/german/analyze_german.py`: reproducible static comparison script.
 
+
+## Language-dependent region in CEvent::DrawButtons (follow-up)
+
+**[EVIDENCE]** Aligning the English and German DrawButtons bodies isolates the difference to the `WM_PHASE_HELP` text
+layout: the branch displacement first differs at RVA `0x179b0` (`+0xa40`), the blocks diverge through EN `0x17a87` /
+DE `0x17a8a`, and the remaining 1,412-instruction suffix aligns at a +3 RVA shift. English draws from y=140 with the
+second string at x=230 on the same row, advancing 20 per row; German starts at y=120, draws the second string at x=160
+and y+13, advancing 18.
+
+**[HYPOTHESIS]** The original source selected this layout with a compile-time language conditional; a scratch
+conditional reproduces both variants' fixed bytes, but the original guard name is unknown, so canonical `src/` keeps
+the English layout without a guard. The open DrawButtons residue (EN `+0x1316` / DE `+0x1319`) lies in the shared
+suffix and is not language-dependent.
