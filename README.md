@@ -6,7 +6,9 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
-**259 functions STRICT + 2 FOLDED, 34,160 / 141,488 unique game `.text` bytes (24.1 %).**
+**317 functions STRICT + 3 FOLDED, 42,016 / 141,488 unique game `.text` bytes (29.7 %)**, built with one shared
+header set for every TU (no per-TU preprocessor views; one documented withdrawal, `CDecor::GetBlupiInfo`, see
+[docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)).
 STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
 data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
 unverified, masked or behavioural similarity is never counted.
@@ -14,11 +16,14 @@ unverified, masked or behavioural similarity is never counted.
 | TU | strict | TU | strict | TU | strict |
 |---|---:|---|---:|---|---:|
 | blupi.cpp | 11 | decor.cpp | 14 | movie.cpp | 13 |
-| button.cpp | 14 (+1 folded) | event.cpp | 54 | network.cpp | 15 |
-| ddutil.cpp | 8 | jauge.cpp | 9 | pixmap.cpp | 34 |
-| decblock.cpp | 13 | menu.cpp | 8 | sound.cpp | 26 |
-| decblupi.cpp | 7 | misc.cpp | 8 (+1 folded) | text.cpp | 6 |
-| decdesign.cpp | 7 | decmove.cpp | 12 | decnet.cpp | 5 |
+| button.cpp | 14 (+1 folded) | event.cpp | 68 | network.cpp | 15 |
+| ddutil.cpp | 8 | jauge.cpp | 9 (+1 folded) | pixmap.cpp | 34 |
+| decblock.cpp | 16 | menu.cpp | 8 | sound.cpp | 27 |
+| decblupi.cpp | 11 | misc.cpp | 8 (+1 folded) | text.cpp | 6 |
+| decdesign.cpp | 36 | decmove.cpp | 19 | decnet.cpp | 5 |
+
+Data: `dectables.cpp` holds SB1 tables as initialized data whose bytes the verifier checks (relocations into them are
+proven by payload). Calls to imports may go through exact `jmp [IAT]` thunks, as in the original.
 
 Largest open bodies (best-known reconstructions in `src/`, not yet strict): `CDecor::BlupiStep` 0x9280 (25 KB,
 candidate 29,216 B, frame 0xbc vs 0xa4), `CEvent::DrawButtons` (4,886-byte identical prefix of 7,419),
