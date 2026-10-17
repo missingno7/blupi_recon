@@ -6,8 +6,8 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
-**317 functions STRICT + 3 FOLDED, 42,016 / 141,488 unique game `.text` bytes (29.7 %)**, built with one shared
-header set for every TU (no per-TU preprocessor views; one documented withdrawal, `CDecor::GetBlupiInfo`, see
+**327 functions STRICT + 3 FOLDED, 70,432 / 141,488 unique game `.text` bytes (49.8 %)**, built with one shared
+header set for every TU (no per-TU preprocessor views; no withdrawals; history of the `CDecor::GetBlupiInfo` withdrawal in
 [docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)).
 STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
 data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
@@ -67,8 +67,8 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 ## Where to continue
 
-1. `CDecor::BlupiStep` (25 KB, ~18 % of game code): fix the 6-dword frame excess, then remove remaining SB2-only
-   behaviour (docs/BIGBLUPI.md has the slot map and region table).
+1. `CDecor::BlupiStep` (25 KB) is STRICT since 010763d. Next: `CEvent::TreatEventBase` (exact size, 8 register bytes),
+   `CEvent::DrawButtons` (+0x1316), `CEvent::ChangePhase`; `decblock.cpp` Build/InitDecor/DrawInfo.
 2. `event.cpp` large handlers (`DrawButtons` +0x1316, `TreatEventBase` +0x2DA, `ChangeButtons` +0x5fb, `ChangePhase`
    stack layout) — docs/EVENT_TU.md.
 3. Engine mid-large bodies (`decdesign`, `decmove` 0x11bd0, `decblock` 0x4350): behaviour-first reconstruction from
