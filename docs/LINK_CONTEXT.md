@@ -36,21 +36,68 @@ once, simulating a shared-header shift) put N `extern int` probes on the first l
 stop matching. GetBlupiInfo flips in windows of 4 with period 8 (a gauge of the exact count), button's MouseMove in
 windows of 8 with period 16, IsDeepWater and MockeryDetect have thresholds.
 
-| State | button | decblock (tables + DecorNextAction) | decmove | decblupi |
-|---|---|---|---|---|
-| canonical headers | 0 OK | 18-21, 26-29, 34-37 (12-15, 20-23 with tables) | 0 OK; with the 3 callers removed: >= 29 | 0-16, 81-96+ |
-| enum removed | OK | 7-10, 15-18, 23-26, 31-34 | callers removed: 0-55 | 12-31 |
-| enum + operators + 44 externs removed | 8-15 + 16k | 1-4, 9-12, 49-52, 57-60 | none in 0-64 | 0-53 |
-| canonical def.h, 44 externs removed | OK | **0 OK** | as is: >= 29; callers removed: none in 0-64 | OK |
+| State | button | decblock (tables + DecorNextAction unless stated) | decmove | decblupi | pixmap |
+|---|---|---|---|---|---|
+| canonical headers | 0 OK | 18-21, 26-29, 34-37 (12-15, 20-23 with tables) | 0 OK; with the 3 callers removed: >= 29 | 0-16, 81-96+ | not measured |
+| enum removed | OK | 7-10, 15-18, 23-26, 31-34 | callers removed: 0-55 | 12-31 | not measured |
+| enum + operators + 44 externs removed | 8-15 + 16k | 1-4, 9-12, 49-52, 57-60 | none in 0-64 | 0-53 | not measured |
+| canonical def.h, 44 externs removed | OK | **0 OK** | as is: >= 29; callers removed: none in 0-64 | OK | not measured |
+| authentic def.h + aggregates (sol-macros) | 4-11 + 16k | no tables/DNA: none in 0-64 | 2-64 | 0-21, 86-105 | 0-64 |
+| same + tables + DecorNextAction | 4-11 + 16k | none in 0-64 | 2-64 | 0-21, 86-105 | 0-64 |
+| same + 44 externs removed | 4-11 + 16k | no tables/DNA: none in 0-64 | 35-64 | 2-65, 130-149 | 0-64 |
+| same + tables + DecorNextAction + 44 externs removed | 4-11 + 16k | **0-64** | 35-64 | 2-65, 130-149 | 0-64 |
 
-The last row is the nearest gate state: canonical def.h, decblock with its tables and DecorNextAction,
+The last canonical-def.h row is the nearest gate state: canonical def.h, decblock with its tables and DecorNextAction,
 `table_adapt_decor` moved, the 44 externs removed. Only MockeryDetect regresses (DecorNextAction STRICT, +272 bytes).
 decblock tolerates removing R externs with R mod 8 in 1..4; decmove tolerates R <= 15. A subset of 9-12 (or 1-4)
 externs would satisfy both, but the 44 have identical evidence status, so choosing a subset would be count fitting.
+
+## Authentic aggregate experiment (sol-macros, 2026-10-18)
+
+- [EVIDENCE] Private trees against HEAD `a998026` are under `scratch/sol-macros/{tree,extern44,tables,tables44}`.
+  The Object enum, 14 POINT operators, MAKE helpers and constructor macros are absent. All **48** TU uses are replaced:
+  blupi 4, decblock 6, decdesign 1, decmove 2, decor 3, event 32. Existing locals use field assignments where their bytes
+  permit it; other arguments use local aggregates. No padding declarations or unused locals are retained. The three
+  SB2-only decmove callers remain present in every state.
+- [EVIDENCE] An existing CButton::Create static symbol supplies a counter anchor without probes: `$S34693` canonical,
+  `$S34250` enum removed, `$S34188` enum/operators removed, `$S34176` MAKE helpers also removed. Measured reductions:
+  **443 + 62 + 12 = 517**, before TU-local aggregate replacements.
+- [EVIDENCE] Full `verify.py --build-dir sol-macros` runs substitute **every** manifest TU, using private headers:
+
+  | State | Every accepted regression at N=0 |
+  |---|---|
+  | enum/operators removed, helpers retained (control) | MouseMove, GetBlupiInfo |
+  | authentic def.h + aggregates | MouseMove, GetBlupiInfo, MoveObjectSort |
+  | + tables + DecorNextAction | MouseMove, GetBlupiInfo, MoveObjectSort |
+  | + 44 externs removed | MouseMove, GetBlupiInfo, IsDeepWater, MockeryDetect, MoveObjectSort |
+  | + tables + DecorNextAction + 44 externs removed | MouseMove, IsDeepWater, MockeryDetect, MoveObjectSort |
+
+  DecorNextAction is STRICT, extent 272, in both table states. The sound build path is unavailable in the sandbox as
+  expected; no sound byte regression was reported. No zero-regression authentic state was found.
+- [EVIDENCE] New table rows give **joint non-relocation-byte windows**, not strict acceptance of probed sources.
+  Bounds: 0-64 for button/decblock/decmove/pixmap; 0-112 for base decblupi, 0-160 with 44 externs removed. Button and
+  pixmap inputs are identical across states and do not include dectables.h. Decmove/decblupi inputs are unchanged by
+  table relocation, so corresponding rows share measurements. Decdesign also has no accepted byte differences in
+  0-64. Before invoking `ctxsweep_tu.py`, private headers are copied to `build/tmp/rx/tusweep/`; its generated TU would
+  otherwise fall back to canonical headers.
+- [EVIDENCE] Individual windows: MoveObjectSort 2-64 in both header states; MockeryDetect 0-64 with externs retained,
+  35-64 with them removed. IsDeepWater 0-21 and 86-112 (base), 2-65 and 130-160 (44 removed). **New peer: IsVentillo**
+  stays equal through 105 (base) or 149 (44 removed), then differs through the tested end. QuickIcon is equal in 0-64.
+  GetBlupiInfo has 2 differing non-relocation bytes throughout 0-64 in the first three states and zero throughout
+  0-64 in the tables+44 state; the prior periodic windows must not be assumed here.
+- [EVIDENCE] Compared with the helper-retaining control, the six changed TUs retain all function non-relocation bytes
+  except context-sensitive GetBlupiInfo/MoveObjectSort and already-unmatched DrawMap. Build's separate zero-POINT
+  aggregates preserve its body; existing-pos reuse changes 8 bytes (rejected). DrawMap's two RECT locals enlarge its
+  frame 0x28 -> 0x38 (159 non-relocation differences against the oracle). Same-block, field-assignment and clip-reuse
+  forms are inert. All four aggregates before Build restore frame 0x28 but still differ by 146 bytes. No DrawMap form
+  is claimed matching.
+- [OPEN] MouseMove has no constructor-macro use and regresses in every state. Aggregate choices in other TUs cannot
+  repair it; further authentic header evidence is required. No patch is proposed. Scripts, full logs, results JSON,
+  source variants and the exact 44-extern list are under `scratch/sol-macros/`.
 
 ## [OPEN] What would resolve it
 
 - Evidence for SB1's real header contents (which tables dectables.h declared, which CDecor methods decor.h declared:
   35 declared methods have no body, mostly SB2-only), or for decmove-specific SB1 content before MockeryDetect.
-- An authentic replacement of the `RECT(...)`/`POINT(...)` helper macros (local aggregates, as already done for
-  DrawMap's Build call) is required for a Planet-Blupi-faithful def.h; its count effect is not yet measured.
+- An authentic, byte-preserving replacement of DrawMap's remaining two RECT arguments is still open; the shared
+  helper-removal count effect and accepted-function regressions are now measured above.

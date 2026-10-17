@@ -1963,6 +1963,11 @@
           "ref": "blupi_recon:docs/HEADERS.md",
           "tier": "PROVEN",
           "counts": "Second instance: six declarations gated per TU regressed CButton::MouseMove when unguarded; completing all SB1 class declarations (full method inventories in plausible order) made them unconditional with MouseMove still STRICT (317/318 accepted). Remaining GetBlupiInfo window +24..27/+32 top/before only -> missing preceding decblock bodies."
+        },
+        {
+          "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#experiment-8-authentic-aggregate-headers",
+          "tier": "PROVEN",
+          "counts": "Authentic def.h removals reduce existing CButton::Create static symbol suffix by 443 (enum), 62 (14 operators), 12 (MAKE helpers), total 517. Four private whole-tree states have 3/3/5/4 accepted regressions; tables+44 restores GetBlupiInfo and adds STRICT DecorNextAction (272 bytes). 859 serial TU count-probe compiles measure peer windows, including new IsVentillo thresholds 106/150; no probes retained in candidate source."
         }
       ],
       "keywords": "sound.h declaration count MouseMove StopSound peer regression",
@@ -2214,6 +2219,11 @@
           "ref": "blupi_recon:docs/COMPILER_STUDY.md#struct-temporaries",
           "tier": "PROVEN",
           "counts": "micro TU 7 variants; AdaptBorder STRICT, AdaptMidBorder still STRICT"
+        },
+        {
+          "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#experiment-8-authentic-aggregate-headers",
+          "tier": "PROVEN",
+          "counts": "SB1 negative: DrawMap local RECT aggregates, shared block, member assignments and clip reuse retain a 0x38 frame and 159 differing non-relocation bytes; all-four-before-Build restores frame 0x28 but still differs by 146 bytes. Build existing-pos reuse changes 8 bytes; separate zero aggregates retain its body. These diagnostics are not strict matches."
         }
       ],
       "keywords": "point struct temporary by value scalar arguments signature register rotation make_point",

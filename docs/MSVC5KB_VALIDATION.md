@@ -128,3 +128,25 @@ This document records the KB transfer checks against Speedy Blupi 1. **[EVIDENCE
 - **[OPEN] Missing sound context:** The target helpers at `0x22f00` and `0x22fc0` remain unnamed. Their `ret 0x10` and `ret 0x0c` cleanups and decompilation show playback-helper behavior, but do not prove their C++ names or prototypes. Current `StopAllSounds()` and `PlaySoundDS(DWORD,DWORD)` declarations do not identify them. Guessed overloads would be filler, so no header delta is proposed yet.
 - **[OPEN] Conclusion:** The strict StopSound body and accepted MouseMove cannot currently coexist under a source-supported scratch header. Reconstruct the original SB1 helper declarations/order from stronger source or symbol evidence, then rerun the full accepted-function comparison before proposing a shared header change.
 - **Artifacts:** Count probes and copied header variants are under `scratch/ctx/`; outputs are under `build/ctx/probes/` and `build/ctx/verify4_*`.
+
+## Experiment 8: Authentic aggregate headers
+
+- **[EVIDENCE, Blupi-specific]** Against HEAD `a998026`, private complete trees remove def.h's Object enum, 14 POINT
+  operators, MAKE_RECT/MAKE_POINT and constructor macros; all 48 TU uses become local aggregates or existing-local
+  field assignments. Existing CButton::Create static symbol suffixes measure reductions 443, 62 and 12 (517 total).
+- **[EVIDENCE]** Four full-tree `verify.py --build-dir sol-macros` states use pinned VC5 SP3 /O2 /GX /Gy, manifest
+  settings and private headers. Base / +tables+DecorNextAction / -44 externs / both have 3/3/5/4 accepted regressions.
+  DecorNextAction is STRICT (272 bytes); the last state restores GetBlupiInfo. Every state regresses MouseMove, whose
+  TU has no aggregate replacement. Sound's sandbox build-path limitation is expected.
+- **[EVIDENCE]** 859 serial `ctxsweep_tu.py` diagnostic compiles check all accepted peers with private headers beside
+  its generated TU. [LINK_CONTEXT.md](LINK_CONTEXT.md#authentic-aggregate-experiment-sol-macros-2026-10-18) records
+  every regression and bounded window, including new IsVentillo thresholds 106/150. Masked byte equality is diagnostic
+  only; full verifier outcomes provide acceptance evidence. No probe declarations are retained in candidate source.
+- **[EVIDENCE, negative]** The six changed TUs preserve helper-control non-relocation function bytes except
+  GetBlupiInfo/MoveObjectSort (context) and unmatched DrawMap. Separate zero POINT aggregates preserve Build's body;
+  existing-pos reuse changes 8 bytes (rejected). DrawMap local RECT, common-block, member-assignment and clip-reuse
+  forms give frame 0x38 and 159 non-relocation differences against the oracle; all-four-before-Build gives frame 0x28
+  but still 146 differences. No tested authentic replacement preserves it.
+- **[OPEN]** No zero-regression authentic state or integration patch is established. Artifacts are in
+  `scratch/sol-macros/`; canonical source and acceptance records are unchanged. Catalog BLUPI-CTX-01 and BLUPI-REG-03
+  retain the findings and negatives.
