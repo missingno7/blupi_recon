@@ -145,12 +145,11 @@ BOOL CPixmap::Create(HWND hwnd, POINT dim,
 		DeleteDC(hdc);
 	}
 
-	m_hWnd = hwnd;
-	m_dim.x = dim.x;
-	m_bFullScreen = bFullScreen;
+	m_hWnd           = hwnd;
+	m_bFullScreen    = bFullScreen;
 	m_bTrueColorBack = bTrueColor;
-	m_mouseType = mouseType;
-	m_dim.y = dim.y;
+	m_mouseType      = mouseType;
+	m_dim            = dim;
 
 	if ( m_mouseType == MOUSETYPEGRA )
 	{
@@ -193,7 +192,7 @@ BOOL CPixmap::Create(HWND hwnd, POINT dim,
     // Set the video mode to 640x480x8.
 	if ( m_bFullScreen )
 	{
-		ddrval = m_lpDD->SetDisplayMode(dim.x, dim.y, m_bTrueColorBack ? 16 : 8);
+		ddrval = m_lpDD->SetDisplayMode(dim.x, dim.y, bTrueColor ? 16 : 8);
 		if ( ddrval != DD_OK )
 		{
 			OutputDebug("Fatal error: SetDisplayMode\n");
@@ -752,8 +751,10 @@ RECT CPixmap::GetClipping()
 
 void CPixmap::QuickIcon(int channel, int rank, POINT pos)
 {
-    int num;
+    int nbx, nby;
     RECT rect;
+    HRESULT ddrval;
+    int limit;
 
     if ( channel == 1 )
     {
@@ -797,49 +798,54 @@ void CPixmap::QuickIcon(int channel, int rank, POINT pos)
     }
     else
     {
-        if ( channel < 0 || channel >= MAXIMAGE ) return;
-        rect.right = m_iconDim[channel].x;
-        num = m_totalDim[channel].x / rect.right;
-        rect.bottom = m_iconDim[channel].y;
-        if ( rank < 0 ) return;
-        if ( (m_totalDim[channel].y / rect.bottom) * num <= rank ) return;
-        rect.left = (rank % num) * rect.right;
-        rect.right = rect.left + rect.right;
-        rect.top = (rank / num) * rect.bottom;
-        rect.bottom = rect.top + rect.bottom;
+        nbx = m_totalDim[channel].x / m_iconDim[channel].x;
+        nby = m_totalDim[channel].y / m_iconDim[channel].y;
+        if ( rank < 0 || rank >= nbx*nby ) return;
+        rect.left   = (rank%nbx)*m_iconDim[channel].x;
+        rect.top    = (rank/nbx)*m_iconDim[channel].y;
+        rect.right  = rect.left + m_iconDim[channel].x;
+        rect.bottom = rect.top  + m_iconDim[channel].y;
     }
 
-    num = m_clipRect.left;
-    if ( pos.x < num )
+	// Effectue un peu de clipping.
+	if ( pos.x < m_clipRect.left )
+	{
+		rect.left += m_clipRect.left-pos.x;
+		pos.x = m_clipRect.left;
+	}
+	limit = (m_clipRect.right-pos.x)+rect.left;
+	if ( rect.right > limit )
+	{
+		rect.right = limit;
+	}
+	if ( pos.y < m_clipRect.top )
+	{
+		rect.top += m_clipRect.top-pos.y;
+		pos.y = m_clipRect.top;
+	}
+	limit = (m_clipRect.bottom-pos.y)+rect.top;
+	if ( rect.bottom > limit )
+	{
+		rect.bottom = limit;
+	}
+
+	if ( rect.left >= rect.right ||
+		 rect.top  >= rect.bottom )  return;
+
+    while( TRUE )
     {
-        num -= pos.x;
-        pos.x = m_clipRect.left;
-        rect.left += num;
-    }
-    num = (m_clipRect.right + rect.left) - pos.x;
-    if ( num < rect.right ) rect.right = num;
-    num = m_clipRect.top;
-    if ( pos.y < num )
-    {
-        num -= pos.y;
-        pos.y = m_clipRect.top;
-        rect.top += num;
-    }
-    num = (m_clipRect.bottom + rect.top) - pos.y;
-    if ( num < rect.bottom ) rect.bottom = num;
-    if ( rect.left < rect.right && rect.top < rect.bottom )
-    {
-        while ( TRUE )
+		ddrval = m_lpDDSBack->BltFast(pos.x, pos.y,
+									  m_lpDDSurface[channel],
+									  &rect, DDBLTFAST_SRCCOLORKEY);
+        if ( ddrval == DD_OK )  break;
+
+        if ( ddrval == DDERR_SURFACELOST )
         {
-            num = m_lpDDSBack->BltFast(pos.x, pos.y, m_lpDDSurface[channel], &rect, 1);
-            if ( num == DD_OK ) return;
-            if ( num == DDERR_SURFACELOST )
-            {
-                num = RestoreAll();
-                if ( num != DD_OK ) return;
-            }
-            if ( num != DDERR_WASSTILLDRAWING ) return;
+            ddrval = RestoreAll();
+            if ( ddrval != DD_OK )  break;
         }
+
+        if ( ddrval != DDERR_WASSTILLDRAWING )  break;
     }
 }
 

@@ -29,12 +29,13 @@ import pefile  # noqa: E402
 EXE = ROOT / "assets" / "Speedy Blupi" / "BLUPI.EXE"
 
 
-def compile_unit(canonical: str, source: Path, out_dir: Path, extra_flags: list[str] | None = None) -> Path:
+def compile_unit(canonical: str, source: Path, out_dir: Path, extra_flags: list[str] | None = None,
+                 tree: str | None = None) -> Path:
     manifest = json.loads((ROOT / "recon.json").read_text(encoding="utf-8"))
     tool = manifest["toolchain"]
     unit = next((u for u in manifest["translation_units"] if u["source"] == canonical), {"source": canonical})
     obj = out_dir / (Path(canonical).stem + ".obj")
-    command = [sys.executable, str(ROOT / "tools" / "msvc.py"), str(source), "--tree", tool["tree"],
+    command = [sys.executable, str(ROOT / "tools" / "msvc.py"), str(source), "--tree", tree or tool["tree"],
                "--out", str(obj), "--log-dir", str(out_dir / "logs"), "--cwd", str(ROOT)]
     if unit.get("build_path"):
         command += ["--build-path", unit["build_path"]]
@@ -64,6 +65,9 @@ def main() -> int:
     parser.add_argument("rva", help="oracle RVA of the function, e.g. 0x1d230")
     parser.add_argument("--region", help="lo:hi function offsets to print side by side (unaligned sequences)")
     parser.add_argument("--name", default="default", help="private output folder build/fnprobe/<name>")
+    parser.add_argument("--aligned", type=int, metavar="ORACLE_SIZE",
+                        help="also align instructions (tools/residues.py) against this oracle code size")
+    parser.add_argument("--tree", help="compiler tree override (experiments only)")
     parser.add_argument("--extra-flag", action="append", default=[], help="additional cl flag for experiments only")
     args = parser.parse_args()
 
@@ -71,7 +75,7 @@ def main() -> int:
     source = (ROOT / (candidate or canonical)).resolve()
     out_dir = ROOT / "build" / "fnprobe" / args.name
     out_dir.mkdir(parents=True, exist_ok=True)
-    obj = compile_unit(canonical.replace("\\", "/"), source, out_dir, args.extra_flag)
+    obj = compile_unit(canonical.replace("\\", "/"), source, out_dir, args.extra_flag, args.tree)
 
     functions = [f for f in cmpfunc.Coff(obj).functions() if args.function == f.name or args.function in f.name]
     if len(functions) != 1:
@@ -88,6 +92,12 @@ def main() -> int:
           f"unmasked differing bytes={len(diffs)}" + (f"  first=+{diffs[0]:#x}" if diffs else ""))
     if diffs:
         print("  offsets: " + " ".join(f"+{k:#x}" for k in diffs[:24]) + (" ..." if len(diffs) > 24 else ""))
+    if args.aligned:
+        import residues
+        result = residues.analyse(func, cmpfunc.Coff(obj), pe.get_data(rva, max(len(func.data), args.aligned) + 1024),
+                                  pe.OPTIONAL_HEADER.ImageBase + rva, args.aligned)
+        print(f"  aligned: equal={result['equal_insns']}/{result['oracle_insns']} oracle instructions, "
+              f"regions={len(result['regions'])}")
     if args.region:
         lo, hi = (int(x, 0) for x in args.region.split(":"))
         md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
