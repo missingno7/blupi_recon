@@ -334,3 +334,48 @@ foreach ($tu in @('sound','movie','misc','ddutil','pixmap')) {
 - `[BLUPI-MISC-02]` **Negative:** `TraceErrorDD` pointer assignment plus shared formatting changed 2,320 to 1,968 bytes and remained mismatched; the case-specific `sprintf` source form is strict. Related: `VC5-CTL-01`, `VC5-CTL-03`, `VC5-INL-03`.
 
 [EVIDENCE] Unique oracle spans for the strict candidate methods in this round total 4,377 bytes: 1,048 sound, 954 pixmap, and 2,375 misc. UI peer bodies are omitted from that tally because they were already accepted functions. This is a scratch-candidate inventory, not a net project-byte increase.
+
+
+## Refreshed residuals round (2026-10-17)
+
+[EVIDENCE] The `scratch/tu` copies for `sound.cpp`, `pixmap.cpp`, `misc.cpp` and the private headers were refreshed from the post-`c3369b5` canonical tree before this round. Only scratch candidates and this document changed; no file under `src/` was edited. Final isolated-TU builds use `tools/verify.py --tu ... --build-dir ...`; explicit data-address proofs use all object files from the same build with `tools/cmpfunc.py`.
+
+### Pixmap target bodies in oracle order
+
+| Oracle RVA / bytes | Candidate identity and current result |
+|---|---|
+| `0x21190` / 902 | `CPixmap::Create`: `MISMATCH`, 912 candidate bytes. The current target field offsets are retained; the Create body still differs. |
+| `0x217a0` / 98 | `CPixmap::DrawMap`: `STRICT`, 112-byte object span. The target body is a per-channel `Blt` wrapper with `DDBLT_WAIT`, `RestoreAll`, and a `DDERR_WASSTILLDRAWING` retry. |
+| `0x21b20` / 770 | `[HYPOTHESIS]` `CPixmap::QuickIcon(int,int,POINT)`: target pseudocode has the expected channel/rank/point ABI, atlas selection, clipping and back-surface `BltFast`. The best candidate is 800 bytes and remains `MISMATCH`; target table read order was tested. An SB2-style inline channel helper grew it to 816 bytes. |
+| `0x21e30` / 719 | `CPixmap::DrawIcon`: `STRICT` after proving the four atlas relocation bases (`table_icon_object=0x479b80`, `table_icon_element=0x47a710`, `table_icon_blupi=0x478dd8`, `table_icon_explo=0x47afd8`). Candidate span is 720 bytes. |
+| `0x22100` / 185 | `CPixmap::DrawPart`: `STRICT`, 192-byte object span after changing the mask color to `0x000000ff`. |
+| `0x225b0` / 268 | `CPixmap::MouseBackDraw`: `STRICT`, 272-byte object span. |
+| `0x22890` / 123 | `CPixmap::MouseRectSprite`: `STRICT` after mapping `table_icon_element=0x47a710`; candidate span is 128 bytes. |
+
+[EVIDENCE] The strict pixmap bodies above cover 1,393 unique oracle bytes: `DrawMap` 98, `DrawIcon` 719, `DrawPart` 185, `MouseBackDraw` 268, and `MouseRectSprite` 123. The default pixmap verify reports 32 `STRICT`, 3 `RELOC-UNVERIFIED`, 25 `MISMATCH`; after the atlas mappings, `cmpfunc.py` reports 34 `STRICT`, 1 `RELOC-UNVERIFIED`, 25 `MISMATCH`. The remaining relocation-unverified body is the ambiguous 16-byte `Fill` candidate. Artifacts: `build/verify-coreres_final_pixmap/results.json` and `build/coreres/pixmap_final_mapped.json`.
+
+[OPEN] The target atlas bases are established by target code and data references, but table contents are not reconstructed. Target entry counts are object 246, element 187, blupi 291, explo 54; current `src/pixtables.h` has 441, 289, 336, 100 respectively. The scratch extern declarations prove code relocations only; do not treat the PB-derived table data as SB1 data.
+
+[OPEN] Of the remaining 25 pixmap mismatches, 14 are emitted `POINT` operator COMDATs from headers, with no matching oracle function boundary identified. The 11 non-inline candidate mismatches are `Create`, `IsPalette`, `SearchColor`, the two smaller `Cache` overloads, `QuickIcon`, `IsIconPixel`, `DrawIconDemi`, `DrawIconPart`, `BuildIconMask`, and `SetMousePos`. `IsPalette`, `SearchColor`, and the cache/drawing helpers have no unique target placement in the current inventory. The target at `0x21b20` is the clipped icon blit described above, not a color search.
+
+### Misc and sound residuals
+
+[EVIDENCE] `GetCurrentDir` at `0x1f360` is `STRICT` (170 oracle bytes) when the four relocations are resolved, including `__pgmptr=0x47e814`, proven by target pseudocode. Default verification remains `RELOC-UNVERIFIED` because that global has no unique reconstructed definition. The candidate object span is 176 bytes. Artifact: `build/coreres/misc_final_mapped.json`.
+
+[EVIDENCE] `ChangeSprite` uses the target cursor IDs in the private `def.h`: Arrow 1, Pointer 2, arrows 3 through 10, Wait 11, Empty 12, Disable 13. Target `0x1f210` confirms these IDs and has no Map or Fill cursor branch. The best candidate remains `MISMATCH`, 288 bytes versus 285. `Random` remains a 32-byte mismatch without a unique target body; oracle order places `InitRandom` at `0x1f350` and `GetCurrentDir` at `0x1f360`.
+
+[OPEN] No SB1 `StopAllSounds` body or call target was identified. The target body at `0x23610` is a table lookup helper. SB2 ancestry supplies a protected `BOOL StopAllSounds()` prototype between `CreateBufferFromWaveFile` and `PlaySoundDS`; a copied-tree test of that declaration changed none of 248 compared accepted statuses. This is only evidence that this prototype is context-neutral in that test, not proof of the original SB1 declaration or signature. No canonical sound header change is proposed.
+
+### Private header deltas
+
+- `scratch/tu/pixmap.h`: exposed the existing `DrawMap(int,RECT,RECT)` and `QuickIcon(int,int,POINT)` declarations outside `SB1_GAME_API`, because the manifest flags do not define that macro. `DrawMap` is strict; `QuickIcon` remains a hypothesis and mismatch. Keep this delta private pending shared-header integration.
+- `scratch/tu/def.h`: corrected cursor IDs and removed unused `SPRITE_MAP` / `SPRITE_FILL` definitions in this candidate. Evidence is the target `ChangeSprite` body at `0x1f210`.
+- `scratch/tu/pixmap.cpp`: declares the four target atlas arrays as externs; the address mappings above verify code references only. No canonical header or data-table delta is proposed.
+- StopAllSounds was tested only in `scratch/coreres/stopall_signature/src/sound.h`; the canonical `src/sound.h` is unchanged.
+
+**Compiler findings**
+
+- `[VC5-CTX-01..04]` **Confirmed SB1 context effect:** adding the real `DrawMap` body at its target TU position changed the unchanged `MouseBackDraw` body from `MISMATCH` to `STRICT` (the byte span stayed 272). This is consistent with the already confirmed TU-context behavior; no probe declaration was retained.
+- `[VC5-SEM-01]` **Blupi-specific, confirmed:** target `DrawPart` uses the mask color `0xff`; the prior white `0xffffff` source did not match. The `0xff` candidate is strict at `0x22100`.
+- `[VC5-SEM-01]` **Blupi-specific, semantic correction only:** the target `ChangeSprite` cursor IDs differ from the inherited PB constants. Correcting them reduced the candidate to 288 bytes, but it still mismatches the 285-byte target; branch/register form remains open.
+- `[VC5-CTX-01..04]` **Negative source-form result:** target `QuickIcon` tags include frame, stack, branch, condition, immediate and displacement differences. Reordering table reads did not close the 800/770-byte gap, and the SB2 inline channel-helper form increased it to 816 bytes. No transferable source-form rule was established.

@@ -1,6 +1,6 @@
 # Speedy Blupi 1 translation-unit map
 
-The per-function assignments are in [oracle/tu_map.csv](../oracle/tu_map.csv). This is a best-effort map of the 421 entries currently tagged `kind=game` below RVA `0x24140`; the corrected linker evidence reclassifies the range `0x23af0`–`0x240c0` as CRT/library code. The map records direct source-object matches separately from source-order and behavior-based assignments.
+The per-function assignments are in [oracle/tu_map.csv](../oracle/tu_map.csv). This is a best-effort map of 421 function entries below RVA `0x24140`; the `kind` field in `oracle/functions.csv` retains its original inventory split. The map records direct source-object matches separately from source-order and behavior-based assignments.
 
 ## Evidence and interpretation
 
@@ -11,6 +11,10 @@ The per-function assignments are in [oracle/tu_map.csv](../oracle/tu_map.csv). T
 **[EVIDENCE]** Correction: RVA `0x1f1e0` is `misc.cpp`'s `InitHInstance`, not a trailing `menu.cpp` entry. In the PB source order it is misc's first function, immediately before anchored `LoadStringA` at `0x1f1f0`; the same-TU boundary-plus-successor placement proves the address. The previous map assigned the misc block start one function late.
 
 **[EVIDENCE]** Correction: the network TU ends at `0x21030`; the 4-byte body there is followed by 16-byte-aligned pixmap functions at `0x21040` (`CPixmap` constructor), `0x210d0` (strict destructor), and `0x21170` (`SetDebug`). The constructor-to-destructor-to-`SetDebug` object order and alignment prove the pixmap boundary. The previous map extended `network.cpp` through the destructor.
+
+**[EVIDENCE]** The earliest supported CRT member starts at `0x238b0`: the VC5 SP3 LIBC `strstr.obj` body has a unique byte hit there with four relocation bytes masked. `fclose.obj` and `fread.obj` similarly hit `0x23930` and `0x239b0` with 16 and 8 relocation bytes masked. These hits establish CRT ownership, not strict relocation equality; the map now marks `0x238b0`–`0x240c0` as CRT.
+
+**[EVIDENCE]** `GetCharWidthA` now strictly anchors the text block at `0x23610`, immediately after the last matched sound function at `0x23600`; the `0x23610` row is reassigned from `sound.cpp` to `text.cpp`. New strict integrated anchors also update the pixmap, decor, and engine rows; see their per-function evidence in `oracle/tu_map.csv`.
 
 **[EVIDENCE]** The clean combined verification strictly reproduces 22 functions in the pixmap block. Their rows are updated to anchored/strict with method identities in `oracle/tu_map.csv`; the unmatched constructor and Create-like body remain hypotheses. The integrated network object adds 13 STRICT inventory functions in its mapped block and two STRICT callbacks outside the function CSV; `JoinSession`, `CreateSession`, `Send`, and `Close` remain mismatches. The shared network header also makes `NetSendLobby`, `NetDraw`, and `ChatSend` STRICT; `DrawMap` shares NetDraw's 48-byte body and is excluded from duplicate acceptance.
 

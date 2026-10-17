@@ -103,7 +103,7 @@ typedef struct
 {
 	short majRev;
 	short minRev;
-	short reserve1[100];
+	int reserve1[50];
 	POINT posDecor;
 	POINT dimDecor;
 	short world;
@@ -355,7 +355,7 @@ public:
 	void	SetCelHiliFromScreenPos(POINT pos);
 	void	SetIconLiftAndStuff(int _foo, int _bar);
 	void	DeleteCel(POINT cel);
-	void	PlaceDecor(short *pCel, int *pTable, int *pLastIndex, int fwKeys, BOOL bMix, BOOL bRand);
+	void	PlaceDecor(int *pCel, int *pTable, int *pLastIndex, int fwKeys, BOOL bMix, BOOL bRand);
 	void	PlaceDecor1(POINT cel, int index, int fwKeys, BOOL bMix);
 	void	PlaceDecor2(POINT cel, int index, int fwKeys, BOOL bMix);
 	void	PlaceDecor3(POINT cel, int index, int fwKeys, BOOL bMix);

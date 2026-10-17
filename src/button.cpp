@@ -40,7 +40,7 @@ CButton::~CButton()
 }
 
 
-// Crée un nouveau bouton.
+// Crï¿½e un nouveau bouton.
 
 BOOL CButton::Create(HWND hWnd, CPixmap *pPixmap, CSound *pSound,
 	POINT pos, int type, BOOL bMinimizeRedraw, UINT message)
@@ -119,7 +119,7 @@ BOOL CButton::Create(HWND hWnd, CPixmap *pPixmap, CSound *pSound,
 
 }
 
-// Dessine un bouton dans son état.
+// Dessine un bouton dans son ï¿½tat.
 
 void CButton::Draw()
 {
@@ -240,7 +240,7 @@ void CButton::SetHide(BOOL bHide)
 }
 
 
-// Traitement d'un événement.
+// Traitement d'un ï¿½vï¿½nement.
 
 BOOL CButton::TreatEvent(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -270,7 +270,7 @@ BOOL CButton::TreatEvent(UINT message, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
-// (*) Tous les boutons doivent recevoir l'événement BUTTONUP !
+// (*) Tous les boutons doivent recevoir l'ï¿½vï¿½nement BUTTONUP !
 
 
 // Indique si la souris est sur ce bouton.
@@ -291,7 +291,7 @@ int CButton::GetToolTips(POINT pos)
 
 	if ( m_bHide || !m_bEnable )  return -1;
 
-	if ( m_nbMenu > 1 && m_bMouseDown )  // sous-menu déroulé ?
+	if ( m_nbMenu > 1 && m_bMouseDown )  // sous-menu dï¿½roulï¿½ ?
 	{
 		width += 2+(m_dim.x-1)*m_nbMenu;
 	}
@@ -321,7 +321,7 @@ int CButton::GetToolTips(POINT pos)
 }
 
 
-// Détecte si la souris est dans le bouton.
+// Dï¿½tecte si la souris est dans le bouton.
 
 BOOL CButton::Detect(POINT pos)
 {
@@ -329,7 +329,7 @@ BOOL CButton::Detect(POINT pos)
 
 	if ( m_bHide || !m_bEnable )  return FALSE;
 
-	if ( m_nbMenu > 1 && m_bMouseDown )  // sous-menu déroulé ?
+	if ( m_nbMenu > 1 && m_bMouseDown )  // sous-menu dï¿½roulï¿½ ?
 	{
 		width += 2+(m_dim.x-1)*m_nbMenu;
 	}
@@ -342,22 +342,21 @@ BOOL CButton::Detect(POINT pos)
 	return TRUE;
 }
 
-// Bouton de la souris pressé.
+// Bouton de la souris pressï¿½.
 
 BOOL CButton::MouseDown(POINT pos)
 {
-	if ( !Detect(pos) )  return FALSE;
+	if ( Detect(pos) )
+	{
+		m_mouseState = 1;
+		m_bMouseDown = TRUE;
+		m_bRedraw    = TRUE;
 
-	m_mouseState = 1;
-	m_bMouseDown = TRUE;
-	m_bRedraw    = TRUE;
-
-
-	m_pSound->PlayImage(SOUND_CLICK, pos);
-	return TRUE;
+		m_pSound->PlayImage(SOUND_CLICK, pos);
+		return TRUE;
+	}
+	return FALSE;
 }
-
-// Souris déplacés.
 
 BOOL CButton::MouseMove(POINT pos)
 {
@@ -371,12 +370,12 @@ BOOL CButton::MouseMove(POINT pos)
 
 	if ( m_bMouseDown )
 	{
-		if ( bDetect )  m_mouseState = 1;  // pressé
+		if ( bDetect )  m_mouseState = 1;  // pressï¿½
 		else            m_mouseState = m_state;
 	}
 	else
 	{
-		if ( bDetect )  m_mouseState = m_state+2;  // survollé
+		if ( bDetect )  m_mouseState = m_state+2;  // survollï¿½
 		else            m_mouseState = m_state;
 	}
 
@@ -401,7 +400,7 @@ BOOL CButton::MouseMove(POINT pos)
 	return m_bMouseDown;
 }
 
-// Bouton de la souris relâché.
+// Bouton de la souris relï¿½chï¿½.
 
 BOOL CButton::MouseUp(POINT pos)
 {

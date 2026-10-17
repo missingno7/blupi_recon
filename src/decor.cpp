@@ -9,6 +9,15 @@
 #include <pixmap.h>
 #include <sound.h>
 #include <network.h>
+
+int table_adapt_decor[80] = {
+	153, 147, 148, 146, 40, 151, 150, 144, 39, 152, 149, 145, 38, 36, 37, 35,
+	153, 147, 148, 146, 40, 151, 150, 144, 39, 152, 149, 145, 38, 36, 37, 156,
+	75, 75, 155, 155, 75, 75, 155, 155, 74, 74, 154, 154, 75, 75, 155, 155,
+	157, 157, 157, 157, 109, 109, 109, 109, 108, 108, 108, 108, 107, 107, 107, 107,
+	202, 202, 138, 138, 202, 202, 138, 138, 202, 202, 138, 138, 202, 202, 138, 138
+};
+
 POINT CDecor::VoyageGetPosVie(int nbVies)
 {
 	return POINT( nbVies * 20 - 5, 417 );
@@ -113,392 +122,69 @@ BOOL CDecor::IsRightBorder(int x, int y, int dx, int dy)
 {
 	int num = (m_dimDecor.x != 0) ? 100 : 10;
 	int num2 = (m_dimDecor.y != 0) ? 100 : 8;
-	if (x < 0 || x >= num || y < 0 || y >= num2)
+	if (x < 0) return TRUE;
+	if (x >= num) return TRUE;
+	if (y < 0) return TRUE;
+	if (y >= num2) return TRUE;
+
+	int icon = m_decor[x][y].icon;
+	if (icon == -1) return FALSE;
+	if (icon == 0x20 || icon == 0x21 || icon == 0x22) return FALSE;
+	if (icon == 0x5c || icon == 0x44) return dy != -1;
+	if (icon == 0x13 || icon == 0x15 || icon == 0x19 || icon == 0x1a || icon == 0x1c) return dy != 1;
+	if (icon == 0x1b) return dx == 0;
+	if (icon >= 0x2d && icon <= 0x2f) return dy != 1;
+	if (icon == 0x0f || icon == 0x10 || icon == 0x4b || icon == 0x59 || icon == 0x5a || icon == 0x9b)
 	{
-		return TRUE;
-	}
-	int icon = m_decor[x + dx][y + dy].icon;
-	if (icon < 386 || icon > 397)
-	{
-		switch (icon)
+		if (dx != -1)
 		{
-		case 245:
-		case 400:
-			break;
-		case 250:
-		case 251:
-		case 252:
-		case 253:
-		case 254:
-		case 255:
-		case 256:
-		case 257:
-		case 258:
-		case 259:
-		case 260:
-			icon = m_decor[x][y].icon;
-			if (icon >= 250)
-			{
-				return icon <= 260;
-			}
+			if (dy != 1) return TRUE;
 			return FALSE;
-		default:
-			icon = m_decor[x][y].icon;
-			switch (icon)
-			{
-			case -1:
-				return FALSE;
-			case 32:
-			case 33:
-			case 34:
-				return FALSE;
-			case 68:
-			case 92:
-				return (dy != -1);
-			case 317:
-				return (dy != 1);
-			case 19:
-			case 21:
-			case 25:
-			case 26:
-			case 28:
-				return (dy != 1);
-			case 27:
-				return (dx == 0);
-			case 45:
-			case 46:
-			case 47:
-				return (dy != 1);
-			default:
-				switch (icon)
-				{
-				case 15:
-				case 16:
-				case 75:
-				case 89:
-				case 90:
-				case 155:
-					return (dx != -1 && dy != 1);
-				case 17:
-				case 18:
-				case 74:
-				case 87:
-				case 88:
-				case 154:
-					return (dx != 1 && dy != 1);
-				case 76:
-				case 77:
-				case 199:
-				case 200:
-					return (dx == 0);
-				case 110:
-				case 111:
-				case 112:
-				case 113:
-				case 114:
-				case 115:
-				case 116:
-				case 117:
-				case 118:
-				case 119:
-				case 120:
-				case 121:
-				case 122:
-				case 123:
-				case 124:
-				case 125:
-					return FALSE;
-				default:
-					switch (icon)
-					{
-					case 126:
-						return (dx == 1);
-					case 129:
-						return (dx == -1);
-					case 132:
-						return (dy == 1);
-					case 135:
-						return (dy == -1);
-					case 139:
-					case 140:
-					case 141:
-					case 142:
-					case 143:
-						return FALSE;
-					default:
-						switch (icon)
-						{
-						case 138:
-							return (dy == -1);
-						case 202:
-							return FALSE;
-						case 107:
-						case 108:
-						case 109:
-						case 157:
-							return (dx != 0);
-						default:
-							switch (icon)
-							{
-							case 309:
-							case 310:
-							case 410:
-							case 411:
-							case 412:
-							case 413:
-							case 414:
-							case 415:
-							case 416:
-							case 417:
-							case 418:
-							case 419:
-							case 420:
-								break;
-							default:
-								switch (icon)
-								{
-								case 182:
-								case 183:
-									return (dy != 0);
-								case 334:
-								case 335:
-								case 336:
-									return (dy != 0);
-								default:
-									if (icon >= 250 && icon <= 260)
-									{
-										return FALSE;
-									}
-									if (icon >= 264 && icon <= 282)
-									{
-										return FALSE;
-									}
-									switch (icon)
-									{
-									case 378:
-										return FALSE;
-									case 404:
-									case 410:
-										return FALSE;
-									case 421:
-									case 422:
-									case 423:
-									case 424:
-									case 425:
-									case 426:
-									case 427:
-									case 428:
-									case 429:
-									case 430:
-									case 431:
-									case 432:
-									case 433:
-									case 434:
-									case 435:
-									case 436:
-									case 437:
-									case 438:
-									case 439:
-									case 440:
-										return (dy != 0);
-									default:
-										return TRUE;
-									}
-								}
-							}
-							break;
-						case 158:
-						case 159:
-						case 160:
-						case 161:
-						case 162:
-						case 163:
-						case 164:
-						case 165:
-						case 166:
-						case 167:
-						case 168:
-						case 169:
-						case 170:
-						case 171:
-						case 172:
-						case 173:
-						case 174:
-						case 175:
-						case 176:
-						case 177:
-						case 178:
-						case 179:
-						case 180:
-						case 181:
-							break;
-						}
-						return (dy == 1);
-					}
-				}
-			}
 		}
+		return FALSE;
 	}
-	icon = m_decor[x][y].icon;
-	if ((icon < 386 || icon > 397) && icon != 400)
+	if (icon == 0x11 || icon == 0x12 || icon == 0x4a || icon == 0x57 || icon == 0x58 || icon == 0x9a)
 	{
-		return icon == 245;
+		if (dx == 1) return FALSE;
+		if (dy == 1) return FALSE;
+	}
+	else
+	{
+		if (icon == 0x4c || icon == 0x4d || icon == 199 || icon == 200) return dx == 0;
+		if (icon >= 0x6e && icon <= 0x7d) return FALSE;
+		if (icon == 0x7e) return dx == 1;
+		if (icon == 0x81) return dx == -1;
+		if (icon == 0x84) return dy == 1;
+		if (icon == 0x87) return dy == -1;
+		if (icon >= 0x8b && icon <= 0x8f) return FALSE;
+		if (icon == 0x8a) return dy == -1;
+		if (icon == 0xca) return FALSE;
+		if (icon == 0x6b || icon == 0x6c || icon == 0x6d || icon == 0x9d) return dx != 0;
+		if (icon >= 0x9e && icon <= 0xb5) return dy == 1;
+		if (icon == 0xb6 || icon == 0xb7) return FALSE;
 	}
 	return TRUE;
 }
 
 void CDecor::AdaptMidBorder(POINT cel)
 {
-	if (!IsValidCel(cel)) return;
-
 	int num = 15;
-	if (!IsRightBorder(cel.x, cel.y + 1, 0, -1 ))
+	if (cel.x < 0 || cel.x >= 100 || cel.y < 0 || cel.y >= 100) return;
+	if (!IsRightBorder(cel.x, cel.y + 1, 0, -1)) num = 14;
+	if (!IsRightBorder(cel.x, cel.y - 1, 0, 1)) num &= ~2;
+	if (!IsRightBorder(cel.x + 1, cel.y, -1, 0)) num &= ~4;
+	if (!IsRightBorder(cel.x - 1, cel.y, 1, 0)) num &= ~8;
+
+	int icon = m_decor[cel.x][cel.y].icon;
+	for (int i = 0; i < 80; i++)
 	{
-		num &= ~1;
-	}
-	if (!IsRightBorder(cel.x, cel.y + 1, 0, 1 ))
-	{
-		num &= ~2;
-	}
-	if (!IsRightBorder(cel.x + 1, cel.y, -1, 0 ))
-	{
-		num &= ~4;
-	}
-	if (!IsRightBorder(cel.x - 1, cel.y, 1, 0 ))
-	{
-		num &= ~8;
-	}
-	int num2 = m_decor[cel.x][cel.y].icon;
-	if (num2 == 156)
-	{
-		num2 = 35;
-	}
-	if (num2 == 252 || num2 == 253)
-	{
-		num2 = 251;
-	}
-	if (num2 == 255)
-	{
-		num2 = 254;
-	}
-	if (num2 == 362)
-	{
-		num2 = 347;
-	}
-	if (num2 == 363)
-	{
-		num2 = 348;
-	}
-	if (num2 >= 341 && num2 <= 346)
-	{
-		num2 = 341;
-	}
-	for (int i = 0; i < 144; i++)
-	{
-		if (num2 == table_adapt_decor[i])
+		if (icon == table_adapt_decor[i])
 		{
-			num2 = table_adapt_decor[i / 16 * 16 + num];
-			if (num2 == 35 && rand() % 2 == 0)
-			{
-				num2 = 156;
-			}
-			if (num2 == 251)
-			{
-				num2 = Random(251, 253);
-			}
-			if (num2 == 254 && rand() % 2 == 0)
-			{
-				num2 = 255;
-			}
-			if (num2 == 347 && rand() % 2 == 0)
-			{
-				num2 = 362;
-			}
-			if (num2 == 348 && rand() % 2 == 0)
-			{
-				num2 = 363;
-			}
-			if (num2 == 341)
-			{
-				num2 = Random(341, 346);
-			}
-			m_decor[cel.x][cel.y].icon = num2;
+			icon = table_adapt_decor[i / 16 * 16 + num];
+			if (icon == 0x23 && rand() % 2 == 0) icon = 0x9c;
+			m_decor[cel.x][cel.y].icon = icon;
 			return;
 		}
-	}
-	num2 = m_decor[cel.x][cel.y].icon;
-	if (num2 == -1 || (num2 >= 264 && num2 <= 282))
-	{
-		num = 15;
-		if (!IsFromage(POINT(cel.x, cel.y + 1)))
-		{
-			num &= ~1;
-		}
-		if (!IsFromage(POINT(cel.x, cel.y - 1)))
-		{
-			num &= ~2;
-		}
-		if (!IsFromage(POINT(cel.x + 1, cel.y)))
-		{
-			num &= ~4;
-		}
-		if (!IsFromage(POINT(cel.x - 1, cel.y)))
-		{
-			num &= ~8;
-		}
-		num2 = table_adapt_fromage[num];
-		if (num2 == 268 && rand() % 2 == 0)
-		{
-			num2 = 279;
-		}
-		if (num2 == 269 && rand() % 2 == 0)
-		{
-			num2 = 280;
-		}
-		if (num2 == 264 && rand() % 2 == 0)
-		{
-			num2 = 281;
-		}
-		if (num2 == 265 && rand() % 2 == 0)
-		{
-			num2 = 282;
-		}
-		m_decor[cel.x][cel.y].icon = num2;
-	}
-	num2 = m_decor[cel.x][cel.y].icon;
-	if (num2 == -1 || (num2 >= 285 && num2 <= 303 && num2 != 301))
-	{
-		num = 15;
-		if (!IsGrotte(POINT(cel.x, cel.y + 1)))
-		{
-			num &= ~1;
-		}
-		if (!IsGrotte(POINT(cel.x, cel.y - 1)))
-		{
-			num &= ~2;
-		}
-		if (!IsGrotte(POINT(cel.x + 1, cel.y)))
-		{
-			num &= ~4;
-		}
-		if (!IsGrotte(POINT(cel.x - 1, cel.y)))
-		{
-			num &= ~8;
-		}
-		num2 = table_adapt_fromage[num + 16];
-		if (num2 == 289 && rand() % 2 == 0)
-		{
-			num2 = 300;
-		}
-		if (num2 == 285 && rand() % 2 == 0)
-		{
-			num2 = 302;
-		}
-		if (num2 == 286 && rand() % 2 == 0)
-		{
-			num2 = 303;
-		}
-		m_decor[cel.x][cel.y].icon = num2;
 	}
 }
 
@@ -510,45 +196,7 @@ void CDecor::AdaptBorder(POINT cel)
 	AdaptMidBorder(POINT(cel.x, cel.y + 1));
 	AdaptMidBorder(POINT(cel.x, cel.y - 1));
 	int icon = m_decor[cel.x][cel.y].icon;
-	if (icon != -1 && !IsPassIcon(icon))
-	{
-		MoveObjectDelete(cel);
-	}
-	icon = m_decor[cel.x][cel.y].icon;
-	if (icon == 304)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			cel.y++;
-			if (cel.y >= 100)
-			{
-				break;
-			}
-			icon = m_decor[cel.x][cel.y].icon;
-			if (icon != -1)
-			{
-				break;
-			}
-			m_decor[cel.x][cel.y].icon = 305;
-		}
-	}
-	if (icon == -1)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			cel.y++;
-			if (cel.y >= 100)
-			{
-				return;
-			}
-			icon = m_decor[cel.x][cel.y].icon;
-			if (icon != 305)
-			{
-				return;
-			}
-			m_decor[cel.x][cel.y].icon = -1;
-		}
-	}
+	if (icon != -1 && !IsPassIcon(icon)) MoveObjectDelete(cel);
 }
 
 BOOL CDecor::DrawMap(BOOL bPlay, int team)
@@ -559,39 +207,39 @@ BOOL CDecor::DrawMap(BOOL bPlay, int team)
 	BOOL bOldMulti = m_bMulti;
 	int oldBlupiChannel = m_blupiChannel;
 	int oldTeam = m_team;
-	m_blupiChannel = CHBLUPI;
+	m_blupiChannel = 2;
 	m_team = 0;
 	m_phase = WM_PHASE_PLAY;
 	LoadImages();
 	if (bPlay) PlayPrepare(TRUE);
 	m_bMulti = FALSE;
-	if (team < MAXTEAM)
+	if (team >= 0 && team < MAXTEAM)
 	{
 		for (int i = 0; i < MAXTEAM; i++)
 		{
 			if (m_pNetwork->m_players[i].bIsPresent)
 			{
-				int icon = (m_blupiStartDir[i] == DIR_LEFT) ? 4 : 0;
-				int channel;
-				if (m_pNetwork->m_players[i].team >= 1 && m_pNetwork->m_players[i].team < MAXTEAM)
+				int playerTeam = m_pNetwork->m_players[i].team;
+				int icon = (m_blupiStartDir[playerTeam] == DIR_LEFT) ? 4 : 0;
+				int channel = 2;
+				if (playerTeam >= 1 && playerTeam < MAXTEAM)
 				{
-					channel = CHBLUPI1 + m_pNetwork->m_players[i].team - 1;
-				}
-				else
-				{
-					channel = CHBLUPI;
+					channel = CHBLUPI1 + playerTeam - 1;
 				}
 				if (team == i)
 				{
-					m_blupiPos = m_blupiStartPos[i];
-					m_blupiDir = m_blupiStartDir[i];
+					m_blupiPos = m_blupiStartPos[playerTeam];
+					m_blupiDir = m_blupiStartDir[playerTeam];
 					m_blupiIcon = icon;
 					m_blupiChannel = channel;
+					m_team = playerTeam;
 				}
 				else
 				{
-					m_netBlupiPos[i] = m_blupiStartPos[i];
-					m_netBlupiIcon[i] = m_blupiIcon = icon;
+					m_netBlupiPos[i] = m_blupiStartPos[playerTeam];
+					m_netBlupiIcon[i] = icon;
+					m_netBlupiSec[i] = 0;
+					m_netBlupiTransport[i] = channel;
 				}
 			}
 			else
@@ -604,14 +252,14 @@ BOOL CDecor::DrawMap(BOOL bPlay, int team)
 		m_scrollAdd.y = 0;
 		m_bMulti = TRUE;
 	}
-	m_posDecor.x = m_scrollPoint.x - LXIMAGE / 2 + DIMBLUPIX - 1;
+	m_posDecor.x = m_scrollPoint.x - LXIMAGE / 2;
 	if (m_posDecor.x < 0) m_posDecor.x = 0;
-	int limit = MAXCELX * DIMOBJX - LXIMAGE + 118; // why 118 ?
+	int limit = (m_dimDecor.x != 0) ? MAXCELX * DIMOBJX - LXIMAGE : 118;
 	if (m_posDecor.x > limit) m_posDecor.x = limit;
 
 	m_posDecor.y = m_scrollPoint.y - 200;
 	if (m_posDecor.y < 0) m_posDecor.y = 0;
-	limit = MAXCELY * DIMOBJY - LYIMAGE + 80; // why 80 ??
+	limit = (m_dimDecor.y != 0) ? MAXCELY * DIMOBJY - LYIMAGE : 80;
 	if (m_posDecor.y > limit) m_posDecor.y = limit;
 
 	m_scrollPoint = m_posDecor;
@@ -625,7 +273,6 @@ BOOL CDecor::DrawMap(BOOL bPlay, int team)
 	m_bMulti = bOldMulti;
 	return TRUE;
 }
-
 void CDecor::GetMissionPath(char* str, int user, int mission, BOOL bUser)
 {
 	if (bUser)
@@ -661,7 +308,7 @@ BOOL CDecor::Write(int gamer, int mission, BOOL bUser)
 
 	pBuffer->majRev = 1;
 	pBuffer->minRev = 3;
-	*pBuffer->reserve1 = 0;
+	pBuffer->reserve1[0] = 0;
 	pBuffer->posDecor = m_posDecor;
 	pBuffer->dimDecor = m_dimDecor;
 	pBuffer->music = m_music;
@@ -671,10 +318,6 @@ BOOL CDecor::Write(int gamer, int mission, BOOL bUser)
 	for (i = 0; i < MAXTEAM; i++)
 	{
 		pBuffer->blupiPos[i] = m_blupiStartPos[i];
-	}
-
-	for (i = 0; i < MAXTEAM; i++)
-	{
 		pBuffer->blupiDir[i] = m_blupiStartDir[i];
 	}
 
@@ -705,13 +348,10 @@ BOOL CDecor::Read(int gamer, int mission, BOOL bUser)
 	char filename[FILENAME_MAX];
 	FILE* file;
 	DescFile* pBuffer;
-	short majRev, minRev;
+	int majRev, minRev;
 	int nb;
 	int i = 4;
 
-	char debug[100];
-	sprintf(debug, "CDecor::Read(%d, %d, %d) start\n", gamer, mission, bUser);
-	OutputDebug(debug);
 
 	pBuffer = 0;
 	InitDecor();
@@ -746,19 +386,6 @@ BOOL CDecor::Read(int gamer, int mission, BOOL bUser)
 	nb = fread(m_decor, sizeof(Cellule), MAXCELX * MAXCELY, file);
 	if (nb < MAXCELX * MAXCELY) goto error;
 	
-#if !DREAM_IN_SB2
-	for (int x = 0; x < MAXCELX; x++)
-	{
-		for (int y = 0; y < MAXCELY; y++)
-		{
-			if (m_decor[x][y].icon >= Object::Dream_1 &&
-				m_decor[x][y].icon <= Object::Dream_20)
-			{
-				m_decor[x][y].icon = Object::KidsSquare_10;
-			}
-		}
-	}
-#endif
 
 	if (majRev == 1 && minRev >= 1)
 	{
@@ -780,10 +407,8 @@ BOOL CDecor::Read(int gamer, int mission, BOOL bUser)
 
 	free(pBuffer);
 	fclose(file);
-	OutputDebug("CDecor::Read awesome\n");
 	return TRUE;
 error:
-	OutputDebug("CDecor::Read error\n");
 	if (pBuffer != NULL) free(pBuffer);
 	if (file != NULL) fclose(file);
 	InitDecor();
@@ -1090,15 +715,14 @@ success:
 		}
 		else
 		{
-			int mission = pBuffer->mission;
-			if (mission == 99)
+			if (pBuffer->mission == 99)
 			{
 				LoadString(0x11c, temp, 100);
 				sprintf(name, temp, pBuffer->nbVies, pBuffer->nbTresor, pBuffer->totalTresor);
 			}
-			else if (mission < 99)
+			else if (pBuffer->mission < 99)
 			{
-				LoadString(mission / 10 + 274, temp, 100);
+				LoadString(pBuffer->mission / 10 + 274, temp, 100);
 				sprintf(name, temp, pBuffer->mission % 10, open, pBuffer->nbVies, pBuffer->nbTresor, pBuffer->totalTresor);
 			}
 			else
@@ -1229,14 +853,6 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 					if (icon >= Object::World_1 && icon <= Object::World_8 && (!m_doors[icon - Object::World_1 + 1] || m_bCheatDoors))
 					{
 						m_decor[x][y].icon += 8;
-					}
-					if (icon == Object::World_9 && (!m_doors[189] || m_bCheatDoors))
-					{
-						m_decor[x][y].icon = Object::WorldDone_9;
-					}
-					if (icon >= Object::World_10 && icon <= Object::World_14 && (!m_doors[icon - Object::World_10 + 1] || m_bCheatDoors))
-					{
-						m_decor[x][y].icon += 5;
 					}
 				}
 			}

@@ -8,13 +8,18 @@
 
 POINT CDecor::ScreenPosToCelPos(POINT pos)
 {
-	if (pos.x >= 0 && pos.x < LXIMAGE && pos.y >= 0 && pos.y < LYIMAGE) {
-		return POINT(
-			(m_posDecor.x + m_dimCelHili.x * -32 + 32 + pos.x) / DIMOBJX,
-			(m_posDecor.y + m_dimCelHili.y * -32 + 32 + pos.y) / DIMOBJY
-		);
+	POINT result;
+	if (pos.x >= 0 && pos.x < LXIMAGE && pos.y >= 0 && pos.y < LYIMAGE)
+	{
+		result.x = (m_posDecor.x - m_dimCelHili.x * 32 + 32 + pos.x) / DIMOBJX;
+		result.y = (m_posDecor.y - m_dimCelHili.y * 32 + 32 + pos.y) / DIMOBJY;
 	}
-	else return POINT( -1, -1 );
+	else
+	{
+		result.x = -1;
+		result.y = -1;
+	}
+	return result;
 }
 
 void CDecor::SetCelHiliFromScreenPos(POINT pos)
@@ -27,14 +32,13 @@ void CDecor::SetIconLiftAndStuff(int menu, int index)
 {
 	m_dimCelHili.x = 1;
 	m_dimCelHili.y = 1;
-	if (menu == 2 && index != 3 && index != 9 && index != 10)
+	if (menu == 2 && index != 3)
 	{
 		m_dimCelHili.x = 2;
 		m_dimCelHili.y = 2;
 	}
 	if (menu == 3) m_iconLift = index;
 	if (menu == 4) m_iconLift = index + 20;
-	if (menu == 5) m_iconLift = index + 40;
 	m_liftEnd = -1;
 }
 
@@ -50,7 +54,7 @@ void CDecor::DeleteCel(POINT cel)
 	MoveObjectDelete(cel);
 }
 
-void __cdecl PlaceDecor(short *pCel, int *pTable, int *pLastIndex, int fwKeys, BOOL bMix, BOOL bRand)
+void __cdecl PlaceDecor(int *pCel, int *pTable, int *pLastIndex, int fwKeys, BOOL bMix, BOOL bRand)
 {
 	if (fwKeys & MK_CONTROL) {
 		if (bRand) *pCel = pTable[rand() % pTable[0] + 1];
@@ -59,7 +63,7 @@ void __cdecl PlaceDecor(short *pCel, int *pTable, int *pLastIndex, int fwKeys, B
 	else if (fwKeys & MK_LBUTTON) {
 		if (*pCel == pTable[*pLastIndex + 1]) {
 			if (bMix) {
-				*pLastIndex++;
+				(*pLastIndex)++;
 				if (*pLastIndex >= pTable[0]) *pLastIndex = 0;
 			}
 		}
@@ -71,8 +75,8 @@ void CDecor::PlaceDecor1(POINT cel, int index, int fwKeys, BOOL bMix)
 {
 	m_liftEnd = -1;
 
-	short *pIcon = &m_decor[cel.x][cel.y].icon;
-	short *pIconBig = &m_bigDecor[cel.x][cel.y].icon;
+	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
+	int *pIconBig = (int *)&m_bigDecor[cel.x][cel.y].icon;
 
 	if (!IsValidCel(cel)) return;
 
@@ -114,7 +118,7 @@ void CDecor::PlaceDecor2(POINT cel, int index, int fwKeys, BOOL bMix)
 {
 	m_liftEnd = -1;
 
-	short *pIcon = &m_decor[cel.x][cel.y].icon;
+	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
 
 	if (!IsValidCel(cel)) return;
 
@@ -151,7 +155,7 @@ void CDecor::PlaceDecor3(POINT cel, int index, int fwKeys, BOOL bMix)
 {
 	m_liftEnd = -1;
 
-	short *pIcon = &m_decor[cel.x][cel.y].icon;
+	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
 
 	if (!IsValidCel(cel)) return;
 
@@ -194,7 +198,7 @@ void CDecor::PlaceDecor4(POINT cel, int index, int fwKeys, BOOL bMix)
 {
 	m_liftEnd = -1;
 
-	short *pIcon = &m_decor[cel.x][cel.y].icon;
+	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
 
 	if (!IsValidCel(cel)) return;
 
@@ -249,7 +253,7 @@ void CDecor::PlaceDecor5(POINT cel, int index, int fwKeys, BOOL bMix)
 	int rank;
 	MoveObject* pMob;
 
-	short *pIcon = &m_decor[cel.x][cel.y].icon;
+	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
 
 	if (!IsValidCel(cel)) return;
 
@@ -573,7 +577,7 @@ void CDecor::PlaceDecor7(POINT cel, int index, int fwKeys, BOOL bMix)
 	MoveObject* pMob;
 	int mobId;
 
-	short *pIcon = &m_decor[cel.x][cel.y].icon;
+	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
 
 	if (!IsValidCel(cel)) return;
 
@@ -807,7 +811,7 @@ void CDecor::PlaceDecor8(POINT cel, int index, int fwKeys, BOOL bMix)
 {
 	m_liftEnd = -1;
 
-	short *pIcon = &m_decor[cel.x][cel.y].icon;
+	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
 
 	if (!IsValidCel(cel)) return;
 
@@ -827,7 +831,7 @@ void CDecor::PlaceDecor9(POINT cel, int index, int fwKeys, BOOL bMix)
 {
 	m_liftEnd = -1;
 
-	short *pIcon = &m_decor[cel.x][cel.y].icon;
+	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
 
 	if (!IsValidCel(cel)) return;
 
@@ -842,7 +846,7 @@ void CDecor::PlaceDecor10(POINT cel, int index, int fwKeys, BOOL bMix)
 {
 	m_liftEnd = -1;
 
-	short *pIcon = &m_decor[cel.x][cel.y].icon;
+	int *pIcon = (int *)&m_decor[cel.x][cel.y].icon;
 
 	if (!IsValidCel(cel)) return;
 

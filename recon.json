@@ -19,6 +19,12 @@
       "/Gy"
     ]
   },
+  "crt_data_evidence": {
+    "symbol": "__pgmptr",
+    "reference_source": "VC\\CRT\\SRC\\STDARGV.C::__setargv",
+    "definition_source": "VC\\CRT\\SRC\\CRT0DAT.C::_pgmptr",
+    "purpose": "bind __pgmptr only when the unique CRT code reference and its zero-filled definition resolve to the same oracle data address"
+  },
   "translation_units": [
     {
       "source": "src/button.cpp"
@@ -42,7 +48,10 @@
       "source": "src/network.cpp"
     },
     {
-      "source": "src/pixmap.cpp"
+      "source": "src/pixmap.cpp",
+      "defines": [
+        "SB1_GAME_API"
+      ]
     },
     {
       "source": "src/sound.cpp"
@@ -373,15 +382,39 @@
       "tu": "src/decblock.cpp"
     },
     {
+      "symbol": "?AdaptMotorVehicleSound@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x000058d0",
+      "size": 128,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?ScreenPosToCelPos@CDecor@@QAE?AUtagPOINT@@U2@@Z",
+      "rva": "0x00005a20",
+      "size": 144,
+      "tu": "src/decdesign.cpp"
+    },
+    {
       "symbol": "?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x00005ab0",
       "size": 48,
       "tu": "src/decdesign.cpp"
     },
     {
+      "symbol": "?SetIconLiftAndStuff@CDecor@@QAEXHH@Z",
+      "rva": "0x00005ae0",
+      "size": 96,
+      "tu": "src/decdesign.cpp"
+    },
+    {
       "symbol": "?DeleteCel@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x00005b40",
       "size": 96,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor@@YAXPAH00HHH@Z",
+      "rva": "0x00005ba0",
+      "size": 128,
       "tu": "src/decdesign.cpp"
     },
     {
@@ -559,9 +592,21 @@
       "tu": "src/decor.cpp"
     },
     {
+      "symbol": "?AdaptMidBorder@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x000143d0",
+      "size": 256,
+      "tu": "src/decor.cpp"
+    },
+    {
       "symbol": "?GetMissionPath@CDecor@@QAEXPADHHH@Z",
       "rva": "0x00014880",
       "size": 96,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?Write@CDecor@@QAEHHHH@Z",
+      "rva": "0x000148e0",
+      "size": 528,
       "tu": "src/decor.cpp"
     },
     {
@@ -1057,6 +1102,12 @@
       "tu": "src/misc.cpp"
     },
     {
+      "symbol": "?GetCurrentDir@@YAXPADH@Z",
+      "rva": "0x0001f360",
+      "size": 176,
+      "tu": "src/misc.cpp"
+    },
+    {
       "symbol": "?AddUserPath@@YAXPAD@Z",
       "rva": "0x0001f560",
       "size": 304,
@@ -1297,6 +1348,12 @@
       "tu": "src/pixmap.cpp"
     },
     {
+      "symbol": "?DrawMap@CPixmap@@QAEHHUtagRECT@@0@Z",
+      "rva": "0x000217a0",
+      "size": 112,
+      "tu": "src/pixmap.cpp"
+    },
+    {
       "symbol": "?SavePalette@CPixmap@@QAEHXZ",
       "rva": "0x00021810",
       "size": 48,
@@ -1342,6 +1399,18 @@
       "symbol": "?GetClipping@CPixmap@@QAE?AUtagRECT@@XZ",
       "rva": "0x00021af0",
       "size": 48,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?DrawIcon@CPixmap@@QAEHHHHUtagPOINT@@HH@Z",
+      "rva": "0x00021e30",
+      "size": 720,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?DrawPart@CPixmap@@QAEHHHUtagPOINT@@UtagRECT@@HH@Z",
+      "rva": "0x00022100",
+      "size": 192,
       "tu": "src/pixmap.cpp"
     },
     {
@@ -1399,6 +1468,12 @@
       "tu": "src/pixmap.cpp"
     },
     {
+      "symbol": "?MouseBackDraw@CPixmap@@QAEXXZ",
+      "rva": "0x000225b0",
+      "size": 272,
+      "tu": "src/pixmap.cpp"
+    },
+    {
       "symbol": "?MouseBackSave@CPixmap@@IAEXXZ",
       "rva": "0x000226c0",
       "size": 256,
@@ -1408,6 +1483,12 @@
       "symbol": "?MouseBackRestore@CPixmap@@IAEXXZ",
       "rva": "0x000227c0",
       "size": 208,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseRectSprite@CPixmap@@IAEXPAUtagRECT@@PAUtagPOINT@@@Z",
+      "rva": "0x00022890",
+      "size": 128,
       "tu": "src/pixmap.cpp"
     },
     {
@@ -1573,6 +1654,12 @@
       "tu": "src/sound.cpp"
     },
     {
+      "symbol": "?GetCharWidthA@@YAHDH@Z",
+      "rva": "0x00023610",
+      "size": 80,
+      "tu": "src/text.cpp"
+    },
+    {
       "symbol": "?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z",
       "rva": "0x00023660",
       "size": 80,
@@ -1585,7 +1672,7 @@
       "tu": "src/text.cpp"
     },
     {
-      "symbol": "?DrawText@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "symbol": "?DrawTextA@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
       "rva": "0x00023770",
       "size": 48,
       "tu": "src/text.cpp"
@@ -1713,6 +1800,26 @@
       "symbol": "_IID_IDirectPlay2A",
       "va": "0x0042c230",
       "evidence": "DirectPlay IID data target verified in the network candidate comparison; docs/NETWAVE_TU.md"
+    },
+    {
+      "symbol": "?table_icon_object@@3PAFA",
+      "va": "0x00479b80",
+      "evidence": "Target atlas base established from strict pixmap code references and oracle pseudocode; table contents remain open (docs/CORE_CLUSTER.md)"
+    },
+    {
+      "symbol": "?table_icon_element@@3PAFA",
+      "va": "0x0047a710",
+      "evidence": "Target atlas base established from strict pixmap code references and oracle pseudocode; table contents remain open (docs/CORE_CLUSTER.md)"
+    },
+    {
+      "symbol": "?table_icon_blupi@@3PAFA",
+      "va": "0x00478dd8",
+      "evidence": "Target atlas base established from strict pixmap code references and oracle pseudocode; table contents remain open (docs/CORE_CLUSTER.md)"
+    },
+    {
+      "symbol": "?table_icon_explo@@3PAFA",
+      "va": "0x0047afd8",
+      "evidence": "Target atlas base established from strict pixmap code references and oracle pseudocode; table contents remain open (docs/CORE_CLUSTER.md)"
     }
   ],
   "forced_locations": [

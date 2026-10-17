@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "recon.json"
 BUILD = ROOT / "build" / "verify"
 ORACLE_TEXT_START = 0x1000
-GAME_TEXT_END = 0x23af0
+GAME_TEXT_END = 0x238b0
 GAME_TEXT_SIZE = GAME_TEXT_END - ORACLE_TEXT_START
 
 
@@ -121,10 +121,50 @@ def compile_units(manifest: dict[str, Any], substitutions: dict[str, Path]) -> l
     return results
 
 
-def run_comparator(objects: list[Path], manifest: dict[str, Any]) -> list[dict[str, Any]]:
+def compile_crt_evidence(manifest: dict[str, Any]) -> list[Path]:
+    evidence = manifest.get("crt_data_evidence")
+    if not evidence:
+        return []
+    sys.path.insert(0, str(ROOT / "tools"))
+    import msvc
+
+    tool = manifest["toolchain"]
+    tree = msvc.resolve_tree(tool["tree"]).resolve()
+    _compiler_bin, vc_root, _shared_bin, _default_includes = msvc.tool_layout(tree, None)
+    source_dir = vc_root / "CRT" / "SRC"
+    obj_dir = BUILD / "objects"
+    results: list[Path] = []
+    for stem in ("STDARGV", "CRT0DAT"):
+        source = source_dir / f"{stem}.C"
+        if not source.is_file():
+            raise FileNotFoundError(f"pinned VC5 CRT evidence source not found: {source}")
+        obj = obj_dir / f"crt_evidence_{stem.lower()}.obj"
+        command = [sys.executable, str(ROOT / "tools" / "msvc.py"), str(source),
+                   "--tree", tool["tree"], "--out", str(obj), "--cwd", str(ROOT),
+                   "--log-dir", str(BUILD / "logs")]
+        for include in (source_dir, source_dir / "INTEL"):
+            command.extend(["--include", str(include)])
+        for define in [*tool.get("defines", []), "_CRTBLD"]:
+            command.extend(["--define", define])
+        for flag in tool.get("flags", []):
+            command.extend(["--flag", flag])
+        print(f"compile CRT binding evidence {source.name}")
+        run = subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             text=True, encoding="mbcs", errors="replace")
+        if run.returncode:
+            print(run.stdout, end="")
+            raise RuntimeError(f"CRT evidence compile failed for {source.name} (exit {run.returncode})")
+        results.append(obj)
+    return results
+
+
+def run_comparator(objects: list[Path], evidence_objects: list[Path],
+                   manifest: dict[str, Any]) -> list[dict[str, Any]]:
     output = BUILD / "results.json"
     command = [sys.executable, str(ROOT / "tools" / "cmpfunc.py"), *map(str, objects),
                "--summary", "--json-out", str(output)]
+    for obj in evidence_objects:
+        command.extend(["--evidence-object", str(obj)])
     for accepted in manifest.get("accepted_functions", []):
         command.extend(["--at", f"{accepted['symbol']}={parse_number(accepted['rva']):#x}"])
     for mapping in manifest.get("symbol_mappings", []):
@@ -159,6 +199,7 @@ def report(results: list[dict[str, Any]], unit_order: list[str]) -> tuple[dict[s
     intervals_by_owner: dict[str, list[tuple[int, int]]] = {name: [] for name in unit_order}
     folded_owner_intervals: dict[str, list[tuple[int, int]]] = {}
     path_exceptions: set[tuple[str, str, str]] = set()
+    crt_evidence: dict[str, dict[str, Any]] = {}
     for result, unit in zip(results, unit_order):
         by_unit[unit] = result["functions"]
         for func in result["functions"]:
@@ -168,6 +209,9 @@ def report(results: list[dict[str, Any]], unit_order: list[str]) -> tuple[dict[s
                     if detail:
                         path_exceptions.add((str(detail.get("object_path")), str(detail.get("oracle_path")),
                                              str(detail.get("target_va"))))
+                    evidence = relocation.get("crt_data_evidence")
+                    if evidence:
+                        crt_evidence[str(relocation.get("symbol"))] = evidence
                 if func["status"] not in ("STRICT", "FOLDED") or len(func["matches"]) != 1:
                     continue
                 rva = int(func["matches"][0]["rva"], 16)
@@ -187,6 +231,11 @@ def report(results: list[dict[str, Any]], unit_order: list[str]) -> tuple[dict[s
                         folded_owner_intervals.setdefault(owner, []).append(interval)
     for object_path, oracle_path, target_va in sorted(path_exceptions):
         print(f"build-path data difference: object={object_path!r} oracle={oracle_path!r} target={target_va}")
+    for symbol, evidence in sorted(crt_evidence.items()):
+        print(f"CRT data binding: {symbol}={evidence.get('target_va')} via "
+              f"{evidence.get('reference_source')} at {evidence.get('reference_rva')}; "
+              f"definition {evidence.get('definition_source')} size={evidence.get('definition_size')} "
+              f"{evidence.get('definition_section')}")
     for result in results:
         for warning in result.get("layout_warnings", []):
             print(f"layout warning ({Path(result['object']).name}): {warning}")
@@ -310,8 +359,9 @@ def main() -> int:
             print(f"  {name}: {hash_file(path)}")
         safe_clean_build()
         units = compile_units(manifest, substitutions)
+        evidence_objects = compile_crt_evidence(manifest)
         by_unit_order = [name for name, _ in units]
-        comparison = run_comparator([obj for _, obj in units], manifest)
+        comparison = run_comparator([obj for _, obj in units], evidence_objects, manifest)
         by_unit, _ = report(comparison, by_unit_order)
         regressions = accepted_regressions(manifest, by_unit)
         if regressions:

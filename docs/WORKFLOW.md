@@ -33,7 +33,9 @@ To check a candidate without changing `src/`, substitute one TU for that run:
 ```
 
 The canonical source remains the manifest's default for all other TUs. Use
-`--accept` after a clean build to add newly STRICT or FOLDED functions to
+`--build-dir NAME` to clean and write a private `build/verify-NAME/` for
+parallel candidate runs; promotion always uses the canonical `build/verify/`.
+Use `--accept` after a clean build to add newly STRICT or FOLDED functions to
 `recon.json`:
 
 ```powershell
@@ -53,8 +55,9 @@ remain `STRICT`.
   each relocation has one run-wide symbol binding; imports resolve to their
   IAT slots; calls to reconstructed functions land at their unique matched
   RVA; other calls land at an exact start in `oracle/functions.csv`; and
-  referenced data lands in the expected PE section with identical initialized
-  bytes.
+  reconstructed data lands in its expected PE section with identical
+  initialized bytes. An explicitly mapped external data symbol must land in
+  one oracle data section; its table contents are not claimed as reconstructed.
 - **FOLDED** means the candidate body matches exactly, an object from another
   TU independently emits that same body, and verified function references from
   one or more placed caller objects land on the shared oracle body. A map entry
@@ -94,6 +97,15 @@ relocations plus linked `.xdata$x` bytes and relocations. The absolute
 `__except_list` symbol is checked as `FS:0`. These checks preserve relocation
 fields for separate target validation; they do not treat masked bytes as a
 match.
+
+The manifest's `__pgmptr` proof clean-compiles `STDARGV.C` and `CRT0DAT.C` from
+the pinned VC5 tree as evidence-only objects. It binds the symbol only when the
+uniquely located CRT reference and the four-byte zero-filled definition resolve
+to one writable oracle address; these objects do not count as reconstructed
+TUs. Explicit mappings for external data are also constrained to one oracle
+`.rdata`/`.data` section. A one-past table relocation is strict only when it
+lands exactly at the end of the named initialized object and the object's bytes
+match in full.
 
 Call placement needs an actual direct relocation in a STRICT caller. If no
 built object references an ambiguous method, the verifier leaves it unresolved

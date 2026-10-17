@@ -514,6 +514,50 @@ def path_string(data: bytes) -> str | None:
 
 def verify_data_target(pe: pefile.PE, coff: Coff, symbol: Symbol, addend: int,
                        target_va: int) -> tuple[str, str, dict[str, Any]]:
+    # A relocation to exactly one-past a proven initialized object is valid
+    # linker output (for example, the limit pointer for a fixed table loop).
+    # Prove the object at its base first; never reinterpret the adjacent bytes
+    # as belonging to the source symbol.
+    if (addend > 0 and symbol.storage in (2, 3) and symbol.section > 0
+            and symbol.section <= len(coff.sections) and not symbol.name.startswith("??_C@")):
+        base_extent = data_extent(coff, symbol, 0)
+        if base_extent is not None:
+            base_offset, expected = base_extent
+            obj_section = coff.sections[symbol.section - 1]
+            kind = section_kind(obj_section.name)
+            base_va = target_va - addend
+            start_section, start_offset = pe_section_at(pe, base_va)
+            end_section, end_offset = pe_section_at(pe, target_va)
+            start_name = (start_section.Name.rstrip(b"\0").decode("ascii", "replace")
+                          if start_section else "<unmapped>")
+            end_name = (end_section.Name.rstrip(b"\0").decode("ascii", "replace")
+                        if end_section else "<unmapped>")
+            expected_name = {"rdata": ".rdata", "data": ".data"}.get(kind)
+            section_limit = (max(end_section.Misc_VirtualSize, end_section.SizeOfRawData)
+                             if end_section else 0)
+            at_object_end = (symbol.value == base_offset and addend == len(expected)
+                             and base_va == target_va - len(expected)
+                             and start_section is not None and start_section is end_section
+                             and start_name == expected_name == end_name
+                             and end_offset == start_offset + len(expected)
+                             and end_offset <= section_limit)
+            if at_object_end:
+                actual = pe_bytes(pe, base_va, len(expected))
+                entry = {"target_va": f"0x{target_va:08x}",
+                         "object_section": obj_section.name,
+                         "oracle_section": end_name,
+                         "object_offset": base_offset,
+                         "data_size": len(expected),
+                         "one_past_data_object": True,
+                         "one_past_offset": addend}
+                if actual is None:
+                    return "MISMATCH", "one-past data object's base exceeds oracle section bounds", entry
+                if actual != expected:
+                    entry["object_bytes"] = expected[:32].hex()
+                    entry["oracle_bytes"] = actual[:32].hex()
+                    return "MISMATCH", "one-past data object's initialized bytes differ", entry
+                return "STRICT", "relocation targets the end of a byte-verified initialized data object", entry
+
     extent = data_extent(coff, symbol, addend)
     entry: dict[str, Any] = {"target_va": f"0x{target_va:08x}"}
     if extent is None:
@@ -752,7 +796,8 @@ def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: i
                   pe: pefile.PE, coff: Coff, obj_path: Path, all_candidates: dict[str, list[int]],
                   function_defs: dict[str, list[Function]], data_defs: dict[str, list[tuple[Coff, Symbol]]],
                   imports: dict[str, int], explicit: dict[str, int],
-                  global_symbols: dict[str, int | None], oracle_function_vas: set[int]) -> tuple[str, list[dict[str, Any]]]:
+                  global_symbols: dict[str, int | None], oracle_function_vas: set[int],
+                  crt_data_evidence: dict[str, dict[str, Any]] | None = None) -> tuple[str, list[dict[str, Any]]]:
     reports: list[dict[str, Any]] = []
     unresolved = False
     hard_mismatch = False
@@ -800,7 +845,8 @@ def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: i
                 companion_status, companion_reports = resolve_sites(
                     helper, symbol_va - image_base - text_rva, exe_text, text_rva,
                     image_base, pe, coff, obj_path, all_candidates, function_defs,
-                    data_defs, imports, explicit, global_symbols, oracle_function_vas)
+                    data_defs, imports, explicit, global_symbols, oracle_function_vas,
+                    crt_data_evidence)
                 entry["companion_relocations"] = companion_reports
                 if companion_status != "STRICT":
                     status = companion_status
@@ -836,8 +882,19 @@ def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: i
             continue
         if symbol.name in explicit:
             ok = symbol_va == explicit[symbol.name]
+            reason = "explicit target mapping" if ok else f"expected 0x{explicit[symbol.name]:08x}"
+            if ok and symbol.section == 0 and not symbol.is_function:
+                base_section, _ = pe_section_at(pe, symbol_va)
+                target_section, _ = pe_section_at(pe, effective_va)
+                allowed = ("rdata", "data", "bss")
+                section_name = (base_section.Name.rstrip(b"\0").decode("ascii", "replace")
+                                if base_section is not None else "")
+                ok = (base_section is not None and target_section is base_section
+                      and section_kind(section_name) in allowed)
+                reason = (f"explicit external data binding in oracle {section_name}" if ok else
+                          "explicit external data mapping is outside one oracle data section")
             entry.update({"verified": ok, "status": "STRICT" if ok else "MISMATCH",
-                          "reason": "explicit target mapping" if ok else f"expected 0x{explicit[symbol.name]:08x}"})
+                          "reason": reason})
             hard_mismatch |= not ok
             unresolved |= not ok
             reports.append(entry)
@@ -914,6 +971,9 @@ def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: i
         if data_source is not None:
             data_status, reason, detail = verify_data_target(pe, data_source[0], data_source[1], addend, effective_va)
             entry.update(detail)
+            evidence = (crt_data_evidence or {}).get(symbol.name)
+            if evidence and global_symbols.get(key) == symbol_va:
+                entry["crt_data_evidence"] = evidence
             entry.update({"verified": data_status == "STRICT", "status": data_status, "reason": reason})
             hard_mismatch |= data_status == "MISMATCH"
             unresolved |= data_status != "STRICT"
@@ -955,7 +1015,8 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                    oracle_function_vas: set[int] | None = None,
                    locations: dict[tuple[str, int], tuple[int, str]] | None = None,
                    folded: dict[tuple[str, int], dict[str, Any]] | None = None,
-                   location_issues: dict[tuple[str, int], str] | None = None) -> dict[str, Any]:
+                   location_issues: dict[tuple[str, int], str] | None = None,
+                   crt_data_evidence: dict[str, dict[str, Any]] | None = None) -> dict[str, Any]:
     coff = Coff(obj_path)
     functions = coff.functions()
     candidates: dict[str, list[int]] = {}
@@ -1019,7 +1080,7 @@ def compare_object(obj_path: Path, pe: pefile.PE, exe_text: bytes, text_rva: int
                 status, reloc_reports = resolve_sites(
                     func, base, exe_text, text_rva, pe.OPTIONAL_HEADER.ImageBase, pe, coff, obj_path,
                     unique_candidates, function_defs or {}, data_defs or {}, imports, explicit,
-                    global_symbols or {}, oracle_function_vas or set())
+                    global_symbols or {}, oracle_function_vas or set(), crt_data_evidence)
                 if status == "STRICT" and folded_into is not None:
                     status = "FOLDED"
             records.append({"rva": f"0x{text_rva + base:08x}", "status": status,
@@ -1205,6 +1266,84 @@ def bind_observed_symbols(loaded: list[tuple[Path, Coff, list[Function], dict[in
             for key, values in observed.items()}
 
 
+def derive_crt_data_evidence(evidence_paths: list[Path],
+                             locations: dict[tuple[str, int], tuple[int, str]],
+                             global_symbols: dict[str, int | None], pe: pefile.PE,
+                             exe_text: bytes, text_rva: int, image_base: int) -> dict[str, dict[str, Any]]:
+    """Bind __pgmptr only from the pinned VC5 CRT declaration, reference, and data extent."""
+    by_name = {path.name.lower(): path for path in evidence_paths}
+    stdargv_path = by_name.get("crt_evidence_stdargv.obj")
+    crt0dat_path = by_name.get("crt_evidence_crt0dat.obj")
+    if not stdargv_path or not crt0dat_path:
+        return {}
+    stdargv = Coff(stdargv_path)
+    crt0dat = Coff(crt0dat_path)
+    refs = [func for func in stdargv.functions() if func.name == "__setargv"]
+    definitions = [symbol for symbol in crt0dat.symbols
+                   if symbol.name == "__pgmptr" and symbol.storage == 2
+                   and not symbol.is_function and symbol.section > 0]
+    if len(refs) != 1 or len(definitions) != 1:
+        return {}
+    func = refs[0]
+    location = locations.get((str(stdargv_path.resolve()), func.symbol.index))
+    if location is None or location[1] != "unique":
+        return {}
+    offset, basis = location
+    rva = text_rva + offset
+    try:
+        with (ROOT / "oracle" / "functions.csv").open(newline="", encoding="utf-8-sig") as stream:
+            oracle_record = next((row for row in csv.DictReader(stream)
+                                  if int(row["rva"], 0) == rva), None)
+    except (OSError, ValueError, KeyError):
+        return {}
+    if not oracle_record or "crt" not in oracle_record.get("kind", "").lower():
+        return {}
+    masked = [False] * len(func.data)
+    for reloc in func.relocs:
+        begin = reloc.offset - func.start
+        for index in range(max(0, begin), min(len(masked), begin + relocation_size(reloc.typ))):
+            masked[index] = True
+    if not is_byte_match(func.data, exe_text[offset:offset + len(func.data)], masked):
+        return {}
+    pgmptr_relocs = []
+    for reloc in func.relocs:
+        symbol = stdargv.sym_by_index.get(reloc.symbol_index)
+        if symbol and symbol.name == "__pgmptr":
+            pgmptr_relocs.append((reloc, symbol))
+    if len(pgmptr_relocs) != 1:
+        return {}
+    reloc, reference_symbol = pgmptr_relocs[0]
+    if (reference_symbol.section != 0 or reference_symbol.storage != 2
+            or reloc.typ != 0x0006):
+        return {}
+    target = relocation_targets(reloc, func.section, offset, exe_text, text_rva,
+                                image_base, func.start)
+    if target is None or target[2] != 0 or target[0] != target[1]:
+        return {}
+    target_va = target[0]
+    if global_symbols.get("global:__pgmptr") != target_va:
+        return {}
+    definition = definitions[0]
+    extent = data_extent(crt0dat, definition, 0)
+    if (extent is None or len(extent[1]) != 4 or extent[1] != b"\0" * 4
+            or section_kind(crt0dat.sections[definition.section - 1].name) != "bss"):
+        return {}
+    data_status, _reason, detail = verify_data_target(pe, crt0dat, definition, 0, target_va)
+    if data_status != "STRICT":
+        return {}
+    return {"__pgmptr": {
+        "target_va": f"0x{target_va:08x}",
+        "reference_source": "VC5 SP3 CRT/SRC/STDARGV.C::__setargv",
+        "reference_rva": f"0x{rva:08x}",
+        "reference_placement": basis,
+        "definition_source": "VC5 SP3 CRT/SRC/CRT0DAT.C::_pgmptr",
+        "definition_section": detail.get("object_section"),
+        "definition_size": len(extent[1]),
+        "oracle_section": detail.get("oracle_section"),
+        "proof": "unique CRT code match references the same externally defined zero-filled data object"
+    }}
+
+
 def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, text_rva: int,
                          at: dict[str, int], explicit: dict[str, int]) -> tuple[dict[str, list[int]], dict[str, int | None],
                                                        dict[str, list[Function]], dict[str, list[tuple[Coff, Symbol]]],
@@ -1252,6 +1391,10 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
             if location is None or location[1] != "unique":
                 continue
             mapped_tu = tu_by_rva.get(text_rva + location[0])
+            # Evidence-only CRT objects are not reconstructed TUs. Their
+            # unique hits are usable only when the oracle map identifies CRT.
+            if obj_tu.startswith("crt_evidence_") and mapped_tu == "crt":
+                continue
             if not mapped_tu or Path(mapped_tu).stem.lower() == obj_tu:
                 continue
             if tu_order_proves_location(funcs, locations, obj_key, func, location[0]):
@@ -1481,6 +1624,8 @@ def collect_global_state(obj_paths: list[Path], pe: pefile.PE, exe_text: bytes, 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("objects", nargs="+", type=Path)
+    parser.add_argument("--evidence-object", action="append", default=[], type=Path,
+                        help="supplemental CRT object used only to prove a symbol binding")
     parser.add_argument("--exe", type=Path, default=DEFAULT_EXE)
     parser.add_argument("--at", action="append", default=[], metavar="SYMBOL=RVA", help="force comparison at one RVA")
     parser.add_argument("--symbol-va", action="append", default=[], metavar="SYMBOL=VA", help="independent target mapping")
@@ -1497,14 +1642,20 @@ def main() -> int:
     exe_text = text_section.get_data()[:text_section.SizeOfRawData]
     imports = import_map(pe)
     object_paths = [path.resolve() for path in args.objects]
+    evidence_paths = [path.resolve() for path in args.evidence_object]
+    all_paths = object_paths + evidence_paths
     shared_candidates, global_symbols, function_defs, data_defs, locations, folded, location_issues = collect_global_state(
-        object_paths, pe, exe_text, text_rva, at, explicit)
+        all_paths, pe, exe_text, text_rva, at, explicit)
+    crt_data_evidence = derive_crt_data_evidence(
+        evidence_paths, locations, global_symbols, pe, exe_text, text_rva,
+        pe.OPTIONAL_HEADER.ImageBase)
     oracle_function_vas = {pe.OPTIONAL_HEADER.ImageBase + rva for rva in oracle_function_starts()}
     all_results = []
     for obj_path in object_paths:
         result = compare_object(obj_path, pe, exe_text, text_rva, imports, explicit, at, not args.summary,
                                 shared_candidates, global_symbols, function_defs, data_defs,
-                                oracle_function_vas, locations, folded, location_issues)
+                                oracle_function_vas, locations, folded, location_issues,
+                                crt_data_evidence)
         result["layout_warnings"] = layout_warnings(obj_path, locations, text_rva, folded)
         all_results.append(result)
         counts = Counter()

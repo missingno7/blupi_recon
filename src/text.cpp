@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-// Retourne l'offset pour un caractère donné.
+// Retourne l'offset pour un caractï¿½re donnï¿½.
 
 int GetOffset(char c)
 {
@@ -31,12 +31,14 @@ int GetOffset(char c)
 			return 15+i;
 		}
 	}
-	if ( c<0 || c>128 )  return 1;  // carré
+	if ( c<0 || c>128 )  return 1;  // carrï¿½
 
 	return c;
 }
 
-// Retourne la longueur d'un caractère.
+// Retourne la longueur d'un caractï¿½re.
+
+extern char table_char[];
 
 int GetCharWidth(char c, int font)
 {
@@ -45,11 +47,11 @@ int GetCharWidth(char c, int font)
 		9,10,10,10,10,10,10,10,10,10,10,10,10,10,10,8,
 		9,9,8,8,8,8,5,5,8,8,8,9,8,8,10,10,
 		5,6,9,13,11,12,12,6,6,6,12,12,5,9,6,9,
-		8,8,9,9,8,9,8,8,9,9,6,6,8,9,10,11,
+		8,8,9,9,8,9,8,8,9,9,6,6,8,9,8,11,
 		12,8,9,9,9,8,8,8,9,4,8,9,8,10,9,9,
 		8,9,8,9,10,8,9,11,9,8,10,7,10,7,13,13,
 		9,9,8,8,8,8,6,8,8,4,6,8,4,12,8,8,
-		8,8,7,6,7,8,8,10,8,8,7,6,6,6,10,0,
+		8,8,7,6,7,8,8,10,8,8,7,6,2,6,10,0,
 	};
 
 	static unsigned char table_width_little[128] =
@@ -63,17 +65,10 @@ int GetCharWidth(char c, int font)
 		4,6,6,6,6,6,4,6,6,2,3,5,2,10,6,6,
 		6,6,3,5,3,6,6,8,6,6,5,4,6,4,7,0,
 	};
-
 	if ( font == FONTLITTLE )
-	{
-		return table_width_little[GetOffset(c)];
-	}
-	else
-	{
-		return table_width[GetOffset(c)]-1;
-	}
+		return table_width_little[table_char[(c & 0xff) * 6]];
+	return table_width[table_char[(c & 0xff) * 6]]-1;
 }
-
 // Affiche un texte.
 
 void DrawText(CPixmap* pPixmap, POINT pos, char *pText, int font)
@@ -84,7 +79,7 @@ void DrawText(CPixmap* pPixmap, POINT pos, char *pText, int font)
 	}
 }
 
-// Affiche un texte penché.
+// Affiche un texte penchï¿½.
 
 void DrawTextPente(CPixmap *pPixmap, POINT pos, char *pText,
 				   int pente, int font)
@@ -106,8 +101,8 @@ void DrawTextPente(CPixmap *pPixmap, POINT pos, char *pText,
 	}
 }
 
-// Affiche un pavé de texte.
-// Une ligne vide est affichée avec un demi interligne !
+// Affiche un pavï¿½ de texte.
+// Une ligne vide est affichï¿½e avec un demi interligne !
 // Si part != -1, n'affiche que les lignes qui commencent
 // par "n|", avec n=part.
 
@@ -158,13 +153,13 @@ void DrawTextRect(CPixmap *pPixmap, POINT pos, char *pText,
 		}
 		else
 		{
-			pos.y += itl;  // passe à la ligne suivante
+			pos.y += itl;  // passe ï¿½ la ligne suivante
 		}
 	}
 }
 
-// Affiche un texte centré pouvant éventuellement
-// contenir plusieurs lignes séparées par des '\n'.
+// Affiche un texte centrï¿½ pouvant ï¿½ventuellement
+// contenir plusieurs lignes sï¿½parï¿½es par des '\n'.
 
 void DrawTextCenter(CPixmap *pPixmap, POINT pos, char *pText, int font)
 {
@@ -198,7 +193,7 @@ void DrawTextCenter(CPixmap *pPixmap, POINT pos, char *pText, int font)
 		}
 		else
 		{
-			pos.y += itl;  // passe à la ligne suivante
+			pos.y += itl;  // passe ï¿½ la ligne suivante
 		}
 	}
 }
@@ -243,7 +238,7 @@ int GetTextHeight(char *pText, int font, int part)
 		}
 		else
 		{
-			h += itl;  // passe à la ligne suivante
+			h += itl;  // passe ï¿½ la ligne suivante
 		}
 	}
 
@@ -351,16 +346,18 @@ void DrawChar(CPixmap* pPixmap, POINT* pos, char c, int font)
 	POINT pos0;
 	POINT pos1;
 	unsigned index;
+	int rank;
 
-	index = c;
-	pos0.y = table_char[index * 6 + 2] + pos->y;
+	index = c & 0xff;
 	pos0.x = table_char[index * 6 + 1] + pos->x;
+	pos0.y = table_char[index * 6 + 2] + pos->y;
 	DrawCharSingle(pPixmap, pos0, table_char[index * 6], font);
-	if (table_char[index * 6 + 3] != -1)
+	rank = table_char[index * 6 + 3];
+	if (rank != -1)
 	{
-		pos1.y = table_char[index * 6 + 4] + pos->y;
-		pos1.x = table_char[index * 6 + 5] + pos->x;
-		DrawCharSingle(pPixmap, pos1, table_char[index * 6 + 3], font);
+		pos1.x = table_char[index * 6 + 4] + pos->x;
+		pos1.y = table_char[index * 6 + 5] + pos->y;
+		DrawCharSingle(pPixmap, pos1, rank, font);
 	}
 	pos->x += GetCharWidth(c, font);
 }

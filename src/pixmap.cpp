@@ -10,6 +10,11 @@
 #include "misc.h"
 #include "ddutil.h"
 
+extern short table_icon_object[];
+extern short table_icon_element[];
+extern short table_icon_blupi[];
+extern short table_icon_explo[];
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -125,26 +130,27 @@ BOOL CPixmap::Create(HWND hwnd, POINT dim,
 	HDC					hdc;
 	int					caps;
 
-	m_bFullScreen = bFullScreen;
-	m_bTrueColorBack = bTrueColor;
-	m_mouseType = mouseType;
-	m_hWnd = hwnd;
-	m_dim = dim;
-
 	hdc = CreateCompatibleDC(NULL);
 	if ( hdc == NULL )
 	{
-		m_bTrueColorBack = FALSE;
+		bTrueColor = FALSE;
 	}
 	else
 	{
 		caps = GetDeviceCaps(hdc, SIZEPALETTE);
 		if ( caps != 0 && caps <= 256 )
 		{
-			m_bTrueColorBack = FALSE;
+			bTrueColor = FALSE;
 		}
 		DeleteDC(hdc);
 	}
+
+	m_hWnd = hwnd;
+	m_dim.x = dim.x;
+	m_bFullScreen = bFullScreen;
+	m_bTrueColorBack = bTrueColor;
+	m_mouseType = mouseType;
+	m_dim.y = dim.y;
 
 	if ( m_mouseType == MOUSETYPEGRA )
 	{
@@ -467,6 +473,25 @@ HRESULT CPixmap::BltFast(LPDIRECTDRAWSURFACE lpDD,
 }
 
 
+BOOL CPixmap::DrawMap(int channel, RECT src, RECT dest)
+{
+    HRESULT hErr;
+
+    if ( channel < 0 || channel >= MAXIMAGE ) return FALSE;
+    while ( TRUE )
+    {
+        hErr = m_lpDDSurface[channel]->Blt(&dest, m_lpDDSBack, &src, DDBLT_WAIT, NULL);
+        if ( hErr == DD_OK ) break;
+        if ( hErr == DDERR_SURFACELOST )
+        {
+            hErr = RestoreAll();
+            if ( hErr != DD_OK ) break;
+        }
+        if ( hErr != DDERR_WASSTILLDRAWING ) break;
+    }
+    return hErr == DD_OK;
+}
+
 // Sauve toute la palette de couleurs.
 
 BOOL CPixmap::SavePalette()
@@ -725,6 +750,100 @@ RECT CPixmap::GetClipping()
 
 // Teste si un point fait partie d'une icône.
 
+void CPixmap::QuickIcon(int channel, int rank, POINT pos)
+{
+    int num;
+    RECT rect;
+
+    if ( channel == 1 )
+    {
+        if ( rank >= table_icon_object[0] ) return;
+        rect.left = table_icon_object[rank*6+1];
+        rect.right = rect.left + table_icon_object[rank*6+5];
+        rect.top = table_icon_object[rank*6+2];
+        rect.bottom = rect.top + table_icon_object[rank*6+6];
+        pos.x += table_icon_object[rank*6+3];
+        pos.y += table_icon_object[rank*6+4];
+    }
+    else if ( channel == 10 )
+    {
+        if ( rank >= table_icon_element[0] ) return;
+        rect.left = table_icon_element[rank*6+1];
+        rect.right = rect.left + table_icon_element[rank*6+5];
+        rect.top = table_icon_element[rank*6+2];
+        rect.bottom = rect.top + table_icon_element[rank*6+6];
+        pos.x += table_icon_element[rank*6+3];
+        pos.y += table_icon_element[rank*6+4];
+    }
+    else if ( channel == 2 || channel == 11 || channel == 12 || channel == 13 )
+    {
+        if ( rank >= table_icon_blupi[0] ) return;
+        rect.left = table_icon_blupi[rank*6+1];
+        rect.right = rect.left + table_icon_blupi[rank*6+5];
+        rect.top = table_icon_blupi[rank*6+2];
+        rect.bottom = rect.top + table_icon_blupi[rank*6+6];
+        pos.x += table_icon_blupi[rank*6+3];
+        pos.y += table_icon_blupi[rank*6+4];
+    }
+    else if ( channel == 9 )
+    {
+        if ( rank >= table_icon_explo[0] ) return;
+        rect.left = table_icon_explo[rank*6+1];
+        rect.right = rect.left + table_icon_explo[rank*6+5];
+        rect.top = table_icon_explo[rank*6+2];
+        rect.bottom = rect.top + table_icon_explo[rank*6+6];
+        pos.x += table_icon_explo[rank*6+3];
+        pos.y += table_icon_explo[rank*6+4];
+    }
+    else
+    {
+        if ( channel < 0 || channel >= MAXIMAGE ) return;
+        rect.right = m_iconDim[channel].x;
+        num = m_totalDim[channel].x / rect.right;
+        rect.bottom = m_iconDim[channel].y;
+        if ( rank < 0 ) return;
+        if ( (m_totalDim[channel].y / rect.bottom) * num <= rank ) return;
+        rect.left = (rank % num) * rect.right;
+        rect.right = rect.left + rect.right;
+        rect.top = (rank / num) * rect.bottom;
+        rect.bottom = rect.top + rect.bottom;
+    }
+
+    num = m_clipRect.left;
+    if ( pos.x < num )
+    {
+        num -= pos.x;
+        pos.x = m_clipRect.left;
+        rect.left += num;
+    }
+    num = (m_clipRect.right + rect.left) - pos.x;
+    if ( num < rect.right ) rect.right = num;
+    num = m_clipRect.top;
+    if ( pos.y < num )
+    {
+        num -= pos.y;
+        pos.y = m_clipRect.top;
+        rect.top += num;
+    }
+    num = (m_clipRect.bottom + rect.top) - pos.y;
+    if ( num < rect.bottom ) rect.bottom = num;
+    if ( rect.left < rect.right && rect.top < rect.bottom )
+    {
+        while ( TRUE )
+        {
+            num = m_lpDDSBack->BltFast(pos.x, pos.y, m_lpDDSurface[channel], &rect, 1);
+            if ( num == DD_OK ) return;
+            if ( num == DDERR_SURFACELOST )
+            {
+                num = RestoreAll();
+                if ( num != DD_OK ) return;
+            }
+            if ( num != DDERR_WASSTILLDRAWING ) return;
+        }
+    }
+}
+
+
 BOOL CPixmap::IsIconPixel(int channel, int rank, POINT pos)
 {
 	int			nbx, nby;
@@ -760,48 +879,75 @@ BOOL CPixmap::IsIconPixel(int channel, int rank, POINT pos)
 // Les modes sont 0=transparent, 1=opaque.
 
 BOOL CPixmap::DrawIcon(int chDst, int channel, int rank, POINT pos,
-					   int mode, BOOL bMask)
+                       int mode, BOOL bMask)
 {
-	int			nbx, nby;
-	RECT		rect;
-	HRESULT		ddrval;
-	COLORREF	oldColor1, oldColor2;
+    int nbx, nby;
+    RECT rect;
+    HRESULT ddrval;
+    COLORREF oldColor1, oldColor2;
 
-	if ( channel < 0 || channel >= MAXIMAGE )  return FALSE;
-	if (  m_lpDDSurface[channel] == NULL )     return FALSE;
+    if ( channel == 1 )
+    {
+        if ( rank >= table_icon_object[0] ) return FALSE;
+        rect.left = table_icon_object[rank*6+1];
+        rect.right = rect.left + table_icon_object[rank*6+5];
+        rect.top = table_icon_object[rank*6+2];
+        rect.bottom = rect.top + table_icon_object[rank*6+6];
+        pos.x += table_icon_object[rank*6+3];
+        pos.y += table_icon_object[rank*6+4];
+    }
+    else if ( channel == 10 )
+    {
+        if ( rank >= table_icon_element[0] ) return FALSE;
+        rect.left = table_icon_element[rank*6+1];
+        rect.right = rect.left + table_icon_element[rank*6+5];
+        rect.top = table_icon_element[rank*6+2];
+        rect.bottom = rect.top + table_icon_element[rank*6+6];
+        pos.x += table_icon_element[rank*6+3];
+        pos.y += table_icon_element[rank*6+4];
+    }
+    else if ( channel == 2 || channel == 11 || channel == 12 || channel == 13 )
+    {
+        if ( rank >= table_icon_blupi[0] ) return FALSE;
+        rect.left = table_icon_blupi[rank*6+1];
+        rect.right = rect.left + table_icon_blupi[rank*6+5];
+        rect.top = table_icon_blupi[rank*6+2];
+        rect.bottom = rect.top + table_icon_blupi[rank*6+6];
+        pos.x += table_icon_blupi[rank*6+3];
+        pos.y += table_icon_blupi[rank*6+4];
+    }
+    else if ( channel == 9 )
+    {
+        if ( rank >= table_icon_explo[0] ) return FALSE;
+        rect.left = table_icon_explo[rank*6+1];
+        rect.right = rect.left + table_icon_explo[rank*6+5];
+        rect.top = table_icon_explo[rank*6+2];
+        rect.bottom = rect.top + table_icon_explo[rank*6+6];
+        pos.x += table_icon_explo[rank*6+3];
+        pos.y += table_icon_explo[rank*6+4];
+    }
+    else
+    {
+        if ( channel < 0 || channel >= MAXIMAGE ) return FALSE;
+        if ( m_lpDDSurface[channel] == NULL ) return FALSE;
+        if ( m_iconDim[channel].x == 0 || m_iconDim[channel].y == 0 ) return FALSE;
+        nbx = m_totalDim[channel].x / m_iconDim[channel].x;
+        nby = m_totalDim[channel].y / m_iconDim[channel].y;
+        if ( rank < 0 || rank >= nbx*nby ) return FALSE;
+        rect.left = (rank%nbx)*m_iconDim[channel].x;
+        rect.top = (rank/nbx)*m_iconDim[channel].y;
+        rect.right = rect.left + m_iconDim[channel].x;
+        rect.bottom = rect.top + m_iconDim[channel].y;
+    }
 
-	if ( m_iconDim[channel].x == 0 ||
-		 m_iconDim[channel].y == 0 )  return FALSE;
-
-	nbx = m_totalDim[channel].x / m_iconDim[channel].x;
-	nby = m_totalDim[channel].y / m_iconDim[channel].y;
-
-	if ( rank < 0 || rank >= nbx*nby )  return FALSE;
-
-	rect.left   = (rank%nbx)*m_iconDim[channel].x;
-	rect.top    = (rank/nbx)*m_iconDim[channel].y;
-	rect.right  = rect.left + m_iconDim[channel].x;
-	rect.bottom = rect.top  + m_iconDim[channel].y;
-
-	oldColor1 = m_colorSurface[2*channel+0];
-	oldColor2 = m_colorSurface[2*channel+1];
-	if ( bMask )  SetTransparent(channel, RGB(255,255,255));  // blanc
-	ddrval = BltFast(chDst, channel, pos, rect, mode);
-	if ( bMask )  SetTransparent2(channel, oldColor1, oldColor2);
-
-	if ( ddrval != DD_OK )  return FALSE;
-	return TRUE;
+    oldColor1 = m_colorSurface[2*channel+0];
+    oldColor2 = m_colorSurface[2*channel+1];
+    if ( bMask ) SetTransparent(channel, 0x000000ff);
+    ddrval = BltFast(chDst, channel, pos, rect, mode);
+    if ( bMask ) SetTransparent2(channel, oldColor1, oldColor2);
+    if ( ddrval != DD_OK ) return FALSE;
+    return TRUE;
 }
-
-// Dessine une partie d'image rectangulaire.
-// Les modes sont 0=transparent, 1=opaque.
-//
-// Correspondances in,out :
-//	 0,0	 2,1	...
-//	 1,16	 3,17
-//
-//	32,32	34,33
-//	33,48	35,49
 
 BOOL CPixmap::DrawIconDemi(int chDst, int channel, int rank, POINT pos,
 						   int mode, BOOL bMask)
@@ -831,7 +977,7 @@ BOOL CPixmap::DrawIconDemi(int chDst, int channel, int rank, POINT pos,
 
 	oldColor1 = m_colorSurface[2*channel+0];
 	oldColor2 = m_colorSurface[2*channel+1];
-	if ( bMask )  SetTransparent(channel, RGB(255,255,255));  // blanc
+	if ( bMask )  SetTransparent(channel, 0x000000ff);  // blanc
 	ddrval = BltFast(chDst, channel, pos, rect, mode);
 	if ( bMask )  SetTransparent2(channel, oldColor1, oldColor2);
 
@@ -872,7 +1018,7 @@ BOOL CPixmap::DrawIconPart(int chDst, int channel, int rank, POINT pos,
 
 	oldColor1 = m_colorSurface[2*channel+0];
 	oldColor2 = m_colorSurface[2*channel+1];
-	if ( bMask )  SetTransparent(channel, RGB(255,255,255));  // blanc
+	if ( bMask )  SetTransparent(channel, 0x000000ff);  // blanc
 	ddrval = BltFast(chDst, channel, pos, rect, mode);
 	if ( bMask )  SetTransparent2(channel, oldColor1, oldColor2);
 
@@ -884,26 +1030,21 @@ BOOL CPixmap::DrawIconPart(int chDst, int channel, int rank, POINT pos,
 // Les modes sont 0=transparent, 1=opaque.
 
 BOOL CPixmap::DrawPart(int chDst, int channel, POINT dest, RECT rect,
-					   int mode, BOOL bMask)
+                       int mode, BOOL bMask)
 {
-	HRESULT		ddrval;
-	COLORREF	oldColor1, oldColor2;
+    HRESULT ddrval;
+    COLORREF oldColor1, oldColor2;
 
-	if ( channel < 0 || channel >= MAXIMAGE )  return FALSE;
-	if (  m_lpDDSurface[channel] == NULL )     return FALSE;
-
-	oldColor1 = m_colorSurface[2*channel+0];
-	oldColor2 = m_colorSurface[2*channel+1];
-	if ( bMask )  SetTransparent(channel, RGB(255,255,255));  // blanc
-	ddrval = BltFast(chDst, channel, dest, rect, mode);
-	if ( bMask )  SetTransparent2(channel, oldColor1, oldColor2);
-
-	if ( ddrval != DD_OK )  return FALSE;
-	return TRUE;
+    if ( channel < 0 || channel >= MAXIMAGE ) return FALSE;
+    if ( m_lpDDSurface[channel] == NULL ) return FALSE;
+    oldColor1 = m_colorSurface[2*channel+0];
+    oldColor2 = m_colorSurface[2*channel+1];
+    if ( bMask ) SetTransparent(channel, 0x000000ff);
+    ddrval = BltFast(chDst, channel, dest, rect, mode);
+    if ( bMask ) SetTransparent2(channel, oldColor1, oldColor2);
+    if ( ddrval != DD_OK ) return FALSE;
+    return TRUE;
 }
-
-// Dessine une partie d'image rectangulaire.
-// Les modes sont 0=transparent, 1=opaque.
 
 BOOL CPixmap::DrawImage(int chDst, int channel, RECT rect, int mode)
 {
@@ -1332,18 +1473,19 @@ void CPixmap::MouseBackRestore()
 // Returns the source rectangle and on-screen origin for the mouse sprite.
 void CPixmap::MouseRectSprite(RECT *rcRect, POINT *pos)
 {
-	int	rank, nbx;
+    int rank;
 
-	rank = 37;
-	if ( m_mouseSprite == SPRITE_POINTER )  rank = 38;
-	if ( m_mouseSprite == SPRITE_WAIT )     rank = 39;
+    rank = 37;
+    if ( m_mouseSprite == SPRITE_ARROW ) rank = 37;
+    if ( m_mouseSprite == SPRITE_POINTER ) rank = 38;
+    if ( m_mouseSprite == SPRITE_WAIT ) rank = 39;
 
-	nbx = m_totalDim[CHPIXMAP_CURSOR].x / m_iconDim[CHPIXMAP_CURSOR].x;
-
-	rcRect->left   = (rank%nbx)*m_iconDim[CHPIXMAP_CURSOR].x;
-	rcRect->top    = (rank/nbx)*m_iconDim[CHPIXMAP_CURSOR].y;
-	rcRect->right  = rcRect->left+m_iconDim[CHPIXMAP_CURSOR].x;
-	rcRect->bottom = rcRect->top +m_iconDim[CHPIXMAP_CURSOR].y;
+    rcRect->left = table_icon_element[rank*6+1];
+    rcRect->right = rcRect->left + table_icon_element[rank*6+5];
+    rcRect->top = table_icon_element[rank*6+2];
+    rcRect->bottom = rcRect->top + table_icon_element[rank*6+6];
+    pos->x += table_icon_element[rank*6+3];
+    pos->y += table_icon_element[rank*6+4];
 }
 
 void CPixmap::MouseHotSpot()

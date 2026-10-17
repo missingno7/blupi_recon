@@ -4,17 +4,17 @@
 
 [EVIDENCE] Scratch candidates are `decblock.cpp`, `decdesign.cpp`, `decmove.cpp`, and `decblupi.cpp`, with private headers under `scratch/tu/engine_include/`. The SB2-derived source copies remain in original function order. `decnet.cpp` was also compiled as a diagnostic owner probe. No canonical source, manifest, oracle map, assets, or external reference files were changed.
 
-[EVIDENCE] VC5 SP3 11.00.7022 compiled with the manifest defines and flags: `WIN32`, `NDEBUG`, `_WINDOWS`, `nullptr=0`, `/W3 /GX /O2 /ML /Gd /Gy`; `TMP` and `TEMP` point at `build/tmp`. All five objects were compared together. The automatic result is `build/engine/results/engine_automatic.json`; forced comparisons are in `build/engine/results/engine_final.json`.
+[EVIDENCE] VC5 SP3 11.00.7022 compiled with the manifest defines and flags: `WIN32`, `NDEBUG`, `_WINDOWS`, `nullptr=0`, `/W3 /GX /O2 /ML /Gd /Gy`; `TMP` and `TEMP` point at `build/tmp`. Current full-TU checks use isolated `--build-dir` paths, including `engine_refreshed_baseline`, `engine_design_followup_final`, `engine_block_flags_followup`, and `engine_combined_final`.
 
 ## Canonical-header recheck (2026-10-17)
 
-[EVIDENCE] The canonical `src/` headers are the baseline for this follow-up. The top-level `scratch/tu/` folder still contains an older full header overlay, so candidate copies were placed in `scratch/tu/engine_canonical/`, which contains only `.cpp` files; quoted includes then resolve to `src/`. Candidate builds used `tools/verify.py --tu ... --build-dir engine_*` and separate build directories. Do not use the top-level `scratch/tu/*.cpp` paths for current comparisons without first accounting for their sibling headers.
+[EVIDENCE] The canonical `src/` headers are the baseline for this follow-up. Refreshed baseline source copies are in `scratch/tu/engine_current/`, which contains only `.cpp` files so quoted includes resolve to `src/`. Private-header experiments remain beside their candidates, including `scratch/tu/des_screen_local/` and `scratch/tu/engine_flag_reorder/`. Candidate builds used `tools/verify.py --tu ... --build-dir <worker>` with separate build directories.
 
-[EVIDENCE] The merged canonical headers preserve all accepted functions in the three owned TUs: `decblupi` 4, `decmove` 11, and `decdesign` 4. The `decmove` object also emits an identical duplicate `ObjectDelete` body owned by `decnet.cpp`; it is not an additional unique match. The prior pre-merge forced-hit notes below are historical and are superseded by the current per-function results.
+[EVIDENCE] The refreshed canonical-header build preserves 34 unique strict bodies across the owned blocks: `decblock` 12, `decblupi` 7, `decmove` 11, and `decdesign` 4. `decmove.obj` also emits an identical `ObjectDelete` body owned by `decnet.cpp`; it is not an additional unique match. The scratch `decdesign` candidate documented below adds three strict bodies without modifying canonical source.
 
 ### Current decblupi per-function table
 
-[EVIDENCE] This table is the integrated canonical `src/` result. The four oracle-first scratch reconstructions below have not been integrated, so their canonical rows remain unfilled in `recon.json`.
+[EVIDENCE] The tables below distinguish refreshed canonical results from scratch-only fixes; no candidate changes were integrated into `src/` by this worker.
 
 | Oracle RVA | Oracle bytes | Current candidate/result |
 |---:|---:|---|
@@ -23,11 +23,11 @@
 | `0xf5b0` | 142 | `BlupiAddFifo` — STRICT |
 | `0xf640` | 640 | `DecorDetect` — MISMATCH |
 | `0xf8c0` | 833 | `TestPath` — STRICT; four call relocations proven |
-| `0xfc10` | 439 | No candidate; target body not yet reconstructed |
-| `0xfdd0` | 75 | No candidate; target body not yet reconstructed |
-| `0xfe20` | 94 | No candidate; target body not yet reconstructed |
-| `0xfe80` | 261 | No candidate; target body not yet reconstructed |
-| `0xff90` | 184 | `IsWorld` — MISMATCH |
+| `0xfc10` | 439 | Target-derived scratch `int MoveObjectPollution` — MISMATCH (480); local-`POINT` variant 496. Canonical void body remains in `decmove` |
+| `0xfdd0` | 75 | `MoveObjectPlouf` — STRICT |
+| `0xfe20` | 94 | `MoveObjectTiplouf` — STRICT |
+| `0xfe80` | 261 | `MoveObjectBlup` — STRICT |
+| `0xff90` | 184 | Canonical `IsWorld` — MISMATCH (272); narrowed target-range scratch form — MISMATCH (192) |
 | `0x10050` | 248 | `GetTypeBarre` — MISMATCH |
 | `0x10150` | 88 | `IsLave` — MISMATCH (96 candidate bytes) |
 | `0x101b0` | 94 | `IsRessort` — MISMATCH (96 candidate bytes) |
@@ -45,19 +45,21 @@
 
 | Oracle RVA | Oracle bytes | Current candidate/result |
 |---:|---:|---|
-| `0x5a20` | 133 | `ScreenPosToCelPos` — MISMATCH (144 candidate bytes) |
+| `0x5a20` | 133 | Canonical `ScreenPosToCelPos` — MISMATCH (144); scratch local-result form — STRICT |
 | `0x5ab0` | 46 | `SetCelHiliFromScreenPos` — STRICT |
-| `0x5ae0` | 93 | `SetIconLiftAndStuff` — MISMATCH (112 candidate bytes after target-backed condition correction) |
+| `0x5ae0` | 93 | Canonical `SetIconLiftAndStuff` — MISMATCH (128); scratch target-condition form — STRICT (96) |
 | `0x5b40` | 90 | `DeleteCel` — STRICT |
-| `0x5ba0` | 125 | `PlaceDecor` — MISMATCH (144 candidate bytes after target-backed pointer update correction) |
+| `0x5ba0` | 125 | Canonical `PlaceDecor` — MISMATCH (144); scratch `int*` helper/pointer-update form — STRICT (128) |
 | `0x8520` | 7 | `GetMissionTitle` — STRICT |
 | `0x8530` | 46 | `SetMissionTitle` — STRICT |
 
 [EVIDENCE] The `0x5a20` body is the first decdesign function under the corrected boundary. The forced anchors at `0x5ab0` and `0x5b40` are ordinary decdesign bodies, not folds. `ObjectDelete` at `0x108a0` remains owned by `decnet.cpp`; the identical `decmove.obj` source copy is excluded as a second target function.
 
+[EVIDENCE] `scratch/tu/des_screen_local/decdesign.cpp` with its private sibling `decor.h`, verified as `engine_design_followup_final`, has seven strict decdesign bodies. Its three additions over canonical source are `ScreenPosToCelPos` (133 bytes), `SetIconLiftAndStuff` (93), and global `PlaceDecor` (125), with all relocations proven.
+
 ## Strict body matches
 
-[EVIDENCE] The current canonical-header verification finds 19 strict functions in the owned blocks: four in `decdesign`, eleven in `decmove`, and four in `decblupi`. All direct relocations for these bodies are proven. The 19 unique target bodies cover 2,547 oracle bytes. Candidate COFF code sizes below may include alignment bytes beyond the Ghidra body size.
+[EVIDENCE] The refreshed canonical-header verification finds 34 unique strict functions in the owned blocks: 12 in `decblock`, seven in `decblupi`, eleven in `decmove`, and four in `decdesign`. They cover 3,403 oracle bytes; candidate COFF code sizes below may include alignment bytes beyond the Ghidra body size. The three scratch-only decdesign matches and scratch `AdaptMotorVehicleSound` add four bodies and 474 bytes, for 38 bodies and 3,877 bytes.
 
 [EVIDENCE] `TestPushCaisse` direct calls resolve to `SearchLinkCaisse=0x00413020` and `TestPushOneCaisse=0x00412f30`; `TestPath` calls resolve to `DecorDetect=0x0040f640`. `ObjectDelete`'s forced calls resolve to `MoveObjectSearch=0x00413cb0` and `NetMessagePush=0x004113c0`.
 
@@ -65,6 +67,19 @@
 |---|---:|---:|---:|
 | `CDecor::GetMissionTitle` | `0x8520` | 7 | 16 |
 | `CDecor::SetMissionTitle` | `0x8530` | 46 | 48 |
+| `CDecor::InitGamer` | `0x3b60` | 31 | 32 |
+| `CDecor::SetTime` | `0x3e70` | 13 | 16 |
+| `CDecor::GetTime` | `0x3e80` | 7 | 16 |
+| `CDecor::BuildPrepare` | `0x4150` | 109 | 112 |
+| `CDecor::IsTerminated` | `0x41c0` | 7 | 16 |
+| `CDecor::GetBlupiChannelActual` | `0x42e0` | 40 | 48 |
+| `CDecor::GetBlupiChannelStandard` | `0x4310` | 30 | 32 |
+| `CDecor::GetIconPerso` | `0x4330` | 26 | 32 |
+| `CDecor::KeyChange` | `0x5780` | 13 | 16 |
+| `CDecor::SetJoystickEnable` | `0x5790` | 13 | 16 |
+| `CDecor::SetDemoPlay` | `0x57a0` | 13 | 16 |
+| `CDecor::PlaySound` | `0x5800` | 124 | 128 |
+| `CDecor::AdaptMotorVehicleSound` | `0x58d0` | 123 | 128 |
 | `CDecor::AscenseurSynchro` | `0x12dd0` | 54 | 64 |
 | `CDecor::UpdateCaisse` | `0x12e10` | 60 | 64 |
 | `CDecor::TestPushCaisse` | `0x12e50` | 215 | 224 |
@@ -80,14 +95,20 @@
 | `CDecor::BlupiAddFifo` | `0xf5b0` | 142 | 144 |
 | `CDecor::TestPath` | `0xf8c0` | 833 | 848 |
 | `CDecor::IsDeepWater` | `0x10290` | 71 | 80 |
+| `CDecor::MoveObjectPlouf` | `0xfdd0` | 75 | 80 |
+| `CDecor::MoveObjectTiplouf` | `0xfe20` | 94 | 96 |
+| `CDecor::MoveObjectBlup` | `0xfe80` | 261 | 272 |
 | `CDecor::SetCelHiliFromScreenPos` | `0x5ab0` | 46 | 48 |
 | `CDecor::DeleteCel` | `0x5b40` | 90 | 96 |
+| `CDecor::ScreenPosToCelPos` (scratch) | `0x5a20` | 133 | 144 |
+| `CDecor::SetIconLiftAndStuff` (scratch) | `0x5ae0` | 93 | 96 |
+| `PlaceDecor` (scratch) | `0x5ba0` | 125 | 128 |
 
 [EVIDENCE] The canonical `decnet` object has strict anchors at `NetStopCloud` (`0x10670`, 50 oracle bytes), `ObjectDelete` (`0x108a0`, 112), `NetPlaySound` (`0x10980`, 59), and `NetStopSound` (`0x109c0`, 50). These anchors are outside the three owned blocks and help establish the neighboring TU's boundaries. `ObjectDelete` accounts for part of the gap between `NetStopCloud` and `NetPlaySound`; unmatched space remains on both sides.
 
-[EVIDENCE] A forced comparison confirms that `decmove.obj` also emits an identical `ObjectDelete` body at `0x108a0` (112 target bytes; relocations proven), but `recon.json` owns and accepts the target function in `decnet.cpp` and excludes the `decmove.cpp` source copy as a second target function. `SetCelHiliFromScreenPos` and `DeleteCel` are automatic strict hits in canonical `decdesign`; `IsDeepWater` is automatic strict in canonical `decblupi`. The 19 owned-block functions cover 2,547 unique target bytes. Adding the four unique `decnet` anchors gives 23 unique target bodies and 2,818 bytes; count `ObjectDelete` once.
+[EVIDENCE] A forced comparison confirms that `decmove.obj` also emits an identical `ObjectDelete` body at `0x108a0` (112 target bytes; relocations proven), but `recon.json` owns and accepts the target function in `decnet.cpp` and excludes the `decmove.cpp` source copy as a second target function. The 34 canonical owned-block bodies cover 3,403 unique target bytes. Adding the four unique `decnet` anchors gives 38 target bodies and 3,674 bytes; count `ObjectDelete` once. The three scratch-only decdesign matches and scratch `AdaptMotorVehicleSound` bring the comparison total to 42 bodies and 4,148 bytes.
 
-[EVIDENCE; pre-merge scratch result, superseded] The earlier `engine_forced_complete.json` note reported seven forced `decblupi` bodies as STRICT from a scratch header overlay. That result does not reproduce under the canonical merged headers: current automatic verification has the four accepted anchors listed in the canonical-header table, `IsDeepWater` STRICT, `IsLave`/`IsRessort` MISMATCH, and `IsPassIcon`/`IsBlocIcon` RELOC-UNVERIFIED. The old forced result is retained only as investigation history and is not counted as current coverage.
+[EVIDENCE; pre-merge scratch result, superseded] The earlier `engine_forced_complete.json` note reported seven forced `decblupi` bodies under a scratch header overlay. The refreshed canonical source now independently has seven strict decblupi bodies, including `MoveObjectPlouf`, `MoveObjectTiplouf`, and `MoveObjectBlup`; the `IsPassIcon` and `IsBlocIcon` rows remain relocation-unverified and are excluded from strict coverage. The earlier result is retained only as investigation history.
 
 ## Decmove per-function table
 
@@ -166,13 +187,13 @@
 
 [EVIDENCE] `IsPassIcon`/`IsBlocIcon` use the target-compatible `MAXQUART=237` (the limit compares to `0xed`); their code is exact, but the data relocation is unverified. `IsLave` uses an early bounds guard and full-width `BOOL` return, yet its current merged-header code still differs in division/register scheduling. `IsRessort` checks icon `0xd3` at the point shifted by `(30,60)`; its current candidate also remains a mismatch.
 
-[OPEN] The four actual target functions between `TestPath` and `IsWorld` (`0xfc10`, `0xfdd0`, `0xfe20`, `0xfe80`) are not present in SB2 `decblupi.cpp` and remain absent from the candidate. They are real missing function bodies before `IsDeepWater` and may account for some TU symbol-count difference, but no exact count contribution is proven. Their source names, intended TU, and source forms remain open; do not add declarations or placeholders solely to reproduce the context probe.
+[EVIDENCE] The four target bodies between `TestPath` and `IsWorld` (`0xfc10`, `0xfdd0`, `0xfe20`, `0xfe80`) were absent from SB2 `decblupi.cpp`; the scratch candidate now reconstructs all four by behavior. `MoveObjectPlouf`, `MoveObjectTiplouf`, and `MoveObjectBlup` are STRICT; `MoveObjectPollution` remains a 480-byte MISMATCH against 439. No placeholder declarations were added.
 
 ## Oracle-first CDecor block reconstruction (2026-10-17)
 
 [EVIDENCE] The target interval assigned by `oracle/tu_map.csv` to `decblock.cpp` contains 26 CDecor methods from `0x3910` through `0x5950`. Their field offsets, callees, and strings align much more closely with behavior in SB2 `external/sb2-decomp/src/decor.cpp` than with SB2 `decblock.cpp`; this is behavior/source ancestry evidence only. The SB1 TU filename remains a link-order hypothesis. I did not rename any source or edit the map.
 
-[EVIDENCE] The oracle-first block candidate is `scratch/tu/engine_oracle_block/decblock.cpp`; it was verified with canonical headers using `tools/verify.py --tu src/decblock.cpp=scratch/tu/engine_oracle_block/decblock.cpp --build-dir engine_oracle_block_final`. It contains 12 STRICT target bodies totaling 426 unique oracle bytes. The 12 are `InitGamer` (`0x3b60`, 31), `SetTime` (`0x3e70`, 13), `GetTime` (`0x3e80`, 7), `BuildPrepare` (`0x4150`, 109), `IsTerminated` (`0x41c0`, 7), `GetBlupiChannelActual` (`0x42e0`, 40), `GetBlupiChannelStandard` (`0x4310`, 30), `GetIconPerso` (`0x4330`, 26), `KeyChange` (`0x5780`, 13), `SetJoystickEnable` (`0x5790`, 13), `SetDemoPlay` (`0x57a0`, 13), and `PlaySound` (`0x5800`, 124). All relocations on these functions are proven. The final run retained all 208 accepted STRICT functions and the one accepted FOLDED body at their accepted RVAs. `PlayPrepare` is a 784-byte candidate against a 703-byte body and remains MISMATCH; `GetBlupiInfo` is 80 against 67 and remains MISMATCH; `AdaptMotorVehicleSound` is 144 against 123 and remains MISMATCH.
+[EVIDENCE] The oracle-first block candidate is `scratch/tu/engine_oracle_block/decblock.cpp`; it was verified with canonical headers using `tools/verify.py --tu src/decblock.cpp=scratch/tu/engine_oracle_block/decblock.cpp --build-dir engine_oracle_block_final`. It contains 12 STRICT target bodies totaling 426 unique oracle bytes. The 12 are `InitGamer` (`0x3b60`, 31), `SetTime` (`0x3e70`, 13), `GetTime` (`0x3e80`, 7), `BuildPrepare` (`0x4150`, 109), `IsTerminated` (`0x41c0`, 7), `GetBlupiChannelActual` (`0x42e0`, 40), `GetBlupiChannelStandard` (`0x4310`, 30), `GetIconPerso` (`0x4330`, 26), `KeyChange` (`0x5780`, 13), `SetJoystickEnable` (`0x5790`, 13), `SetDemoPlay` (`0x57a0`, 13), and `PlaySound` (`0x5800`, 124). All relocations on these functions are proven, and the run retained the previously accepted functions at their accepted RVAs. A separate current-source scratch candidate, `scratch/tu/engine_adapt_sound/decblock.cpp`, has 13 STRICT decblock bodies because `AdaptMotorVehicleSound` now matches `0x58d0` (123 target bytes; 128-byte candidate section) with its calls proven to `CSound::Play` at `0x23220`. `PlayPrepare` remains a 784-byte mismatch against 703; target-backed field/loop changes reduce it to 768 but it remains MISMATCH. `GetBlupiInfo` remains 80 against 67.
 
 | Oracle RVA | Oracle bytes | Behavior-derived source/result |
 |---:|---:|---|
@@ -184,7 +205,7 @@
 | `0x3b80` | 744 | `InitDecor`: clears the 100×100 maps and initializes object/default state from fixed values; no candidate yet |
 | `0x3e70` | 13 | `SetTime` — STRICT |
 | `0x3e80` | 7 | `GetTime` — STRICT |
-| `0x3e90` | 703 | `PlayPrepare` — SB2 behavior maps; candidate MISMATCH (784 bytes) |
+| `0x3e90` | 703 | Canonical `PlayPrepare` — MISMATCH (784); target-store/loop scratch form — MISMATCH (768) |
 | `0x4150` | 109 | `BuildPrepare` — STRICT |
 | `0x41c0` | 7 | `IsTerminated` — STRICT |
 | `0x41d0` | 261 | Tick/input helper: calls target RVAs `0x115c0`, `0x9280`, `0x11160`, and `0x115a0` by phase, and updates scroll coordinates from key bits; no candidate yet |
@@ -200,10 +221,10 @@
 | `0x57b0` | 67 | `GetBlupiInfo` behavior is identified from four output stores; candidate MISMATCH (80 bytes) |
 | `0x5800` | 124 | `PlaySound` — STRICT; target-relative coordinate subtraction and explicit locality argument |
 | `0x5880` | 68 | `StopSound` behavior is clear, but the merged `CSound` API has no `StopSound` declaration/body; no compilable candidate |
-| `0x58d0` | 123 | `AdaptMotorVehicleSound`: target calls the sound adaptation helper at `0x23220`; SB2 PlayImage sequence MISMATCH (144 bytes) |
+| `0x58d0` | 123 | Canonical `AdaptMotorVehicleSound` — MISMATCH (144); scratch coordinate-based `CSound::Play` calls — STRICT |
 | `0x5950` | 208 | `ChangePhase` sound/phase behavior identified; target sound stop helper is absent from the merged `CSound` API |
 
-[EVIDENCE] The four target `decblupi` bodies were matched by behavior against SB2 `decmove.cpp`, independent of SB2 filename placement. Candidate `scratch/tu/engine_oracle_blupi/decblupi.cpp` and its private header were verified with `tools/verify.py --tu src/decblupi.cpp=scratch/tu/engine_oracle_blupi/decblupi.cpp --build-dir engine_oracle_blupi_final`. This run also retained all 208 accepted STRICT functions and the one accepted FOLDED body at their accepted RVAs.
+[EVIDENCE] The four target `decblupi` bodies were matched by behavior against SB2 `decmove.cpp`, independent of SB2 filename placement. Candidate `scratch/tu/engine_oracle_blupi/decblupi.cpp` and its private header were verified with `tools/verify.py --tu src/decblupi.cpp=scratch/tu/engine_oracle_blupi/decblupi.cpp --build-dir engine_oracle_blupi_final`; the run retained the previously accepted functions at their accepted RVAs.
 
 | Oracle RVA | Oracle bytes | Behavior/result |
 |---:|---:|---|
@@ -248,13 +269,15 @@
 
 [EVIDENCE] The canonical `src/decor.h` agrees with the target-supported layout: `m_decor=+0x10`, `m_bigDecor=+0x4e30`, and `m_moveObject=+0x9c50`; no trajectory arrays precede `m_moveObject`; Power is at `+0xc934`, Shield at `+0xc938`, the FIFO-count/no-barre union at `+0xc978`, and FIFO positions at `+0xc97c`. The tail placement of the trajectory arrays remains unproven. The earlier disagreement with the decor worker's private header has been resolved in the canonical header merge; I did not edit decor-owned files.
 
-[EVIDENCE] The private `SortGetType` declaration is global `int __cdecl`, rather than the SB2 member returning `char`. The private `PlaceDecor` declaration was also changed to test the global helper form, but its body at `0x5ba0` remains a mismatch. These are scratch-only declaration changes.
+[HYPOTHESIS; private header delta for infra] Moving `m_blupiOver` after `m_blupiSurf` would align the target-used flag slots as Helico `+0xc90c`, Jeep `+0xc910`, Tank `+0xc914`, Skate `+0xc918`, Nage `+0xc91c`, Surf `+0xc920`, and Over `+0xc924`. This maps the `GetBlupiInfo` output grouping and the three vehicle checks in `MoveObjectPollution` to their target offsets. A scratch header with this order does not by itself make either function STRICT (`GetBlupiInfo` remains 80 vs 67 bytes; `MoveObjectPollution` remains 480 vs 439), so treat the member identities as a proposal pending reconciliation, not an integrated layout correction.
+
+[EVIDENCE] The private `SortGetType` declaration is global `int __cdecl`, rather than the SB2 member returning `char`. In `scratch/tu/des_screen_local/decor.h`, the global `PlaceDecor` helper's first parameter is `int*`, matching target symbol `?PlaceDecor@@YAXPAH00HHH@Z`; the short icon members are passed through explicit `int*` casts. That private declaration and source form produce the 125-byte strict body at `0x5ba0`; no canonical header was changed.
 
 ## TU boundary and ownership findings
 
 [EVIDENCE] The function at `0x5950` has a 208-byte body ending at `0x5a20`. The sequence `ScreenPosToCelPos` (`0x5a20`), `SetCelHiliFromScreenPos` (`0x5ab0`), `SetIconLiftAndStuff` (`0x5ae0`), `DeleteCel` (`0x5b40`), and the `PlaceDecor` helper (`0x5ba0`) follows the `decdesign.cpp` candidate order. Forced comparisons make `SetCelHiliFromScreenPos` and `DeleteCel` strict from `decdesign.obj`; `decblock.obj` produces neither body. This is evidence for ordinary `decdesign` ownership, not a fold.
 
-[EVIDENCE] `ScreenPosToCelPos` at `0x5a20`, `SetIconLiftAndStuff` at `0x5ae0`, and the `PlaceDecor` helper at `0x5ba0` remain mismatches. `SetIconLiftAndStuff` still has a different branch/store sequence after the shared member offsets were corrected.
+[EVIDENCE] The canonical `decdesign.cpp` still mismatches at `0x5a20`, `0x5ae0`, and `0x5ba0`. The source-form candidate `scratch/tu/des_screen_local/decdesign.cpp` strictly matches all three under the corrected `0x5a20` boundary, confirming ordinary decdesign ownership rather than folding.
 
 [EVIDENCE] The canonical `oracle/tu_map.csv` now starts `decdesign.cpp` at `0x5a20` and assigns the sequence through `0x5ba0` to `decdesign.cpp`. The strict `0x5ab0` and `0x5b40` bodies and candidate order support that boundary. This worker did not edit the map.
 
@@ -278,21 +301,25 @@
 - [EVIDENCE; negative] **`VC5-SEM-01` / `BLUPI-CTX-01` / `VC5-CTX-01..04`:** `MoveObjectSort` (`0x13b20`) copies twelve dwords per 48-byte record; the canonical header's inline helper uses `sizeof(*dest)`. With merged headers the candidate is 256 bytes versus the 234-byte target and still has control/displacement residues as well as the register difference at `+0x6d`. Fresh `vc5probe.py` probes with the canonical header tested top-level declaration counts 0–128 and before-method counts 0–32; every probe remained MISMATCH at 256 bytes. Generic symbol-count context is inert for this current body. Classification: negative for the tested context family; do not add dummy declarations. The remaining source/control-flow difference is open.
 - [EVIDENCE; negative, `VC5-EXP-03` / `VC5-CTX-01..04`]: `IsLave` at `0x10150` has the target early bounds guard and full-width `BOOL` result in the canonical candidate, but remains MISMATCH at 96 candidate bytes versus an 88-byte body. A scalar-local/index rewrite retained 96 bytes and the mismatch. Target/candidate disassembly agrees on the field offset and conditions; remaining instructions differ in register and division order. Canonical-header probes at top (0–32 declarations) and immediately before the method (1–32) all remained MISMATCH at 96 bytes. The earlier private-overlay strict claim is not reproduced, so no return-width rule is confirmed by this function.
 - [EVIDENCE; negative, `VC5-EXP-03`]: changing both `IsLave` and `IsRessort` declarations/definitions from `BOOL` to `bool`, following Ghidra's inferred return type, left both forced comparisons mismatching at 96 candidate bytes (`IsLave` target 88; `IsRessort` target 94). A top-level declaration-count probe for `IsRessort` at 0 and 32 declarations also remained MISMATCH. Classification: negative for return-width/signature as the complete fix.
-- [EVIDENCE; negative, `VC5-CTX-01..04`]: `ScreenPosToCelPos` (`0x5a20`, 144 candidate bytes versus 133 target) remained MISMATCH under top-level declaration-count probes from 0 through 128. Classification: negative for generic top-level symbol-count context.
+- [EVIDENCE; negative then confirmed, `VC5-CTX-01..04` / `VC5-SEM-01`]: `ScreenPosToCelPos` (`0x5a20`) remained MISMATCH at 144 candidate bytes in top-level declaration-count probes from 0 through 128. In the same VC5 SP3 `/O2 /GX /ML /Gd /Gy` decdesign context, changing the direct `POINT(-1,-1)` return to a local `POINT result` with separate x/y assignments in the valid and invalid branches produced a STRICT 133-byte body. The generic context family was negative; the source-form change is Blupi-specific and target-backed.
 - [EVIDENCE; negative, `VC5-EXP-03`]: `GetTypeBarre` at `0x10050` was compiled with both `char` and `int` return declarations in isolated scratch variants. Both forced comparisons remain MISMATCH at 256 candidate bytes versus a 248-byte target body. Return width alone does not account for the target's call/branch layout; classification: negative for the return-width variants, with the source signature unverified because pseudocode types are unreliable.
 - [EVIDENCE; confirmed-transferable, `BLUPI-CTX-01` / `VC5-CTX-01..04`]: `IsDeepWater` at `0x10290` is an automatic unique STRICT hit at 80 candidate bytes versus a 71-byte target body with canonical headers and full natural TU context. This supersedes the diagnostic-only declaration-count result; the verified source contains no probe declarations.
 - [EVIDENCE] **`VC5-SEM-01`:** `MoveObjectDelete` (`0x13a30`) inherited an `int` return accumulator and `else if` from SB2. The target body independently checks both start and end cells and has no returned result. Changing the private declaration/definition to `void` and making the second check independent reduced the candidate from 144 to 128 COFF bytes and made all 115 target bytes strict in the same `/O2 /GX /ML /Gd /Gy` `decmove` context. Classification: Blupi-specific semantic/source correction; the combined variation does not isolate the effect of either change.
 - [EVIDENCE; negative] **`VC5-SEM-01` / `VC5-CTL-03`:** for `MoveObjectDetect` (`0x135e0`), grouping the helicopter action filter, adding the four creature/player-position skips from target pseudocode, and leaving the `IntersectRect` output uninitialized changed the candidate from 512 to 608 bytes; the canonical-header candidate remains 608 bytes versus the 538-byte target. A local `short type` had no further size effect. Classification: negative for these changes as a complete reconstruction; target parameter/load order and remaining source form are unresolved.
-- [EVIDENCE; negative, `VC5-SEM-01`]: `PlaceDecor` at `0x5ba0` now follows target pseudocode's pointer update (`*pLastIndex = *pLastIndex + 1`, then wrap against `pTable[0]`) and control-bit branch order; it remains MISMATCH at 144 candidate bytes versus 125 target bytes. `SetIconLiftAndStuff` removes SB2's exclusions for indices 9 and 10 because target pseudocode excludes only index 3; the 112-byte candidate still differs from the 93-byte body. Classification: negative for these candidate forms as a complete match; both changes are Blupi-specific semantic corrections.
+- [EVIDENCE; confirmed-transferable, `VC5-SEM-01`]: `SetIconLiftAndStuff` (`0x5ae0`) became STRICT (93 oracle bytes) after matching the target's `menu == 2 && index != 3` condition, dropping SB2 exclusions for 9/10, and omitting the SB2-only `menu == 5` assignment. `PlaceDecor` (`0x5ba0`) became STRICT (125 bytes) after the helper's first parameter changed from `short*` to `int*`, icon-field pointers were cast to `int*`, and the target increment was expressed as `(*pLastIndex)++` before wrapping against `pTable[0]`. Both matches use the private scratch header and have all relocations proven; these are source/API differences specific to SB1, not general compiler rules.
 - [EVIDENCE; confirmed-transferable, `VC5-SEM-01`]: In oracle-first `decblock`, under VC5 SP3 `/O2 /GX /ML /Gd /Gy`, the behavior-derived `BuildPrepare` body matches `0x4150` exactly (109 oracle bytes; 112-byte candidate section including alignment), with no relocations. `InitGamer`, `SetTime`, `GetTime`, `IsTerminated`, and the three direct setter methods also match at their target RVAs. Classification: confirmed-transferable source bodies; no new compiler rule.
 - [EVIDENCE; Blupi-specific, `VC5-SEM-01`]: In the same decblock flags/TU context, the SB2 channel helpers with inherited `CHBLUPI=4` did not represent `0x42e0`/`0x4310`. Replacing the default/guard channel value with target value `2` made both helpers STRICT (40 and 30 oracle bytes). Target pseudocode supports the constant difference. Classification: Blupi-specific semantic constant.
 - [EVIDENCE; Blupi-specific, `VC5-SEM-01`]: In the same decblock context, the target `0x5780` body has no SB2 `KeyChange` inversion branch; a direct `m_keyPress = keyPress` setter is STRICT (13 oracle bytes). At `0x5800`, direct point subtraction from `m_posDecor` and four-argument `PlayImage(..., bLocal)` match the target (124 oracle bytes; relocations proven). Classification: Blupi-specific source/API form.
-- [EVIDENCE; negative, `VC5-SEM-01`]: In the decblock candidate with the same VC5 SP3 flags, `GetBlupiInfo` at `0x57b0` has four target output stores, including two OR-combined flags. The bitwise-OR candidate is 80 bytes against 67; changing both joins to logical `||` produces 112 bytes and still mismatches. Neither construct is a complete fix; retain bitwise OR as the better behavior candidate. Classification: negative for both source-form variants.
+- [EVIDENCE; negative, `VC5-SEM-01` / `VC5-CTX-01..04`]: In the decblock candidate with VC5 SP3 flags, `GetBlupiInfo` at `0x57b0` has four target output stores, including two OR-combined flags. The bitwise-OR candidate is 80 bytes against 67; changing both joins to logical `||` produces 112 bytes and still mismatches. A private header reorder aligns the flag offsets but leaves an 80-byte mismatch; a `before:GetBlupiInfo` context probe with zero declarations also remains MISMATCH. Neither construct nor layout hypothesis is a complete fix; retain bitwise OR as the better behavior candidate. Classification: negative for both source-form variants and the tested context point.
+- [EVIDENCE; negative, `VC5-SEM-01`]: `PlayPrepare` at `0x3e90` targets a 200-record walk from `m_moveObject[0]` and only the six random-phase types shown by pseudocode. A scratch decblock candidate changed the inherited reverse/off-by-one loop to a forward 0–199 loop, used a `MoveObject*` countdown loop, omitted the two resets absent from target stores under the private flag layout, and narrowed the randomization list. The section fell from 784 to 768 bytes but remains MISMATCH against 703. The target-backed changes are not a complete reconstruction; field identity/order remains partly hypothetical.
 - [EVIDENCE; negative, `VC5-SEM-01`]: In the decblupi candidate with VC5 SP3 `/O2 /GX /ML /Gd /Gy`, the target pollution emitter at `0xfc10` returns timer quotients/object-start status and lacks SB2's over-state branch. The oracle-derived `int` return candidate shrinks the SB2 body from 624 to 480 bytes against the 439-byte target, but remains MISMATCH. Direct modulo expressions instead of local temporaries made no size change. Classification: negative as a complete reconstruction; source signature/form remains unverified.
-- [EVIDENCE; negative, `VC5-SEM-01`]: In the decblock candidate with the same VC5 SP3 flags, the SB2 `AdaptMotorVehicleSound` PlayImage sequence is 144 bytes against the 123-byte target, whose four guarded calls target the sound adaptation helper at `0x23220`. The merged `CSound` API has no corresponding declaration. Classification: negative for direct SB2 source transfer; no relocation-verified candidate.
+- [EVIDENCE; negative, `VC5-SEM-01`]: A second `MoveObjectPollution` source form (`POINT pos = m_blupiPos`, then adjust `pos.x` before `ObjectStart`) emitted 496 bytes against the 439-byte target. Both scratch forms use the target-supported DIR_RIGHT check and private flag-order hypothesis; neither is STRICT. This rules out the local-POINT form as a complete fix, not as the target's exact source form.
+- [EVIDENCE; negative, `VC5-SEM-01`]: The oracle-derived `IsWorld` behavior narrows SB2's many World/Level cases to three icon ranges (`0x9e..0xa5`, `0xa6..0xad`, `0xae..0xb5`) returning 1–8, plus `0xb8 -> 99`, with other values returning -1. This reduced the candidate from 272 to 192 bytes against the 184-byte target. Separate-int and reversed-argument signature probes did not change the result. Classification: negative for the tested source form; target behavior is supported, but return/control-flow code generation remains open.
+- [EVIDENCE; confirmed-transferable, `VC5-SEM-01`]: The scratch `decdesign` candidate `scratch/tu/des_screen_local/decdesign.cpp`, built with VC5 SP3 `/O2 /GX /ML /Gd /Gy`, strictly matches `ScreenPosToCelPos` (133 bytes), `SetIconLiftAndStuff` (93), and `PlaceDecor` (125). Their target-backed changes are listed above. No canonical source or shared header was edited.
+- [EVIDENCE; confirmed-transferable, `VC5-SEM-01`]: In the decblock candidate with VC5 SP3 `/O2 /GX /ML /Gd /Gy`, changing the four guarded calls from `PlayImage(sound, POINT)` to `CSound::Play(sound, x, y)` reduced `AdaptMotorVehicleSound` from 144 to a 128-byte section and made the 123-byte target at `0x58d0` STRICT. Each call relocation resolves to the already-STRICT `CSound::Play` body at `0x23220`; no header delta was needed. Classification: Blupi-specific source/API correction.
 
 ## Current limits and next step
 
-[EVIDENCE] The canonical manifest remains untouched by this worker. Current scratch probes produce 12 STRICT decblock bodies (426 unique target bytes) and three new STRICT decblupi effect bodies (430 unique target bytes); no candidate was integrated into `src/`. The former zero-hit decblock result is superseded by the oracle-first table above. The 26-function block behavior maps to SB2 `decor.cpp` methods, but the assigned SB1 TU filename/source generation remains a hypothesis; no map edit is proposed.
+[EVIDENCE] The canonical manifest remains untouched by this worker. The refreshed `src/` candidates have 34 unique strict bodies across decblock (12), decblupi (7), decmove (11), and decdesign (4), totaling 3,403 bytes. Scratch `des_screen_local` adds three strict decdesign bodies (351 bytes), and `engine_adapt_sound` adds strict `AdaptMotorVehicleSound` (123 bytes), for a 38-body / 3,877-byte engine candidate set. The former zero-hit decblock result is superseded by the oracle-first table above. The 26-function block behavior maps to SB2 `decor.cpp` methods, but the assigned SB1 TU filename/source generation remains a hypothesis; no map edit is proposed.
 
-[OPEN] `PlayPrepare` (784/703), `GetBlupiInfo` (80/67), `AdaptMotorVehicleSound` (144/123), and the 439-byte pollution emitter (480 candidate bytes) remain mismatches. `StopSound` and `ChangePhase` behavior is clear from the oracle, but the merged `CSound` API lacks the target's direct sound helper; their scratch attempts were discarded after compile errors. Constructor/Create/LoadImages/InitDecor/Build/DrawInfo/DecorNextAction and the tick/input body still need oracle-derived source. The CDecor allocation tail is sized but semantically unpartitioned; see the proposed opaque tail delta above. The `decblock`/`decdesign` boundary remains `0x5a20`, and no `oracle/tu_map.csv` change was made by this worker.
+[OPEN] `PlayPrepare` (768–784/703) and `GetBlupiInfo` (80/67) remain mismatches; `MoveObjectPollution` remains 480/439 (496 with a local `POINT`). `AdaptMotorVehicleSound` is STRICT in the scratch candidate. `StopSound` and `ChangePhase` behavior is clear from the oracle, but the merged `CSound` API still lacks their target direct-stop helper; their scratch attempts were discarded after compile errors. Constructor/Create/LoadImages/InitDecor/Build/DrawInfo/DecorNextAction and the tick/input body still need oracle-derived source. The CDecor allocation tail is sized but semantically unpartitioned; see the proposed opaque tail delta above. The `decblock`/`decdesign` boundary remains `0x5a20`, and no `oracle/tu_map.csv` change was made by this worker.

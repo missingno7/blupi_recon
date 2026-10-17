@@ -185,7 +185,7 @@ This round supersedes the earlier candidate-status rows above for these four TUs
 - **[EVIDENCE] `CJauge::Draw` at `0x1ee50`: STRICT.** The private `def.h` value `CHJAUGE=5` matches the oracle's `DrawPart` channel. All three call relocations (candidate offsets 88, 179, 246) resolve to oracle function entries. The oracle function record is 255 bytes; the verifier compares a 256-byte candidate extent, whose last byte is the matching `0x90` at `0x1ef4f`, outside the recorded function. Count 255 unique function bytes. This resolves the three relocation gaps noted in `BLUPI-SEM-01` validation.
 - **[EVIDENCE] `DrawText` at `0x23770`: STRICT, 48 bytes.** The source loop `while (*pText != 0) DrawChar(..., *pText++, font)` matches the oracle body, including its call relocation to `DrawChar` at `0x236b0`.
 
-### Private header deltas
+### Private header deltas (historical; superseded below)
 
 - **[EVIDENCE] `scratch/tu/uires/jauge/def.h`:** `CHJAUGE` 12 to 5, supported by the channel argument in oracle `CJauge::Draw` and the strict result above.
 - **[EVIDENCE] `scratch/tu/uires/text/def.h`:** adds `#undef DrawText` and `#undef GetCharWidth` at the end of private `def.h`, after the Windows headers introduce those aliases. Without these undefs, the object emits `DrawTextA` and `GetCharWidthA`, so the SB1 symbols cannot be compared. `CHLITTLE=7` and `CHTEXT=6` already match current `src/def.h`; no change was needed here.
@@ -207,3 +207,47 @@ This round supersedes the earlier candidate-status rows above for these four TUs
 - **[EVIDENCE]** All mapped `CMenu` bodies remain strict in this run. `CMenu::Create`, `Draw`, and `Update` have no body assignment in `oracle/tu_map.csv`, so they were not treated as targets.
 
 Reproduction outputs: `build/verify-uires-final/results.json` and `build/verify-uires-final/logs/`.
+
+
+## Residuals follow-up after central integration (2026-10-17)
+
+This section is authoritative over the earlier private-header and candidate-status notes. The four scratch `.cpp` files were refreshed from current `src/`; quoted includes point at the canonical headers. The final combined verification is `build/verify-uires-round3-final/results.json`, built with VC5 SP3 `/O2 /GX /ML /Gd /Gy` through `tools/verify.py --tu ... --build-dir uires-round3-final`. All accepted checks passed. Canonical `src/` files were not changed.
+
+### Integrated header deltas
+
+**[EVIDENCE]** Relative to the Planet Blupi 1.8.0 `def.h`, the shared `src/def.h` values used by these TUs are now:
+
+- `CHLITTLE`: 8 to 7; `CHTEXT`: 13 to 6, supported by `DrawCharSingle` at `0x23660`.
+- `CHBUTTON`: 10 to 4, supported by `CButton::Draw` passing `m_type + 4`.
+- `CHJAUGE`: 12 to 5, supported by `CJauge::Draw` and its three strict `DrawPart` relocations.
+- After the `DEF_H` guard: `#ifdef DrawText` / `#undef DrawText` / `#endif`, and the corresponding `GetCharWidth` undef block. These remove the Windows aliases so the intended project symbols are emitted.
+
+`CHLITTLE` and `CHTEXT` were already integrated in the shared header before this round. The current `CHBUTTON` and `CHJAUGE` values supersede the historical private-header notes above. No `button.h` or `text.h` signature/member delta is retained in the final candidate.
+
+### Current mapped results
+
+- **[EVIDENCE] `CJauge::Draw`, `0x1ee50`: STRICT, 255 original bytes.** The three `DrawPart` call relocations resolve. This is the canonical source result.
+- **[EVIDENCE] `DrawText`, `0x23770`: STRICT, 48 bytes.** This is the canonical source result.
+- **[EVIDENCE] `GetCharWidth`, `0x23610`: STRICT, 66 original bytes.** The candidate COFF extent is 80 bytes including 14 bytes after the recorded oracle function. Every code relocation resolves. This body indexes the glyph rank table and then the large or little width table.
+- **[EVIDENCE] All eight mapped `CMenu` bodies are STRICT:** constructor `0x1eff0/20`, destructor `0x1f010/1`, `Delete` `0x1f020/18`, `TreatEvent` `0x1f040/117`, `Detect` `0x1f0d0/107`, `MouseDown` `0x1f140/5`, `MouseMove` `0x1f150/95`, and `MouseUp` `0x1f1b0/44`. `Create`, `Draw`, and `Update` have no assigned oracle body and were not forced to an address.
+- **[OPEN] `CButton::Create` (`0x2a30/161`, candidate 176), `Draw` (`0x2b40/325`, candidate 336), `GetToolTips` (`0x2e10/237`, candidate 192), and `MouseDown` (`0x2f70/84`, candidate 96) remain MISMATCH.
+- **[OPEN] `DrawChar`, `0x236b0/144`, remains MISMATCH at 144 candidate bytes** with the canonical `char` API. The corrected glyph data and field ordering are not sufficient to reproduce its code generation.
+- **[EVIDENCE]** `GetCharWidth` at `0x23610` is currently assigned to `sound.cpp` with inferred/bracketed confidence in `oracle/tu_map.csv`. Its disassembly directly indexes the glyph table at `0x47b530` and width tables at `0x47bb40` / `0x47bbc0`, and it is called by strict text bodies. The body is text code; the inferred TU ownership should be corrected centrally.
+- **[EVIDENCE]** The inferred `text.cpp` rows `0x238b0`, `0x23930`, and `0x239b0` decompile as `strstr`-style search, `fclose`-style stream cleanup, and `fread` buffer logic. **[HYPOTHESIS]** They are the pinned VC5 CRT `STRSTR.C`, `FCLOSE.C`, and `FREAD.C` implementations; no strict source probe was run this round. They are not `DrawTextPente`, `DrawTextRect`, or other text methods. Those source methods have no assigned game body in the current map; the inferred ownership should be corrected centrally.
+
+### Glyph data comparison
+
+**[EVIDENCE]** Static comparison against the original data section used table VA addresses from the decompilation. In the private `scratch/tu/texttables.h`, `table_char` at `0x47b530` (1536 bytes) was corrected at field 0 for glyph rows `0, 2-12, 14`: each prior value `0, 2, 3, ..., 12, 14` becomes `1`. In the private `scratch/tu/text.cpp`, `table_width[128]` at `0x47bb40` changes index 62 from 10 to 8 and index 124 from 6 to 2. These changes make all three candidate tables byte-equal to the oracle.
+
+`table_width_little[128]` at `0x47bbc0` already matches all 128 oracle bytes; it required no change. The data corrections remain private to this candidate and were not copied into canonical `src/`. **[OPEN]** If accepted, central source integration needs exactly the 13 `table_char` rank edits and two `table_width` value edits listed above; no table layout change is needed.
+
+### Compiler findings
+
+- **[EVIDENCE] `GetCharWidth`, text TU, VC5 SP3 `/O2 /GX /ML /Gd /Gy`:** replaced the PB `GetOffset(c)` lookup with direct glyph-rank lookup in each font branch and corrected the two measured large-width entries plus the 13 glyph-rank entries above. Result: STRICT, 66 original code bytes, with relocations proven. Related `VC5-SEM-01`; classification: blupi-specific source/data reconstruction.
+- **[EVIDENCE] `DrawChar`, same TU and flags:** corrected the second glyph's table fields to `+4` x and `+5` y, and kept the rank in an `int` local before the `-1` sentinel test. With the canonical `char` API it remains MISMATCH; byte comparison finds 20 non-relocated byte positions different in its 144-byte body. A private `int` declaration/definition made `DrawChar` STRICT but changed `DrawText` from 48 to 64 bytes and MISMATCH, so that API variant was discarded. `VC5-SEM-01`, `VC5-CTX-04`; classification: negative for the `int` API due to peer regression, canonical signature still open.
+- **[EVIDENCE] `CButton::Create`, same button TU flags:** changed the range guard into the target's valid-range block. It stayed MISMATCH at 176 bytes. `VC5-CTL-03`; classification: negative for this guard rewrite.
+- **[EVIDENCE] `CButton::MouseDown`, same button TU flags:** changed the failed-detect early return into a successful-detect block. It stayed MISMATCH at 96 bytes. `VC5-CTL-03`; classification: negative for this guard rewrite.
+- **[EVIDENCE] `CButton::GetToolTips`, same button TU flags:** a control-flow reconstruction of the demo exception, expanded-menu bound, tooltip limit, and negative demo result emitted 240 bytes against the 237-byte oracle and caused an accepted `MouseMove` regression. The final scratch source is restored to the canonical version. `VC5-SEM-01`, `VC5-CTX-04`; classification: negative for this tested source form.
+- **[EVIDENCE]** The final text candidate keeps the canonical `char` prototypes so `DrawText` and `GetTextWidth` remain STRICT. `DrawChar` parameter-width experiments therefore remain bounded by the observed caller/TU context; no dummy declarations or forced constructs were retained.
+
+Final combined verification totals: button 14 STRICT plus one FOLDED; jauge 9 STRICT; menu 8 STRICT; text 6 STRICT. The text strict additions in this follow-up count 66 unique original code bytes for `GetCharWidth`; data bytes are reported separately and are not included in code-byte coverage.

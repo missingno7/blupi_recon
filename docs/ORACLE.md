@@ -49,7 +49,7 @@ The seven thunk entries are at RVAs `0x20450`, `0x23890`–`0x238a2`, `0x2793e`,
 
 ## [EVIDENCE] CRT boundary correction
 
-The earlier `0x24140` split was too late. A VC5 SP3 compile of `VC\CRT\SRC\FOPEN.C` strictly matches `_fsopen` at `0x23af0` and `fopen` at `0x23b20`, with their helper relocations verified; `SPRINTF.C` strictly matches `sprintf` at `0x23b40`. Set the game coverage end to `0x23af0` (142,064 bytes from RVA `0x1000`). `oracle/tu_map.csv` now reclassifies entries `0x23af0`–`0x240c0` as CRT; the later `0x24140` runtime boundary remains a useful structural anchor, but not the first CRT entry. The existing `kind` labels in `oracle/functions.csv` retain their original inventory split.
+The earlier `0x24140` split was too late. A VC5 SP3 compile of `VC\CRT\SRC\FOPEN.C` strictly matches `_fsopen` at `0x23af0` and `fopen` at `0x23b20`, with their helper relocations verified; `SPRINTF.C` strictly matches `sprintf` at `0x23b40`. A scan of the VC5 SP3 LIBC archive places `_strstr` at `0x238b0`, `_fclose` at `0x23930`, and `_fread` at `0x239b0`; each has a unique archive-member byte hit with relocation bytes masked. This moves the first supported CRT entry and game coverage end to `0x238b0` (141,488 bytes from RVA `0x1000`); archive hits establish CRT ownership but are not strict relocation proofs. `oracle/tu_map.csv` reclassifies `0x238b0`–`0x240c0` as CRT. The existing `kind` labels in `oracle/functions.csv` retain their original inventory split.
 
 ## [EVIDENCE] Vtables and strings
 

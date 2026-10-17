@@ -1,5 +1,5 @@
 #include <def.h>
-#include <decor.h>
+#include "decor.h"
 #include <misc.h>
 #include <obstacle.h>
 #include <dectables.h>
@@ -230,10 +230,10 @@ void CDecor::AdaptMotorVehicleSound(POINT pos)
 {
 	POINT blupiPos = POINT(pos.x - m_posDecor.x, pos.y - m_posDecor.y);
 
-	if (m_bHelicoMarch) m_pSound->PlayImage(SOUND_HELICOHIGH, blupiPos);
-	if (m_bHelicoStop) m_pSound->PlayImage(SOUND_HELICOLOW, blupiPos);
-	if (m_bJeepMarch)  m_pSound->PlayImage(SOUND_JEEPHIGH, blupiPos);
-	if (m_bJeepStop) m_pSound->PlayImage(SOUND_JEEPLOW, blupiPos);
+	if (m_bHelicoMarch) m_pSound->Play(SOUND_HELICOHIGH, blupiPos.x, blupiPos.y);
+	if (m_bHelicoStop) m_pSound->Play(SOUND_HELICOLOW, blupiPos.x, blupiPos.y);
+	if (m_bJeepMarch)  m_pSound->Play(SOUND_JEEPHIGH, blupiPos.x, blupiPos.y);
+	if (m_bJeepStop) m_pSound->Play(SOUND_JEEPLOW, blupiPos.x, blupiPos.y);
 }
 
 BOOL CDecor::BlitzActif(POINT cel)

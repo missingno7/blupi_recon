@@ -1839,9 +1839,3 @@ bool operator==(POINT a, const POINT& b)
 
 #endif /* DEF_H */
 
-#ifdef DrawText
-#undef DrawText
-#endif
-#ifdef GetCharWidth
-#undef GetCharWidth
-#endif
