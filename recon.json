@@ -305,6 +305,18 @@
       "tu": "src/decblock.cpp"
     },
     {
+      "symbol": "?Create@CDecor@@QAEXPAXPAVCSound@@PAVCPixmap@@PAVCNetwork@@@Z",
+      "rva": "0x000039d0",
+      "size": 208,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?LoadImages@CDecor@@QAEHXZ",
+      "rva": "0x00003aa0",
+      "size": 192,
+      "tu": "src/decblock.cpp"
+    },
+    {
       "symbol": "?InitGamer@CDecor@@QAEXXZ",
       "rva": "0x00003b60",
       "size": 32,
@@ -329,6 +341,12 @@
       "tu": "src/decblock.cpp"
     },
     {
+      "symbol": "?PlayPrepare@CDecor@@QAEXH@Z",
+      "rva": "0x00003e90",
+      "size": 704,
+      "tu": "src/decblock.cpp"
+    },
+    {
       "symbol": "?BuildPrepare@CDecor@@QAEXXZ",
       "rva": "0x00004150",
       "size": 112,
@@ -338,6 +356,12 @@
       "symbol": "?IsTerminated@CDecor@@QAEHXZ",
       "rva": "0x000041c0",
       "size": 16,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?MoveStep@CDecor@@QAEXH@Z",
+      "rva": "0x000041d0",
+      "size": 272,
       "tu": "src/decblock.cpp"
     },
     {
@@ -411,6 +435,12 @@
       "symbol": "?AdaptMotorVehicleSound@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x000058d0",
       "size": 128,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?ChangePhase@CDecor@@QAEXH@Z",
+      "rva": "0x00005950",
+      "size": 208,
       "tu": "src/decblock.cpp"
     },
     {
@@ -1139,6 +1169,12 @@
       "symbol": "?SearchDoor@CDecor@@QAEHHPAUtagPOINT@@@Z",
       "rva": "0x00015de0",
       "size": 80,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?AdaptDoors@CDecor@@QAEXHH@Z",
+      "rva": "0x00015e30",
+      "size": 848,
       "tu": "src/decor.cpp"
     },
     {

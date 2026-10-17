@@ -715,7 +715,7 @@ success:
 			if (pBuffer->mission == 99)
 			{
 				LoadString(0x11c, temp, 100);
-				sprintf(name, temp, pBuffer->nbVies, pBuffer->nbTresor, pBuffer->totalTresor);
+				sprintf(name, temp, open, pBuffer->nbVies, pBuffer->nbTresor, pBuffer->totalTresor);
 			}
 			else if (pBuffer->mission < 99)
 			{
@@ -804,7 +804,7 @@ BOOL CDecor::SearchDoor(int n, POINT *cel)
 void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 {
 	POINT cel;
-	int index;
+	int index, i;
 	int icon;
 	POINT newPosBlupi;
 
@@ -814,7 +814,7 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 	{
 		if (mission == 1)
 		{
-			for (int i = 0; i < 10; ++i)
+			for (i = 0; i < 10; ++i)
 			{
 				if (SearchDoor(i, &cel))
 				{
@@ -831,12 +831,11 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 						m_moveObject[index].posStart.y = cel.y * DIMOBJY;
 						m_moveObject[index].posEnd.x = cel.x * DIMOBJX;
 						m_moveObject[index].posEnd.y = cel.y * DIMOBJY - DIMOBJY;
-						m_moveObject[index].posCurrent.x = m_moveObject[index].posStart.x;
-						m_moveObject[index].posCurrent.y = m_moveObject[index].posStart.y;
+						m_moveObject[index].posCurrent = m_moveObject[index].posStart;
 						m_moveObject[index].step = STEP_STOPSTART;
 						m_moveObject[index].time = 0;
 						m_moveObject[index].phase = 0;
-						m_moveObject[index].channel = CHOBJECT;
+						m_moveObject[index].channel = 1;
 						m_moveObject[index].icon = 0xb7;
 						PlaySound(SOUND_DOOR, m_moveObject[index].posStart, FALSE);
 					}
@@ -856,7 +855,7 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 		}
 		else if (mission % 10 == 0)
 		{
-			for (int i = 0; i < 10; ++i)
+			for (i = 0; i < 10; ++i)
 			{
 				if (SearchWorld(i, &cel, &newPosBlupi))
 				{
@@ -873,18 +872,20 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 						m_moveObject[index].posStart.y = cel.y * DIMOBJY;
 						m_moveObject[index].posEnd.x = cel.x * DIMOBJX;
 						m_moveObject[index].posEnd.y = cel.y * DIMOBJY - DIMOBJY;
-						m_moveObject[index].posCurrent.x = m_moveObject[index].posStart.x;
-						m_moveObject[index].posCurrent.y = m_moveObject[index].posStart.y;
+						m_moveObject[index].posCurrent = m_moveObject[index].posStart;
 						m_moveObject[index].step = STEP_STOPSTART;
 						m_moveObject[index].time = 0;
 						m_moveObject[index].phase = 0;
-						m_moveObject[index].channel = CHOBJECT;
+						m_moveObject[index].channel = 1;
 						m_moveObject[index].icon = 0xb6;
 						PlaySound(SOUND_DOOR, m_moveObject[index].posStart, FALSE);
 						for (int j = 0; j < MAXTEAM; j++)
 						{
 							m_blupiStartPos[j] = newPosBlupi;
-							m_blupiStartDir[j] = (m_blupiStartPos[j].x < cel.x * DIMOBJX) ? DIR_RIGHT : DIR_LEFT;
+							if (newPosBlupi.x < cel.x * DIMOBJX)
+								m_blupiStartDir[j] = DIR_RIGHT;
+							else
+								m_blupiStartDir[j] = DIR_LEFT;
 						}
 					}
 				}
