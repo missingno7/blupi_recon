@@ -126,6 +126,8 @@ def main():
     parser.add_argument("--opt", choices=("ref,icf", "ref,noicf", "noref,noicf"), default="ref,icf")
     parser.add_argument("--library", action="append", default=[], type=Path, help="additional genuine library")
     parser.add_argument("--oracle", type=Path, default=DEFAULT_ORACLE)
+    parser.add_argument("--diagnostic", action="store_true",
+                        help="link even when accepted functions regress (layout diagnostics only; the gate stays FAIL)")
     args = parser.parse_args()
     out = args.out_dir.resolve()
     # Generated artifacts belong in build/ or scratch/, never beside original inputs.
@@ -200,7 +202,9 @@ def main():
     print(f"accepted-function gate {gate['status']}; coverage {coverage} / {verify.GAME_TEXT_SIZE}", flush=True)
     if regressions:
         print("\n".join(regressions))
-        return 1
+        if not args.diagnostic:
+            return 1
+        print("DIAGNOSTIC LINK: accepted-function gate FAILED; the image is for layout measurement only", flush=True)
     ordered = oracle_order(units) if args.order == "oracle" else units
     oracle = pefile.PE(str(args.oracle))
     header = oracle.OPTIONAL_HEADER

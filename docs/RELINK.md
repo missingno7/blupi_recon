@@ -450,3 +450,24 @@ without losing accepted matches; establish explo's physical extent. Then rerun
 the natural full link and measure CRT extraction/folding, DLL/IAT order and
 section shifts. Resource reconstruction and exact 5.10 linker patch remain
 separate open items.
+
+## Diagnostic link of the evidence candidates (2026-10-18)
+
+[EVIDENCE] `tools/relink.py --diagnostic` links even when accepted functions regress, writes gate FAIL to gate.json
+and prints a banner; the image is for layout measurement only (never a match claim, never executed). Objects:
+`verify.py --build-dir linkdiag` with scratch/linkfix candidates (decor tables + table_decor_action +
+DecorNextAction in decblock.cpp, the three SB2-only decmove callers removed, table_adapt_decor moved, pixtables-only
+dectables.cpp, empty obstacle.cpp; docs/LINK_CONTEXT.md). Gate: GetBlupiInfo and MockeryDetect regress (context).
+
+[EVIDENCE] **First successful natural link** (`build/relink/diag/`): zero unresolved and zero duplicate symbols.
+- `.text` virtual size is only 48 bytes below the oracle; `.rdata` is 5,884 bytes larger, which moves `.data` up one
+  page (+0x1000); `.data` is 48,964 bytes smaller; `.rsrc` is absent (not reconstructed).
+- Accepted functions: every function up to DrawInfo (0x5270) links at its oracle address; the first drift is
+  Build's 10-byte shortfall (-16 after alignment). 212 / 402 accepted functions are byte-exact at their linked address;
+  the others differ only through shifted addresses.
+- `??1CButton` (accepted under button.cpp) links 432 bytes away: the oracle has it as the first function of the
+  menu.cpp block, consistent with an inline (COMDAT) destructor first supplied by menu.obj. [HYPOTHESIS]
+- network.cpp: the oracle places EnumProvidersCallback/EnumSessionsCallback before EnumProviders/EnumSessions; our
+  objects emit them after, whether `static` or not and whether defined before or after (prototype). [OPEN]
+- `.rdata` growth and the `.data` deficit are the next layout items to explain (imports, CRT constants, uninitialized
+  data). The ordering items above are free of any accepted-function byte change.
