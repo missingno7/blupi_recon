@@ -7,6 +7,8 @@ import argparse
 import os
 from pathlib import Path
 import subprocess
+import time
+import contextlib
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,6 +48,36 @@ def tool_layout(tree: Path, vc_root_arg: str | None) -> tuple[Path, Path, Path |
     vc_root = vc_root.resolve()
     include_dirs = [vc_root / "INCLUDE"]
     return compiler_bin, vc_root, shared_bin, include_dirs
+
+
+@contextlib.contextmanager
+def compile_slot():
+    """Machine-wide cap on concurrent compiles shared by every caller (verify, permute, ad-hoc loops).
+
+    Several sandboxed workers fanning out parallel compile loops exhausted the Codex sandbox desktop heap
+    and froze the host twice (2026-10-17). Slots are byte-range locks on files under build/locks/; Windows
+    releases them when the holding process exits, so a killed compile never leaks a slot.
+    """
+    import msvcrt
+    slots = max(1, int(os.environ.get("BLUPI_COMPILE_SLOTS", "6")))
+    lock_dir = ROOT / "build" / "locks"
+    lock_dir.mkdir(parents=True, exist_ok=True)
+    while True:
+        for index in range(slots):
+            handle = open(lock_dir / f"compile-{index}.lock", "a+b")
+            try:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError:
+                handle.close()
+                continue
+            try:
+                yield
+            finally:
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+                handle.close()
+            return
+        time.sleep(0.1)
 
 
 def main() -> int:
@@ -102,6 +134,11 @@ def main() -> int:
     command += [f"/D{definition}" for definition in args.define]
     command += args.flag
 
+    with compile_slot():
+        return _compile(args, compiler_bin, env, command, output, tree, temp_dir)
+
+
+def _compile(args, compiler_bin, env, command, output, tree, temp_dir) -> int:
     banner_run = subprocess.run([str(compiler_bin / "CL.EXE")], cwd=args.cwd.resolve(), env=env,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                                 encoding="mbcs", errors="replace")

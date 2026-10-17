@@ -16,6 +16,10 @@ Hard rules:
   `scratch/`. Commit only small canonical inputs, focused scripts and concise docs.
 - Separate proven facts from hypotheses in docs ([EVIDENCE] / [HYPOTHESIS] / [OPEN]).
 - Do not run git commit; the supervisor integrates. Do not leave background processes running.
+- Host safety (the PC froze twice from too many concurrent sandboxed processes): run shell commands one at a
+  time and to completion - no parallel/background shell sessions, no fanning out several compile loops at once.
+  All compiles go through tools/msvc.py, which enforces a machine-wide cap (BLUPI_COMPILE_SLOTS, default 6);
+  never call cl.exe directly. Keep BLUPI_JOBS / permute --jobs at their defaults.
 - Matching loop: candidate in scratch -> `tools/verify.py --tu src/X.cpp=<candidate>` (docs/WORKFLOW.md). When a
   function does not match, consult msvc5kb/README.md (`msvc5kb/tools/kb.py hints <func>`) before guessing; Blood II
   rules are hypotheses until confirmed on SB1. Record verified compiler findings and negatives in the catalog.
