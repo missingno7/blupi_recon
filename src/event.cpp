@@ -565,6 +565,45 @@ CEvent::~CEvent()
 	WriteInfo(m_gamer);
 }
 
+void CEvent::OutputNetDebug(const char* str)
+{
+	FILE* file;
+
+	if (m_pDecor->GetNetDebug())
+	{
+		file = fopen("debug.txt", "ab");
+		if (file)
+		{
+			fwrite(str, 1, strlen(str), file);
+			fclose(file);
+		}
+	}
+}
+
+// Returns the mouse position
+
+POINT CEvent::GetMousePos()
+{
+	POINT       pos;
+
+	GetCursorPos(&pos);
+	ScreenToClient(m_hWnd, &pos);
+
+	return pos;
+}
+
+void CEvent::SetFullScreen(BOOL bFullScreen)
+{
+	m_bFullScreen = bFullScreen;
+}
+
+// Initializes the mouse type.
+
+void CEvent::SetMouseType(int mouseType)
+{
+	m_mouseType = mouseType;
+}
+
 void CEvent::Create(HINSTANCE hInstance, HWND hWnd, CPixmap *pPixmap, CDecor *pDecor,
 					CSound *pSound, CNetwork *pNetwork, CMovie *pMovie )
 {
@@ -606,30 +645,6 @@ int CEvent::GetState(int button)
 	return m_buttons[index].GetState();
 }
 
-// Returns the mouse position
-
-POINT CEvent::GetMousePos()
-{
-	POINT       pos;
-
-	GetCursorPos(&pos);
-	ScreenToClient(m_hWnd, &pos);
-
-	return pos;
-}
-
-void CEvent::SetFullScreen(BOOL bFullScreen)
-{
-	m_bFullScreen = bFullScreen;
-}
-
-// Initializes the mouse type.
-
-void CEvent::SetMouseType(int mouseType)
-{
-	m_mouseType = mouseType;
-}
-
 void CEvent::SetState(int button, int state)
 {
 	int     index;
@@ -668,16 +683,6 @@ void CEvent::SetDemo(int button, BOOL bDemo)
 	if (index < 0) return;
 
 	m_buttons[index].SetDemo(bDemo);
-}
-
-void CEvent::SetIconMenu(int button, int* pIcons, int nbMenu)
-{
-	int      index;
-
-	index = GetButtonIndex(button);
-	if (index < 0) return;
-
-	m_buttons[index].SetIconMenu(pIcons, nbMenu);
 }
 
 /*
@@ -722,6 +727,16 @@ void CEvent::SetMenu(int button, int menu)
 	m_buttons[index].SetMenu(menu);
 }
 
+void CEvent::SetIconMenu(int button, int* pIcons, int nbMenu)
+{
+	int      index;
+
+	index = GetButtonIndex(button);
+	if (index < 0) return;
+
+	m_buttons[index].SetIconMenu(pIcons, nbMenu);
+}
+
 // Restore the game after activation in fullScreen mode.
 
 void CEvent::RestoreGame()
@@ -740,42 +755,6 @@ void CEvent::FlushInput()
 {
 	m_keyPress = 0;
 	m_pDecor->KeyChange(0);
-}
-
-BOOL CEvent::CreateButtons()
-{
-	int		message;
-	int*	iconMenu;
-	POINT	pos;
-	BOOL	bMinimizeRedraw = FALSE;
-
-	
-	for (int i = 0; table[m_index].buttons[i].message != 0; i++)
-	{
-		pos.x = table[m_index].buttons[i].x;
-		pos.y = table[m_index].buttons[i].y;
-		message = table[m_index].buttons[i].message;
-
-		m_buttons[i].Create(m_hWnd, m_pPixmap, m_pSound, pos,
-			table[m_index].buttons[i].type,
-			bMinimizeRedraw, message);
-
-		iconMenu = table[m_index].buttons[i].iconMenu;
-
-		m_buttons[i].SetIconMenu(&table[m_index].buttons[i].iconMenu[1], iconMenu[0]);
-		m_buttons[i].SetToolTips(&table[m_index].buttons[i].toolTips[1], table[m_index].buttons[i].toolTips[0]);
-	}
-	return TRUE;
-}
-
-BOOL CEvent::LoadImageFromDisc()
-{
-	char res[100];
-
-	strcpy(res, table[m_index].backName);
-	if (res[0] && table[m_index].bCDrom)
-		AddCDPath(res);
-	return m_pPixmap->CacheAll(FALSE, m_hWnd, TRUE, TRUE, TRUE, 1, res, m_pDecor->GetRegion());
 }
 
 void CEvent::ReadInput()
@@ -879,6 +858,124 @@ void CEvent::ReadInput()
 	}
 }
 
+BOOL CEvent::NetCreate(int provider)
+{
+	BOOL created;
+
+	MouseRelease();
+	created = m_pNetwork->CreateProvider(provider);
+	MouseCapture();
+	return created;
+}
+
+BOOL CEvent::NetEnumSessions()
+{
+	BOOL enumSess;
+
+	MouseRelease();
+	enumSess = m_pNetwork->EnumSessions();
+	MouseCapture();
+	return enumSess;
+}
+
+BOOL CEvent::CreateButtons()
+{
+	int		message;
+	int*	iconMenu;
+	POINT	pos;
+	BOOL	bMinimizeRedraw = FALSE;
+
+	
+	for (int i = 0; table[m_index].buttons[i].message != 0; i++)
+	{
+		pos.x = table[m_index].buttons[i].x;
+		pos.y = table[m_index].buttons[i].y;
+		message = table[m_index].buttons[i].message;
+
+		m_buttons[i].Create(m_hWnd, m_pPixmap, m_pSound, pos,
+			table[m_index].buttons[i].type,
+			bMinimizeRedraw, message);
+
+		iconMenu = table[m_index].buttons[i].iconMenu;
+
+		m_buttons[i].SetIconMenu(&table[m_index].buttons[i].iconMenu[1], iconMenu[0]);
+		m_buttons[i].SetToolTips(&table[m_index].buttons[i].toolTips[1], table[m_index].buttons[i].toolTips[0]);
+	}
+	return TRUE;
+}
+
+BOOL CEvent::LoadImageFromDisc()
+{
+	char res[100];
+
+	strcpy(res, table[m_index].backName);
+	if (res[0] && table[m_index].bCDrom)
+		AddCDPath(res);
+	return m_pPixmap->CacheAll(FALSE, m_hWnd, TRUE, TRUE, TRUE, 1, res, m_pDecor->GetRegion());
+}
+
+void CEvent::NetAdjustLobbyButtons()
+{
+	BOOL allReady = TRUE;
+	int nbReady = 0;
+	int offset = 0;
+	int button = WM_BUTTON11;
+	do
+	{
+		if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->bIsPresent)
+		{
+			SetHide(button - 10, FALSE);
+			SetHide(button, FALSE);
+			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid && !((NetPlayer*)((char*)m_pNetwork->m_players + offset))->ready) SetEnable(button - 10, TRUE);
+			else SetEnable(button - 10, FALSE);
+			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid) SetEnable(button, TRUE);
+			else SetEnable(button, FALSE);
+			int icon = ((NetPlayer*)((char*)m_pNetwork->m_players + offset))->team + 108;
+			SetIconMenu(button - 10, &icon, 1);
+			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->ready)
+			{
+				icon = 91;
+				SetIconMenu(button, &icon, 1);
+				++nbReady;
+			}
+			else
+			{
+				icon = 90;
+				SetIconMenu(button, &icon, 1);
+				allReady = FALSE;
+			}
+		}
+		else
+		{
+			SetHide(button - 10, TRUE);
+			SetHide(button, TRUE);
+		}
+		offset += sizeof(NetPlayer);
+		button++;
+	} while (button - WM_BUTTON11 < MAXNETPLAYER);
+
+	if (m_pNetwork->IsHost())
+	{
+#if _DEMO || _VALUE
+		SetDemo(WM_PREV, TRUE);
+		SetDemo(WM_NEXT, TRUE);
+#else
+		if (m_multi > 1 && !(allReady && nbReady > 1)) SetEnable(WM_PREV, TRUE);
+		else SetEnable(WM_PREV, FALSE);
+		if (m_multi < 10 && !(allReady && nbReady > 1)) SetEnable(WM_NEXT, TRUE);
+		else SetEnable(WM_NEXT, FALSE);
+#endif
+		if (allReady && nbReady > 1) SetEnable(WM_PHASE_DP_STARTMULTI, TRUE);
+		else SetEnable(WM_PHASE_DP_STARTMULTI, FALSE);
+	}
+	else
+	{
+		SetHide(WM_PREV, TRUE);
+		SetHide(WM_NEXT, TRUE);
+		SetHide(WM_PHASE_DP_STARTMULTI, TRUE);
+	}
+}
+
 void CEvent::ChangePause(BOOL bPause, BOOL bMulti)
 {
 	char data[3];
@@ -968,85 +1065,9 @@ void CEvent::NetDraw()
 	m_pDecor->DrawMap(TRUE, NetSearchPlayer(m_pNetwork->m_dpid));
 }
 
-void CEvent::ChatSend()
+void CEvent::DrawMap()
 {
-	int playerId;
-	char data[108];
-
-	if (m_textInput[0])
-	{
-		playerId = NetSearchPlayer(m_pNetwork->m_dpid);
-		strcpy(&data[8], "<");
-		if (playerId != -1)
-		{
-			strcat(&data[8], m_pNetwork->m_players[playerId].name);
-		}
-		strcat(&data[8], "> ");
-		strcat(&data[8], m_textInput);
-		ChatPush(&data[8]);
-		data[0] = 108;
-		data[1] = MESS_CHAT;
-		*(DPID*)&data[4] = m_pNetwork->m_dpid;
-		m_pNetwork->Send(data, 108, DPSEND_GUARANTEED);
-		m_textInput[0] = '\0';
-		m_textHiliStart = 0;
-		m_textHiliEnd = strlen(m_textInput);
-		m_textCursorIndex = 0;
-		SetEnable(WM_BUTTON20, 0);
-	}
-}
-
-void CEvent::ChatPush(char *str)
-{
-	int i;
-
-	char *dest;
-	for (i = 0; i < MAXCHAT; i++)
-	{
-		if (m_chatZone[i][0] == 0)
-		{
-			dest = m_chatZone[i];
-			goto found;
-		}
-	}
-	ChatPop();
-	dest = m_chatZone[MAXCHAT - 1];
-found:
-	strcpy(dest, str);
-	m_pSound->PlayImage(SOUND_TRESOR, POINT( LXIMAGE / 2, LYIMAGE / 2 ), -1, 0);
-}
-
-void CEvent::ChatFlush()
-{
-	for (int i = 0; i < MAXCHAT; i++)
-	{
-		m_chatZone[i][0] = '\0';
-	}
-}
-
-void CEvent::ChatPop()
-{
-	int i;
-	for (i = 0; i < MAXCHAT - 1; i++)
-	{
-		strcpy(m_chatZone[i], m_chatZone[i + 1]);
-	}
-	m_chatZone[MAXCHAT - 1][0] = '\0';
-}
-
-void CEvent::OutputNetDebug(const char* str)
-{
-	FILE* file;
-
-	if (m_pDecor->GetNetDebug())
-	{
-		file = fopen("debug.txt", "ab");
-		if (file)
-		{
-			fwrite(str, 1, strlen(str), file);
-			fclose(file);
-		}
-	}
+	m_pDecor->DrawMap(TRUE, NetSearchPlayer(m_pNetwork->m_dpid));
 }
 
 void AddCheatCode(char *pDst, char *pSrc)
@@ -1716,6 +1737,2053 @@ BOOL CEvent::DrawButtons()
 
 
 	return TRUE;
+}
+
+int CEvent::MousePosToSprite(POINT pos)
+{
+	int sprite;
+
+	sprite = SPRITE_POINTER;
+
+	if (m_phase != WM_PHASE_PLAY &&
+		m_phase != WM_PHASE_PLAYTEST &&
+		m_phase != WM_PHASE_BUILD)
+	{
+		if (m_phase == WM_PHASE_BYE)
+		{
+			sprite = SPRITE_POINTER;
+		}
+		else if (!MouseOnButton(pos))
+		{
+			sprite = SPRITE_ARROW;
+		}
+	}
+	if (m_bWaitMouse)
+	{
+		sprite = SPRITE_WAIT;
+	}
+	if (m_bHideMouse)
+	{
+		sprite = SPRITE_EMPTY;
+	}
+	if (m_bDisableMouse)
+	{
+		sprite = SPRITE_DISABLE;
+	}
+
+	return sprite;
+}
+
+void CEvent::MouseSprite(POINT pos)
+{
+	m_mouseSprite = MousePosToSprite(pos);
+
+	m_pPixmap->SetMousePosSprite(pos, m_mouseSprite, m_bDemoPlay);
+	ChangeSprite(m_mouseSprite);
+}
+
+void CEvent::WaitMouse(BOOL bWait)
+{
+	m_bWaitMouse = bWait;
+
+	if ( bWait )
+	{
+		m_mouseSprite = SPRITE_WAIT;
+	}
+	else
+	{
+		m_mouseSprite = MousePosToSprite(GetMousePos());
+	}
+	m_pPixmap->SetMouseSprite(m_mouseSprite, m_bDemoPlay);
+	ChangeSprite(m_mouseSprite);
+}
+
+void CEvent::HideMouse(BOOL bHide)
+{
+	m_bHideMouse = bHide;
+	m_bDisableMouse = FALSE;
+
+	if ( bHide )
+	{
+		m_mouseSprite = SPRITE_EMPTY;
+	}
+	else
+	{
+		m_mouseSprite = MousePosToSprite(GetMousePos());
+	}
+	m_pPixmap->SetMouseSprite(m_mouseSprite, m_bDemoPlay);
+	ChangeSprite(m_mouseSprite);
+}
+
+void CEvent::DisableMouse(int bDisable)
+{
+	m_bDisableMouse = bDisable;
+
+	if (bDisable)
+	{
+		m_mouseSprite = SPRITE_DISABLE;
+	}
+	else
+	{
+		m_mouseSprite = MousePosToSprite(GetMousePos());
+	}
+	m_pPixmap->SetMouseSprite(m_mouseSprite, m_bDemoPlay);
+	ChangeSprite(m_mouseSprite);
+}
+
+BOOL CEvent::EventButtons(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	POINT		pos, test;
+	int			i, lg, oldx, res;
+	UINT uid;
+
+	pos = ConvLongToPos(lParam);
+	m_textToolTips[0] = 0;
+	m_textToolTips2[0] = 0;
+	oldx = m_posToolTips.x;
+	m_posToolTips.x = -1;
+	if (m_phase != WM_PHASE_PLAY && m_phase != WM_PHASE_PLAYTEST && table[m_index].buttons[0].message)
+	{
+		i = 0;
+		while (table[m_index].buttons[i].message != 0)
+		{
+			res = m_buttons[i].GetToolTips(pos);
+			if (res != -1)
+			{
+				if (res < 0)
+				{
+					LoadString(TX_NOTINDEMO, m_textToolTips2, 50);
+					res = -res;
+					pos.y -= 12;
+				}
+				LoadString(res, m_textToolTips, 50);
+				lg = GetTextWidth(m_textToolTips);
+				pos.x += 10;
+				pos.y += 20;
+				if (pos.x > LXIMAGE - lg) pos.x = LXIMAGE - lg;
+				if (pos.y > LYIMAGE - 14) pos.y = LYIMAGE - 14;
+				m_posToolTips = pos;
+				break;
+			}
+			i++;
+		}
+	}
+	i = 0;
+	while (table[m_index].buttons[i].message != 0)
+	{
+		if (m_buttons[i].TreatEvent(message, wParam, lParam)) return TRUE;
+		i++;
+	}
+	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST)
+	{
+		if (m_menu.TreatEvent(message, wParam, lParam)) return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL CEvent::MouseOnButton(POINT pos)
+{
+	int 	i;
+
+	i = 0;
+	while ( table[m_index].buttons[i].message != 0 )
+	{
+		if ( m_buttons[i].MouseOnButton(pos) ) return TRUE;
+		i ++;
+	}
+
+	return FALSE;
+}
+
+int CEvent::SearchPhase(UINT phase)
+{
+	int		i = 0;
+
+	while (table[i].phase != 0)
+	{
+		if (table[i].phase == phase) return i;
+		i++;
+	}
+
+	return -1;
+}
+
+int CEvent::GetWorld()
+{
+	if (m_bPrivate) return m_private;
+	if (m_bMulti)	return m_multi+100;
+	else			return m_mission;
+}
+
+BOOL CEvent::IsPrivate()
+{
+	return m_bPrivate;
+}
+
+BOOL CEvent::IsMulti()
+{
+	return m_bMulti;
+}
+
+void CEvent::GetWorldGroup()
+{
+	if (m_mission % 10 != 0 && m_mission != 99)
+	{
+		m_mission = (m_mission / 10) * 10;
+	}
+	else
+	{
+		m_mission = 1;
+	}
+}
+
+void CEvent::SetMission(int index)
+{
+	if (m_bPrivate) m_private = index;
+	else if (m_bMulti) m_multi = index;
+	else m_mission = index;
+}
+
+BOOL CEvent::CheckWorld1()
+{
+#if REQUIRE_CD
+	FILE* file;
+	char buf[260];
+
+	strcpy(buf, "data\\world001.blp");
+	AddCDPath(buf);
+	file = fopen(buf, "rb");
+	if (file == NULL) return FALSE;
+	fclose(file);
+	return TRUE;
+#else
+	return TRUE;
+#endif
+}
+
+// Very rough code, needs improvement
+
+BOOL CEvent::ChangePhase(UINT phase)
+{
+	int	  i, mission;
+	char  str[MAX_PATH];
+	char  text[100];
+	char  res[100];
+	char  netData[12];
+	BOOL  bEnable;
+	short door[100];
+
+	sprintf(str, "CEvent::ChangePhase [Begin] --- %d\r\n", phase - WM_USER);
+	OutputNetDebug(str);
+#if BYE_SCREEN
+	if (phase == WM_PHASE_DOQUIT)
+#else
+	if (phase == WM_PHASE_BYE)
+#endif
+	{
+		PostMessage(m_hWnd, WM_CLOSE, 0, 0);
+		return TRUE;
+	}
+	m_pDecor->SetDemoPlay(m_bDemoPlay);
+	if (m_mouseType == MOUSETYPEGRA && m_bFullScreen)
+	{
+		m_bShowMouse = FALSE;
+	}
+	if (phase == WM_PHASE_QUITPLAYTEST)
+	{
+		m_pDecor->Read(m_gamer, 999, TRUE);
+		phase = WM_PHASE_BUILD;
+	}
+
+	if (!m_bDemoPlay &&
+		(phase != WM_PHASE_PLAY || m_phase == WM_PHASE_PLAY) &&
+		phase != WM_PHASE_STOP &&
+		phase != WM_PHASE_SETUP &&
+		phase != WM_PHASE_HELP &&
+		phase != WM_PHASE_GAMEREAD &&
+		phase != WM_PHASE_GAMEREADp &&
+		phase != WM_PHASE_GAMEWRITE)
+	{
+		m_pSound->StopMusic();
+	}
+
+	m_textToolTips[0] = 0;
+	m_posToolTips.x = -1;
+	m_pDecor->ChangePause(FALSE);
+	m_bHili = FALSE;
+	m_introTime = 0;
+	//m_bMousePress = FALSE;
+	m_bInfoHelp = FALSE;
+
+	if (m_bMulti &&
+		phase != WM_PHASE_PLAY &&
+		phase != WM_PHASE_QUITPLAY &&
+		phase != WM_PHASE_STOP &&
+		phase != WM_PHASE_SETUPp &&
+		phase != WM_PHASE_HELP &&
+		phase != WM_PHASE_GAMEREAD &&
+		phase != WM_PHASE_GAMEREADp &&
+		phase != WM_PHASE_GAMEWRITE)
+	{
+		m_pNetwork->Close();
+		m_bMulti = FALSE;
+		m_pDecor->SetMulti(FALSE);
+	}
+
+	if (phase == WM_PHASE_INIT)
+	{
+		m_demoTime = 0;
+	}
+	switch (phase)
+	{
+	case WM_PHASE_PLAY:
+		if (!m_bDemoPlay && GetWorld() >= 300 && GetWorld() < 320)
+		{
+			DemoRecStart();
+		}
+		break;
+	case WM_PHASE_QUITPLAY:
+		if (m_bPrivate)
+		{
+			if (!m_bMulti) return ChangePhase(WM_PHASE_INFO);
+		}
+		else if (m_bMulti)
+		{
+			NetSendBarePacket(PK_ABANDON, 0);
+			m_pNetwork->Close();
+			m_bMulti = FALSE;
+			m_pDecor->SetMulti(FALSE);
+			return ChangePhase(WM_PHASE_GAMER);
+		}
+		else
+		{
+			if (m_mission == 1)
+				return ChangePhase(WM_PHASE_GAMER);
+			else if (m_mission == 99 || m_mission % 10 == 0)
+				SetMission(1);
+			else
+				SetMission(10 * (m_mission / 10));
+			m_phase = WM_PHASE_PLAY;
+			return ChangePhase(WM_PHASE_PLAY);
+		}
+		break;
+	case WM_PHASE_DP_DOSERVICE:
+		if (NetCreate(m_fileIndex))
+		{
+			m_pNetwork->FreeProviderList();
+			if (NetEnumSessions())
+				return ChangePhase(WM_PHASE_SESSION);
+		}
+		else
+		{
+			m_pNetwork->FreeProviderList();
+			return ChangePhase(WM_PHASE_SERVICE);
+		}
+	case WM_PHASE_DP_CANCELSERVICE:
+		m_pNetwork->FreeProviderList();
+		return ChangePhase(WM_PHASE_GAMER);
+	case WM_PHASE_DP_JOIN:
+		if (m_pNetwork->JoinSession(m_fileIndex, m_name))
+		{
+			m_pNetwork->FreeSessionList();
+			return ChangePhase(WM_PHASE_MULTI);
+		}
+		else
+		{
+			m_pNetwork->FreeSessionList();
+			if (NetEnumSessions()) return ChangePhase(WM_PHASE_SESSION);
+			return ChangePhase(WM_PHASE_SERVICE);
+		}
+	case WM_PHASE_DP_CREATELOBBY:
+		return ChangePhase(WM_PHASE_CREATE);
+	case WM_PHASE_DP_REFRESH:
+		m_pNetwork->FreeSessionList();
+		if (NetEnumSessions())
+			return ChangePhase(WM_PHASE_SESSION);
+		else
+			return ChangePhase(WM_PHASE_SERVICE);
+	case WM_PHASE_DP_CANCELSESSION:
+		m_pNetwork->FreeSessionList();
+		return ChangePhase(WM_PHASE_SERVICE);
+	case WM_PHASE_DP_DOCREATE:
+		if (m_textInput[0] == '\0') return FALSE;
+		m_pNetwork->FreeSessionList();
+		if (m_pNetwork->CreateSession(m_textInput, m_name))
+			return ChangePhase(WM_PHASE_MULTI);
+		else if (NetEnumSessions())
+			return ChangePhase(WM_PHASE_SESSION);
+		else
+			return ChangePhase(WM_PHASE_SERVICE);
+	case WM_PHASE_DP_CANCELCREATE:
+		if (NetEnumSessions())
+			return ChangePhase(WM_PHASE_SESSION);
+		else
+			return ChangePhase(WM_PHASE_SERVICE);
+	case WM_PHASE_DP_STARTMULTI:
+		NetStartPlay();
+		return ChangePhase(WM_PHASE_PLAY);
+	case WM_PHASE_DP_CANCELMULTI:
+		netData[0] = 12;
+		netData[1] = MESS_LOBBY;
+		*(DPID*)&netData[4] = m_pNetwork->m_dpid;
+		*(DPID*)&netData[8] = m_pNetwork->IsHost();
+		m_pNetwork->Send(netData, 12, DPSEND_GUARANTEED);
+		m_pNetwork->Close();
+		if (NetEnumSessions()) return ChangePhase(WM_PHASE_SESSION);
+		return ChangePhase(WM_PHASE_SERVICE);
+	default:
+		DemoRecStop();
+		break;
+	}
+
+	if (SearchPhase(phase) < 0)
+	{
+		return FALSE;
+	}
+	m_pPixmap->MouseInvalidate();
+	HideMouse(FALSE);
+	WaitMouse(TRUE);
+
+	if (phase == WM_PHASE_GAMER || phase == WM_PHASE_PLAY)
+	{
+		OutputNetDebug("CEvent::ChangePhase [WriteInfo]\r\n");
+		WriteInfo(m_gamer);
+	}
+
+	int oldPhase = m_phase;
+	if ((oldPhase == WM_PHASE_BUILD && phase == WM_PHASE_INFO) ||
+		oldPhase == WM_PHASE_REGION ||
+		oldPhase == WM_PHASE_NAMEDESIGN ||
+		oldPhase == WM_PHASE_MUSIC)
+	{
+		m_pDecor->Write(m_gamer, GetWorld(), !m_bBuildOfficialMissions);
+	}
+	
+	m_phase = phase;
+	m_index = SearchPhase(phase);
+	if (table[m_index].bLocked && !CheckWorld1())
+	{
+		m_tryInsertCount = 40;
+		m_tryPhase = m_phase;
+		return ChangePhase(WM_PHASE_INSERT);
+	}
+
+	if (table[m_index].backName[0] != '\0')
+	{
+		strcpy(str, table[m_index].backName);
+		if (str[0] != '\0')
+		{
+			if (table[m_index].bCDrom)
+			{
+				AddCDPath(str);
+			}
+			if (!m_pPixmap->BackgroundCache(0, str, POINT( LXIMAGE, LYIMAGE ), POINT( 0,0 ), FALSE))
+			{
+				OutputNetDebug("CEvent::ChangePhase [Cache error]\r\n");
+				WaitMouse(FALSE);
+				m_tryInsertCount = 40;
+				m_tryPhase = m_phase;
+				return ChangePhase(WM_PHASE_INSERT);
+			}
+		}
+	}
+
+	if (m_phase == WM_PHASE_PLAY && !m_bPrivate &&
+		oldPhase != WM_PHASE_SETUPp &&
+		oldPhase != WM_PHASE_HELP &&
+		oldPhase != WM_PHASE_GAMEREAD &&
+		oldPhase != WM_PHASE_GAMEREADp &&
+		oldPhase != WM_PHASE_GAMEWRITE &&
+		oldPhase != WM_PHASE_STOP)
+	{
+		sprintf(str, "CEvent::ChangePhase [Read] %d, %d\r\n", m_gamer, GetWorld());
+		OutputNetDebug(str);
+
+		if (!m_pDecor->Read(m_gamer, GetWorld(), FALSE))
+		{
+			OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
+			m_tryInsertCount = 40;
+			m_tryPhase = m_phase;
+			return ChangePhase(WM_PHASE_INSERT);
+		}
+		m_pDecor->DrawMap(TRUE, -1);
+	}
+
+	if (m_phase == WM_PHASE_INFO && m_bPrivate)
+	{
+		
+		m_bDrawMap = m_pDecor->Read(m_gamer, GetWorld(), !m_bBuildOfficialMissions);
+		if (m_bDrawMap)
+		{
+			m_pDecor->DrawMap(TRUE, -1);
+		}
+	
+	}
+
+	if ((m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST) &&
+		oldPhase != WM_PHASE_SETUPp &&
+		oldPhase != WM_PHASE_HELP &&
+		oldPhase != WM_PHASE_GAMEREAD &&
+		oldPhase != WM_PHASE_GAMEREADp &&
+		oldPhase != WM_PHASE_GAMEWRITE &&
+		oldPhase != WM_PHASE_STOP)
+	{
+		m_pDecor->AdaptDoors(m_bPrivate, GetWorld());
+	}
+
+	if (m_phase == WM_PHASE_TESTCD)
+	{
+		if (m_pDecor->Read(1, 1, FALSE))
+		{
+			return ChangePhase(WM_PHASE_INIT);
+		}
+		else
+		{
+			m_tryInsertCount = 40;
+			m_tryPhase = m_phase;
+			return ChangePhase(WM_PHASE_INSERT);
+		}
+	}
+
+	if (m_phase == WM_PHASE_PLAYTEST)
+	{
+		m_pDecor->Write(m_gamer, 999, TRUE);
+		m_pDecor->PlayPrepare(TRUE);
+	}
+
+	if (m_phase == WM_PHASE_PLAY &&
+		oldPhase != WM_PHASE_SETUPp &&
+		oldPhase != WM_PHASE_HELP &&
+		oldPhase != WM_PHASE_GAMEREAD &&
+		oldPhase != WM_PHASE_GAMEREADp &&
+		oldPhase != WM_PHASE_GAMEWRITE &&
+		oldPhase != WM_PHASE_STOP)
+	{
+		if (m_bPrivate || m_bMulti)
+		{
+			m_pDecor->PlayPrepare(TRUE);
+		}
+		else
+		{
+			m_pDecor->PlayPrepare(FALSE);
+			m_pDecor->SetNbVies(m_nbVies);
+		}
+	}
+
+	if (m_phase == WM_PHASE_BUILD)
+	{
+		m_pDecor->BuildPrepare();
+	}
+
+	CreateButtons();
+	m_96b4 = 0;
+	m_menu.Delete();
+	if (m_phase == WM_PHASE_BUILD)
+	{
+		SetState(WM_DECOR1, 1);
+		SetMenu(WM_DECOR2, 0);
+		SetMenu(WM_DECOR3, 0);
+		SetMenu(WM_DECOR4, 0);
+		SetMenu(WM_DECOR5, 0);
+		SetMenu(WM_DECOR6, 0);
+		SetMenu(WM_DECOR7, 0);
+		SetMenu(WM_DECOR8, 0);
+		if (!m_bBuildOfficialMissions) SetHide(WM_DECOR8, TRUE);
+		m_pDecor->SetIconLiftAndStuff(1, GetMenu(WM_DECOR1));
+	}
+	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST || m_phase == WM_PHASE_BUILD)
+	{
+		OutputNetDebug("CEvent::ChangePhase [LoadImages]\r\n");
+		m_pDecor->LoadImages();
+	}
+	if (m_phase == WM_PHASE_INFO)
+	{
+#if _DEMO || _VALUE
+		SetDemo(WM_PHASE_REGION, TRUE);
+		SetDemo(WM_PHASE_NAMEDESIGN, TRUE);
+		SetDemo(WM_PHASE_MUSIC, TRUE);
+		SetDemo(WM_PREV, TRUE);
+		SetDemo(WM_NEXT, TRUE);
+		SetHide(WM_PHASE_BUILD, FALSE);
+		SetDemo(WM_PHASE_WRITEDESIGN, TRUE);
+		SetDemo(WM_PHASE_READDESIGN, TRUE);
+#else
+		bEnable = TRUE;
+		int world = 1;
+		if (GetWorld() == 0)
+		{
+			bEnable = FALSE;
+		}
+		SetEnable(WM_PREV, bEnable);
+		if (GetWorld() >= 320)
+		{
+			bEnable = FALSE;
+		}
+		if (m_bPrivate)
+		{
+			bEnable = GetWorld() < 20 - 1;
+		}
+		SetEnable(WM_NEXT, bEnable);
+		SetHide(WM_PHASE_BUILD, FALSE);
+		SetEnable(WM_PHASE_WRITEDESIGN, m_bDrawMap);
+		SetEnable(WM_PHASE_READDESIGN, !m_bDrawMap);
+#endif
+		SetEnable(WM_PHASE_CLEARDESIGN, m_bDrawMap);
+		SetEnable(WM_PHASE_PLAYMOVIE, m_bDrawMap);
+	}
+	if (m_phase == WM_PHASE_GAMER)
+	{
+#if _DEMO || _VALUE
+		SetDemo(WM_BUTTON2, TRUE);
+		SetDemo(WM_BUTTON3, TRUE);
+		SetDemo(WM_BUTTON4, TRUE);
+		SetDemo(WM_BUTTON5, TRUE);
+		SetDemo(WM_BUTTON6, TRUE);
+		SetDemo(WM_BUTTON7, TRUE);
+		SetDemo(WM_BUTTON8, TRUE);
+		SetDemo(WM_PHASE_GAMEREAD, TRUE);
+#endif
+		WriteInfo(m_gamer);
+		int i, j;
+		for (i = 0; i < 8; i++)
+		{
+			if (ReadInfo(i + 1))
+			{
+				m_bNamesExist[i] = TRUE;
+				strcpy(m_names[i], m_name);
+			
+				m_pDecor->GetDoors(door);
+				int num = 0;
+				for (j = 0; j < 100; j++)
+				{
+					if (door[j] == 0)
+					{
+						num++;
+					}
+				}
+				if (num == 1)
+				{
+					LoadString(TX_NUMDOOROPEN, res, 100);
+					sprintf(text, res, num);
+					strcat(m_names[i], text);
+				}
+				if (1 < num)
+				{
+					LoadString(TX_NUMDOORSOPEN, res, 100);
+					sprintf(text, res, num);
+					strcat(m_names[i], text);
+				}
+			}
+			else
+			{
+				m_bNamesExist[i] = FALSE;
+				LoadString(TX_PLAYERFREE, m_names[i], 100);
+			}
+			SetState(WM_BUTTON1 + i, m_gamer - 1 == i ? 1 : 0);
+		}
+		ReadInfo(m_gamer);
+	}
+	if (m_phase == WM_PHASE_NAMEGAMER)
+	{
+		strcpy(m_textInput, m_name);
+		m_textHiliStart = 0;
+		m_textCursorIndex = 0;
+		m_textHiliEnd = strlen(m_textInput);
+	}
+	if (m_phase == WM_PHASE_NAMEDESIGN)
+	{
+		strcpy(m_textInput, m_pDecor->GetMissionTitle());
+		m_textHiliStart = 0;
+		m_textCursorIndex = 0;
+		m_textHiliEnd = strlen(m_textInput);
+	}
+	if (m_phase == WM_PHASE_MUSIC)
+	{
+		int music = m_pDecor->GetMusic();
+		for (int i = 0; i < 11; i++)
+		{
+			SetState(WM_BUTTON1 + i, i == music);
+		}
+	}
+	if (m_phase == WM_PHASE_REGION)
+	{
+		int region = m_pDecor->GetRegion();
+		for (int i = 0; i < 32; i++)
+		{
+			SetState(WM_BUTTON1 + i, i == region);
+		}
+		POINT dim = m_pDecor->GetDim();
+		if (dim.x == MAXCELX)
+		{
+			if (dim.y == MAXCELY)
+			{
+				SetState(WM_DIMS1, 1);
+				SetState(WM_DIMS2, 0);
+				SetState(WM_DIMS3, 0);
+				SetState(WM_DIMS4, 0);
+			}
+			if (dim.y == 0)
+			{
+				SetState(WM_DIMS1, 0);
+				SetState(WM_DIMS2, 1);
+				SetState(WM_DIMS3, 0);
+				SetState(WM_DIMS4, 0);
+			}
+		}
+		else if (dim.y == MAXCELY)
+		{
+			SetState(WM_DIMS1, 0);
+			SetState(WM_DIMS2, 0);
+			SetState(WM_DIMS3, 1);
+			SetState(WM_DIMS4, 0);
+		}
+		else
+		{
+			SetState(WM_DIMS1, 0);
+			SetState(WM_DIMS2, 0);
+			SetState(WM_DIMS3, 0);
+			SetState(WM_DIMS4, 1);
+		}
+	}
+	if (m_phase == WM_PHASE_SERVICE)
+	{
+		m_pNetwork->EnumProviders();
+		m_nbFiles = m_pNetwork->GetNbProviders();
+		m_filePageOffset = 0;
+		m_fileIndex = 0;
+		SetHide(WM_BUTTON10, TRUE);
+		SetHide(WM_BUTTON11, m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6);
+		for (i = 0; i < 6; ++i)
+		{
+			if (m_filePageOffset + i >= m_nbFiles)
+			{
+				SetHide(WM_BUTTON1 + i, TRUE);
+			}
+			else
+			{
+				SetHide(WM_BUTTON1 + i, FALSE);
+				SetState(WM_BUTTON1 + i, m_filePageOffset + i == m_fileIndex);
+			}
+		}
+		SetEnable(WM_PHASE_DP_DOSERVICE, m_nbFiles != 0);
+	}
+	if (m_phase == WM_PHASE_SESSION)
+	{
+		m_nbFiles = m_pNetwork->GetNbSessions();
+		m_filePageOffset = 0;
+		m_fileIndex = 0;
+		SetHide(WM_BUTTON10, 1);
+		SetHide(WM_BUTTON11, m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6);
+		for (i = 0; i < 6; ++i)
+		{
+			if (m_filePageOffset + i >= m_nbFiles)
+			{
+				SetHide(WM_BUTTON1 + i, TRUE);
+			}
+			else
+			{
+				SetHide(WM_BUTTON1, FALSE);
+				SetState(WM_BUTTON1 + i, m_filePageOffset + i == m_fileIndex);
+			}
+		}
+		SetEnable(WM_PHASE_DP_JOIN, m_nbFiles != 0);
+	}
+	if (m_phase == WM_PHASE_MULTI)
+	{
+		m_bDrawMap = m_pDecor->Read(m_gamer, m_multi + 200, 0);
+		for (i = 0; i < MAXNETPLAYER; i++)
+		{
+			m_pNetwork->m_players[i].bIsPresent = FALSE;
+		}
+		if (m_pNetwork->IsHost())
+		{
+			m_pNetwork->m_players[0].bIsPresent = TRUE;
+			m_pNetwork->m_players[0].ready = FALSE;
+			m_pNetwork->m_players[0].dpid = m_pNetwork->m_dpid;
+			m_pNetwork->m_players[0].team = 0;
+			strncpy(m_pNetwork->m_players[0].name, m_name, 20);
+			m_pNetwork->m_players[0].name[19] = '\0';
+		}
+		else
+		{
+			char data[28];
+			data[0] = 28;
+			data[1] = MESS_JOIN;
+			*&data[4] = m_pNetwork->m_dpid; // what
+			strncpy(data + 8, m_name, 20);
+			m_pNetwork->Send(data, 28, 1);
+		}
+		if (m_bDrawMap)
+		{
+			DrawMap();
+		}
+		NetAdjustLobbyButtons();
+		ChatFlush();
+		m_textHiliStart = 0;
+		m_textInput[0] = 0;
+		m_textCursorIndex = 0;
+		m_textHiliEnd = strlen(m_textInput);
+	}
+	if (m_phase == WM_PHASE_CREATE)
+	{
+		m_textHiliStart = 0;
+		m_textInput[0] = 0;
+		m_textCursorIndex = 0;
+		m_textHiliEnd = strlen(m_textInput);
+	}
+	if (m_phase == WM_PHASE_STOP)
+	{
+#if _DEMO || _VALUE
+		SetDemo(WM_PHASE_GAMEWRITE, TRUE);
+		SetDemo(WM_PHASE_GAMEREADp, TRUE);
+#endif
+		if (m_bMulti)
+		{
+			SetEnable(WM_PHASE_GAMEWRITE, FALSE);
+			SetEnable(WM_PHASE_GAMEREADp, FALSE);
+		}
+	}
+	if (m_phase == WM_PHASE_WRITEDESIGN || m_phase == WM_PHASE_READDESIGN)
+	{
+		long hFile;
+		struct _finddata_t fBuffer;
+		BOOL bDo;
+		char temp[_MAX_FNAME];
+
+		m_nbFiles = 0;
+		hFile = _findfirst("\\User\\*.xch", &fBuffer);
+		if (hFile != -1)
+		{
+			do
+			{
+				strcpy(m_filenameBuffer[m_nbFiles++], fBuffer.name);
+			} while (_findnext(hFile, &fBuffer) == 0 &&
+				m_nbFiles < 100);
+		}
+		do
+		{
+			bDo = FALSE;
+
+			for (i = 0; i < m_nbFiles - 1; i++)
+			{
+				if (strcmp(m_filenameBuffer[i], m_filenameBuffer[i + 1]) > 0)
+				{
+					strcpy(temp, m_filenameBuffer[i]);
+					strcpy(m_filenameBuffer[i], m_filenameBuffer[i + 1]);
+					strcpy(m_filenameBuffer[i + 1], temp);
+					bDo = TRUE;
+				}
+			}
+			
+		} while (bDo);
+		m_filePageOffset = 0;
+		m_fileIndex = 0;
+	}
+	if (m_phase == WM_PHASE_READDESIGN)
+	{
+		SetHide(WM_BUTTON10, m_filePageOffset == 0);
+		SetHide(WM_BUTTON11, (((m_nbFiles + 5) / 6) * 6 <= m_filePageOffset + 6));
+		for (i = 0; i < 6; i++)
+		{
+			if (i + m_filePageOffset < m_nbFiles)
+			{
+				SetHide(WM_BUTTON1 + i, FALSE);
+				SetState(WM_BUTTON1 + i, i + m_filePageOffset == m_fileIndex);
+			}
+			else
+			{
+				SetHide(WM_BUTTON1 + i, TRUE);
+			}
+		}
+		SetEnable(WM_PHASE_DOREADDESIGN, m_nbFiles != 0);
+	}
+	if (m_phase == WM_PHASE_WRITEDESIGN)
+	{
+		SetHide(WM_BUTTON10, m_filePageOffset == 0);
+		SetHide(WM_BUTTON11, m_filePageOffset + 12 >= 12 * ((m_nbFiles + 11) / 12));
+		strcpy(m_textInput, m_pDecor->GetMissionTitle());
+		if (!m_textInput[0])
+		{
+			LoadString(TX_MISSION2D, res, 100);
+			sprintf(m_textInput, res, GetWorld());
+		}
+		m_textHiliStart = 0;
+		m_textHiliEnd = strlen(m_textInput);
+		memcpy(&m_textInput[strlen(m_textInput)], ".xch", strlen(".xch") + 1);
+		m_textCursorIndex = 0;
+	}
+	if (m_phase == WM_PHASE_GAMEWRITE || m_phase == WM_PHASE_GAMEREADp || m_phase == WM_PHASE_GAMEREAD)
+	{
+		m_fileIndex = m_saveIndex;
+
+		for (i = 0; i < MAXSAVE; i++)
+		{
+			SetState(WM_BUTTON1 + i, i == m_fileIndex);
+			if (m_pDecor->FileExist(m_gamer, i, m_filenameBuffer[i]))
+			{
+				m_bNamesExist[i] = TRUE;
+			}
+			else
+			{
+				m_bNamesExist[i] = FALSE;
+				LoadString(TX_MISSIONFREE, m_filenameBuffer[i], 50);
+				if (m_phase == WM_PHASE_GAMEREAD || m_phase == WM_PHASE_GAMEREADp)
+				{
+					SetEnable(WM_BUTTON1 + i, FALSE);
+				}
+			}
+		}
+			ReadAll();
+			if (m_fileIndex >= 0)
+			{
+				SetEnable(WM_BUTTON20, m_bNamesExist[m_fileIndex]);
+			}
+			else
+			{
+				SetEnable(WM_BUTTON20, FALSE);
+			}
+	}
+	if (m_phase == WM_PHASE_SETUP || m_phase == WM_PHASE_SETUPp)
+	{
+		m_nbJoy = 0;
+		int numDevs;
+		JOYCAPS joyCaps;
+		numDevs = joyGetNumDevs();
+		if (numDevs > 0)
+		{
+			for (i = 0; i < numDevs; i++)
+			{
+				ZeroMemory(&joyCaps, sizeof(JOYCAPS));
+				if (!joyGetDevCaps(i, &joyCaps, sizeof(JOYCAPS)))
+				{
+					m_joyIDList[m_nbJoy] = i;
+					strcpy(m_joyNames[m_nbJoy], joyCaps.szPname);
+					m_nbJoy++;
+					if (m_nbJoy >= 5) break;
+				}
+			}
+		}
+		for (i = 0; i < 5; ++i)
+		{
+			SetHide(WM_BUTTON8 + i, i >= m_nbJoy);
+		}
+	}
+	if ((m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST || m_phase == WM_PHASE_MUSIC) && !m_bDemoPlay)
+	{
+		if (m_pSound->IsPlayingMusic())
+		{
+			m_pSound->AdaptVolumeMusic();
+		}
+		else
+		{
+			int music = m_pDecor->GetMusic();
+			if (music > 0)
+			{
+				m_pSound->PlayMusic(m_hWnd, music);
+			}
+		}
+	}
+	if (m_phase == WM_PHASE_PLAYMOVIE)
+	{
+		sprintf(m_movieToStart, "movie\\play%.3d.avi", GetWorld());
+		AddCDPath(m_movieToStart);
+		m_phaseAfterMovie = WM_PHASE_PLAY;
+	}
+	if (m_phase == WM_PHASE_WINMOVIE)
+	{
+		sprintf(m_movieToStart, "movie\\win%.3d.avi", GetWorld());
+		AddCDPath(m_movieToStart);
+		m_phaseAfterMovie = WM_PHASE_WIN;
+	}
+	if (m_phase == WM_PHASE_WINMOVIEDESIGN)
+	{
+		sprintf(m_movieToStart, "movie\\win%.3d.avi", GetWorld());
+		AddCDPath(m_movieToStart);
+		m_phaseAfterMovie = WM_PHASE_WINDESIGN;
+	}
+	if (m_phase == WM_PHASE_WINMOVIEMULTI)
+	{
+		sprintf(m_movieToStart, "movie\\win%.3d.avi", GetWorld());
+		AddCDPath(m_movieToStart);
+		m_phaseAfterMovie = WM_PHASE_WINMULTI;
+	}
+	WaitMouse(FALSE);
+	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST)
+	{
+		DisableMouse(TRUE);
+	}
+	m_pDecor->ChangePhase(phase);
+	OutputNetDebug("CEvent::ChangePhase [End]");
+	
+	return TRUE;
+
+}
+
+UINT CEvent::GetPhase()
+{
+	return m_phase;
+}
+
+void CEvent::TryInsert()
+{
+	if ( m_tryInsertCount == 0 )
+	{
+		if (CheckWorld1())
+		{
+			ChangePhase(m_tryPhase);
+		}
+		else
+		{
+			m_tryInsertCount = 40;
+		}
+	}
+	else
+	{
+		m_tryInsertCount --;
+	}
+}
+
+void CEvent::MovieToStart()
+{
+	if (m_movieToStart[0] != 0)
+	{
+		HideMouse(TRUE);
+
+		if (StartMovie(m_movieToStart))
+		{
+			m_phase = m_phaseAfterMovie;
+		}
+		else
+		{
+			ChangePhase(m_phaseAfterMovie);
+		}
+
+		m_movieToStart[0] = 0;
+	}
+}
+
+void CEvent::ReadAll()
+{
+	BOOL mission;
+	BOOL read;
+	BOOL bUser;
+	BOOL bPrivate;
+	BOOL bMission;
+
+	bUser = FALSE;
+
+	if ((m_fileIndex >= 0) && (m_bNamesExist[m_fileIndex] != 0))
+	{
+		mission = m_pDecor->CurrentWrite(m_gamer, 999);
+		
+		if (mission != FALSE)
+		{
+			read = m_pDecor->CurrentRead(m_gamer, m_fileIndex, &bMission, &bPrivate);
+			
+			if (read != FALSE)
+			{
+				m_pDecor->DrawMap(FALSE, -1);
+			}
+			m_pDecor->CurrentRead(m_gamer, 999, &bMission, &bPrivate);
+		}
+	}
+}
+
+BOOL CEvent::CurrentRead(int rank)
+{
+	char buf[100];
+	int mission;
+	BOOL bPrivate;
+	
+	if (!m_pDecor->CurrentRead(m_gamer, rank, &mission, &bPrivate)) return FALSE;
+	{
+		m_bPrivate = bPrivate;
+		SetMission(mission);
+		m_saveIndex = rank;
+		return TRUE;
+	}
+}
+
+// Passe les images d'introduction.
+
+void CEvent::IntroStep()
+{
+	m_introTime++;
+
+	if (m_introTime > 20 * 3)
+	{
+		if (m_phase == WM_PHASE_INTRO1)
+		{
+			ChangePhase(WM_PHASE_INTRO2);
+			return;
+		}
+
+		if (m_phase == WM_PHASE_INTRO2)
+		{
+			ChangePhase(WM_PHASE_INIT);
+			return;
+		}
+	}
+}
+BOOL CEvent::CurrentWrite(int rank)
+{
+	char str[100];
+
+	if (!m_pDecor->CurrentWrite(m_gamer, rank)) return FALSE;
+
+	LoadString(TX_GAMESAVED, str, 100);
+	m_pDecor->NotifPush(str);
+	m_saveIndex = rank;
+	return TRUE;
+}
+
+BOOL CEvent::BuildUp(POINT pos, int fwKeys)
+{
+	return TRUE;
+}
+
+// Modifie le décor lorsque le bouton de la sourie est pressé.
+
+BOOL CEvent::PlayDown(POINT pos, int fwKeys)
+{
+	return TRUE;
+}
+
+// Modifie le décor lorsque la souris est déplacée.
+
+BOOL CEvent::PlayMove(POINT pos, int fwKeys)
+{
+	return TRUE;
+}
+
+// Modifie le décor lorsque le bouton de la sourie est relâché.
+
+BOOL CEvent::PlayUp(POINT pos, int fwKeys)
+{
+	return TRUE;
+}
+
+void CEvent::MouseRelease()
+{
+	m_bMouseRelease = TRUE;
+	ShowCursor(TRUE);
+}
+
+void CEvent::MouseCapture()
+{
+	m_bMouseRelease = FALSE;
+	ShowCursor(FALSE);
+}
+
+BOOL CEvent::IsMouseRelease()
+{
+	return m_bMouseRelease;
+}
+
+void CEvent::AddUserExportPath(char* dst, char* pFileName)
+{
+	char* suffix;
+
+	mkdir("\\User");
+	strcpy(dst, "\\User\\");
+	strcat(dst, pFileName);
+	suffix = strstr(dst, ".xch");
+	if (!suffix || suffix - dst != strlen(dst) - 4)
+	{
+		strcat(dst, ".xch");
+	}
+}
+
+BOOL CEvent::CopyMission(char *srcFileName, char *dstFileName)
+{
+	FILE *srcFile = NULL;
+	FILE *destFile = NULL;
+	int num;
+	BOOL bError = TRUE;
+	void *buffer = malloc(2560);
+	if (buffer)
+	{
+		srcFile = fopen(srcFileName, "rb");
+		if (!srcFile) goto die;
+		destFile = fopen(dstFileName, "wb");
+		if (destFile)
+		{
+			num = 1;
+			while (num > 0)
+			{
+				num = fread(buffer, 1, 2560, srcFile);
+				if (srcFile->_flag & _IOERR) goto error;
+				if (num > 0)
+				{
+					fwrite(buffer, 1, num, destFile);
+					if (destFile->_flag & _IOERR) goto error;
+				}
+			}
+			bError = FALSE;
+		}
+	}
+error:
+	if (srcFile) fclose(srcFile);
+die:
+	if (destFile) fclose(destFile);
+	if (buffer) free(buffer);
+	return bError;
+}
+
+void CEvent::ChangeButtons(int message)
+{
+	int playerId;
+	char netData[12];
+
+	if (m_phase == WM_PHASE_GAMER && message >= WM_BUTTON1 && message <= WM_BUTTON10)
+	{
+		m_gamer = message - WM_BUTTON0;
+		for (int i = 0; i < 10; i++)
+		{
+			SetState(WM_BUTTON1 + i, m_gamer - 1 == i);
+		}
+		ReadInfo(m_gamer);
+	}
+	if (m_phase == WM_PHASE_NAMEGAMER && message == WM_PHASE_DONAMEGAMER)
+	{
+		strcpy(m_name, m_textInput);
+		WriteInfo(m_gamer);
+		ChangePhase(WM_PHASE_GAMER);
+	}
+	if (m_phase == WM_PHASE_NAMEDESIGN && message == WM_PHASE_DONAMEDESIGN)
+	{
+		m_pDecor->SetMissionTitle(m_textInput);
+		ChangePhase(WM_PHASE_INFO);
+	}
+	if (m_phase == WM_PHASE_CLEARGAMER && message == WM_PHASE_DOCLEARGAMER)
+	{
+		ClearGamer(m_gamer);
+		ChangePhase(WM_PHASE_GAMER);
+	}
+	if (m_phase == WM_PHASE_CLEARDESIGN && message == WM_PHASE_DOCLEARDESIGN)
+	{
+		m_pDecor->DeleteMission(m_gamer, GetWorld(), !m_bBuildOfficialMissions);
+		ChangePhase(WM_PHASE_INFO);
+	}
+	if (m_phase == WM_PHASE_MUSIC)
+	{
+		m_pDecor->SetMusic(message - WM_BUTTON1);
+		ChangePhase(m_phase);
+	}
+	if (m_phase == WM_PHASE_REGION)
+	{
+		if (message >= WM_BUTTON1 && message <= WM_BUTTON24)
+		{
+			m_pDecor->SetRegion(message - WM_BUTTON1);
+			ChangePhase(m_phase);
+		}
+		if (message >= WM_DIMS1 && message <= WM_DIMS4)
+		{
+			SetState(WM_DIMS1, 0);
+			SetState(WM_DIMS2, 0);
+			SetState(WM_DIMS3, 0);
+			SetState(WM_DIMS4, 0);
+			POINT dim;
+			if (message == WM_DIMS1)
+			{
+				dim.x = MAXCELX;
+				dim.y = MAXCELY;
+				SetState(WM_DIMS1, 1);
+			}
+			if (message == WM_DIMS2)
+			{
+				dim.x = MAXCELX;
+				dim.y = 0;
+				SetState(WM_DIMS2, 1);
+			}
+			if (message == WM_DIMS3)
+			{
+				dim.x = 0;
+				dim.y = MAXCELY;
+				SetState(WM_DIMS3, 1);
+			}
+			if (message == WM_DIMS4)
+			{
+				dim.x = 0;
+				dim.y = 0;
+				SetState(WM_DIMS4, 1);
+			}
+			m_pDecor->SetDim(dim);
+		}
+	}
+	if (m_phase == WM_PHASE_SERVICE)
+	{
+		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
+		{
+			m_fileIndex = message - WM_BUTTON1 + m_filePageOffset;
+		}
+		if (message == WM_BUTTON10)
+		{
+			m_filePageOffset = m_filePageOffset + -6;
+			if (m_filePageOffset < 0) m_filePageOffset = 0;
+		}
+		if (message == WM_BUTTON11)
+		{
+			m_filePageOffset += 6;
+		}
+		BOOL bHide;
+		bHide = FALSE;
+		if (m_filePageOffset == 0) bHide = TRUE;
+		SetHide(WM_BUTTON10, bHide);
+		bHide = FALSE;
+		if (m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6) bHide = TRUE;
+		SetHide(WM_BUTTON11, bHide);
+		for (int i = 0; i < 6; i++)
+		{
+			if (m_filePageOffset + i < m_nbFiles)
+			{
+				SetHide(WM_BUTTON1 + i, FALSE);
+				SetState(WM_BUTTON1 + i, m_filePageOffset + i == m_fileIndex);
+			}
+			else
+			{
+				SetHide(WM_BUTTON1 + i, TRUE);
+			}
+		}
+	}
+	if (m_phase == WM_PHASE_SESSION)
+	{
+		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
+		{
+			m_fileIndex = message - WM_BUTTON1 + m_filePageOffset;
+		}
+		if (message == WM_BUTTON10)
+		{
+			m_filePageOffset = m_filePageOffset + -6;
+			if (m_filePageOffset < 0) m_filePageOffset = 0;
+		}
+		if (message == WM_BUTTON11)
+		{
+			m_filePageOffset += 6;
+		}
+		BOOL bHide;
+		bHide = FALSE;
+		if (m_filePageOffset == 0) bHide = TRUE;
+		SetHide(WM_BUTTON10, bHide);
+		bHide = FALSE;
+		if (m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6) bHide = TRUE;
+		SetHide(WM_BUTTON11, bHide);
+		for (int i = 0; i < 6; i++)
+		{
+			if (m_filePageOffset + i < m_nbFiles)
+			{
+				SetHide(WM_BUTTON1 + i, FALSE);
+				SetState(WM_BUTTON1 + i, m_filePageOffset + i == m_fileIndex);
+			}
+			else
+			{
+				SetHide(WM_BUTTON1 + i, TRUE);
+			}
+		}
+	}
+	if (m_phase == WM_PHASE_MULTI)
+	{
+		if (message >= WM_BUTTON1 && message <= WM_BUTTON4)
+		{
+			playerId = message - WM_BUTTON1;
+			m_pNetwork->m_players[playerId].team++;
+			if (m_pNetwork->m_players[playerId].team >= MAXTEAM)
+			{
+				m_pNetwork->m_players[playerId].team = 0;
+			}
+
+			if (m_pNetwork->IsHost())
+			{
+				NetSendLobby();
+			}
+			else
+			{
+				netData[0] = 12;
+				netData[1] = MESS_TEAM;
+				*(DPID*)&netData[4] = m_pNetwork->m_dpid;
+				*(short*)&netData[8] = m_pNetwork->m_players[playerId].team;
+				m_pNetwork->Send(netData, 12, DPSEND_GUARANTEED);
+			}
+			DrawMap();
+			NetAdjustLobbyButtons();
+		}
+		if (message >= WM_BUTTON11 && message <= WM_BUTTON14)
+		{
+			playerId = message - WM_BUTTON11;
+			m_pNetwork->m_players[playerId].ready = !m_pNetwork->m_players[playerId].ready;
+			if (m_pNetwork->IsHost())
+			{
+				NetSendLobby();
+			}
+			else
+			{
+				netData[0] = 12;
+				netData[1] = MESS_READY;
+				*(DPID*)&netData[4] = m_pNetwork->m_dpid;
+				netData[8] = m_pNetwork->m_players[playerId].ready;
+				m_pNetwork->Send(netData, 12, DPSEND_GUARANTEED);
+			}
+			NetAdjustLobbyButtons();
+		}
+		if (message == WM_BUTTON20)
+		{
+			ChatSend();
+		}
+	}
+	if (m_phase == WM_PHASE_READDESIGN)
+	{
+		BOOL bBuild;
+		char out[256];
+		char file[256];
+		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
+		{
+			m_fileIndex = m_filePageOffset + message - WM_BUTTON1;
+		}
+		if (message == WM_BUTTON10)
+		{
+			m_filePageOffset = m_filePageOffset + -6;
+			if (m_filePageOffset < 0)
+				m_filePageOffset = 0;
+		}
+		if (message == WM_BUTTON11)
+			m_filePageOffset += 6;
+		if (message == WM_PHASE_DOREADDESIGN)
+		{
+			AddUserExportPath(file, m_filenameBuffer[m_fileIndex]);
+			bBuild = !m_bBuildOfficialMissions;
+			m_pDecor->GetMissionPath(out, m_gamer, GetWorld(), bBuild);
+			CopyMission(file, out);
+			ChangePhase(WM_PHASE_INFO);
+		}
+		BOOL bHide = FALSE;
+		if (m_filePageOffset == 0) bHide = TRUE;
+		SetHide(WM_BUTTON10, bHide);
+		bHide = FALSE;
+		if (m_filePageOffset + 6 >= ((m_nbFiles + 5) / 6) * 6) bHide = TRUE;
+		SetHide(WM_BUTTON11, bHide);
+		for (int k = 0; k < 6; k++)
+		{
+			if (m_filePageOffset + k < m_nbFiles)
+			{
+				SetHide(k + WM_BUTTON1, 0);
+				SetState(k + WM_BUTTON1, m_filePageOffset + k == m_fileIndex);
+			}
+			else
+			{
+				SetHide(k + WM_BUTTON1, 1);
+			}
+		}
+	}
+	if (m_phase == WM_PHASE_WRITEDESIGN)
+	{
+		if (message == WM_BUTTON10)
+		{
+			m_filePageOffset -= 12;
+			if (m_filePageOffset < 0) m_filePageOffset = 0;
+		}
+		if (message == WM_BUTTON11) m_filePageOffset += 12;
+		if (message == WM_PHASE_DOWRITEDESIGN)
+		{
+			char str[256];
+			char filename[256];
+			AddUserExportPath(str, m_textInput);
+			m_pDecor->GetMissionPath(filename, m_gamer, GetWorld(), !m_bBuildOfficialMissions);
+			CopyMission(filename, str);
+			ChangePhase(WM_PHASE_INFO);
+		}
+		BOOL bHide = FALSE;
+		if (m_filePageOffset == 0) bHide = TRUE;
+		SetHide(WM_BUTTON10, bHide);
+		bHide = FALSE;
+		if (m_filePageOffset + 12 >= 12 * ((m_nbFiles + 11) / 12)) bHide = TRUE;
+		SetHide(WM_BUTTON11, bHide);
+	}
+	if (m_phase == WM_PHASE_GAMEREAD || m_phase == WM_PHASE_GAMEREADp)
+	{
+		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
+		{
+			m_fileIndex = message - WM_BUTTON1;
+			ReadAll();
+			for (int n = 0; n < 6; n++)
+			{
+				SetState(n + WM_BUTTON1, n == m_fileIndex);
+			}
+			SetEnable(WM_BUTTON20, GetState(m_fileIndex + WM_BUTTON1));
+		}
+		if (message == WM_BUTTON20 && CurrentRead(m_fileIndex))
+			ChangePhase(WM_PHASE_PLAY);
+	}
+	if (m_phase == WM_PHASE_GAMEWRITE)
+	{
+		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
+		{
+			m_fileIndex = message - WM_BUTTON1;
+			ReadAll();
+			for (int n = 0; n < 6; n++)
+			{
+				SetState((n + WM_BUTTON1), n == m_fileIndex);
+			}
+			SetEnable(WM_BUTTON20, GetState(m_fileIndex + WM_BUTTON1));
+		}
+		if (message == WM_BUTTON20 && CurrentWrite(m_fileIndex))
+		{
+			ChangePhase(WM_PHASE_PLAY);
+		}
+	}
+	if (m_phase == WM_PHASE_SETUP || m_phase == WM_PHASE_SETUPp)
+	{
+		if (message == WM_BUTTON1)
+		{
+			int volume = m_pSound->GetAudioVolume();
+			if (volume > 0) m_pSound->SetAudioVolume(volume - 1);
+		}
+		if (message == WM_BUTTON2)
+		{
+			int volume = m_pSound->GetAudioVolume();
+			if (volume < 20) m_pSound->SetAudioVolume(volume + 1);
+		}
+		if (message == WM_BUTTON3)
+		{
+			int midi = m_pSound->GetMidiVolume();
+			if (midi > 0)
+			{
+				m_pSound->SetMidiVolume(midi - 1);
+				m_pSound->SuspendMusic();
+			}
+		}
+		if (message == WM_BUTTON4)
+		{
+			int midi = m_pSound->GetMidiVolume();
+			if (midi < 20)
+			{
+				m_pSound->SetMidiVolume(midi + 1);
+				m_pSound->SuspendMusic();
+			}
+		}
+		if (message == WM_BUTTON5) m_bMovie = FALSE;
+		if (message == WM_BUTTON6) m_bMovie = TRUE;
+		if (message >= WM_BUTTON7 && message <= WM_BUTTON12)
+		{
+			m_joyIndex = message - WM_BUTTON7;
+			if (m_joyIndex > 0) m_joyID = m_joyIDList[m_joyIndex - 1];
+		}
+	}
+}
+
+BOOL CEvent::BuildDown(POINT pos, int fwKeys, BOOL bMix)
+{
+	POINT cel;
+	int icon;
+
+	if (pos.x < 0 || pos.x > LXIMAGE ||
+		pos.y < 0 || pos.y > LYIMAGE) return FALSE;
+
+	if (fwKeys & MK_RBUTTON)
+	{
+		cel = m_pDecor->ScreenPosToCelPos(pos);
+		m_pDecor->DeleteCel(cel);
+	}
+	else
+	{
+		if (GetState(WM_DECOR1) == 1) {
+			cel = m_pDecor->ScreenPosToCelPos(pos);
+			m_pDecor->DeleteCel(cel);
+		}
+		if (GetState(WM_DECOR2) == 1) {
+			cel = m_pDecor->ScreenPosToCelPos(pos);
+			icon = GetMenu(WM_DECOR2);
+			m_pDecor->PlaceDecor1(cel, icon, fwKeys, bMix);
+		}
+		if (GetState(WM_DECOR3) == 1) {
+			cel = m_pDecor->ScreenPosToCelPos(pos);
+			icon = GetMenu(WM_DECOR3);
+			m_pDecor->PlaceDecor2(cel, icon, fwKeys, bMix);
+		}
+		if (GetState(WM_DECOR4) == 1) {
+			cel = m_pDecor->ScreenPosToCelPos(pos);
+			icon = GetMenu(WM_DECOR4);
+			m_pDecor->PlaceDecor3(cel, icon, fwKeys, bMix);
+		}
+		if (GetState(WM_DECOR5) == 1) {
+			cel = m_pDecor->ScreenPosToCelPos(pos);
+			icon = GetMenu(WM_DECOR5);
+			m_pDecor->PlaceDecor4(cel, icon, fwKeys, bMix);
+		}
+		if (GetState(WM_DECOR6) == 1) {
+			cel = m_pDecor->ScreenPosToCelPos(pos);
+			icon = GetMenu(WM_DECOR6);
+			m_pDecor->PlaceDecor5(cel, icon, fwKeys, bMix);
+		}
+		if (GetState(WM_DECOR7) == 1) {
+			cel = m_pDecor->ScreenPosToCelPos(pos);
+			icon = GetMenu(WM_DECOR7);
+			m_pDecor->PlaceDecor6(cel, icon, fwKeys, bMix);
+		}
+		if (GetState(WM_DECOR8) == 1) {
+			cel = m_pDecor->ScreenPosToCelPos(pos);
+			icon = GetMenu(WM_DECOR8);
+			m_pDecor->PlaceDecor7(cel, icon, fwKeys, bMix);
+		}
+	}
+	return TRUE;
+}
+
+BOOL CEvent::BuildMove(POINT pos, int fwKeys)
+{
+	if (fwKeys & (MK_LBUTTON | MK_RBUTTON)) BuildDown(pos, fwKeys, FALSE);
+	m_pDecor->SetCelHiliFromScreenPos(pos);
+	return TRUE;
+}
+
+/*
+void CEvent::TryPhase()
+{
+	m_tryPhase = 1;
+	ShowCursor(1);
+}
+
+void CEvent::UnTryPhase()
+{
+	m_tryPhase = 0;
+	ShowCursor(1);
+}
+
+int CEvent::GetTryPhase()
+{
+	return m_tryPhase;
+}
+
+void CEvent::GetDoors(int doors)
+{
+	for (int i = 0; i < 200; i++)
+	{
+		doors[i] = (int)data[Gamer];
+	}
+}
+
+
+void CEvent::TableSomething()
+{
+	char filename[MAX_PATH];
+
+	if (strstr(filename, table[m_index].backName))
+	{
+		AddCDPath(filename);
+	}
+	if (!m_pPixmap->CacheAll(CHBACK, filename, totalDim, iconDim, FALSE, GetRegion()))
+	{
+		return;
+	}
+}
+*/
+
+
+
+BOOL CEvent::StartMovie(char* pFilename)
+{
+	RECT	 rect;
+	char	 filename[MAX_PATH];
+
+	if (!m_pMovie->GetEnable()) return FALSE;
+	if (!m_bMovie) return FALSE;
+
+	if (!m_pMovie->IsExist(pFilename)) return FALSE;
+
+	rect.left = 1;
+	rect.top = 1;
+	rect.right = LXIMAGE - 2;
+	rect.bottom = LYIMAGE - 2;
+
+	m_pSound->StopMusic();
+	m_pPixmap->SavePalette();
+
+	strcpy(filename, pFilename);
+	strcpy(filename + strlen(filename) - 4, ".blp");
+	m_pSound->Cache(SOUND_MOVIE, filename);
+
+	if (!m_pMovie->Play(m_hWnd, rect, pFilename)) return FALSE;
+	m_bRunMovie = TRUE;
+	m_pSound->PlaySoundDS(SOUND_MOVIE, 0, 0, 0);
+	return TRUE;
+}
+
+void CEvent::StopMovie()
+{
+	m_pMovie->Stop(m_hWnd);
+	m_pPixmap->RestorePalette();
+	m_pPixmap->MouseInvalidate();
+	m_pSound->Flush(SOUND_MOVIE);
+	ChangePhase(m_phase);
+	m_bRunMovie = FALSE;
+}
+
+BOOL CEvent::IsMovie()
+{
+	return m_bRunMovie;
+}
+
+BOOL CEvent::WriteInfo(int gamer)
+{
+	char		filename[MAX_PATH];
+	FILE*		file = NULL;
+	DescInfo	info;
+	int			nb;
+	int			doors;
+	char		text[100];
+
+	if (m_6d30 == 0) return TRUE;
+	sprintf(filename, "data\\info%.3d.blp", gamer);
+	AddUserPath(filename);
+
+	file = fopen(filename, "wb");
+	if (file == NULL) goto error;
+
+	info.majRev = 1;
+	info.minRev = 0;
+	strcpy(info.name, m_name);
+	info.prive = m_private;
+	info.mission = m_mission;
+	info.multi = m_multi;
+	info.nbVies = m_nbVies;
+	info.speed = m_speed;
+	info.bMovie = m_bMovie;
+	info.bHiliInfoButton = m_bHiliInfoButton;
+	info.bBuildOfficialMissions = m_bBuildOfficialMissions;
+
+	info.audioVolume = m_pSound->GetAudioVolume();
+	info.midiVolume = m_pSound->GetMidiVolume();
+
+	m_pDecor->GetDoors(info.doors);
+
+	nb = fwrite(&info, sizeof(DescInfo), 1, file);
+	if (nb < 1) goto error;
+
+	fclose(file);
+	return TRUE;
+
+error:
+	if (file != NULL) fclose(file);
+	return FALSE;
+
+}
+
+BOOL CEvent::ReadInfo(int gamer)
+{
+	char	 filename[MAX_PATH];
+	FILE*	 file = NULL;
+	DescInfo info;
+	int		 nb;
+	char	 str[100];
+
+	m_6d30 = 1;
+	m_pDecor->InitGamer();
+	m_nbVies = 3;
+	m_mission = 1;
+	m_private = 1;
+	m_multi = 1;
+
+	LoadString(TX_READINFO, str, 100);
+	sprintf(m_name, str, gamer);
+	sprintf(filename, "data\\info%.3d.blp", gamer);
+	AddUserPath(filename);
+
+
+	file = fopen(filename, "rb");
+	if (file == NULL) goto error;
+	
+	nb = fread(&info, sizeof(DescInfo), 1, file);
+	if (nb < 1) goto error;
+
+	if (m_name[0] != '\0')
+		strcpy(m_name, info.name);
+
+	m_private = info.prive;
+	m_mission = info.mission;
+	m_multi = info.multi;
+	m_nbVies = info.nbVies;
+	m_speed = info.speed;
+	m_bMovie = info.bMovie;
+	m_bHiliInfoButton = info.bHiliInfoButton;
+	m_bBuildOfficialMissions = info.bBuildOfficialMissions;
+
+	m_pSound->SetAudioVolume(info.audioVolume);
+	m_pSound->SetMidiVolume(info.midiVolume);
+	m_pDecor->SetDoors(info.doors);
+	fclose(file);
+	return TRUE;
+
+error:
+	if (file != NULL) fclose(file);
+	return FALSE;
+}
+
+BOOL CEvent::ClearGamer(int gamer)
+{
+	char filename[MAX_PATH];
+
+	m_6d30 = 0;
+	sprintf(filename, "data\\info%.3d.blp", gamer);
+	AddUserPath(filename);
+	remove(filename);
+	return TRUE;
+}
+
+void CEvent::SetNbVies(int lives)
+{
+	m_nbVies = lives;
+}
+
+int CEvent::GetSpeed()
+{
+	return m_speed;
+}
+
+void CEvent::SetSpeed(int speed)
+{
+	if ( speed > 2 ) speed = 2;
+	
+	m_speed = speed;
+}
+
+void CEvent::DemoRecStart()
+{
+	m_pDemoBuffer = (DemoEvent*)malloc(MAXDEMO*sizeof(DemoEvent));
+	if ( m_pDemoBuffer == NULL ) return;
+	memset(m_pDemoBuffer, 0, MAXDEMO*sizeof(DemoEvent));
+
+	m_demoTime  = 0;
+	m_demoIndex = 0;
+	m_bDemoRec  = TRUE;
+	m_bDemoPlay = FALSE;
+
+	InitRandom();
+	m_pDecor->SetTime(0);
+	m_speed = 1;
+}
+
+void CEvent::DemoRecStop()
+{
+	FILE* 		 file = NULL;
+	DemoHeader   header;
+	char filename[MAX_PATH];
+
+	if ( m_bDemoPlay ) return;
+
+	if ( m_pDemoBuffer != NULL )
+	{
+		sprintf(filename, "data\\demo%.3d.blp", GetWorld());
+		DeleteFile(filename);
+		file = fopen(filename, "wb");
+		if ( file != NULL )
+		{
+			memset(&header, 0, sizeof(DemoHeader));
+			header.majRev 	= 1;
+			header.minRev   = 0;
+			fwrite(&header, sizeof(DemoHeader), 1, file);
+			fwrite(m_pDemoBuffer, sizeof(DemoEvent), m_demoIndex, file);
+			fclose(file);
+		}
+		free(m_pDemoBuffer);
+		m_pDemoBuffer = NULL;
+	}
+
+	m_bDemoRec = FALSE;
+	m_demoTime = 0;
+}
+
+BOOL CEvent::DemoPlayStart()
+{
+	char		filename[MAX_PATH];
+	FILE* file = NULL;
+	DemoHeader	header;
+	int			nb, world, time, total, mission, music;
+
+	m_pDemoBuffer = (DemoEvent*)malloc(MAXDEMO * sizeof(DemoEvent));
+	if (m_pDemoBuffer == NULL)  return FALSE;
+	memset(m_pDemoBuffer, 0, MAXDEMO * sizeof(DemoEvent));
+
+	sprintf(filename, "data\\demo%.3d.blp", m_demoNumber + 200);
+	file = fopen(filename, "rb");
+	if (file == NULL) return FALSE;
+
+	nb = fread(&header, sizeof(DemoHeader), 1, file);
+	if (nb < 1)
+	{
+		DemoPlayStop();
+		return FALSE;
+	}
+
+	m_demoEnd = fread(m_pDemoBuffer, sizeof(DemoEvent), MAXDEMO, file);
+	fclose(file);
+
+	mission = m_demoNumber + 200;
+	m_bPrivate = TRUE;
+	m_private = mission;
+
+	if (!m_pDecor->Read(m_gamer, mission, FALSE))
+	{
+		DemoPlayStop();
+		return FALSE;
+	}
+	if (!m_bDemoPlay)
+	{
+		music = m_pDecor->GetMusic();
+		if (music > 0)
+		{
+			sprintf(filename, "sound\\music%.3d.blp", music - 1);
+			m_pSound->PlayMusic(m_hWnd, filename);
+		}
+	}
+	m_demoTime = 0;
+	m_demoIndex = 0;
+	m_bDemoPlay = TRUE;
+	m_bDemoRec = FALSE;
+	m_keyPress = KEY_NONE;
+	m_pDecor->KeyChange(KEY_NONE);
+	ChangePhase(WM_PHASE_PLAY);
+	InitRandom();
+	m_pDecor->SetTime(0);
+	m_speed = 1;
+	return TRUE;
+}
+
+void CEvent::DemoPlayStop()
+{
+	if (m_pDemoBuffer != NULL)
+	{
+		free(m_pDemoBuffer);
+		m_pDemoBuffer = NULL;
+	}
+	m_bDemoPlay = FALSE;
+	m_bDemoRec = FALSE;
+	m_demoTime = 0;
+	m_keyPress = KEY_NONE;
+	m_pDecor->KeyChange(KEY_NONE);
+	m_private = 1;
+	ChangePhase(WM_PHASE_INIT);
+}
+
+void CEvent::DemoStep()
+{
+	int			time;
+	int		input;
+
+	if (m_phase == WM_PHASE_INIT)
+	{
+		if (m_demoTime > DEF_TIME_DEMO)  // ~30 secondes écoulées ?
+		{
+			m_demoNumber = 0;
+			DemoPlayStart();  // démarre une démo automatique
+		}
+	}
+
+	if (m_bDemoPlay &&  // démo en lecture ?
+		m_pDemoBuffer != NULL)
+	{
+		while (TRUE)
+		{
+			time = m_pDemoBuffer[m_demoIndex].time;
+			if (time > m_demoTime)  break;
+
+			input = m_pDemoBuffer[m_demoIndex].input;
+			m_keyPress = input;
+			m_demoIndex++;
+			m_pDecor->KeyChange(m_keyPress);
+
+			if (m_demoIndex >= m_demoEnd)
+			{
+				m_demoNumber++;  // démo suivante
+				if (!DemoPlayStart())  // démarre la démo suivante
+				{
+					m_demoNumber = 0;  // premiére démo
+					DemoPlayStart();   // démarre la démo
+				}
+				return;
+			}
+		}
+	}
+
+	m_demoTime++;
+}
+
+void CEvent::DemoRecEvent()
+{
+	if (m_bDemoRec)
+	{
+		m_pDemoBuffer[m_demoIndex].time = m_demoTime;
+		m_pDemoBuffer[m_demoIndex].input = m_keyPress;
+		m_demoIndex++;
+		if (m_demoIndex >= MAXDEMO)
+		{
+			DemoRecStop();
+		}
+	}
+}
+
+void CEvent::ChatFlush()
+{
+	for (int i = 0; i < MAXCHAT; i++)
+	{
+		m_chatZone[i][0] = '\0';
+	}
+}
+
+void CEvent::ChatPop()
+{
+	int i;
+	for (i = 0; i < MAXCHAT - 1; i++)
+	{
+		strcpy(m_chatZone[i], m_chatZone[i + 1]);
+	}
+	m_chatZone[MAXCHAT - 1][0] = '\0';
+}
+
+void CEvent::ChatPush(char *str)
+{
+	int i;
+
+	char *dest;
+	for (i = 0; i < MAXCHAT; i++)
+	{
+		if (m_chatZone[i][0] == 0)
+		{
+			dest = m_chatZone[i];
+			goto found;
+		}
+	}
+	ChatPop();
+	dest = m_chatZone[MAXCHAT - 1];
+found:
+	strcpy(dest, str);
+	m_pSound->PlayImage(SOUND_TRESOR, POINT( LXIMAGE / 2, LYIMAGE / 2 ), -1, 0);
+}
+
+void CEvent::ChatSend()
+{
+	int playerId;
+	char data[108];
+
+	if (m_textInput[0])
+	{
+		playerId = NetSearchPlayer(m_pNetwork->m_dpid);
+		strcpy(&data[8], "<");
+		if (playerId != -1)
+		{
+			strcat(&data[8], m_pNetwork->m_players[playerId].name);
+		}
+		strcat(&data[8], "> ");
+		strcat(&data[8], m_textInput);
+		ChatPush(&data[8]);
+		data[0] = 108;
+		data[1] = MESS_CHAT;
+		*(DPID*)&data[4] = m_pNetwork->m_dpid;
+		m_pNetwork->Send(data, 108, DPSEND_GUARANTEED);
+		m_textInput[0] = '\0';
+		m_textHiliStart = 0;
+		m_textHiliEnd = strlen(m_textInput);
+		m_textCursorIndex = 0;
+		SetEnable(WM_BUTTON20, 0);
+	}
 }
 
 void CEvent::PutTextInputBox(POINT pos)
@@ -2739,2073 +4807,4 @@ BOOL CEvent::LoadState(BOOL save)
 	SetMission((int)pEvent);
 	m_saveIndex = saveNum;
 	return TRUE;
-}
-
-int CEvent::MousePosToSprite(POINT pos)
-{
-	int sprite;
-
-	sprite = SPRITE_POINTER;
-
-	if (m_phase != WM_PHASE_PLAY &&
-		m_phase != WM_PHASE_PLAYTEST &&
-		m_phase != WM_PHASE_BUILD)
-	{
-		if (m_phase == WM_PHASE_BYE)
-		{
-			sprite = SPRITE_POINTER;
-		}
-		else if (!MouseOnButton(pos))
-		{
-			sprite = SPRITE_ARROW;
-		}
-	}
-	if (m_bWaitMouse)
-	{
-		sprite = SPRITE_WAIT;
-	}
-	if (m_bHideMouse)
-	{
-		sprite = SPRITE_EMPTY;
-	}
-	if (m_bDisableMouse)
-	{
-		sprite = SPRITE_DISABLE;
-	}
-
-	return sprite;
-}
-
-void CEvent::MouseSprite(POINT pos)
-{
-	m_mouseSprite = MousePosToSprite(pos);
-
-	m_pPixmap->SetMousePosSprite(pos, m_mouseSprite, m_bDemoPlay);
-	ChangeSprite(m_mouseSprite);
-}
-
-void CEvent::WaitMouse(BOOL bWait)
-{
-	m_bWaitMouse = bWait;
-
-	if ( bWait )
-	{
-		m_mouseSprite = SPRITE_WAIT;
-	}
-	else
-	{
-		m_mouseSprite = MousePosToSprite(GetMousePos());
-	}
-	m_pPixmap->SetMouseSprite(m_mouseSprite, m_bDemoPlay);
-	ChangeSprite(m_mouseSprite);
-}
-
-void CEvent::HideMouse(BOOL bHide)
-{
-	m_bHideMouse = bHide;
-	m_bDisableMouse = FALSE;
-
-	if ( bHide )
-	{
-		m_mouseSprite = SPRITE_EMPTY;
-	}
-	else
-	{
-		m_mouseSprite = MousePosToSprite(GetMousePos());
-	}
-	m_pPixmap->SetMouseSprite(m_mouseSprite, m_bDemoPlay);
-	ChangeSprite(m_mouseSprite);
-}
-
-void CEvent::DisableMouse(int bDisable)
-{
-	m_bDisableMouse = bDisable;
-
-	if (bDisable)
-	{
-		m_mouseSprite = SPRITE_DISABLE;
-	}
-	else
-	{
-		m_mouseSprite = MousePosToSprite(GetMousePos());
-	}
-	m_pPixmap->SetMouseSprite(m_mouseSprite, m_bDemoPlay);
-	ChangeSprite(m_mouseSprite);
-}
-
-BOOL CEvent::EventButtons(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	POINT		pos, test;
-	int			i, lg, oldx, res;
-	UINT uid;
-
-	pos = ConvLongToPos(lParam);
-	m_textToolTips[0] = 0;
-	m_textToolTips2[0] = 0;
-	oldx = m_posToolTips.x;
-	m_posToolTips.x = -1;
-	if (m_phase != WM_PHASE_PLAY && m_phase != WM_PHASE_PLAYTEST && table[m_index].buttons[0].message)
-	{
-		i = 0;
-		while (table[m_index].buttons[i].message != 0)
-		{
-			res = m_buttons[i].GetToolTips(pos);
-			if (res != -1)
-			{
-				if (res < 0)
-				{
-					LoadString(TX_NOTINDEMO, m_textToolTips2, 50);
-					res = -res;
-					pos.y -= 12;
-				}
-				LoadString(res, m_textToolTips, 50);
-				lg = GetTextWidth(m_textToolTips);
-				pos.x += 10;
-				pos.y += 20;
-				if (pos.x > LXIMAGE - lg) pos.x = LXIMAGE - lg;
-				if (pos.y > LYIMAGE - 14) pos.y = LYIMAGE - 14;
-				m_posToolTips = pos;
-				break;
-			}
-			i++;
-		}
-	}
-	i = 0;
-	while (table[m_index].buttons[i].message != 0)
-	{
-		if (m_buttons[i].TreatEvent(message, wParam, lParam)) return TRUE;
-		i++;
-	}
-	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST)
-	{
-		if (m_menu.TreatEvent(message, wParam, lParam)) return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL CEvent::MouseOnButton(POINT pos)
-{
-	int 	i;
-
-	i = 0;
-	while ( table[m_index].buttons[i].message != 0 )
-	{
-		if ( m_buttons[i].MouseOnButton(pos) ) return TRUE;
-		i ++;
-	}
-
-	return FALSE;
-}
-
-int CEvent::SearchPhase(UINT phase)
-{
-	int		i = 0;
-
-	while (table[i].phase != 0)
-	{
-		if (table[i].phase == phase) return i;
-		i++;
-	}
-
-	return -1;
-}
-
-int CEvent::GetWorld()
-{
-	if (m_bPrivate) return m_private;
-	if (m_bMulti)	return m_multi+100;
-	else			return m_mission;
-}
-
-BOOL CEvent::IsPrivate()
-{
-	return m_bPrivate;
-}
-
-BOOL CEvent::IsMulti()
-{
-	return m_bMulti;
-}
-
-void CEvent::GetWorldGroup()
-{
-	if (m_mission % 10 != 0 && m_mission != 99)
-	{
-		m_mission = (m_mission / 10) * 10;
-	}
-	else
-	{
-		m_mission = 1;
-	}
-}
-
-void CEvent::SetMission(int index)
-{
-	if (m_bPrivate) m_private = index;
-	else if (m_bMulti) m_multi = index;
-	else m_mission = index;
-}
-
-UINT CEvent::GetPhase()
-{
-	return m_phase;
-}
-
-void CEvent::TryInsert()
-{
-	if ( m_tryInsertCount == 0 )
-	{
-		if (CheckWorld1())
-		{
-			ChangePhase(m_tryPhase);
-		}
-		else
-		{
-			m_tryInsertCount = 40;
-		}
-	}
-	else
-	{
-		m_tryInsertCount --;
-	}
-}
-
-void CEvent::ReadAll()
-{
-	BOOL mission;
-	BOOL read;
-	BOOL bUser;
-	BOOL bPrivate;
-	BOOL bMission;
-
-	bUser = FALSE;
-
-	if ((m_fileIndex >= 0) && (m_bNamesExist[m_fileIndex] != 0))
-	{
-		mission = m_pDecor->CurrentWrite(m_gamer, 999);
-		
-		if (mission != FALSE)
-		{
-			read = m_pDecor->CurrentRead(m_gamer, m_fileIndex, &bMission, &bPrivate);
-			
-			if (read != FALSE)
-			{
-				m_pDecor->DrawMap(FALSE, -1);
-			}
-			m_pDecor->CurrentRead(m_gamer, 999, &bMission, &bPrivate);
-		}
-	}
-}
-
-BOOL CEvent::CurrentWrite(int rank)
-{
-	char str[100];
-
-	if (!m_pDecor->CurrentWrite(m_gamer, rank)) return FALSE;
-
-	LoadString(TX_GAMESAVED, str, 100);
-	m_pDecor->NotifPush(str);
-	m_saveIndex = rank;
-	return TRUE;
-}
-
-// Very rough code, needs improvement
-
-BOOL CEvent::ChangePhase(UINT phase)
-{
-	int	  i, mission;
-	char  str[MAX_PATH];
-	char  text[100];
-	char  res[100];
-	char  netData[12];
-	BOOL  bEnable;
-	short door[100];
-
-	sprintf(str, "CEvent::ChangePhase [Begin] --- %d\r\n", phase - WM_USER);
-	OutputNetDebug(str);
-#if BYE_SCREEN
-	if (phase == WM_PHASE_DOQUIT)
-#else
-	if (phase == WM_PHASE_BYE)
-#endif
-	{
-		PostMessage(m_hWnd, WM_CLOSE, 0, 0);
-		return TRUE;
-	}
-	m_pDecor->SetDemoPlay(m_bDemoPlay);
-	if (m_mouseType == MOUSETYPEGRA && m_bFullScreen)
-	{
-		m_bShowMouse = FALSE;
-	}
-	if (phase == WM_PHASE_QUITPLAYTEST)
-	{
-		m_pDecor->Read(m_gamer, 999, TRUE);
-		phase = WM_PHASE_BUILD;
-	}
-
-	if (!m_bDemoPlay &&
-		(phase != WM_PHASE_PLAY || m_phase == WM_PHASE_PLAY) &&
-		phase != WM_PHASE_STOP &&
-		phase != WM_PHASE_SETUP &&
-		phase != WM_PHASE_HELP &&
-		phase != WM_PHASE_GAMEREAD &&
-		phase != WM_PHASE_GAMEREADp &&
-		phase != WM_PHASE_GAMEWRITE)
-	{
-		m_pSound->StopMusic();
-	}
-
-	m_textToolTips[0] = 0;
-	m_posToolTips.x = -1;
-	m_pDecor->ChangePause(FALSE);
-	m_bHili = FALSE;
-	m_introTime = 0;
-	//m_bMousePress = FALSE;
-	m_bInfoHelp = FALSE;
-
-	if (m_bMulti &&
-		phase != WM_PHASE_PLAY &&
-		phase != WM_PHASE_QUITPLAY &&
-		phase != WM_PHASE_STOP &&
-		phase != WM_PHASE_SETUPp &&
-		phase != WM_PHASE_HELP &&
-		phase != WM_PHASE_GAMEREAD &&
-		phase != WM_PHASE_GAMEREADp &&
-		phase != WM_PHASE_GAMEWRITE)
-	{
-		m_pNetwork->Close();
-		m_bMulti = FALSE;
-		m_pDecor->SetMulti(FALSE);
-	}
-
-	if (phase == WM_PHASE_INIT)
-	{
-		m_demoTime = 0;
-	}
-	switch (phase)
-	{
-	case WM_PHASE_PLAY:
-		if (!m_bDemoPlay && GetWorld() >= 300 && GetWorld() < 320)
-		{
-			DemoRecStart();
-		}
-		break;
-	case WM_PHASE_QUITPLAY:
-		if (m_bPrivate)
-		{
-			if (!m_bMulti) return ChangePhase(WM_PHASE_INFO);
-		}
-		else if (m_bMulti)
-		{
-			NetSendBarePacket(PK_ABANDON, 0);
-			m_pNetwork->Close();
-			m_bMulti = FALSE;
-			m_pDecor->SetMulti(FALSE);
-			return ChangePhase(WM_PHASE_GAMER);
-		}
-		else
-		{
-			if (m_mission == 1)
-				return ChangePhase(WM_PHASE_GAMER);
-			else if (m_mission == 99 || m_mission % 10 == 0)
-				SetMission(1);
-			else
-				SetMission(10 * (m_mission / 10));
-			m_phase = WM_PHASE_PLAY;
-			return ChangePhase(WM_PHASE_PLAY);
-		}
-		break;
-	case WM_PHASE_DP_DOSERVICE:
-		if (NetCreate(m_fileIndex))
-		{
-			m_pNetwork->FreeProviderList();
-			if (NetEnumSessions())
-				return ChangePhase(WM_PHASE_SESSION);
-		}
-		else
-		{
-			m_pNetwork->FreeProviderList();
-			return ChangePhase(WM_PHASE_SERVICE);
-		}
-	case WM_PHASE_DP_CANCELSERVICE:
-		m_pNetwork->FreeProviderList();
-		return ChangePhase(WM_PHASE_GAMER);
-	case WM_PHASE_DP_JOIN:
-		if (m_pNetwork->JoinSession(m_fileIndex, m_name))
-		{
-			m_pNetwork->FreeSessionList();
-			return ChangePhase(WM_PHASE_MULTI);
-		}
-		else
-		{
-			m_pNetwork->FreeSessionList();
-			if (NetEnumSessions()) return ChangePhase(WM_PHASE_SESSION);
-			return ChangePhase(WM_PHASE_SERVICE);
-		}
-	case WM_PHASE_DP_CREATELOBBY:
-		return ChangePhase(WM_PHASE_CREATE);
-	case WM_PHASE_DP_REFRESH:
-		m_pNetwork->FreeSessionList();
-		if (NetEnumSessions())
-			return ChangePhase(WM_PHASE_SESSION);
-		else
-			return ChangePhase(WM_PHASE_SERVICE);
-	case WM_PHASE_DP_CANCELSESSION:
-		m_pNetwork->FreeSessionList();
-		return ChangePhase(WM_PHASE_SERVICE);
-	case WM_PHASE_DP_DOCREATE:
-		if (m_textInput[0] == '\0') return FALSE;
-		m_pNetwork->FreeSessionList();
-		if (m_pNetwork->CreateSession(m_textInput, m_name))
-			return ChangePhase(WM_PHASE_MULTI);
-		else if (NetEnumSessions())
-			return ChangePhase(WM_PHASE_SESSION);
-		else
-			return ChangePhase(WM_PHASE_SERVICE);
-	case WM_PHASE_DP_CANCELCREATE:
-		if (NetEnumSessions())
-			return ChangePhase(WM_PHASE_SESSION);
-		else
-			return ChangePhase(WM_PHASE_SERVICE);
-	case WM_PHASE_DP_STARTMULTI:
-		NetStartPlay();
-		return ChangePhase(WM_PHASE_PLAY);
-	case WM_PHASE_DP_CANCELMULTI:
-		netData[0] = 12;
-		netData[1] = MESS_LOBBY;
-		*(DPID*)&netData[4] = m_pNetwork->m_dpid;
-		*(DPID*)&netData[8] = m_pNetwork->IsHost();
-		m_pNetwork->Send(netData, 12, DPSEND_GUARANTEED);
-		m_pNetwork->Close();
-		if (NetEnumSessions()) return ChangePhase(WM_PHASE_SESSION);
-		return ChangePhase(WM_PHASE_SERVICE);
-	default:
-		DemoRecStop();
-		break;
-	}
-
-	if (SearchPhase(phase) < 0)
-	{
-		return FALSE;
-	}
-	m_pPixmap->MouseInvalidate();
-	HideMouse(FALSE);
-	WaitMouse(TRUE);
-
-	if (phase == WM_PHASE_GAMER || phase == WM_PHASE_PLAY)
-	{
-		OutputNetDebug("CEvent::ChangePhase [WriteInfo]\r\n");
-		WriteInfo(m_gamer);
-	}
-
-	int oldPhase = m_phase;
-	if ((oldPhase == WM_PHASE_BUILD && phase == WM_PHASE_INFO) ||
-		oldPhase == WM_PHASE_REGION ||
-		oldPhase == WM_PHASE_NAMEDESIGN ||
-		oldPhase == WM_PHASE_MUSIC)
-	{
-		m_pDecor->Write(m_gamer, GetWorld(), !m_bBuildOfficialMissions);
-	}
-	
-	m_phase = phase;
-	m_index = SearchPhase(phase);
-	if (table[m_index].bLocked && !CheckWorld1())
-	{
-		m_tryInsertCount = 40;
-		m_tryPhase = m_phase;
-		return ChangePhase(WM_PHASE_INSERT);
-	}
-
-	if (table[m_index].backName[0] != '\0')
-	{
-		strcpy(str, table[m_index].backName);
-		if (str[0] != '\0')
-		{
-			if (table[m_index].bCDrom)
-			{
-				AddCDPath(str);
-			}
-			if (!m_pPixmap->BackgroundCache(0, str, POINT( LXIMAGE, LYIMAGE ), POINT( 0,0 ), FALSE))
-			{
-				OutputNetDebug("CEvent::ChangePhase [Cache error]\r\n");
-				WaitMouse(FALSE);
-				m_tryInsertCount = 40;
-				m_tryPhase = m_phase;
-				return ChangePhase(WM_PHASE_INSERT);
-			}
-		}
-	}
-
-	if (m_phase == WM_PHASE_PLAY && !m_bPrivate &&
-		oldPhase != WM_PHASE_SETUPp &&
-		oldPhase != WM_PHASE_HELP &&
-		oldPhase != WM_PHASE_GAMEREAD &&
-		oldPhase != WM_PHASE_GAMEREADp &&
-		oldPhase != WM_PHASE_GAMEWRITE &&
-		oldPhase != WM_PHASE_STOP)
-	{
-		sprintf(str, "CEvent::ChangePhase [Read] %d, %d\r\n", m_gamer, GetWorld());
-		OutputNetDebug(str);
-
-		if (!m_pDecor->Read(m_gamer, GetWorld(), FALSE))
-		{
-			OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
-			m_tryInsertCount = 40;
-			m_tryPhase = m_phase;
-			return ChangePhase(WM_PHASE_INSERT);
-		}
-		m_pDecor->DrawMap(TRUE, -1);
-	}
-
-	if (m_phase == WM_PHASE_INFO && m_bPrivate)
-	{
-		
-		m_bDrawMap = m_pDecor->Read(m_gamer, GetWorld(), !m_bBuildOfficialMissions);
-		if (m_bDrawMap)
-		{
-			m_pDecor->DrawMap(TRUE, -1);
-		}
-	
-	}
-
-	if ((m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST) &&
-		oldPhase != WM_PHASE_SETUPp &&
-		oldPhase != WM_PHASE_HELP &&
-		oldPhase != WM_PHASE_GAMEREAD &&
-		oldPhase != WM_PHASE_GAMEREADp &&
-		oldPhase != WM_PHASE_GAMEWRITE &&
-		oldPhase != WM_PHASE_STOP)
-	{
-		m_pDecor->AdaptDoors(m_bPrivate, GetWorld());
-	}
-
-	if (m_phase == WM_PHASE_TESTCD)
-	{
-		if (m_pDecor->Read(1, 1, FALSE))
-		{
-			return ChangePhase(WM_PHASE_INIT);
-		}
-		else
-		{
-			m_tryInsertCount = 40;
-			m_tryPhase = m_phase;
-			return ChangePhase(WM_PHASE_INSERT);
-		}
-	}
-
-	if (m_phase == WM_PHASE_PLAYTEST)
-	{
-		m_pDecor->Write(m_gamer, 999, TRUE);
-		m_pDecor->PlayPrepare(TRUE);
-	}
-
-	if (m_phase == WM_PHASE_PLAY &&
-		oldPhase != WM_PHASE_SETUPp &&
-		oldPhase != WM_PHASE_HELP &&
-		oldPhase != WM_PHASE_GAMEREAD &&
-		oldPhase != WM_PHASE_GAMEREADp &&
-		oldPhase != WM_PHASE_GAMEWRITE &&
-		oldPhase != WM_PHASE_STOP)
-	{
-		if (m_bPrivate || m_bMulti)
-		{
-			m_pDecor->PlayPrepare(TRUE);
-		}
-		else
-		{
-			m_pDecor->PlayPrepare(FALSE);
-			m_pDecor->SetNbVies(m_nbVies);
-		}
-	}
-
-	if (m_phase == WM_PHASE_BUILD)
-	{
-		m_pDecor->BuildPrepare();
-	}
-
-	CreateButtons();
-	m_96b4 = 0;
-	m_menu.Delete();
-	if (m_phase == WM_PHASE_BUILD)
-	{
-		SetState(WM_DECOR1, 1);
-		SetMenu(WM_DECOR2, 0);
-		SetMenu(WM_DECOR3, 0);
-		SetMenu(WM_DECOR4, 0);
-		SetMenu(WM_DECOR5, 0);
-		SetMenu(WM_DECOR6, 0);
-		SetMenu(WM_DECOR7, 0);
-		SetMenu(WM_DECOR8, 0);
-		if (!m_bBuildOfficialMissions) SetHide(WM_DECOR8, TRUE);
-		m_pDecor->SetIconLiftAndStuff(1, GetMenu(WM_DECOR1));
-	}
-	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST || m_phase == WM_PHASE_BUILD)
-	{
-		OutputNetDebug("CEvent::ChangePhase [LoadImages]\r\n");
-		m_pDecor->LoadImages();
-	}
-	if (m_phase == WM_PHASE_INFO)
-	{
-#if _DEMO || _VALUE
-		SetDemo(WM_PHASE_REGION, TRUE);
-		SetDemo(WM_PHASE_NAMEDESIGN, TRUE);
-		SetDemo(WM_PHASE_MUSIC, TRUE);
-		SetDemo(WM_PREV, TRUE);
-		SetDemo(WM_NEXT, TRUE);
-		SetHide(WM_PHASE_BUILD, FALSE);
-		SetDemo(WM_PHASE_WRITEDESIGN, TRUE);
-		SetDemo(WM_PHASE_READDESIGN, TRUE);
-#else
-		bEnable = TRUE;
-		int world = 1;
-		if (GetWorld() == 0)
-		{
-			bEnable = FALSE;
-		}
-		SetEnable(WM_PREV, bEnable);
-		if (GetWorld() >= 320)
-		{
-			bEnable = FALSE;
-		}
-		if (m_bPrivate)
-		{
-			bEnable = GetWorld() < 20 - 1;
-		}
-		SetEnable(WM_NEXT, bEnable);
-		SetHide(WM_PHASE_BUILD, FALSE);
-		SetEnable(WM_PHASE_WRITEDESIGN, m_bDrawMap);
-		SetEnable(WM_PHASE_READDESIGN, !m_bDrawMap);
-#endif
-		SetEnable(WM_PHASE_CLEARDESIGN, m_bDrawMap);
-		SetEnable(WM_PHASE_PLAYMOVIE, m_bDrawMap);
-	}
-	if (m_phase == WM_PHASE_GAMER)
-	{
-#if _DEMO || _VALUE
-		SetDemo(WM_BUTTON2, TRUE);
-		SetDemo(WM_BUTTON3, TRUE);
-		SetDemo(WM_BUTTON4, TRUE);
-		SetDemo(WM_BUTTON5, TRUE);
-		SetDemo(WM_BUTTON6, TRUE);
-		SetDemo(WM_BUTTON7, TRUE);
-		SetDemo(WM_BUTTON8, TRUE);
-		SetDemo(WM_PHASE_GAMEREAD, TRUE);
-#endif
-		WriteInfo(m_gamer);
-		int i, j;
-		for (i = 0; i < 8; i++)
-		{
-			if (ReadInfo(i + 1))
-			{
-				m_bNamesExist[i] = TRUE;
-				strcpy(m_names[i], m_name);
-			
-				m_pDecor->GetDoors(door);
-				int num = 0;
-				for (j = 0; j < 100; j++)
-				{
-					if (door[j] == 0)
-					{
-						num++;
-					}
-				}
-				if (num == 1)
-				{
-					LoadString(TX_NUMDOOROPEN, res, 100);
-					sprintf(text, res, num);
-					strcat(m_names[i], text);
-				}
-				if (1 < num)
-				{
-					LoadString(TX_NUMDOORSOPEN, res, 100);
-					sprintf(text, res, num);
-					strcat(m_names[i], text);
-				}
-			}
-			else
-			{
-				m_bNamesExist[i] = FALSE;
-				LoadString(TX_PLAYERFREE, m_names[i], 100);
-			}
-			SetState(WM_BUTTON1 + i, m_gamer - 1 == i ? 1 : 0);
-		}
-		ReadInfo(m_gamer);
-	}
-	if (m_phase == WM_PHASE_NAMEGAMER)
-	{
-		strcpy(m_textInput, m_name);
-		m_textHiliStart = 0;
-		m_textCursorIndex = 0;
-		m_textHiliEnd = strlen(m_textInput);
-	}
-	if (m_phase == WM_PHASE_NAMEDESIGN)
-	{
-		strcpy(m_textInput, m_pDecor->GetMissionTitle());
-		m_textHiliStart = 0;
-		m_textCursorIndex = 0;
-		m_textHiliEnd = strlen(m_textInput);
-	}
-	if (m_phase == WM_PHASE_MUSIC)
-	{
-		int music = m_pDecor->GetMusic();
-		for (int i = 0; i < 11; i++)
-		{
-			SetState(WM_BUTTON1 + i, i == music);
-		}
-	}
-	if (m_phase == WM_PHASE_REGION)
-	{
-		int region = m_pDecor->GetRegion();
-		for (int i = 0; i < 32; i++)
-		{
-			SetState(WM_BUTTON1 + i, i == region);
-		}
-		POINT dim = m_pDecor->GetDim();
-		if (dim.x == MAXCELX)
-		{
-			if (dim.y == MAXCELY)
-			{
-				SetState(WM_DIMS1, 1);
-				SetState(WM_DIMS2, 0);
-				SetState(WM_DIMS3, 0);
-				SetState(WM_DIMS4, 0);
-			}
-			if (dim.y == 0)
-			{
-				SetState(WM_DIMS1, 0);
-				SetState(WM_DIMS2, 1);
-				SetState(WM_DIMS3, 0);
-				SetState(WM_DIMS4, 0);
-			}
-		}
-		else if (dim.y == MAXCELY)
-		{
-			SetState(WM_DIMS1, 0);
-			SetState(WM_DIMS2, 0);
-			SetState(WM_DIMS3, 1);
-			SetState(WM_DIMS4, 0);
-		}
-		else
-		{
-			SetState(WM_DIMS1, 0);
-			SetState(WM_DIMS2, 0);
-			SetState(WM_DIMS3, 0);
-			SetState(WM_DIMS4, 1);
-		}
-	}
-	if (m_phase == WM_PHASE_SERVICE)
-	{
-		m_pNetwork->EnumProviders();
-		m_nbFiles = m_pNetwork->GetNbProviders();
-		m_filePageOffset = 0;
-		m_fileIndex = 0;
-		SetHide(WM_BUTTON10, TRUE);
-		SetHide(WM_BUTTON11, m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6);
-		for (i = 0; i < 6; ++i)
-		{
-			if (m_filePageOffset + i >= m_nbFiles)
-			{
-				SetHide(WM_BUTTON1 + i, TRUE);
-			}
-			else
-			{
-				SetHide(WM_BUTTON1 + i, FALSE);
-				SetState(WM_BUTTON1 + i, m_filePageOffset + i == m_fileIndex);
-			}
-		}
-		SetEnable(WM_PHASE_DP_DOSERVICE, m_nbFiles != 0);
-	}
-	if (m_phase == WM_PHASE_SESSION)
-	{
-		m_nbFiles = m_pNetwork->GetNbSessions();
-		m_filePageOffset = 0;
-		m_fileIndex = 0;
-		SetHide(WM_BUTTON10, 1);
-		SetHide(WM_BUTTON11, m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6);
-		for (i = 0; i < 6; ++i)
-		{
-			if (m_filePageOffset + i >= m_nbFiles)
-			{
-				SetHide(WM_BUTTON1 + i, TRUE);
-			}
-			else
-			{
-				SetHide(WM_BUTTON1, FALSE);
-				SetState(WM_BUTTON1 + i, m_filePageOffset + i == m_fileIndex);
-			}
-		}
-		SetEnable(WM_PHASE_DP_JOIN, m_nbFiles != 0);
-	}
-	if (m_phase == WM_PHASE_MULTI)
-	{
-		m_bDrawMap = m_pDecor->Read(m_gamer, m_multi + 200, 0);
-		for (i = 0; i < MAXNETPLAYER; i++)
-		{
-			m_pNetwork->m_players[i].bIsPresent = FALSE;
-		}
-		if (m_pNetwork->IsHost())
-		{
-			m_pNetwork->m_players[0].bIsPresent = TRUE;
-			m_pNetwork->m_players[0].ready = FALSE;
-			m_pNetwork->m_players[0].dpid = m_pNetwork->m_dpid;
-			m_pNetwork->m_players[0].team = 0;
-			strncpy(m_pNetwork->m_players[0].name, m_name, 20);
-			m_pNetwork->m_players[0].name[19] = '\0';
-		}
-		else
-		{
-			char data[28];
-			data[0] = 28;
-			data[1] = MESS_JOIN;
-			*&data[4] = m_pNetwork->m_dpid; // what
-			strncpy(data + 8, m_name, 20);
-			m_pNetwork->Send(data, 28, 1);
-		}
-		if (m_bDrawMap)
-		{
-			DrawMap();
-		}
-		NetAdjustLobbyButtons();
-		ChatFlush();
-		m_textHiliStart = 0;
-		m_textInput[0] = 0;
-		m_textCursorIndex = 0;
-		m_textHiliEnd = strlen(m_textInput);
-	}
-	if (m_phase == WM_PHASE_CREATE)
-	{
-		m_textHiliStart = 0;
-		m_textInput[0] = 0;
-		m_textCursorIndex = 0;
-		m_textHiliEnd = strlen(m_textInput);
-	}
-	if (m_phase == WM_PHASE_STOP)
-	{
-#if _DEMO || _VALUE
-		SetDemo(WM_PHASE_GAMEWRITE, TRUE);
-		SetDemo(WM_PHASE_GAMEREADp, TRUE);
-#endif
-		if (m_bMulti)
-		{
-			SetEnable(WM_PHASE_GAMEWRITE, FALSE);
-			SetEnable(WM_PHASE_GAMEREADp, FALSE);
-		}
-	}
-	if (m_phase == WM_PHASE_WRITEDESIGN || m_phase == WM_PHASE_READDESIGN)
-	{
-		long hFile;
-		struct _finddata_t fBuffer;
-		BOOL bDo;
-		char temp[_MAX_FNAME];
-
-		m_nbFiles = 0;
-		hFile = _findfirst("\\User\\*.xch", &fBuffer);
-		if (hFile != -1)
-		{
-			do
-			{
-				strcpy(m_filenameBuffer[m_nbFiles++], fBuffer.name);
-			} while (_findnext(hFile, &fBuffer) == 0 &&
-				m_nbFiles < 100);
-		}
-		do
-		{
-			bDo = FALSE;
-
-			for (i = 0; i < m_nbFiles - 1; i++)
-			{
-				if (strcmp(m_filenameBuffer[i], m_filenameBuffer[i + 1]) > 0)
-				{
-					strcpy(temp, m_filenameBuffer[i]);
-					strcpy(m_filenameBuffer[i], m_filenameBuffer[i + 1]);
-					strcpy(m_filenameBuffer[i + 1], temp);
-					bDo = TRUE;
-				}
-			}
-			
-		} while (bDo);
-		m_filePageOffset = 0;
-		m_fileIndex = 0;
-	}
-	if (m_phase == WM_PHASE_READDESIGN)
-	{
-		SetHide(WM_BUTTON10, m_filePageOffset == 0);
-		SetHide(WM_BUTTON11, (((m_nbFiles + 5) / 6) * 6 <= m_filePageOffset + 6));
-		for (i = 0; i < 6; i++)
-		{
-			if (i + m_filePageOffset < m_nbFiles)
-			{
-				SetHide(WM_BUTTON1 + i, FALSE);
-				SetState(WM_BUTTON1 + i, i + m_filePageOffset == m_fileIndex);
-			}
-			else
-			{
-				SetHide(WM_BUTTON1 + i, TRUE);
-			}
-		}
-		SetEnable(WM_PHASE_DOREADDESIGN, m_nbFiles != 0);
-	}
-	if (m_phase == WM_PHASE_WRITEDESIGN)
-	{
-		SetHide(WM_BUTTON10, m_filePageOffset == 0);
-		SetHide(WM_BUTTON11, m_filePageOffset + 12 >= 12 * ((m_nbFiles + 11) / 12));
-		strcpy(m_textInput, m_pDecor->GetMissionTitle());
-		if (!m_textInput[0])
-		{
-			LoadString(TX_MISSION2D, res, 100);
-			sprintf(m_textInput, res, GetWorld());
-		}
-		m_textHiliStart = 0;
-		m_textHiliEnd = strlen(m_textInput);
-		memcpy(&m_textInput[strlen(m_textInput)], ".xch", strlen(".xch") + 1);
-		m_textCursorIndex = 0;
-	}
-	if (m_phase == WM_PHASE_GAMEWRITE || m_phase == WM_PHASE_GAMEREADp || m_phase == WM_PHASE_GAMEREAD)
-	{
-		m_fileIndex = m_saveIndex;
-
-		for (i = 0; i < MAXSAVE; i++)
-		{
-			SetState(WM_BUTTON1 + i, i == m_fileIndex);
-			if (m_pDecor->FileExist(m_gamer, i, m_filenameBuffer[i]))
-			{
-				m_bNamesExist[i] = TRUE;
-			}
-			else
-			{
-				m_bNamesExist[i] = FALSE;
-				LoadString(TX_MISSIONFREE, m_filenameBuffer[i], 50);
-				if (m_phase == WM_PHASE_GAMEREAD || m_phase == WM_PHASE_GAMEREADp)
-				{
-					SetEnable(WM_BUTTON1 + i, FALSE);
-				}
-			}
-		}
-			ReadAll();
-			if (m_fileIndex >= 0)
-			{
-				SetEnable(WM_BUTTON20, m_bNamesExist[m_fileIndex]);
-			}
-			else
-			{
-				SetEnable(WM_BUTTON20, FALSE);
-			}
-	}
-	if (m_phase == WM_PHASE_SETUP || m_phase == WM_PHASE_SETUPp)
-	{
-		m_nbJoy = 0;
-		int numDevs;
-		JOYCAPS joyCaps;
-		numDevs = joyGetNumDevs();
-		if (numDevs > 0)
-		{
-			for (i = 0; i < numDevs; i++)
-			{
-				ZeroMemory(&joyCaps, sizeof(JOYCAPS));
-				if (!joyGetDevCaps(i, &joyCaps, sizeof(JOYCAPS)))
-				{
-					m_joyIDList[m_nbJoy] = i;
-					strcpy(m_joyNames[m_nbJoy], joyCaps.szPname);
-					m_nbJoy++;
-					if (m_nbJoy >= 5) break;
-				}
-			}
-		}
-		for (i = 0; i < 5; ++i)
-		{
-			SetHide(WM_BUTTON8 + i, i >= m_nbJoy);
-		}
-	}
-	if ((m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST || m_phase == WM_PHASE_MUSIC) && !m_bDemoPlay)
-	{
-		if (m_pSound->IsPlayingMusic())
-		{
-			m_pSound->AdaptVolumeMusic();
-		}
-		else
-		{
-			int music = m_pDecor->GetMusic();
-			if (music > 0)
-			{
-				m_pSound->PlayMusic(m_hWnd, music);
-			}
-		}
-	}
-	if (m_phase == WM_PHASE_PLAYMOVIE)
-	{
-		sprintf(m_movieToStart, "movie\\play%.3d.avi", GetWorld());
-		AddCDPath(m_movieToStart);
-		m_phaseAfterMovie = WM_PHASE_PLAY;
-	}
-	if (m_phase == WM_PHASE_WINMOVIE)
-	{
-		sprintf(m_movieToStart, "movie\\win%.3d.avi", GetWorld());
-		AddCDPath(m_movieToStart);
-		m_phaseAfterMovie = WM_PHASE_WIN;
-	}
-	if (m_phase == WM_PHASE_WINMOVIEDESIGN)
-	{
-		sprintf(m_movieToStart, "movie\\win%.3d.avi", GetWorld());
-		AddCDPath(m_movieToStart);
-		m_phaseAfterMovie = WM_PHASE_WINDESIGN;
-	}
-	if (m_phase == WM_PHASE_WINMOVIEMULTI)
-	{
-		sprintf(m_movieToStart, "movie\\win%.3d.avi", GetWorld());
-		AddCDPath(m_movieToStart);
-		m_phaseAfterMovie = WM_PHASE_WINMULTI;
-	}
-	WaitMouse(FALSE);
-	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST)
-	{
-		DisableMouse(TRUE);
-	}
-	m_pDecor->ChangePhase(phase);
-	OutputNetDebug("CEvent::ChangePhase [End]");
-	
-	return TRUE;
-
-}
-
-void CEvent::MovieToStart()
-{
-	if (m_movieToStart[0] != 0)
-	{
-		HideMouse(TRUE);
-
-		if (StartMovie(m_movieToStart))
-		{
-			m_phase = m_phaseAfterMovie;
-		}
-		else
-		{
-			ChangePhase(m_phaseAfterMovie);
-		}
-
-		m_movieToStart[0] = 0;
-	}
-}
-
-void CEvent::MouseRelease()
-{
-	m_bMouseRelease = TRUE;
-	ShowCursor(TRUE);
-}
-
-void CEvent::MouseCapture()
-{
-	m_bMouseRelease = FALSE;
-	ShowCursor(FALSE);
-}
-
-BOOL CEvent::NetCreate(int provider)
-{
-	BOOL created;
-
-	MouseRelease();
-	created = m_pNetwork->CreateProvider(provider);
-	MouseCapture();
-	return created;
-}
-
-BOOL CEvent::NetEnumSessions()
-{
-	BOOL enumSess;
-
-	MouseRelease();
-	enumSess = m_pNetwork->EnumSessions();
-	MouseCapture();
-	return enumSess;
-}
-
-void CEvent::DrawMap()
-{
-	m_pDecor->DrawMap(TRUE, NetSearchPlayer(m_pNetwork->m_dpid));
-}
-
-BOOL CEvent::BuildDown(POINT pos, int fwKeys, BOOL bMix)
-{
-	POINT cel;
-	int icon;
-
-	if (pos.x < 0 || pos.x > LXIMAGE ||
-		pos.y < 0 || pos.y > LYIMAGE) return FALSE;
-
-	if (fwKeys & MK_RBUTTON)
-	{
-		cel = m_pDecor->ScreenPosToCelPos(pos);
-		m_pDecor->DeleteCel(cel);
-	}
-	else
-	{
-		if (GetState(WM_DECOR1) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			m_pDecor->DeleteCel(cel);
-		}
-		if (GetState(WM_DECOR2) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			icon = GetMenu(WM_DECOR2);
-			m_pDecor->PlaceDecor1(cel, icon, fwKeys, bMix);
-		}
-		if (GetState(WM_DECOR3) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			icon = GetMenu(WM_DECOR3);
-			m_pDecor->PlaceDecor2(cel, icon, fwKeys, bMix);
-		}
-		if (GetState(WM_DECOR4) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			icon = GetMenu(WM_DECOR4);
-			m_pDecor->PlaceDecor3(cel, icon, fwKeys, bMix);
-		}
-		if (GetState(WM_DECOR5) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			icon = GetMenu(WM_DECOR5);
-			m_pDecor->PlaceDecor4(cel, icon, fwKeys, bMix);
-		}
-		if (GetState(WM_DECOR6) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			icon = GetMenu(WM_DECOR6);
-			m_pDecor->PlaceDecor5(cel, icon, fwKeys, bMix);
-		}
-		if (GetState(WM_DECOR7) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			icon = GetMenu(WM_DECOR7);
-			m_pDecor->PlaceDecor6(cel, icon, fwKeys, bMix);
-		}
-		if (GetState(WM_DECOR8) == 1) {
-			cel = m_pDecor->ScreenPosToCelPos(pos);
-			icon = GetMenu(WM_DECOR8);
-			m_pDecor->PlaceDecor7(cel, icon, fwKeys, bMix);
-		}
-	}
-	return TRUE;
-}
-
-BOOL CEvent::BuildMove(POINT pos, int fwKeys)
-{
-	if (fwKeys & (MK_LBUTTON | MK_RBUTTON)) BuildDown(pos, fwKeys, FALSE);
-	m_pDecor->SetCelHiliFromScreenPos(pos);
-	return TRUE;
-}
-
-BOOL CEvent::BuildUp(POINT pos, int fwKeys)
-{
-	return TRUE;
-}
-
-/*
-void CEvent::TryPhase()
-{
-	m_tryPhase = 1;
-	ShowCursor(1);
-}
-
-void CEvent::UnTryPhase()
-{
-	m_tryPhase = 0;
-	ShowCursor(1);
-}
-
-int CEvent::GetTryPhase()
-{
-	return m_tryPhase;
-}
-
-void CEvent::GetDoors(int doors)
-{
-	for (int i = 0; i < 200; i++)
-	{
-		doors[i] = (int)data[Gamer];
-	}
-}
-
-
-void CEvent::TableSomething()
-{
-	char filename[MAX_PATH];
-
-	if (strstr(filename, table[m_index].backName))
-	{
-		AddCDPath(filename);
-	}
-	if (!m_pPixmap->CacheAll(CHBACK, filename, totalDim, iconDim, FALSE, GetRegion()))
-	{
-		return;
-	}
-}
-*/
-
-
-
-BOOL CEvent::StartMovie(char* pFilename)
-{
-	RECT	 rect;
-	char	 filename[MAX_PATH];
-
-	if (!m_pMovie->GetEnable()) return FALSE;
-	if (!m_bMovie) return FALSE;
-
-	if (!m_pMovie->IsExist(pFilename)) return FALSE;
-
-	rect.left = 1;
-	rect.top = 1;
-	rect.right = LXIMAGE - 2;
-	rect.bottom = LYIMAGE - 2;
-
-	m_pSound->StopMusic();
-	m_pPixmap->SavePalette();
-
-	strcpy(filename, pFilename);
-	strcpy(filename + strlen(filename) - 4, ".blp");
-	m_pSound->Cache(SOUND_MOVIE, filename);
-
-	if (!m_pMovie->Play(m_hWnd, rect, pFilename)) return FALSE;
-	m_bRunMovie = TRUE;
-	m_pSound->PlaySoundDS(SOUND_MOVIE, 0, 0, 0);
-	return TRUE;
-}
-
-void CEvent::StopMovie()
-{
-	m_pMovie->Stop(m_hWnd);
-	m_pPixmap->RestorePalette();
-	m_pPixmap->MouseInvalidate();
-	m_pSound->Flush(SOUND_MOVIE);
-	ChangePhase(m_phase);
-	m_bRunMovie = FALSE;
-}
-
-BOOL CEvent::IsMovie()
-{
-	return m_bRunMovie;
-}
-
-BOOL CEvent::IsMouseRelease()
-{
-	return m_bMouseRelease;
-}
-
-void CEvent::AddUserExportPath(char* dst, char* pFileName)
-{
-	char* suffix;
-
-	mkdir("\\User");
-	strcpy(dst, "\\User\\");
-	strcat(dst, pFileName);
-	suffix = strstr(dst, ".xch");
-	if (!suffix || suffix - dst != strlen(dst) - 4)
-	{
-		strcat(dst, ".xch");
-	}
-}
-
-void CEvent::SetNbVies(int lives)
-{
-	m_nbVies = lives;
-}
-
-void CEvent::SetSpeed(int speed)
-{
-	if ( speed > 2 ) speed = 2;
-	
-	m_speed = speed;
-}
-
-int CEvent::GetSpeed()
-{
-	return m_speed;
-}
-
-void CEvent::DemoRecStart()
-{
-	m_pDemoBuffer = (DemoEvent*)malloc(MAXDEMO*sizeof(DemoEvent));
-	if ( m_pDemoBuffer == NULL ) return;
-	memset(m_pDemoBuffer, 0, MAXDEMO*sizeof(DemoEvent));
-
-	m_demoTime  = 0;
-	m_demoIndex = 0;
-	m_bDemoRec  = TRUE;
-	m_bDemoPlay = FALSE;
-
-	InitRandom();
-	m_pDecor->SetTime(0);
-	m_speed = 1;
-}
-
-void CEvent::DemoRecStop()
-{
-	FILE* 		 file = NULL;
-	DemoHeader   header;
-	char filename[MAX_PATH];
-
-	if ( m_bDemoPlay ) return;
-
-	if ( m_pDemoBuffer != NULL )
-	{
-		sprintf(filename, "data\\demo%.3d.blp", GetWorld());
-		DeleteFile(filename);
-		file = fopen(filename, "wb");
-		if ( file != NULL )
-		{
-			memset(&header, 0, sizeof(DemoHeader));
-			header.majRev 	= 1;
-			header.minRev   = 0;
-			fwrite(&header, sizeof(DemoHeader), 1, file);
-			fwrite(m_pDemoBuffer, sizeof(DemoEvent), m_demoIndex, file);
-			fclose(file);
-		}
-		free(m_pDemoBuffer);
-		m_pDemoBuffer = NULL;
-	}
-
-	m_bDemoRec = FALSE;
-	m_demoTime = 0;
-}
-
-BOOL CEvent::DemoPlayStart()
-{
-	char		filename[MAX_PATH];
-	FILE* file = NULL;
-	DemoHeader	header;
-	int			nb, world, time, total, mission, music;
-
-	m_pDemoBuffer = (DemoEvent*)malloc(MAXDEMO * sizeof(DemoEvent));
-	if (m_pDemoBuffer == NULL)  return FALSE;
-	memset(m_pDemoBuffer, 0, MAXDEMO * sizeof(DemoEvent));
-
-	sprintf(filename, "data\\demo%.3d.blp", m_demoNumber + 200);
-	file = fopen(filename, "rb");
-	if (file == NULL) return FALSE;
-
-	nb = fread(&header, sizeof(DemoHeader), 1, file);
-	if (nb < 1)
-	{
-		DemoPlayStop();
-		return FALSE;
-	}
-
-	m_demoEnd = fread(m_pDemoBuffer, sizeof(DemoEvent), MAXDEMO, file);
-	fclose(file);
-
-	mission = m_demoNumber + 200;
-	m_bPrivate = TRUE;
-	m_private = mission;
-
-	if (!m_pDecor->Read(m_gamer, mission, FALSE))
-	{
-		DemoPlayStop();
-		return FALSE;
-	}
-	if (!m_bDemoPlay)
-	{
-		music = m_pDecor->GetMusic();
-		if (music > 0)
-		{
-			sprintf(filename, "sound\\music%.3d.blp", music - 1);
-			m_pSound->PlayMusic(m_hWnd, filename);
-		}
-	}
-	m_demoTime = 0;
-	m_demoIndex = 0;
-	m_bDemoPlay = TRUE;
-	m_bDemoRec = FALSE;
-	m_keyPress = KEY_NONE;
-	m_pDecor->KeyChange(KEY_NONE);
-	ChangePhase(WM_PHASE_PLAY);
-	InitRandom();
-	m_pDecor->SetTime(0);
-	m_speed = 1;
-	return TRUE;
-}
-
-void CEvent::DemoPlayStop()
-{
-	if (m_pDemoBuffer != NULL)
-	{
-		free(m_pDemoBuffer);
-		m_pDemoBuffer = NULL;
-	}
-	m_bDemoPlay = FALSE;
-	m_bDemoRec = FALSE;
-	m_demoTime = 0;
-	m_keyPress = KEY_NONE;
-	m_pDecor->KeyChange(KEY_NONE);
-	m_private = 1;
-	ChangePhase(WM_PHASE_INIT);
-}
-
-void CEvent::DemoStep()
-{
-	int			time;
-	int		input;
-
-	if (m_phase == WM_PHASE_INIT)
-	{
-		if (m_demoTime > DEF_TIME_DEMO)  // ~30 secondes écoulées ?
-		{
-			m_demoNumber = 0;
-			DemoPlayStart();  // démarre une démo automatique
-		}
-	}
-
-	if (m_bDemoPlay &&  // démo en lecture ?
-		m_pDemoBuffer != NULL)
-	{
-		while (TRUE)
-		{
-			time = m_pDemoBuffer[m_demoIndex].time;
-			if (time > m_demoTime)  break;
-
-			input = m_pDemoBuffer[m_demoIndex].input;
-			m_keyPress = input;
-			m_demoIndex++;
-			m_pDecor->KeyChange(m_keyPress);
-
-			if (m_demoIndex >= m_demoEnd)
-			{
-				m_demoNumber++;  // démo suivante
-				if (!DemoPlayStart())  // démarre la démo suivante
-				{
-					m_demoNumber = 0;  // premiére démo
-					DemoPlayStart();   // démarre la démo
-				}
-				return;
-			}
-		}
-	}
-
-	m_demoTime++;
-}
-
-void CEvent::DemoRecEvent()
-{
-	if (m_bDemoRec)
-	{
-		m_pDemoBuffer[m_demoIndex].time = m_demoTime;
-		m_pDemoBuffer[m_demoIndex].input = m_keyPress;
-		m_demoIndex++;
-		if (m_demoIndex >= MAXDEMO)
-		{
-			DemoRecStop();
-		}
-	}
-}
-
-BOOL CEvent::WriteInfo(int gamer)
-{
-	char		filename[MAX_PATH];
-	FILE*		file = NULL;
-	DescInfo	info;
-	int			nb;
-	int			doors;
-	char		text[100];
-
-	if (m_6d30 == 0) return TRUE;
-	sprintf(filename, "data\\info%.3d.blp", gamer);
-	AddUserPath(filename);
-
-	file = fopen(filename, "wb");
-	if (file == NULL) goto error;
-
-	info.majRev = 1;
-	info.minRev = 0;
-	strcpy(info.name, m_name);
-	info.prive = m_private;
-	info.mission = m_mission;
-	info.multi = m_multi;
-	info.nbVies = m_nbVies;
-	info.speed = m_speed;
-	info.bMovie = m_bMovie;
-	info.bHiliInfoButton = m_bHiliInfoButton;
-	info.bBuildOfficialMissions = m_bBuildOfficialMissions;
-
-	info.audioVolume = m_pSound->GetAudioVolume();
-	info.midiVolume = m_pSound->GetMidiVolume();
-
-	m_pDecor->GetDoors(info.doors);
-
-	nb = fwrite(&info, sizeof(DescInfo), 1, file);
-	if (nb < 1) goto error;
-
-	fclose(file);
-	return TRUE;
-
-error:
-	if (file != NULL) fclose(file);
-	return FALSE;
-
-}
-
-BOOL CEvent::ReadInfo(int gamer)
-{
-	char	 filename[MAX_PATH];
-	FILE*	 file = NULL;
-	DescInfo info;
-	int		 nb;
-	char	 str[100];
-
-	m_6d30 = 1;
-	m_pDecor->InitGamer();
-	m_nbVies = 3;
-	m_mission = 1;
-	m_private = 1;
-	m_multi = 1;
-
-	LoadString(TX_READINFO, str, 100);
-	sprintf(m_name, str, gamer);
-	sprintf(filename, "data\\info%.3d.blp", gamer);
-	AddUserPath(filename);
-
-
-	file = fopen(filename, "rb");
-	if (file == NULL) goto error;
-	
-	nb = fread(&info, sizeof(DescInfo), 1, file);
-	if (nb < 1) goto error;
-
-	if (m_name[0] != '\0')
-		strcpy(m_name, info.name);
-
-	m_private = info.prive;
-	m_mission = info.mission;
-	m_multi = info.multi;
-	m_nbVies = info.nbVies;
-	m_speed = info.speed;
-	m_bMovie = info.bMovie;
-	m_bHiliInfoButton = info.bHiliInfoButton;
-	m_bBuildOfficialMissions = info.bBuildOfficialMissions;
-
-	m_pSound->SetAudioVolume(info.audioVolume);
-	m_pSound->SetMidiVolume(info.midiVolume);
-	m_pDecor->SetDoors(info.doors);
-	fclose(file);
-	return TRUE;
-
-error:
-	if (file != NULL) fclose(file);
-	return FALSE;
-}
-
-// Modifie le décor lorsque le bouton de la sourie est pressé.
-
-BOOL CEvent::PlayDown(POINT pos, int fwKeys)
-{
-	return TRUE;
-}
-
-// Modifie le décor lorsque la souris est déplacée.
-
-BOOL CEvent::PlayMove(POINT pos, int fwKeys)
-{
-	return TRUE;
-}
-
-// Modifie le décor lorsque le bouton de la sourie est relâché.
-
-BOOL CEvent::PlayUp(POINT pos, int fwKeys)
-{
-	return TRUE;
-}
-
-void CEvent::ChangeButtons(int message)
-{
-	int playerId;
-	char netData[12];
-
-	if (m_phase == WM_PHASE_GAMER && message >= WM_BUTTON1 && message <= WM_BUTTON10)
-	{
-		m_gamer = message - WM_BUTTON0;
-		for (int i = 0; i < 10; i++)
-		{
-			SetState(WM_BUTTON1 + i, m_gamer - 1 == i);
-		}
-		ReadInfo(m_gamer);
-	}
-	if (m_phase == WM_PHASE_NAMEGAMER && message == WM_PHASE_DONAMEGAMER)
-	{
-		strcpy(m_name, m_textInput);
-		WriteInfo(m_gamer);
-		ChangePhase(WM_PHASE_GAMER);
-	}
-	if (m_phase == WM_PHASE_NAMEDESIGN && message == WM_PHASE_DONAMEDESIGN)
-	{
-		m_pDecor->SetMissionTitle(m_textInput);
-		ChangePhase(WM_PHASE_INFO);
-	}
-	if (m_phase == WM_PHASE_CLEARGAMER && message == WM_PHASE_DOCLEARGAMER)
-	{
-		ClearGamer(m_gamer);
-		ChangePhase(WM_PHASE_GAMER);
-	}
-	if (m_phase == WM_PHASE_CLEARDESIGN && message == WM_PHASE_DOCLEARDESIGN)
-	{
-		m_pDecor->DeleteMission(m_gamer, GetWorld(), !m_bBuildOfficialMissions);
-		ChangePhase(WM_PHASE_INFO);
-	}
-	if (m_phase == WM_PHASE_MUSIC)
-	{
-		m_pDecor->SetMusic(message - WM_BUTTON1);
-		ChangePhase(m_phase);
-	}
-	if (m_phase == WM_PHASE_REGION)
-	{
-		if (message >= WM_BUTTON1 && message <= WM_BUTTON24)
-		{
-			m_pDecor->SetRegion(message - WM_BUTTON1);
-			ChangePhase(m_phase);
-		}
-		if (message >= WM_DIMS1 && message <= WM_DIMS4)
-		{
-			SetState(WM_DIMS1, 0);
-			SetState(WM_DIMS2, 0);
-			SetState(WM_DIMS3, 0);
-			SetState(WM_DIMS4, 0);
-			POINT dim;
-			if (message == WM_DIMS1)
-			{
-				dim.x = MAXCELX;
-				dim.y = MAXCELY;
-				SetState(WM_DIMS1, 1);
-			}
-			if (message == WM_DIMS2)
-			{
-				dim.x = MAXCELX;
-				dim.y = 0;
-				SetState(WM_DIMS2, 1);
-			}
-			if (message == WM_DIMS3)
-			{
-				dim.x = 0;
-				dim.y = MAXCELY;
-				SetState(WM_DIMS3, 1);
-			}
-			if (message == WM_DIMS4)
-			{
-				dim.x = 0;
-				dim.y = 0;
-				SetState(WM_DIMS4, 1);
-			}
-			m_pDecor->SetDim(dim);
-		}
-	}
-	if (m_phase == WM_PHASE_SERVICE)
-	{
-		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
-		{
-			m_fileIndex = message - WM_BUTTON1 + m_filePageOffset;
-		}
-		if (message == WM_BUTTON10)
-		{
-			m_filePageOffset = m_filePageOffset + -6;
-			if (m_filePageOffset < 0) m_filePageOffset = 0;
-		}
-		if (message == WM_BUTTON11)
-		{
-			m_filePageOffset += 6;
-		}
-		BOOL bHide;
-		bHide = FALSE;
-		if (m_filePageOffset == 0) bHide = TRUE;
-		SetHide(WM_BUTTON10, bHide);
-		bHide = FALSE;
-		if (m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6) bHide = TRUE;
-		SetHide(WM_BUTTON11, bHide);
-		for (int i = 0; i < 6; i++)
-		{
-			if (m_filePageOffset + i < m_nbFiles)
-			{
-				SetHide(WM_BUTTON1 + i, FALSE);
-				SetState(WM_BUTTON1 + i, m_filePageOffset + i == m_fileIndex);
-			}
-			else
-			{
-				SetHide(WM_BUTTON1 + i, TRUE);
-			}
-		}
-	}
-	if (m_phase == WM_PHASE_SESSION)
-	{
-		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
-		{
-			m_fileIndex = message - WM_BUTTON1 + m_filePageOffset;
-		}
-		if (message == WM_BUTTON10)
-		{
-			m_filePageOffset = m_filePageOffset + -6;
-			if (m_filePageOffset < 0) m_filePageOffset = 0;
-		}
-		if (message == WM_BUTTON11)
-		{
-			m_filePageOffset += 6;
-		}
-		BOOL bHide;
-		bHide = FALSE;
-		if (m_filePageOffset == 0) bHide = TRUE;
-		SetHide(WM_BUTTON10, bHide);
-		bHide = FALSE;
-		if (m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6) bHide = TRUE;
-		SetHide(WM_BUTTON11, bHide);
-		for (int i = 0; i < 6; i++)
-		{
-			if (m_filePageOffset + i < m_nbFiles)
-			{
-				SetHide(WM_BUTTON1 + i, FALSE);
-				SetState(WM_BUTTON1 + i, m_filePageOffset + i == m_fileIndex);
-			}
-			else
-			{
-				SetHide(WM_BUTTON1 + i, TRUE);
-			}
-		}
-	}
-	if (m_phase == WM_PHASE_MULTI)
-	{
-		if (message >= WM_BUTTON1 && message <= WM_BUTTON4)
-		{
-			playerId = message - WM_BUTTON1;
-			m_pNetwork->m_players[playerId].team++;
-			if (m_pNetwork->m_players[playerId].team >= MAXTEAM)
-			{
-				m_pNetwork->m_players[playerId].team = 0;
-			}
-
-			if (m_pNetwork->IsHost())
-			{
-				NetSendLobby();
-			}
-			else
-			{
-				netData[0] = 12;
-				netData[1] = MESS_TEAM;
-				*(DPID*)&netData[4] = m_pNetwork->m_dpid;
-				*(short*)&netData[8] = m_pNetwork->m_players[playerId].team;
-				m_pNetwork->Send(netData, 12, DPSEND_GUARANTEED);
-			}
-			DrawMap();
-			NetAdjustLobbyButtons();
-		}
-		if (message >= WM_BUTTON11 && message <= WM_BUTTON14)
-		{
-			playerId = message - WM_BUTTON11;
-			m_pNetwork->m_players[playerId].ready = !m_pNetwork->m_players[playerId].ready;
-			if (m_pNetwork->IsHost())
-			{
-				NetSendLobby();
-			}
-			else
-			{
-				netData[0] = 12;
-				netData[1] = MESS_READY;
-				*(DPID*)&netData[4] = m_pNetwork->m_dpid;
-				netData[8] = m_pNetwork->m_players[playerId].ready;
-				m_pNetwork->Send(netData, 12, DPSEND_GUARANTEED);
-			}
-			NetAdjustLobbyButtons();
-		}
-		if (message == WM_BUTTON20)
-		{
-			ChatSend();
-		}
-	}
-	if (m_phase == WM_PHASE_READDESIGN)
-	{
-		BOOL bBuild;
-		char out[256];
-		char file[256];
-		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
-		{
-			m_fileIndex = m_filePageOffset + message - WM_BUTTON1;
-		}
-		if (message == WM_BUTTON10)
-		{
-			m_filePageOffset = m_filePageOffset + -6;
-			if (m_filePageOffset < 0)
-				m_filePageOffset = 0;
-		}
-		if (message == WM_BUTTON11)
-			m_filePageOffset += 6;
-		if (message == WM_PHASE_DOREADDESIGN)
-		{
-			AddUserExportPath(file, m_filenameBuffer[m_fileIndex]);
-			bBuild = !m_bBuildOfficialMissions;
-			m_pDecor->GetMissionPath(out, m_gamer, GetWorld(), bBuild);
-			CopyMission(file, out);
-			ChangePhase(WM_PHASE_INFO);
-		}
-		BOOL bHide = FALSE;
-		if (m_filePageOffset == 0) bHide = TRUE;
-		SetHide(WM_BUTTON10, bHide);
-		bHide = FALSE;
-		if (m_filePageOffset + 6 >= ((m_nbFiles + 5) / 6) * 6) bHide = TRUE;
-		SetHide(WM_BUTTON11, bHide);
-		for (int k = 0; k < 6; k++)
-		{
-			if (m_filePageOffset + k < m_nbFiles)
-			{
-				SetHide(k + WM_BUTTON1, 0);
-				SetState(k + WM_BUTTON1, m_filePageOffset + k == m_fileIndex);
-			}
-			else
-			{
-				SetHide(k + WM_BUTTON1, 1);
-			}
-		}
-	}
-	if (m_phase == WM_PHASE_WRITEDESIGN)
-	{
-		if (message == WM_BUTTON10)
-		{
-			m_filePageOffset -= 12;
-			if (m_filePageOffset < 0) m_filePageOffset = 0;
-		}
-		if (message == WM_BUTTON11) m_filePageOffset += 12;
-		if (message == WM_PHASE_DOWRITEDESIGN)
-		{
-			char str[256];
-			char filename[256];
-			AddUserExportPath(str, m_textInput);
-			m_pDecor->GetMissionPath(filename, m_gamer, GetWorld(), !m_bBuildOfficialMissions);
-			CopyMission(filename, str);
-			ChangePhase(WM_PHASE_INFO);
-		}
-		BOOL bHide = FALSE;
-		if (m_filePageOffset == 0) bHide = TRUE;
-		SetHide(WM_BUTTON10, bHide);
-		bHide = FALSE;
-		if (m_filePageOffset + 12 >= 12 * ((m_nbFiles + 11) / 12)) bHide = TRUE;
-		SetHide(WM_BUTTON11, bHide);
-	}
-	if (m_phase == WM_PHASE_GAMEREAD || m_phase == WM_PHASE_GAMEREADp)
-	{
-		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
-		{
-			m_fileIndex = message - WM_BUTTON1;
-			ReadAll();
-			for (int n = 0; n < 6; n++)
-			{
-				SetState(n + WM_BUTTON1, n == m_fileIndex);
-			}
-			SetEnable(WM_BUTTON20, GetState(m_fileIndex + WM_BUTTON1));
-		}
-		if (message == WM_BUTTON20 && CurrentRead(m_fileIndex))
-			ChangePhase(WM_PHASE_PLAY);
-	}
-	if (m_phase == WM_PHASE_GAMEWRITE)
-	{
-		if (message >= WM_BUTTON1 && message <= WM_BUTTON6)
-		{
-			m_fileIndex = message - WM_BUTTON1;
-			ReadAll();
-			for (int n = 0; n < 6; n++)
-			{
-				SetState((n + WM_BUTTON1), n == m_fileIndex);
-			}
-			SetEnable(WM_BUTTON20, GetState(m_fileIndex + WM_BUTTON1));
-		}
-		if (message == WM_BUTTON20 && CurrentWrite(m_fileIndex))
-		{
-			ChangePhase(WM_PHASE_PLAY);
-		}
-	}
-	if (m_phase == WM_PHASE_SETUP || m_phase == WM_PHASE_SETUPp)
-	{
-		if (message == WM_BUTTON1)
-		{
-			int volume = m_pSound->GetAudioVolume();
-			if (volume > 0) m_pSound->SetAudioVolume(volume - 1);
-		}
-		if (message == WM_BUTTON2)
-		{
-			int volume = m_pSound->GetAudioVolume();
-			if (volume < 20) m_pSound->SetAudioVolume(volume + 1);
-		}
-		if (message == WM_BUTTON3)
-		{
-			int midi = m_pSound->GetMidiVolume();
-			if (midi > 0)
-			{
-				m_pSound->SetMidiVolume(midi - 1);
-				m_pSound->SuspendMusic();
-			}
-		}
-		if (message == WM_BUTTON4)
-		{
-			int midi = m_pSound->GetMidiVolume();
-			if (midi < 20)
-			{
-				m_pSound->SetMidiVolume(midi + 1);
-				m_pSound->SuspendMusic();
-			}
-		}
-		if (message == WM_BUTTON5) m_bMovie = FALSE;
-		if (message == WM_BUTTON6) m_bMovie = TRUE;
-		if (message >= WM_BUTTON7 && message <= WM_BUTTON12)
-		{
-			m_joyIndex = message - WM_BUTTON7;
-			if (m_joyIndex > 0) m_joyID = m_joyIDList[m_joyIndex - 1];
-		}
-	}
-}
-
-BOOL CEvent::ClearGamer(int gamer)
-{
-	char filename[MAX_PATH];
-
-	m_6d30 = 0;
-	sprintf(filename, "data\\info%.3d.blp", gamer);
-	AddUserPath(filename);
-	remove(filename);
-	return TRUE;
-}
-
-BOOL CEvent::CheckWorld1()
-{
-#if REQUIRE_CD
-	FILE* file;
-	char buf[260];
-
-	strcpy(buf, "data\\world001.blp");
-	AddCDPath(buf);
-	file = fopen(buf, "rb");
-	if (file == NULL) return FALSE;
-	fclose(file);
-	return TRUE;
-#else
-	return TRUE;
-#endif
-}
-
-BOOL CEvent::CopyMission(char *srcFileName, char *dstFileName)
-{
-	FILE *srcFile = NULL;
-	FILE *destFile = NULL;
-	int num;
-	BOOL bError = TRUE;
-	void *buffer = malloc(2560);
-	if (buffer)
-	{
-		srcFile = fopen(srcFileName, "rb");
-		if (!srcFile) goto die;
-		destFile = fopen(dstFileName, "wb");
-		if (destFile)
-		{
-			num = 1;
-			while (num > 0)
-			{
-				num = fread(buffer, 1, 2560, srcFile);
-				if (srcFile->_flag & _IOERR) goto error;
-				if (num > 0)
-				{
-					fwrite(buffer, 1, num, destFile);
-					if (destFile->_flag & _IOERR) goto error;
-				}
-			}
-			bError = FALSE;
-		}
-	}
-error:
-	if (srcFile) fclose(srcFile);
-die:
-	if (destFile) fclose(destFile);
-	if (buffer) free(buffer);
-	return bError;
-}
-
-void CEvent::NetAdjustLobbyButtons()
-{
-	BOOL allReady = TRUE;
-	int nbReady = 0;
-	int offset = 0;
-	int button = WM_BUTTON11;
-	do
-	{
-		if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->bIsPresent)
-		{
-			SetHide(button - 10, FALSE);
-			SetHide(button, FALSE);
-			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid && !((NetPlayer*)((char*)m_pNetwork->m_players + offset))->ready) SetEnable(button - 10, TRUE);
-			else SetEnable(button - 10, FALSE);
-			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid) SetEnable(button, TRUE);
-			else SetEnable(button, FALSE);
-			int icon = ((NetPlayer*)((char*)m_pNetwork->m_players + offset))->team + 108;
-			SetIconMenu(button - 10, &icon, 1);
-			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->ready)
-			{
-				icon = 91;
-				SetIconMenu(button, &icon, 1);
-				++nbReady;
-			}
-			else
-			{
-				icon = 90;
-				SetIconMenu(button, &icon, 1);
-				allReady = FALSE;
-			}
-		}
-		else
-		{
-			SetHide(button - 10, TRUE);
-			SetHide(button, TRUE);
-		}
-		offset += sizeof(NetPlayer);
-		button++;
-	} while (button - WM_BUTTON11 < MAXNETPLAYER);
-
-	if (m_pNetwork->IsHost())
-	{
-#if _DEMO || _VALUE
-		SetDemo(WM_PREV, TRUE);
-		SetDemo(WM_NEXT, TRUE);
-#else
-		if (m_multi > 1 && !(allReady && nbReady > 1)) SetEnable(WM_PREV, TRUE);
-		else SetEnable(WM_PREV, FALSE);
-		if (m_multi < 10 && !(allReady && nbReady > 1)) SetEnable(WM_NEXT, TRUE);
-		else SetEnable(WM_NEXT, FALSE);
-#endif
-		if (allReady && nbReady > 1) SetEnable(WM_PHASE_DP_STARTMULTI, TRUE);
-		else SetEnable(WM_PHASE_DP_STARTMULTI, FALSE);
-	}
-	else
-	{
-		SetHide(WM_PREV, TRUE);
-		SetHide(WM_NEXT, TRUE);
-		SetHide(WM_PHASE_DP_STARTMULTI, TRUE);
-	}
-}
-
-BOOL CEvent::CurrentRead(int rank)
-{
-	char buf[100];
-	int mission;
-	BOOL bPrivate;
-	
-	if (!m_pDecor->CurrentRead(m_gamer, rank, &mission, &bPrivate)) return FALSE;
-	{
-		m_bPrivate = bPrivate;
-		SetMission(mission);
-		m_saveIndex = rank;
-		return TRUE;
-	}
-}
-
-// Passe les images d'introduction.
-
-void CEvent::IntroStep()
-{
-	m_introTime++;
-
-	if (m_introTime > 20 * 3)
-	{
-		if (m_phase == WM_PHASE_INTRO1)
-		{
-			ChangePhase(WM_PHASE_INTRO2);
-			return;
-		}
-
-		if (m_phase == WM_PHASE_INTRO2)
-		{
-			ChangePhase(WM_PHASE_INIT);
-			return;
-		}
-	}
 }

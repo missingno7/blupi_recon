@@ -11,6 +11,58 @@
 // a0f94abe-11c3-d111-be62-0040f6944838
 static const GUID APP_GUID = { 0xbe4af9a0, 0xc311, 0x11d1, { 0xbe, 0x62, 0x00, 0x40, 0xf6, 0x94, 0x48, 0x38 } };
 
+void TraceErrorDP(HRESULT hErr)
+{
+	char dperr[256];
+	char err[1024];
+
+	switch (hErr)
+	{
+	case DPERR_OUTOFMEMORY: sprintf(dperr, "DPERR_OUTOFMEMORY"); break;
+	case DPERR_UNSUPPORTED: sprintf(dperr, "DPERR_UNSUPPORTED"); break;
+	case DPERR_NOINTERFACE: sprintf(dperr, "DPERR_NOINTERFACE"); break;
+	case DPERR_GENERIC: sprintf(dperr, "DPERR_GENERIC"); break;
+	case DPERR_INVALIDPARAMS: sprintf(dperr, "DPERR_INVALIDPARAMS"); break;
+	case DPERR_ACTIVEPLAYERS: sprintf(dperr, "DPERR_ACTIVEPLAYERS"); break;
+	case DPERR_ACCESSDENIED: sprintf(dperr, "DPERR_ACCESSDENIED"); break;
+	case DPERR_CANTADDPLAYER: sprintf(dperr, "DPERR_CANTADDPLAYER"); break;
+	case DPERR_CANTCREATEPLAYER: sprintf(dperr, "DPERR_CANTCREATEPLAYER"); break;
+	case DPERR_CANTCREATEGROUP: sprintf(dperr, "DPERR_CANTCREATEGROUP"); break;
+	case DPERR_CANTCREATESESSION: sprintf(dperr, "DPERR_CANTCREATESESSION"); break;
+	case DPERR_BUFFERTOOSMALL: sprintf(dperr, "DPERR_BUFFERTOOSMALL"); break;
+	case DPERR_CAPSNOTAVAILABLEYET: sprintf(dperr, "DPERR_CAPSNOTAVAILABLEYET"); break;
+	case DPERR_ALREADYINITIALIZED: sprintf(dperr, "DPERR_ALREADYINITIALIZED"); break;
+	case DPERR_INVALIDFLAGS: sprintf(dperr, "DPERR_INVALIDFLAGS"); break;
+	case DPERR_EXCEPTION: sprintf(dperr, "DPERR_EXCEPTION"); break;
+	case DPERR_INVALIDPLAYER: sprintf(dperr, "DPERR_INVALIDPLAYER"); break;
+	case DPERR_INVALIDOBJECT: sprintf(dperr, "DPERR_INVALIDOBJECT"); break;
+	case DPERR_NOCONNECTION: sprintf(dperr, "DPERR_NOCONNECTION"); break;
+	case DPERR_NOCAPS: sprintf(dperr, "DPERR_NOCAPS"); break;
+	case DPERR_NONAMESERVERFOUND: sprintf(dperr, "DPERR_NONAMESERVERFOUND"); break;
+	case DPERR_NOMESSAGES: sprintf(dperr, "DPERR_NOMESSAGES"); break;
+	case DPERR_NOSESSIONS: sprintf(dperr, "DPERR_NOSESSIONS"); break;
+	case DPERR_NOPLAYERS: sprintf(dperr, "DPERR_NOPLAYERS"); break;
+	case DPERR_TIMEOUT: sprintf(dperr, "DPERR_TIMEOUT"); break;
+	case DPERR_SENDTOOBIG: sprintf(dperr, "DPERR_SENDTOOBIG"); break;
+	case DPERR_BUSY: sprintf(dperr, "DPERR_BUSY"); break;
+	case DPERR_UNAVAILABLE: sprintf(dperr, "DPERR_UNAVAILABLE"); break;
+	case DPERR_PLAYERLOST: sprintf(dperr, "DPERR_PLAYERLOST"); break;
+	case DPERR_USERCANCEL: sprintf(dperr, "DPERR_USERCANCEL"); break;
+	case DPERR_BUFFERTOOLARGE: sprintf(dperr, "DPERR_BUFFERTOOLARGE"); break;
+	case DPERR_SESSIONLOST: sprintf(dperr, "DPERR_SESSIONLOST"); break;
+	case DPERR_APPNOTSTARTED: sprintf(dperr, "DPERR_APPNOTSTARTED"); break;
+	case DPERR_CANTCREATEPROCESS: sprintf(dperr, "DPERR_CANTCREATEPROCESS"); break;
+	case DPERR_UNKNOWNAPPLICATION: sprintf(dperr, "DPERR_UNKNOWNAPPLICATION"); break;
+	case DPERR_INVALIDINTERFACE: sprintf(dperr, "DPERR_INVALIDINTERFACE"); break;
+	case DPERR_NOTLOBBIED: sprintf(dperr, "DPERR_NOTLOBBIED"); break;
+	case DP_OK: sprintf(dperr, "DP_OK"); break;
+
+	default: sprintf(dperr, "Unknown Error"); break;
+	}
+	sprintf(err, "DirectPlay Error %s\n", dperr);
+	OutputDebug(err);
+}
+
 CNetwork::CNetwork()
 {
 	m_pDP = NULL;
@@ -303,56 +355,4 @@ void CNetwork::FreeUnknownList()
 BOOL CNetwork::IsHost()
 {
 	return m_bHost;
-}
-
-void TraceErrorDP(HRESULT hErr)
-{
-	char dperr[256];
-	char err[1024];
-
-	switch (hErr)
-	{
-	case DPERR_OUTOFMEMORY: sprintf(dperr, "DPERR_OUTOFMEMORY"); break;
-	case DPERR_UNSUPPORTED: sprintf(dperr, "DPERR_UNSUPPORTED"); break;
-	case DPERR_NOINTERFACE: sprintf(dperr, "DPERR_NOINTERFACE"); break;
-	case DPERR_GENERIC: sprintf(dperr, "DPERR_GENERIC"); break;
-	case DPERR_INVALIDPARAMS: sprintf(dperr, "DPERR_INVALIDPARAMS"); break;
-	case DPERR_ACTIVEPLAYERS: sprintf(dperr, "DPERR_ACTIVEPLAYERS"); break;
-	case DPERR_ACCESSDENIED: sprintf(dperr, "DPERR_ACCESSDENIED"); break;
-	case DPERR_CANTADDPLAYER: sprintf(dperr, "DPERR_CANTADDPLAYER"); break;
-	case DPERR_CANTCREATEPLAYER: sprintf(dperr, "DPERR_CANTCREATEPLAYER"); break;
-	case DPERR_CANTCREATEGROUP: sprintf(dperr, "DPERR_CANTCREATEGROUP"); break;
-	case DPERR_CANTCREATESESSION: sprintf(dperr, "DPERR_CANTCREATESESSION"); break;
-	case DPERR_BUFFERTOOSMALL: sprintf(dperr, "DPERR_BUFFERTOOSMALL"); break;
-	case DPERR_CAPSNOTAVAILABLEYET: sprintf(dperr, "DPERR_CAPSNOTAVAILABLEYET"); break;
-	case DPERR_ALREADYINITIALIZED: sprintf(dperr, "DPERR_ALREADYINITIALIZED"); break;
-	case DPERR_INVALIDFLAGS: sprintf(dperr, "DPERR_INVALIDFLAGS"); break;
-	case DPERR_EXCEPTION: sprintf(dperr, "DPERR_EXCEPTION"); break;
-	case DPERR_INVALIDPLAYER: sprintf(dperr, "DPERR_INVALIDPLAYER"); break;
-	case DPERR_INVALIDOBJECT: sprintf(dperr, "DPERR_INVALIDOBJECT"); break;
-	case DPERR_NOCONNECTION: sprintf(dperr, "DPERR_NOCONNECTION"); break;
-	case DPERR_NOCAPS: sprintf(dperr, "DPERR_NOCAPS"); break;
-	case DPERR_NONAMESERVERFOUND: sprintf(dperr, "DPERR_NONAMESERVERFOUND"); break;
-	case DPERR_NOMESSAGES: sprintf(dperr, "DPERR_NOMESSAGES"); break;
-	case DPERR_NOSESSIONS: sprintf(dperr, "DPERR_NOSESSIONS"); break;
-	case DPERR_NOPLAYERS: sprintf(dperr, "DPERR_NOPLAYERS"); break;
-	case DPERR_TIMEOUT: sprintf(dperr, "DPERR_TIMEOUT"); break;
-	case DPERR_SENDTOOBIG: sprintf(dperr, "DPERR_SENDTOOBIG"); break;
-	case DPERR_BUSY: sprintf(dperr, "DPERR_BUSY"); break;
-	case DPERR_UNAVAILABLE: sprintf(dperr, "DPERR_UNAVAILABLE"); break;
-	case DPERR_PLAYERLOST: sprintf(dperr, "DPERR_PLAYERLOST"); break;
-	case DPERR_USERCANCEL: sprintf(dperr, "DPERR_USERCANCEL"); break;
-	case DPERR_BUFFERTOOLARGE: sprintf(dperr, "DPERR_BUFFERTOOLARGE"); break;
-	case DPERR_SESSIONLOST: sprintf(dperr, "DPERR_SESSIONLOST"); break;
-	case DPERR_APPNOTSTARTED: sprintf(dperr, "DPERR_APPNOTSTARTED"); break;
-	case DPERR_CANTCREATEPROCESS: sprintf(dperr, "DPERR_CANTCREATEPROCESS"); break;
-	case DPERR_UNKNOWNAPPLICATION: sprintf(dperr, "DPERR_UNKNOWNAPPLICATION"); break;
-	case DPERR_INVALIDINTERFACE: sprintf(dperr, "DPERR_INVALIDINTERFACE"); break;
-	case DPERR_NOTLOBBIED: sprintf(dperr, "DPERR_NOTLOBBIED"); break;
-	case DP_OK: sprintf(dperr, "DP_OK"); break;
-
-	default: sprintf(dperr, "Unknown Error"); break;
-	}
-	sprintf(err, "DirectPlay Error %s\n", dperr);
-	OutputDebug(err);
 }

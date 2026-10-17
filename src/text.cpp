@@ -69,6 +69,45 @@ int GetCharWidth(char c, int font)
 		return table_width_little[table_char[(c & 0xff) * 6]];
 	return table_width[table_char[(c & 0xff) * 6]]-1;
 }
+
+
+
+void DrawCharSingle(CPixmap* pPixmap, POINT pos, int rank, int font)
+{
+	if (font == FONTLITTLE)
+	{
+		pPixmap->DrawIcon(-1, CHLITTLE, rank, pos, 0, FALSE);
+		return;
+	}
+	pPixmap->DrawIcon(-1, CHTEXT, (int)(rank + font * 128), pos, 0, FALSE);
+}
+
+void DrawChar(CPixmap* pPixmap, POINT* pos, unsigned char c, int font)
+{
+	POINT pos0;
+	POINT pos1;
+	unsigned index;
+	int rank;
+
+	index = c & 0xff;
+	pos0.x = table_char[index * 6 + 1] + pos->x;
+	pos0.y = table_char[index * 6 + 2] + pos->y;
+	DrawCharSingle(pPixmap, pos0, table_char[index * 6], font);
+	rank = table_char[index * 6 + 3];
+	if (rank != -1)
+	{
+		pos1.x = table_char[index * 6 + 4] + pos->x;
+		pos1.y = table_char[index * 6 + 5] + pos->y;
+		DrawCharSingle(pPixmap, pos1, rank, font);
+	}
+	pos->x += GetCharWidth(c, font);
+}
+
+
+void DrawTextLeft(CPixmap* pPixmap, POINT pos, char *pText, int font)
+{
+	DrawText(pPixmap, pos, pText, font);
+}
 // Affiche un texte.
 
 void DrawText(CPixmap* pPixmap, POINT pos, char *pText, int font)
@@ -299,6 +338,9 @@ void DrawBignum(CPixmap *pPixmap, POINT pos, int num)
 	}
 }
 
+
+#include "texttables.h"
+
 // Retourne la longueur d'un grand nombre.
 
 int GetBignumWidth(int num)
@@ -318,46 +360,4 @@ int GetBignumWidth(int num)
 	}
 
 	return width;
-}
-
-
-
-void DrawCharSingle(CPixmap* pPixmap, POINT pos, int rank, int font)
-{
-	if (font == FONTLITTLE)
-	{
-		pPixmap->DrawIcon(-1, CHLITTLE, rank, pos, 0, FALSE);
-		return;
-	}
-	pPixmap->DrawIcon(-1, CHTEXT, (int)(rank + font * 128), pos, 0, FALSE);
-}
-
-
-void DrawTextLeft(CPixmap* pPixmap, POINT pos, char *pText, int font)
-{
-	DrawText(pPixmap, pos, pText, font);
-}
-
-
-#include "texttables.h"
-
-void DrawChar(CPixmap* pPixmap, POINT* pos, unsigned char c, int font)
-{
-	POINT pos0;
-	POINT pos1;
-	unsigned index;
-	int rank;
-
-	index = c & 0xff;
-	pos0.x = table_char[index * 6 + 1] + pos->x;
-	pos0.y = table_char[index * 6 + 2] + pos->y;
-	DrawCharSingle(pPixmap, pos0, table_char[index * 6], font);
-	rank = table_char[index * 6 + 3];
-	if (rank != -1)
-	{
-		pos1.x = table_char[index * 6 + 4] + pos->x;
-		pos1.y = table_char[index * 6 + 5] + pos->y;
-		DrawCharSingle(pPixmap, pos1, rank, font);
-	}
-	pos->x += GetCharWidth(c, font);
 }

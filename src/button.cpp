@@ -119,6 +119,28 @@ BOOL CButton::Create(HWND hWnd, CPixmap *pPixmap, CSound *pSound,
 
 }
 
+
+
+
+void CButton::SetIconMenu(int* pIcons, int nbMenu)
+{
+	for (int i = 0; i < nbMenu; i++)
+	{
+		m_iconMenu[i] = pIcons[i];
+	}
+	m_nbMenu = nbMenu;
+}
+
+
+void CButton::SetToolTips(int* pToolTips, int nbToolTips)
+{
+	for (int i = 0; i < nbToolTips; i++)
+	{
+		m_toolTips[i] = pToolTips[i];
+	}
+	m_nbToolTips = nbToolTips;
+}
+
 // Dessine un bouton dans son �tat.
 
 void CButton::Draw()
@@ -433,26 +455,4 @@ BOOL CButton::MouseUp(POINT pos)
 	}
 
 	return TRUE;
-}
-
-
-
-
-void CButton::SetIconMenu(int* pIcons, int nbMenu)
-{
-	for (int i = 0; i < nbMenu; i++)
-	{
-		m_iconMenu[i] = pIcons[i];
-	}
-	m_nbMenu = nbMenu;
-}
-
-
-void CButton::SetToolTips(int* pToolTips, int nbToolTips)
-{
-	for (int i = 0; i < nbToolTips; i++)
-	{
-		m_toolTips[i] = pToolTips[i];
-	}
-	m_nbToolTips = nbToolTips;
 }

@@ -98,6 +98,13 @@ void CJauge::Redraw()
 	m_bRedraw = TRUE;
 }
 
+
+
+int CJauge::GetLevel()
+{
+	return m_level;
+}
+
 // Modifie le niveau.
 
 void CJauge::SetLevel(int level)
@@ -111,6 +118,11 @@ void CJauge::SetLevel(int level)
 	}
 
 	m_level = level;
+}
+
+int CJauge::GetType()
+{
+	return m_type;
 }
 
 // Modifie le type.
@@ -149,16 +161,4 @@ POINT CJauge::GetPos()
 void CJauge::SetRedraw()
 {
 	m_bRedraw = TRUE;
-}
-
-
-
-int CJauge::GetLevel()
-{
-	return m_level;
-}
-
-int CJauge::GetType()
-{
-	return m_type;
 }

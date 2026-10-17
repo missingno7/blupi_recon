@@ -1362,8 +1362,6 @@ BOOL CDecor::GetNetPacked() { return m_bNetPacked; }
 void CDecor::SetNetPacked(BOOL bNetPacked) { m_bNetPacked = bNetPacked; }
 BOOL CDecor::GetNetMovePredict() { return m_bNetMovePredict; }
 void CDecor::SetNetMovePredict(BOOL bNetMovePredict) { m_bNetMovePredict = bNetMovePredict; }
-void CDecor::SetMulti(BOOL multi) { m_bMulti = multi; }
-void CDecor::SetTeam(int team) { m_team = team; }
 
 BOOL CDecor::GetNetDebug()
 {
@@ -1383,6 +1381,8 @@ void CDecor::OutputNetDebug(char *text)
         m_netPacketsSent2, m_netPacketsReceived, m_netPacketsReceived2);
     strcat(text, textbuffer);
 }
+void CDecor::SetMulti(BOOL multi) { m_bMulti = multi; }
+void CDecor::SetTeam(int team) { m_team = team; }
 
 void CDecor::BlupiSearchIcon()
 
