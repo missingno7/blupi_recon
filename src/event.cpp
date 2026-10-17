@@ -50,7 +50,7 @@ DescInfo;
 // Toutes les premières lettres doivent
 // être différentes !
 
-static char cheat_code[25][15] =
+static char cheat_code[22][15] =
 {
 	"XMISSION",		// 0 (xnjttjpo)
 	"OPENDOORS",	// 1
@@ -74,9 +74,6 @@ static char cheat_code[25][15] =
 	"NETPACKED",
 	"ZNETDEBUG",
 	"YNOSMOOTH",
-	"IOVERCRAFT",
-	"UDYNAMITE",
-	"WELLKEYS",
 };
 
 
@@ -4093,7 +4090,7 @@ BOOL CEvent::TreatEventBase(UINT message, WPARAM wParam, LPARAM lParam)
 			if (m_posCheat == 0)
 			{
 				m_rankCheat = -1;
-				for (i = 0; i < 25; i++)
+				for (i = 0; i < 22; i++)
 				{
 					if ((char)wParam == cheat_code[i][0])
 					{
