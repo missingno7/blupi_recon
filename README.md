@@ -6,28 +6,31 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
-**327 functions STRICT + 3 FOLDED, 70,432 / 141,488 unique game `.text` bytes (49.8 %)**, built with one shared
-header set for every TU (no per-TU preprocessor views; no withdrawals; history of the `CDecor::GetBlupiInfo` withdrawal in
-[docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)).
+**393 functions STRICT + 3 FOLDED, 107,440 / 141,488 unique game `.text` bytes (75.9 %)**, built with one shared
+header set for every TU (no per-TU preprocessor views; no active withdrawals; withdrawal history in
+[docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). `decmove.cpp`, `decdesign.cpp` and
+`decblupi.cpp` are fully strict; 16 mapped game functions (about 33 KB) remain open.
 STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
 data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
 unverified, masked or behavioural similarity is never counted.
 
 | TU | strict | TU | strict | TU | strict |
 |---|---:|---|---:|---|---:|
-| blupi.cpp | 11 | decor.cpp | 14 | movie.cpp | 13 |
-| button.cpp | 14 (+1 folded) | event.cpp | 68 | network.cpp | 15 |
+| blupi.cpp | 12 | decor.cpp | 17 | movie.cpp | 13 |
+| button.cpp | 17 (+1 folded) | event.cpp | 87 | network.cpp | 18 |
 | ddutil.cpp | 8 | jauge.cpp | 9 (+1 folded) | pixmap.cpp | 34 |
-| decblock.cpp | 16 | menu.cpp | 8 | sound.cpp | 27 |
-| decblupi.cpp | 11 | misc.cpp | 8 (+1 folded) | text.cpp | 6 |
-| decdesign.cpp | 36 | decmove.cpp | 19 | decnet.cpp | 5 |
+| decblock.cpp | 24 | menu.cpp | 8 | sound.cpp | 28 |
+| decblupi.cpp | 20 | misc.cpp | 8 (+1 folded) | text.cpp | 7 |
+| decdesign.cpp | 42 | decmove.cpp | 39 | decnet.cpp | 6 |
+
+(Per-TU counts are the verifier's and include header inline bodies compiled into each TU.)
 
 Data: `dectables.cpp` holds SB1 tables as initialized data whose bytes the verifier checks (relocations into them are
 proven by payload). Calls to imports may go through exact `jmp [IAT]` thunks, as in the original.
 
-Largest open bodies (best-known reconstructions in `src/`, not yet strict): `CDecor::BlupiStep` 0x9280 (25 KB,
-candidate 29,216 B, frame 0xbc vs 0xa4), `CEvent::DrawButtons` (4,886-byte identical prefix of 7,419),
-`CEvent::TreatEventBase` (730 of 6,616), `CEvent::ChangeButtons` (1,531 of 2,854), `CEvent::ChangePhase` (6,919 B).
+Largest open bodies (best-known reconstructions in `src/`, not yet strict): `CEvent::DrawButtons` 0x16f70 (7,419 B,
+65 differing bytes), `CEvent::ChangePhase` 0x19310 (6,922 vs 6,919 B), `CEvent::TreatEventBase` 0x1d230 (6,616 B,
+8 register bytes), `CDecor::Build` 0x4350 (3,846 vs 3,866 B), `CDecor::DoInit` 0x1ef0 (CDecor allocation size only).
 
 Per-TU details, near misses and blockers: `docs/*_TU.md`, `docs/CORE_CLUSTER.md`, `docs/UI_CLUSTER.md`,
 `docs/ENGINE_PROBE.md`.
@@ -36,7 +39,8 @@ Per-TU details, near misses and blockers: `docs/*_TU.md`, `docs/CORE_CLUSTER.md`
 
 - **Toolchain** ([docs/TOOLCHAIN.md](docs/TOOLCHAIN.md)): MSVC 5.0, compiler pinned to VS97 SP3 `cl 11.00.7022`
   (RTM differs on some functions), `/O2 /GX /ML /Gd /Gy`, statically linked VC5 SP3 `LIBC.LIB`, linker 5.10 family
-  (exact build open), identical-COMDAT folding observed. Original build path `F:\Profil\` (`__FILE__`).
+  (exact build open), identical-COMDAT folding observed. Original build path `F:\Profil\` (`__FILE__`), reproduced
+  by a temporary drive mapping for `sound.cpp` ([docs/BUILD_PATH.md](docs/BUILD_PATH.md)).
 - **Layout** ([docs/TU_MAP.md](docs/TU_MAP.md), `oracle/tu_map.csv`): `.text` is TU blocks in alphabetical source
   order, functions in source order; game code ends at RVA `0x238b0`, VC5 LIBC follows (no SB1 `wave.cpp`).
 - **Ancestry** ([docs/ANCESTRY_PLANETBLUPI.md](docs/ANCESTRY_PLANETBLUPI.md),
@@ -67,12 +71,14 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 ## Where to continue
 
-1. `CDecor::BlupiStep` (25 KB) is STRICT since 010763d. Next: `CEvent::TreatEventBase` (exact size, 8 register bytes),
-   `CEvent::DrawButtons` (+0x1316), `CEvent::ChangePhase`; `decblock.cpp` Build/InitDecor/DrawInfo.
-2. `event.cpp` large handlers (`DrawButtons` +0x1316, `TreatEventBase` +0x2DA, `ChangeButtons` +0x5fb, `ChangePhase`
-   stack layout) — docs/EVENT_TU.md.
-3. Engine mid-large bodies (`decdesign`, `decmove` 0x11bd0, `decblock` 0x4350): behaviour-first reconstruction from
-   pseudocode + SB2 hints (worked for `decblock`).
-4. `pixmap.cpp` remaining bodies (`Create`, `QuickIcon`), `decor.cpp` save/map methods, `button.cpp`/`text.cpp` residuals.
-5. Open questions: `CDecor` is allocated as 0x258d4 bytes but no member access beyond +0xdbec is known; exact
-   linker build (Rich header has no linker entry); `__FILE__` build path `F:\Profil\` (reported, not masked).
+All 16 open functions have had several worker passes; the disproven families are recorded per target, so new work
+needs a genuinely new source or context hypothesis.
+1. `event.cpp` register/scheduling residues: `TreatEventBase`, `DrawButtons`, `ChangePhase`
+   (docs/SENIOR_SOL_TREAT.md, SENIOR_SOL_EVENT.md, LAYOUT_ORDER.md). Restoring the original definition order already
+   moved `DrawButtons` 78 -> 65 bytes; a reduced compiler example of the remaining choices is the suggested next step.
+2. `decblock.cpp`: `Build` (20-byte missing region), `DecorNextAction` (strict alone, regresses `GetBlupiInfo`);
+   `decor.cpp` `AdaptBorder`, `DrawMap`, `CurrentRead`, `FileExist` (docs/SENIOR_SOL_BUILD.md, SENIOR_SOL_DECOR3.md).
+3. Small residues: `pixmap.cpp` `Create`/`QuickIcon` (frame 0x10 vs 0x14), `misc.cpp` `AddCDPath` and 0x1f410,
+   `button.cpp` 0x2a30, `network.cpp` 0x20ec0 (docs/SENIOR_SOL_SMALL.md, SENIOR_SOL_LEFTOVERS.md).
+4. Open questions: the `CDecor` tail (allocated 0x258d4 bytes, no access beyond +0xdbec known; blocks `DoInit`,
+   docs/LAYOUT_DEBT.md); exact linker build (Rich header has no linker entry); data-section matching and a full relink.
