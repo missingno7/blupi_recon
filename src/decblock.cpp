@@ -524,9 +524,9 @@ void CDecor::Build(RECT rect, POINT mousePos)
 
 	if (m_phase != WM_PHASE_BUILD)
 	{
-		m_blupiSec = 0;
 		if (!m_blupiFront)
 		{
+			m_blupiSec = 0;
 			tinyPoint.x = m_blupiPos.x - posDecor.x;
 			tinyPoint.y = m_blupiPos.y - posDecor.y;
 			if (m_blupiShield)
@@ -560,10 +560,9 @@ void CDecor::Build(RECT rect, POINT mousePos)
 				{
 					for (j = 0; j < 3; j++)
 					{
-						num = 48 + (m_time + j) % 6;
-						pos.x = tinyPoint.x - 34;
 						pos.y = tinyPoint.y - 34;
-						m_pPixmap->QuickIcon(CHEXPLO, num, pos);
+						pos.x = tinyPoint.x - 34;
+						m_pPixmap->QuickIcon(CHEXPLO, (j + m_time) % 6 + 48, pos);
 					}
 				}
 				num = m_blupiIcon;
@@ -766,7 +765,7 @@ void CDecor::Build(RECT rect, POINT mousePos)
 			m_moveObject[i].posCurrent.y >= posDecor.y - DIMOBJY &&
 			m_moveObject[i].posCurrent.x <= posDecor.x + LXIMAGE &&
 			m_moveObject[i].posCurrent.y <= posDecor.y + LYIMAGE &&
-			m_moveObject[i].type > 7 && m_moveObject[i].type < 12)
+			m_moveObject[i].type >= 8 && m_moveObject[i].type <= 11)
 		{
 			tinyPoint.x = m_moveObject[i].posCurrent.x - posDecor.x;
 			tinyPoint.y = m_moveObject[i].posCurrent.y - posDecor.y;
