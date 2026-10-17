@@ -690,6 +690,12 @@
       "tu": "src/decblupi.cpp"
     },
     {
+      "symbol": "?MoveObjectPollution@CDecor@@QAEXXZ",
+      "rva": "0x0000fc10",
+      "size": 448,
+      "tu": "src/decblupi.cpp"
+    },
+    {
       "symbol": "?MoveObjectPlouf@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x0000fdd0",
       "size": 80,
@@ -705,6 +711,18 @@
       "symbol": "?MoveObjectBlup@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x0000fe80",
       "size": 272,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsWorld@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x0000ff90",
+      "size": 192,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?GetTypeBarre@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00010050",
+      "size": 256,
       "tu": "src/decblupi.cpp"
     },
     {
@@ -730,11 +748,13 @@
       "rva": "0x00010290",
       "size": 80,
       "tu": "src/decblupi.cpp",
-      "withdrawn": {
-        "reason": "Removing a duplicate animation-selector draft body that the original did not have from decblupi.cpp changed IsDeepWater's emitted coordinate order (decblupi.cpp TU context). Same class as the earlier GetBlupiInfo withdrawal: preceding decblupi bodies are still incomplete; restore by completing them, never by keeping the non-original duplicate.",
-        "evidence": "src/PROVENANCE.md (follow-up 21); docs/SENIOR_SOL_DECDESIGN.md",
-        "date": "2026-10-17"
-      }
+      "withdrawal_history": [
+        {
+          "reason": "Removing a duplicate animation-selector draft body that the original did not have from decblupi.cpp changed IsDeepWater's emitted coordinate order (decblupi.cpp TU context). Same class as the earlier GetBlupiInfo withdrawal: preceding decblupi bodies are still incomplete; restore by completing them, never by keeping the non-original duplicate.",
+          "evidence": "src/PROVENANCE.md (follow-up 21); docs/SENIOR_SOL_DECDESIGN.md",
+          "date": "2026-10-17"
+        }
+      ]
     },
     {
       "symbol": "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z",
@@ -752,6 +772,18 @@
       "symbol": "?IsBlocIcon@CDecor@@QAEHH@Z",
       "rva": "0x00010370",
       "size": 64,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?SearchDistRight@CDecor@@QAEHUtagPOINT@@0H@Z",
+      "rva": "0x000103b0",
+      "size": 208,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00010480",
+      "size": 496,
       "tu": "src/decblupi.cpp"
     },
     {
@@ -1004,7 +1036,12 @@
       "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
       "rva": "0x00013b20",
       "size": 240,
-      "tu": "src/decmove.cpp"
+      "tu": "src/decmove.cpp",
+      "withdrawn": {
+        "reason": "Removing the stale duplicate MoveObjectPollution body from decmove.cpp (the function belongs to decblupi.cpp at 0xfc10; two definitions could not have linked) shifted decmove.cpp TU context and MoveObjectSort became MISMATCH. Restore by finding the genuine decmove.cpp context (missing/extra declarations or bodies), never by keeping the duplicate.",
+        "evidence": "supervisor integration of sol-decblupi (docs/SENIOR_SOL_DECBLUPI.md)",
+        "date": "2026-10-17"
+      }
     },
     {
       "symbol": "?MoveObjectPriority@CDecor@@QAEXH@Z",

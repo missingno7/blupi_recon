@@ -4190,44 +4190,74 @@ BOOL CDecor::TestPath(RECT rect, POINT start, POINT *end)
 	return TRUE;
 }
 
-int CDecor::IsWorld(POINT pos)
+void CDecor::MoveObjectPollution()
 {
-	pos.x += 30;
-	pos.y += 30;
-	if (pos.x < 0 || pos.x >= DIMOBJX * MAXCELX || pos.y < 0 || pos.y >= DIMOBJY * MAXCELY)
+	POINT pos = m_blupiPos;
+	int offset = 0;
+	int speed;
+	if (m_blupiAction == ACTION_TURN) return;
+	if (m_blupiHelico)
 	{
-		return -1;
+		if (m_blupiVitesse.y < -5)
+		{
+			if (m_time % 20 != 0 && m_time % 20 != 2 && m_time % 20 != 5 &&
+				m_time % 20 != 8 && m_time % 20 != 10 && m_time % 20 != 11 &&
+				m_time % 20 != 16 && m_time % 20 != 18) return;
+		}
+		else if (m_blupiVitesse.x == 0)
+		{
+			if (m_time % 50 != 0 && m_time % 50 != 12 && m_time % 50 != 30) return;
+		}
+		else
+		{
+			if (m_time % 20 != 0 && m_time % 20 != 3 && m_time % 20 != 5 &&
+				m_time % 20 != 11 && m_time % 20 != 15) return;
+		}
+		offset = 22;
 	}
-	int icon = m_decor[pos.x / DIMOBJX][pos.y / DIMOBJY].icon;
-	if (icon >= Object::World_1 && icon <= Object::World_8)
+	if (m_blupiJeep)
 	{
-		return icon - Object::World_1 + 1;
+		if (m_blupiVitesse.x == 0)
+		{
+			if (m_blupiPhase % 50 != 0 && m_blupiPhase % 50 != 12 &&
+				m_blupiPhase % 50 != 20 && m_blupiPhase % 50 != 35) return;
+		}
+		else
+		{
+			if (m_blupiPhase % 20 != 0 && m_blupiPhase % 20 != 3 &&
+				m_blupiPhase % 20 != 5 && m_blupiPhase % 20 != 11 &&
+				m_blupiPhase % 20 != 15) return;
+		}
+		offset = 32;
 	}
-	if (icon >= Object::WorldDone_1 && icon <= Object::WorldDone_8)
+	if (m_blupiTank)
 	{
-		return icon - Object::WorldDone_1 + 1;
+		if (m_blupiVitesse.x == 0)
+		{
+			if (m_blupiPhase % 50 != 0 && m_blupiPhase % 50 != 15 &&
+				m_blupiPhase % 50 != 28) return;
+		}
+		else
+		{
+			if (m_blupiPhase % 20 != 0 && m_blupiPhase % 20 != 4 &&
+				m_blupiPhase % 20 != 12) return;
+		}
+		offset = 35;
 	}
-	if (icon == Object::World_9 || icon == Object::WorldDone_9)
+	if (offset != 0)
 	{
-		return 9;
+		if (m_blupiDir == DIR_RIGHT)
+		{
+			pos.x += 5 - offset;
+			speed = -20;
+		}
+		else
+		{
+			pos.x += offset;
+			speed = 20;
+		}
+		ObjectStart(pos, TYPE_POLLUTION, speed, TRUE);
 	}
-	if (icon >= Object::World_10 && icon <= Object::World_14)
-	{
-		return icon - Object::World_10 + 10;
-	}
-	if (icon >= Object::WorldDone_10 && icon <= Object::WorldDone_14)
-	{
-		return icon - Object::WorldDone_10 + 10;
-	}
-	if (icon >= Object::Level_1 && icon <= Object::Level_8)
-	{
-		return icon - Object::Level_1 + 1;
-	}
-	if (icon == Object::WorldBack)
-	{
-		return 199;
-	}
-	return -1;
 }
 
 void CDecor::MoveObjectPlouf(POINT pos)
@@ -4299,63 +4329,38 @@ void CDecor::MoveObjectBlup(POINT pos)
 	m_moveObject[num2].time = 0;
 	MoveObjectStepIcon(num2);
 }
-int CDecor::GetTypeBarre(POINT pos)
+int CDecor::IsWorld(POINT pos)
 {
-	int x = pos.x + 30;
-	int y = pos.y + 22;
-	if (y % 64 < 45 && x >= 0 && x < 6400 && y >= 0 && y < 6400)
-	{
-		int icon = m_decor[x / DIMOBJX][y / DIMOBJY].icon;
-		if (icon == 138 || icon == 202)
-		{
-			if (y >= 6336) return 1;
-			icon = m_decor[x / DIMOBJX][y / DIMOBJY + 1].icon;
-			if (IsPassIcon(icon)) return 2;
-			RECT rect;
-			rect.left = pos.x + 12;
-			rect.right = pos.x + 48;
-			rect.top = pos.y + 58;
-			rect.bottom = pos.y + 59;
-			if (DecorDetect(rect, TRUE)) return 2;
-			return 1;
-		}
-	}
-	return 0;
+	pos.x += 30;
+	pos.y += 30;
+	if (pos.x < 0 || pos.x >= 6400 || pos.y < 0 || pos.y >= 6400) return -1;
+	int icon = m_decor[pos.x / DIMOBJX][pos.y / DIMOBJY].icon;
+	if (icon >= 158 && icon <= 165) return icon - 157;
+	if (icon >= 166 && icon <= 173) return icon - 165;
+	if (icon >= 174 && icon <= 181) return icon - 173;
+	if (icon == 184) return 99;
+	return -1;
 }
 
-int CDecor::SearchDistRight(POINT pos, POINT dir, int type)
+int CDecor::GetTypeBarre(POINT pos)
 {
-	POINT cel;
-	int num = 0;
-	if (type == TYPE_POLLUTION ||
-		type == TYPE_TRESORTRACK ||
-		type == TYPE_INVERTSTART ||
-		type == TYPE_INVERTSTOP ||
-		type == TYPE_INVERTSPIN ||
-		type == TYPE_EXPLO8)
-	{
-		return 500;
-	}
-	cel.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
-	cel.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
-	while (IsValidCel(cel) && !IsBlocIcon(m_decor[cel.x][cel.y].icon))
-	{
-		if (type == TYPE_BALLE)
-		{
-			SetBalleTraj(cel);
-		}
-		num += DIMOBJX;
-		cel += dir;
-	}
-	if ((type == TYPE_GLU || type == TYPE_ELECTRO) && num >= DIMOBJX)
-	{
-		num -= DIMOBJX;
-	}
-	if (type == TYPE_BALLE && num >= 10)
-	{
-		num -= 10;
-	}
-	return num;
+	POINT pos2 = pos;
+	pos.x += 30;
+	pos.y += 22;
+	if (pos.y % 64 > 44) return 0;
+	if (pos.x < 0 || pos.x >= 6400 || pos.y < 0 || pos.y >= 6400) return 0;
+	int icon = m_decor[pos.x / DIMOBJX][pos.y / DIMOBJY].icon;
+	if (icon != 138 && icon != 202) return 0;
+	if (pos.y >= 6336) return 1;
+	icon = m_decor[pos.x / DIMOBJX][pos.y / DIMOBJY + 1].icon;
+	if (!IsPassIcon(icon)) return 2;
+	RECT rect;
+	rect.left = pos2.x + 12;
+	rect.right = pos2.x + 48;
+	rect.top = pos2.y + 58;
+	rect.bottom = pos2.y + 59;
+	if (DecorDetect(rect, TRUE)) return 2;
+	return 1;
 }
 
 BOOL CDecor::IsLave(POINT pos)
@@ -4430,9 +4435,32 @@ BOOL CDecor::IsBlocIcon(int icon)
 	return TRUE;
 }
 
+int CDecor::SearchDistRight(POINT pos, POINT dir, int type)
+{
+	POINT cel;
+	int num = 0;
+	cel.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
+	cel.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
+	while (IsValidCel(cel) && !IsBlocIcon(m_decor[cel.x][cel.y].icon))
+	{
+		num += DIMOBJX;
+		cel.x += dir.x;
+		cel.y += dir.y;
+	}
+	if ((type == TYPE_GLU || type == TYPE_ELECTRO) && num >= DIMOBJX)
+	{
+		num -= DIMOBJX;
+	}
+	if (type == TYPE_BALLE && num >= 10)
+	{
+		num -= 10;
+	}
+	return num;
+}
+
 BOOL CDecor::IsVentillo(POINT pos)
 {
-	int num = 0;
+	int num;
 	BOOL flag = FALSE;
 	POINT tinyPoint;
 	pos.x += 30;
@@ -4491,7 +4519,7 @@ BOOL CDecor::IsVentillo(POINT pos)
 		return FALSE;
 	}
 	ModifDecor(pos, -1);
-	do
+	while (TRUE)
 	{
 		pos.x += tinyPoint.x;
 		pos.y += tinyPoint.y;
@@ -4500,7 +4528,8 @@ BOOL CDecor::IsVentillo(POINT pos)
 			break;
 		}
 		ModifDecor(pos, -1);
-	} while (pos.x >= 0 && pos.x < 6400 && pos.y >= 0 && pos.y < 6400);
+		if (pos.x < 0 || pos.x >= 6400 || pos.y < 0 || pos.y >= 6400) break;
+	}
 	return TRUE;
 }
 
