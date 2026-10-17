@@ -400,9 +400,7 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
 def warn_line_endings() -> None:
     """src/ is byte-exact (git -text) and CRLF like the original sources; flag accidental LF copies."""
     for path in sorted((ROOT / "src").iterdir()):
-        if path.suffix.lower() in (".cpp", ".h") and b"
-" in path.read_bytes().replace(b"
-", b""):
+        if path.suffix.lower() in (".cpp", ".h") and b"\n" in path.read_bytes().replace(b"\r\n", b""):
             print(f"warning: {path.relative_to(ROOT)} has non-CRLF line endings")
 
 
