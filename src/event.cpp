@@ -3991,7 +3991,7 @@ void CEvent::AddUserExportPath(char* dst, char* pFileName)
 
 	mkdir("\\User");
 	strcpy(dst, "\\User\\");
-	strcpy(dst, pFileName);
+	strcat(dst, pFileName);
 	suffix = strstr(dst, ".xch");
 	if (!suffix || suffix - dst != strlen(dst) - 4)
 	{

@@ -287,7 +287,9 @@ BOOL CNetwork::Receive(LPVOID pDest, DWORD dwDataSize, LPDWORD lpdwPlayer)
 
 BOOL CNetwork::Close()
 {
-	return m_pDP->Close() == DP_OK;
+	HRESULT hr;
+	hr = m_pDP->Close();
+	return hr == DP_OK;
 }
 
 void CNetwork::FreeUnknownList()

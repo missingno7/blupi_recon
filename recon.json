@@ -1545,6 +1545,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?AddUserExportPath@CEvent@@SAXPAD0@Z",
+      "rva": "0x0001b090",
+      "size": 192,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?CopyMission@CEvent@@SAHPAD0@Z",
       "rva": "0x0001b150",
       "size": 208,
@@ -2064,6 +2070,12 @@
       "symbol": "?Receive@CNetwork@@QAEHPAXKPAK@Z",
       "rva": "0x00020f10",
       "size": 208,
+      "tu": "src/network.cpp"
+    },
+    {
+      "symbol": "?Close@CNetwork@@QAEHXZ",
+      "rva": "0x00020fe0",
+      "size": 32,
       "tu": "src/network.cpp"
     },
     {
