@@ -2373,6 +2373,18 @@
       "tu": "src/sound.cpp"
     },
     {
+      "symbol": "?GetTrueColorDecor@CPixmap@@QAEHXZ",
+      "rva": "0x00022dc0",
+      "size": 16,
+      "tu": "src/pixmap.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "?GetEnable@CSound@@QAEHXZ",
+        "rva": "0x00022dc0",
+        "tu": "src/sound.cpp"
+      }
+    },
+    {
       "symbol": "?GetEnable@CSound@@QAEHXZ",
       "rva": "0x00022dc0",
       "size": 16,

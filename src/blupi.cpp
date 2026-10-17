@@ -403,7 +403,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message,
 				totalDim.y = 96;
 				iconDim.x = DIMLITTLEX;
 				iconDim.y = DIMLITTLEY;
-				g_pPixmap->BackgroundCache(CHLITTLE, "image08\\little.blp", totalDim, iconDim, TRUE);
+				g_pPixmap->Cache(CHLITTLE, "image08\\little.blp", totalDim, iconDim, TRUE);
 				g_pPixmap->SetTransparent(CHLITTLE, RGB(0, 0, 255)); // bleu
 
 				g_pPixmap->SavePalette();

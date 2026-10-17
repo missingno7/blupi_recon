@@ -1,5 +1,163 @@
 # Full relink and initialized data (sol-relink, 2026-10-17)
 
+## Round 2: source reconstruction after 11af3b8 / c1b2c29
+
+[EVIDENCE] **Partial delivery:** `scratch/sol-relink/round2/relink2.patch`.
+It applies against c1b2c29 with plain `git apply --check` and changes six files:
+blupi.cpp, decblupi.cpp, decmove.cpp, event.cpp, pixmap.cpp and pixtables.h.
+Canonical sources, recon.json and compiler catalog were not edited. The patch
+preserves all **402 active accepted entries (399 STRICT, three FOLDED)**.
+Sound has the expected INCOMPLETE historical-path exception; measured text
+coverage remains **110,720 / 141,488**, with no new unique code coverage.
+
+[EVIDENCE] The final natural link has **zero duplicate symbols** and three
+unresolved methods: **DecorNextAction, BlupiRect and BlupiDead**. The latter
+two are exposed dependencies of retained, unmatched SB2 helper callers after
+removing their unsupported decblupi definitions. There is no successful EXE or
+layout.json. Actual section/accepted-function RVA deltas therefore remain OPEN.
+No forced link, padding, renamed duplicate owner, replacement stub or changed
+source order to conceal a context regression is delivered.
+
+### Delivered changes and evidence
+
+- [EVIDENCE] Decblupi's two channel-method copies and five unsupported bodies
+  (BlupiIsGround, BlupiRect, BlupiAdjust, BlupiBloque, BlupiDead) are removed.
+  Its **20 remaining definitions are all STRICT**, beginning with BlupiStep
+  at `0x9280` and ending with IsVentillo at `0x10480`. The target BlupiStep
+  ends immediately before GetPosDecor at `0xf540`; there is no intervening
+  BlupiDead slot. The leading four helpers likewise have no space before the
+  block's first method. These bodies have SB2 ancestry and no independently
+  established SB1 out-of-line location. This is evidence against retaining
+  these copies as SB1 definitions, not proof about every possible original
+  inline helper's source spelling. GetBlupiChannelActual/Standard remain owned
+  by decblock at `0x42e0`/`0x4310`. IsDeepWater stays STRICT at `0x10290`
+  without extern probes or added declarations.
+- [EVIDENCE] BackgroundCache calls in blupi/event are calls to the existing
+  `CPixmap::Cache` at `0x21870` in the oracle. Accepted WindowProc independently
+  binds its former BackgroundCache call to exactly that address. The initial
+  Planet Blupi pixmap source (`b0270ab`) has Cache and no BackgroundCache or
+  eight-argument CacheAll. The unreferenced SB2 LoadImageFromDisc body is removed
+  from event; it has no oracle slot or incoming compiled relocation. This
+  eliminates the CacheAll dependency without inventing a pixmap method.
+- [EVIDENCE] GetTrueColorBack/Decor return the sole SB1 true-color word,
+  `m_bTrueColorBack` at `+4`. Constructor/Create stores establish that offset;
+  both corresponding oracle getter calls land on the four-byte
+  `mov eax,[ecx+4]; ret` body at `0x22dc0` (16-byte object span). The independent
+  CSound::GetEnable body owns that location. GetTrueColorDecor is **FOLDED**
+  with a verified LoadImages caller and the independent sound object witness.
+  GetTrueColorBack remains **RELOC-UNVERIFIED**: its unmatched ChangePhase
+  caller does not supply the same independent folding proof. Neither adds
+  unique bytes or a newly accepted function.
+- [EVIDENCE] The existing CDecor::PlaySound target at `0x5800` ends with
+  `ret 0x10`: sound, two POINT components and bLocal. Every placed live caller
+  uses that three-argument source ABI. The inherited two-argument references
+  occur only in unmatched StartSploutchGlu, DynamiteStart, MoveObjectFollow and
+  BlupiDead; no separate target overload body is identified. The three retained
+  decmove helper calls now pass FALSE explicitly. BlupiDead is removed with
+  the unsupported decblupi bodies. [HYPOTHESIS] FALSE is the ordinary broadcast
+  behavior used by the surrounding SB1 effects; no strict identity or original
+  caller-byte match is claimed for those retained SB2 helpers. Their source
+  references now resolve to the real four-word callee rather than a fabricated
+  two-argument wrapper. This changes no accepted caller's bytes.
+
+### Explo's physical extent
+
+[EVIDENCE] The initializer now occupies exactly **648 bytes / 324 shorts**,
+RVA **`0x7afd8` through `0x7b25f`**, SHA-256
+`ef5159e7a1a74477e84ed92ee707a014349da765e52794aeaa63b598a8b728cc`.
+The independently located MouseHotSpot `int[8]` starts at `0x7b260`; the
+preceding nonzero short at `0x7b25e` is 124. Thus the typed atlas payload
+reaches that boundary without borrowing the next table's value 95.
+The stored count is 54, but the available data contains 53 complete six-short
+rows and five fields of the last row. The actual DrawIcon instructions read
+height from `base + rank*12 + 12`; rank 53 reads **`0x7b260`**, the next object.
+The patch preserves the count and the bounded numeric data; it does not append
+95, normalize the count, pad the array, or overlap MouseHotSpot.
+
+[HYPOTHESIS] A missing final initializer field/count mistake is the likely
+source explanation. The exact 1998 declaration spelling cannot be recovered
+from these addresses. The physical boundary and the cross-boundary target
+read are measured independently of that explanation. Full-image data ordering
+must eventually reproduce the neighbour relationship naturally.
+
+[EVIDENCE] `datacmp.py` verifies all 648 new bytes without masking. Final
+initialized data coverage is **267,474 / 334,706 (79.91%)**: `.data`
+267,458 / 329,728 and `.rdata` 16 / 4,978. The report has 456 EXACT symbols;
+ambiguous/unlocated data and the expected sound-path mismatch add no coverage.
+The only proposed header delta is the numeric explo initializer in
+pixtables.h; method declarations, constants outside that table, member layouts
+and ABI are unchanged.
+
+### Rejected context repairs / Compiler findings
+
+All measurements used manifest SP3 flags, canonical headers unless explicitly
+identified below, no PCH, and msvc.py/fnprobe.py/verify.py at default limits.
+KB hints for IsDeepWater, GetBlupiInfo and MockeryDetect, and VC5-CTX-01, were
+consulted. Artifacts are under `scratch/sol-relink/round2/measurements/`.
+
+- [EVIDENCE; VC5-CTX-01..04; Blupi-specific] Removing only the two channel
+  copies makes IsDeepWater evaluate x before y (80-byte span, 66 fixed-byte
+  differences after the instruction-order shift). Removing the complete
+  unsupported decblupi helper set restores its original y/x order and every
+  remaining method's STRICT result. Removing just the unreferenced ground/
+  adjust/bloque helpers, or just the dynamite/death component, is insufficient.
+  The final improvement comes from source-backed TU cleanup, not the known
+  six-extern diagnostic threshold.
+- [EVIDENCE; VC5-CTX-01..04; negative] Removing StartSploutchGlu, DynamiteStart
+  and MoveObjectFollow from decmove removes the orphan references to BlupiRect/
+  BlupiDead, but regresses accepted MockeryDetect (`0x13320`): 544 -> 528-byte
+  extent, with changed division/evaluation order at both coordinate lookups
+  (175/191 aligned oracle instructions). Deleting the six unreferenced
+  trajectory methods, the unused three-argument ObjectStart wrapper, and the
+  extra AscenseurShift/MoveAscenseurDetect bodies does not repair it. Nor do
+  scalar/POINT coordinate locals, C89 local placement, or an explicit stdlib
+  include. A POINT-construction variant worsens the size to 512. These source
+  deletions/rewrites are rejected; the final patch retains the existing
+  decmove bodies and only corrects their unresolved sound-call ABI.
+- [EVIDENCE; VC5-CTX-01..04; negative] DecorNextAction is inserted at its oracle
+  source position, before KeyChange, with the recovered table in the data TU.
+  Its 272-byte extent has zero fixed differences against the 269-byte body at
+  `0x5670`, but GetBlupiInfo loses STRICT with four operand displacement bytes
+  at `+0xe,+0x14,+0x2e,+0x34`: both commutative OR pairs swap load order.
+  Restoring the direct SB2 GetBlupiInfo expression, SB2 action-local scopes,
+  Planet-style includes, and putting the actual numeric table definitions at
+  the head of the owner TU are inert. None is retained. The existing study's
+  arbitrary extern/function count probes were not repeated or delivered.
+- [EVIDENCE; VC5-CTX-01..04; negative] A coherent private header trial removes
+  the same obsolete helper/API declarations from decor.h/event.h/pixmap.h.
+  It reduces GetBlupiInfo to two differing bytes, but leaves MockeryDetect
+  wrong and regresses IsDeepWater and MoveObjectSort. No trial header cleanup
+  or synthetic per-TU header view is delivered. Further arbitrary count/order
+  permutations have no source evidence and were not pursued.
+
+[OPEN] The remaining natural-link blockers are genuine reconstruction/context
+debt. Integrating the oracle-ordered DecorNextAction must first restore
+GetBlupiInfo. Removing the unsupported decmove callers must first restore
+MockeryDetect. Their source-counter/allocator context remains unidentified
+after these bounded, source-supported tests; source fillers are not a fix.
+
+### Reproduction and artifacts
+
+```powershell
+.pyenv\python.exe tools\verify.py --tu src/blupi.cpp=scratch/sol-relink/round2/delivery-src/blupi.cpp --tu src/event.cpp=scratch/sol-relink/round2/delivery-src/event.cpp --tu src/pixmap.cpp=scratch/sol-relink/round2/delivery-src/pixmap.cpp --tu src/decblupi.cpp=scratch/sol-relink/round2/delivery-src/decblupi.cpp --tu src/decmove.cpp=scratch/sol-relink/round2/delivery-src/decmove.cpp --tu src/dectables.cpp=scratch/sol-relink/round2/delivery-src/dectables.cpp --build-dir sol-relink2
+git apply --check scratch/sol-relink/round2/relink2.patch
+.pyenv\python.exe tools\relink.py --objects-dir build/verify-sol-relink2/objects --out-dir build/relink/round2
+.pyenv\python.exe tools\datacmp.py --objects-dir build/verify-sol-relink2/objects --comparison build/verify-sol-relink2/results.json --source-dir scratch/sol-relink/round2/delivery-src --json-out build/relink/round2/data.json --csv-out build/relink/round2/data.csv
+```
+
+[EVIDENCE] The final verifier exits zero with no accepted regression and the
+expected sound INCOMPLETE note. Dectables.cpp is a byte-identical candidate
+copy solely to select the private corrected pixtables.h; it has no source
+patch hunk. `gate-delivery.log`, `delivery-files.json`, `explo-evidence.json`,
+the focused scripts/variant metrics, and `build/relink/round2/{gate,build,data}.json`
+preserve inputs and results. No game/linked image was executed, and no commit
+or background process was created.
+
+## Round 1 historical report
+
+The sections below retain the first delivery's measurements, before supervisor
+integration and POINT-inline cleanup. Round 2 above is the current result.
+
 ## Result
 
 [EVIDENCE] `tools/relink.py` builds the 20 manifest TUs serially through

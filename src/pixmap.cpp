@@ -288,6 +288,16 @@ BOOL CPixmap::Flush()
 	return TRUE;
 }
 
+BOOL CPixmap::GetTrueColorBack()
+{
+	return m_bTrueColorBack;
+}
+
+BOOL CPixmap::GetTrueColorDecor()
+{
+	return m_bTrueColorBack;
+}
+
 // Restitue les bitmaps.
 
 BOOL CPixmap::Restore()

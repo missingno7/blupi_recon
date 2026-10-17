@@ -500,7 +500,7 @@ void CDecor::StartSploutchGlu(POINT pos)
 	pos2.y = pos.y + 15;
 	ObjectStart(pos2, TYPE_SPLOUTCH3, 0);
 	StopVehicleSound();
-	PlaySound(SOUND_GLU, pos);
+	PlaySound(SOUND_GLU, pos, FALSE);
 }
 
 BOOL CDecor::ObjectStart(POINT pos, int type, int speed)
@@ -1226,7 +1226,7 @@ void CDecor::DynamiteStart(int i, int dx, int dy)
 	ObjectStart(posStart, TYPE_EXPLO1, 0);
 	if (dx == 0 && dy == 0)
 	{
-		PlaySound(SOUND_BOUM, posStart);
+		PlaySound(SOUND_BOUM, posStart, FALSE);
 		m_decorAction = 1;
 		m_decorPhase = 0;
 	}
@@ -1701,7 +1701,7 @@ void CDecor::MoveObjectFollow(POINT pos)
 			if (IntersectRect(&tinyRect, &src2, &src))
 			{
 				m_moveObject[i].type = TYPE_BOMBEFOLLOW2;
-				PlaySound(SOUND_FOLLOW, m_moveObject[i].posCurrent);
+				PlaySound(SOUND_FOLLOW, m_moveObject[i].posCurrent, FALSE);
 			}
 		}
 	}

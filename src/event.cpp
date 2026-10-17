@@ -901,16 +901,6 @@ BOOL CEvent::CreateButtons()
 	return TRUE;
 }
 
-BOOL CEvent::LoadImageFromDisc()
-{
-	char res[100];
-
-	strcpy(res, table[m_index].backName);
-	if (res[0] && table[m_index].bCDrom)
-		AddCDPath(res);
-	return m_pPixmap->CacheAll(FALSE, m_hWnd, TRUE, TRUE, TRUE, 1, res, m_pDecor->GetRegion());
-}
-
 void CEvent::NetAdjustLobbyButtons()
 {
 	BOOL allReady = TRUE;
@@ -2189,7 +2179,7 @@ BOOL CEvent::ChangePhase(UINT phase)
 				totalDim.y = LYIMAGE;
 				iconDim.x = 0;
 				iconDim.y = 0;
-				bEnable = m_pPixmap->BackgroundCache(0, str, totalDim, iconDim, FALSE);
+				bEnable = m_pPixmap->Cache(0, str, totalDim, iconDim, FALSE);
 			}
 		}
 		if (!bEnable)
@@ -2202,7 +2192,7 @@ BOOL CEvent::ChangePhase(UINT phase)
 				totalDim.y = LYIMAGE;
 				iconDim.x = 0;
 				iconDim.y = 0;
-				bEnable = m_pPixmap->BackgroundCache(0, str, totalDim, iconDim, FALSE);
+				bEnable = m_pPixmap->Cache(0, str, totalDim, iconDim, FALSE);
 			}
 			if (!bEnable)
 			{
