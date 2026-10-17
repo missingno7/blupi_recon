@@ -684,6 +684,12 @@
       "tu": "src/decblupi.cpp"
     },
     {
+      "symbol": "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x000102e0",
+      "size": 80,
+      "tu": "src/decblupi.cpp"
+    },
+    {
       "symbol": "?IsPassIcon@CDecor@@QAEHH@Z",
       "rva": "0x00010330",
       "size": 64,
@@ -726,9 +732,21 @@
       "tu": "src/decnet.cpp"
     },
     {
+      "symbol": "?NetDataFlush@CDecor@@QAEXXZ",
+      "rva": "0x00010a00",
+      "size": 96,
+      "tu": "src/decmove.cpp"
+    },
+    {
       "symbol": "?NetSendBarePacket@CDecor@@QAEXEH@Z",
       "rva": "0x00010a60",
       "size": 48,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetAdjustToLift@CDecor@@QAEXXZ",
+      "rva": "0x00011160",
+      "size": 80,
       "tu": "src/decmove.cpp"
     },
     {
@@ -759,6 +777,12 @@
       "symbol": "?NotifPop@CDecor@@QAEXXZ",
       "rva": "0x000114b0",
       "size": 96,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?NotifPush@CDecor@@QAEXPAD@Z",
+      "rva": "0x00011510",
+      "size": 144,
       "tu": "src/decmove.cpp"
     },
     {
@@ -810,6 +834,12 @@
       "tu": "src/decmove.cpp"
     },
     {
+      "symbol": "?MoveChargeDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00013800",
+      "size": 160,
+      "tu": "src/decmove.cpp"
+    },
+    {
       "symbol": "?MoveObjectDelete@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x00013a30",
       "size": 128,
@@ -825,6 +855,12 @@
       "symbol": "?SortGetType@@YAHH@Z",
       "rva": "0x00013af0",
       "size": 48,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectPriority@CDecor@@QAEXH@Z",
+      "rva": "0x00013c10",
+      "size": 160,
       "tu": "src/decmove.cpp"
     },
     {

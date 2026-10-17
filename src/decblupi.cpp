@@ -4477,7 +4477,8 @@ BOOL CDecor::IsDeepWater(POINT pos)
 BOOL CDecor::IsOutWater(POINT pos)
 {
 	int icon = m_decor[(pos.x + DIMBLUPIX / 2) / DIMOBJX][(pos.y + DIMBLUPIY / 2) / DIMOBJY].icon;
-	return icon != 91 && icon != 92 && IsPassIcon(icon);
+	if (icon == 91 || icon == 92) return FALSE;
+	return IsPassIcon(icon);
 }
 
 BOOL CDecor::IsPassIcon(int icon)

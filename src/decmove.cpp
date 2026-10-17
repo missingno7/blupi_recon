@@ -12,7 +12,7 @@ void CDecor::NetDataFlush()
 	{
 		m_netBlupiIcon[i] = -1;
 		m_netTimes[i] = 0;
-		m_netTimeSincePacket[i] = 0;
+		m_netPrevTimes[i] = 0;
 		m_netVitesses[i].x = 0;
 		m_netVitesses[i].y = 0;
 	}
@@ -62,7 +62,7 @@ void CDecor::NetAdjustToLift()
 {
 	for (int i = 0; i < MAXNETPLAYER; i++)
 	{
-		if (m_netBlupiPos[i].x != -1 && m_netTransports[i] >= 0 && m_netTransports[i] < MAXMOVEOBJECT)
+		if (m_netBlupiIcon[i] != -1 && m_netTransports[i] >= 0 && m_netTransports[i] < MAXMOVEOBJECT)
 		{
 			m_netBlupiPos[i].y = m_moveObject[m_netTransports[i]].posCurrent.y - (DIMBLUPIY - 2);
 		}
@@ -175,20 +175,22 @@ void CDecor::NotifPop()
 void CDecor::NotifPush(char* str)
 {
 	int i;
+	char* pText;
 	for (i = 0; i < MAXNOTIF; i++)
 	{
-		if (m_notifText[i][0] != '\0') break;
+		if (m_notifText[i][0] == '\0')
+		{
+			pText = m_notifText[i];
+			goto Push;
+		}
 	}
-	if (i >= MAXNOTIF)
-	{
-		NotifPop();
-		i = MAXNOTIF - 1;
-	}
-	strcpy(m_notifText[i], str);
+	NotifPop();
+	pText = m_notifText[MAXNOTIF - 1];
+Push:
+	strcpy(pText, str);
 	m_notifTime = NOTIFDELAY;
-	m_pSound->PlayImage(SOUND_TRESOR, POINT(LXIMAGE / 2, LYIMAGE / 2), -1);
+	m_pSound->PlayImage(SOUND_TRESOR, POINT(LXIMAGE / 2, LYIMAGE / 2), -1, 0);
 }
-
 void CDecor::NotifStep()
 {
 	if (m_notifTime == 0)
@@ -2374,7 +2376,7 @@ int CDecor::MoveChargeDetect(POINT pos)
 			src2.right = m_moveObject[i].posCurrent.x + DIMBLUPIX + 10;
 			src2.top = m_moveObject[i].posCurrent.y + 36;
 			src2.bottom = m_moveObject[i].posCurrent.y + DIMBLUPIY;
-			RECT tinyRect = { 0, 0, 0, 0 };
+			RECT tinyRect;
 			if (IntersectRect(&tinyRect, &src2, &src))
 			{
 				return i;
@@ -2532,11 +2534,12 @@ void CDecor::MoveObjectPriority(int rank)
 	if (rank != 0 && m_moveObject[rank].type == TYPE_BALLE)
 	{
 		int i = 0;
-		while (m_moveObject[i].type == TYPE_BALLE)
+		for (; i < MAXMOVEOBJECT; i++)
 		{
-			i++;
-			if (i >= MAXMOVEOBJECT) return;
+			if (m_moveObject[i].type != TYPE_BALLE) goto MoveObjectPriorityFound;
 		}
+		return;
+MoveObjectPriorityFound:
 		if (i <= rank)
 		{
 			MoveObject tempMob;
