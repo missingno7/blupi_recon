@@ -1037,11 +1037,13 @@
       "rva": "0x00013b20",
       "size": 240,
       "tu": "src/decmove.cpp",
-      "withdrawn": {
-        "reason": "Removing the stale duplicate MoveObjectPollution body from decmove.cpp (the function belongs to decblupi.cpp at 0xfc10; two definitions could not have linked) shifted decmove.cpp TU context and MoveObjectSort became MISMATCH. Restore by finding the genuine decmove.cpp context (missing/extra declarations or bodies), never by keeping the duplicate.",
-        "evidence": "supervisor integration of sol-decblupi (docs/SENIOR_SOL_DECBLUPI.md)",
-        "date": "2026-10-17"
-      }
+      "withdrawal_history": [
+        {
+          "reason": "Removing the stale duplicate MoveObjectPollution body from decmove.cpp (the function belongs to decblupi.cpp at 0xfc10; two definitions could not have linked) shifted decmove.cpp TU context and MoveObjectSort became MISMATCH. Restore by finding the genuine decmove.cpp context (missing/extra declarations or bodies), never by keeping the duplicate.",
+          "evidence": "supervisor integration of sol-decblupi (docs/SENIOR_SOL_DECBLUPI.md)",
+          "date": "2026-10-17"
+        }
+      ]
     },
     {
       "symbol": "?MoveObjectPriority@CDecor@@QAEXH@Z",
@@ -1254,6 +1256,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?ReadInput@CEvent@@QAEXXZ",
+      "rva": "0x00016710",
+      "size": 480,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?NetCreate@CEvent@@IAEHH@Z",
       "rva": "0x000168f0",
       "size": 48,
@@ -1272,6 +1280,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?NetAdjustLobbyButtons@CEvent@@IAEXXZ",
+      "rva": "0x00016a70",
+      "size": 496,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?ChangePause@CEvent@@QAEXHH@Z",
       "rva": "0x00016c60",
       "size": 128,
@@ -1287,6 +1301,12 @@
       "symbol": "?NetSearchPlayer@CEvent@@IAEHK@Z",
       "rva": "0x00016d30",
       "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?NetStartPlay@CEvent@@IAEXXZ",
+      "rva": "0x00016d60",
+      "size": 240,
       "tu": "src/event.cpp"
     },
     {
@@ -1374,9 +1394,21 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?GetWorldGroup@CEvent@@QAEXXZ",
+      "rva": "0x00019200",
+      "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?SetMission@CEvent@@QAEXH@Z",
       "rva": "0x00019250",
       "size": 64,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?CheckWorld1@CEvent@@IAEHXZ",
+      "rva": "0x00019290",
+      "size": 128,
       "tu": "src/event.cpp"
     },
     {
@@ -1386,9 +1418,27 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?TryInsert@CEvent@@QAEXXZ",
+      "rva": "0x0001ae30",
+      "size": 64,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?MovieToStart@CEvent@@QAEXXZ",
       "rva": "0x0001ae70",
       "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?ReadAll@CEvent@@QAEXXZ",
+      "rva": "0x0001aec0",
+      "size": 160,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?CurrentRead@CEvent@@IAEHH@Z",
+      "rva": "0x0001af60",
+      "size": 96,
       "tu": "src/event.cpp"
     },
     {
@@ -1494,6 +1544,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?DemoRecStop@CEvent@@IAEXXZ",
+      "rva": "0x0001c6f0",
+      "size": 240,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?DemoPlayStart@CEvent@@IAEHXZ",
       "rva": "0x0001c7e0",
       "size": 448,
@@ -1503,6 +1559,12 @@
       "symbol": "?DemoPlayStop@CEvent@@IAEXXZ",
       "rva": "0x0001c9a0",
       "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?DemoStep@CEvent@@QAEXXZ",
+      "rva": "0x0001ca00",
+      "size": 192,
       "tu": "src/event.cpp"
     },
     {
@@ -1518,6 +1580,18 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?ChatPop@CEvent@@IAEXXZ",
+      "rva": "0x0001cb40",
+      "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?ChatPush@CEvent@@IAEXPAD@Z",
+      "rva": "0x0001cb90",
+      "size": 128,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?ChatSend@CEvent@@IAEXXZ",
       "rva": "0x0001cc10",
       "size": 352,
@@ -1527,6 +1601,12 @@
       "symbol": "?TextInputDelete@CEvent@@IAEHXZ",
       "rva": "0x0001cf00",
       "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?TreatTextInput@CEvent@@IAEHIIJ@Z",
+      "rva": "0x0001cf60",
+      "size": 592,
       "tu": "src/event.cpp"
     },
     {

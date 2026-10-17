@@ -408,75 +408,11 @@ void CDecor::NotifStep()
 	}
 }
 
-void CDecor::MoveObjectPlouf(POINT pos)
-{
-	for (int i = 0; i < MAXMOVEOBJECT; i++)
-	{
-		if (m_moveObject[i].type == TYPE_PLOUF) return;
-	}
-	pos.y -= 45;
-	PlaySound(SOUND_PLOUF, pos);
-	ObjectStart(pos, TYPE_PLOUF, 0);
-}
 
-void CDecor::MoveObjectTiplouf(POINT pos)
-{
-	for (int i = 0; i < MAXMOVEOBJECT; i++)
-	{
-		if (m_moveObject[i].type == TYPE_TIPLOUF) return;
-	}
-	if (m_blupiDir == DIR_RIGHT)
-	{
-		pos.x += 5;
-	}
-	else
-	{
-		pos.x -= 5;
-	}
-	pos.y -= 45;
-	PlaySound(SOUND_TIPLOUF, pos);
-	ObjectStart(pos, TYPE_TIPLOUF, 0);
-}
 
-void CDecor::MoveObjectBlup(POINT pos)
-{
-	PlaySound(SOUND_BLUP, pos);
-	pos.y -= 20;
-	int num = 0;
-	POINT tinyPoint = pos;
-	while (tinyPoint.y > 0)
-	{
-		int icon = m_decor[(tinyPoint.x + 16) / DIMOBJX][tinyPoint.y / DIMOBJY].icon;
-		if (icon != 91 && icon != 92)
-		{
-			break;
-		}
-		num++;
-		tinyPoint.y -= DIMOBJY;
-	}
-	num--;
-	if (num <= 0)
-	{
-		return;
-	}
-	int num2 = MoveObjectFree();
-	if (num2 == -1)
-	{
-		return;
-	}
-	m_moveObject[num2].type = TYPE_BLUP;
-	m_moveObject[num2].phase = 0;
-	m_moveObject[num2].posCurrent.x = pos.x;
-	m_moveObject[num2].posCurrent.y = pos.y;
-	m_moveObject[num2].posStart = m_moveObject[num2].posCurrent;
-	m_moveObject[num2].posEnd.x = pos.x;
-	m_moveObject[num2].posEnd.y = pos.y - num * DIMOBJY;
-	m_moveObject[num2].timeStopStart = 0;
-	m_moveObject[num2].stepAdvance = num * 10;
-	m_moveObject[num2].step = STEP_ADVANCE;
-	m_moveObject[num2].time = 0;
-	MoveObjectStepIcon(num2);
-}
+
+
+
 
 
 void CDecor::FlushBalleTraj()
@@ -536,40 +472,7 @@ BOOL CDecor::IsMoveTraj(POINT pos)
 	return (m_moveTraj[num] & 1 << num2) != 0;
 }
 
-int CDecor::SearchDistRight(POINT pos, POINT dir, int type)
-{
-	POINT cel;
-	int num = 0;
-	if (type == TYPE_POLLUTION ||
-		type == TYPE_TRESORTRACK ||
-		type == TYPE_INVERTSTART ||
-		type == TYPE_INVERTSTOP ||
-		type == TYPE_INVERTSPIN ||
-		type == TYPE_EXPLO8)
-	{
-		return 500;
-	}
-	cel.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
-	cel.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
-	while (IsValidCel(cel) && !IsBlocIcon(m_decor[cel.x][cel.y].icon))
-	{
-		if (type == TYPE_BALLE)
-		{
-			SetBalleTraj(cel);
-		}
-		num += DIMOBJX;
-		cel += dir;
-	}
-	if ((type == TYPE_GLU || type == TYPE_ELECTRO) && num >= DIMOBJX)
-	{
-		num -= DIMOBJX;
-	}
-	if (type == TYPE_BALLE && num >= 10)
-	{
-		num -= 10;
-	}
-	return num;
-}
+
 
 
 void CDecor::StartSploutchGlu(POINT pos)
@@ -605,111 +508,9 @@ BOOL CDecor::ObjectStart(POINT pos, int type, int speed)
 	return ObjectStart(pos, type, speed, FALSE);
 }
 
-BOOL CDecor::ObjectStart(POINT pos, int type, int speed, BOOL bMulti)
-{
-	int index = MoveObjectFree();
-	if (index == -1)
-	{
-		return FALSE;
-	}
-	m_moveObject[index].type = type;
-	m_moveObject[index].phase = 0;
-	m_moveObject[index].posCurrent = pos;
-	m_moveObject[index].posStart = pos;
-	m_moveObject[index].posEnd = pos;
-	MoveObjectStepIcon(index);
-	if (speed != 0)
-	{
-		POINT tinyPoint = pos;
-		int num2 = speed;
-		int dist = 0;
-		if (num2 > 50)
-		{
-			num2 -= 50;
-			POINT dir;
-			dir.x = 0;
-			dir.y = 1;
-			dist = SearchDistRight(tinyPoint, dir, type);
-			tinyPoint.y += dist;
-		}
-		else if (num2 < -50)
-		{
-			num2 += 50;
-			POINT dir;
-			dir.x = 0;
-			dir.y = -1;
-			dist = SearchDistRight(tinyPoint, dir, type);
-			tinyPoint.y -= dist;
-		}
-		else if (num2 > 0)
-		{
-			POINT dir;
-			dir.x = 1;
-			dir.y = 0;
-			dist = SearchDistRight(tinyPoint, dir, type);
-			tinyPoint.x += dist;
-		}
-		else if (num2 < 0)
-		{
-			POINT dir;
-			dir.x = -1;
-			dir.y = 0;
-			dist = SearchDistRight(tinyPoint, dir, type);
-			tinyPoint.x -= dist;
-		}
-		if (dist == 0)
-		{
-			if (type == TYPE_BALLE)
-			{
-				m_moveObject[index].type = 0;
-				return TRUE;
-			}
-		}
-		else
-		{
-			m_moveObject[index].posEnd = tinyPoint;
-			m_moveObject[index].timeStopStart = 0;
-			m_moveObject[index].stepAdvance = abs(dist * num2 / DIMOBJX);
-			m_moveObject[index].step = STEP_ADVANCE;
-			m_moveObject[index].time = 0;
-		}
-	}
-	MoveObjectPriority(index);
-	if (bMulti)
-	{
-		NetMessage msg;
-		msg.type = PK_OBJECTSTART;
-		msg.data1 = speed;
-		msg.data2 = pos.x;
-		msg.data3 = pos.y;
-		msg.data4 = type;
-		NetMessagePush(&msg);
-	}
-	return TRUE;
-}
 
-BOOL CDecor::ObjectDelete(POINT pos, int type, BOOL bMulti)
-{
-	NetMessage msg;
 
-	int num = MoveObjectSearch(pos, type);
-	if (num == -1)
-	{
-		return FALSE;
-	}
-	m_moveObject[num].type = 0;
-	if (bMulti)
-	{
-		msg.type = PK_OBJECTDELETE;
-		msg.data1 = 0;
-		msg.data2 = pos.x;
-		msg.data3 = pos.y;
-		msg.data4 = type;
 
-		NetMessagePush(&msg);
-	}
-	return TRUE;
-}
 
 void CDecor::MoveObjectStep()
 {

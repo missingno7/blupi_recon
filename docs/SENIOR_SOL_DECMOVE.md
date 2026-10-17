@@ -1,10 +1,140 @@
 # Senior decmove structural pass (sol-decmove, 2026-10-17)
 
-[EVIDENCE] **Latest result: the follow-up below adds 13 STRICT functions / 4,934
-unique original bytes and makes all 39 oracle-mapped decmove functions STRICT.**
-See [the follow-up result](#follow-up-after-canonical-integration). The earlier
-pass, hashes and unresolved data handoff below are historical; its three large
-matches and shield/power definitions have since been integrated by the supervisor.
+[EVIDENCE] **Latest result: Sort is restored after duplicate Pollution removal;
+all 39 oracle-mapped decmove functions are STRICT, and the proposed common header
+passes the full accepted-function gate.** The repair moves the actual global
+SortGetType declaration out of CDecor; no diagnostic declaration is retained.
+See [the context repair](#context-repair-after-duplicate-pollution-removal).
+The previous two passes below are historical and have been integrated.
+
+## Context repair after duplicate Pollution removal
+
+[EVIDENCE] Review patch: `scratch/sol-decmove/sol-decmove-context.patch`.
+The header-only repair is also available as
+`scratch/sol-decmove/sort-declaration.patch`. Canonical source and recon.json
+were not changed. The final candidate is `scratch/sol-decmove/decmove.cpp`
+with its adjacent private `decor.h`; `context-proof.json` records hashes and
+the exact change audit. Every surviving function body is byte-for-byte source
+identical to canonical source. Six duplicate definitions are removed, listed
+below. No count probe, padding, unused variable or extra body is retained.
+Both patch files pass `git apply --check` against the current canonical tree;
+their hunk contents preserve the source files' CRLF line endings.
+
+[EVIDENCE] The baseline after the supervisor removed MoveObjectPollution has
+a 3ch Sort frame, correct ESI flag and EDI key registers, but evaluates the
+next object's key before the current object's key. Target does current first.
+The residue is 240-byte compared extent / score 17 / fixed prefix 130 bytes /
+44 identical instructions. Moving the helper declaration to file scope gives
+score 0 / fixed prefix 234 / 89 identical instructions. The body is **234 B**;
+the six trailing NOPs receive no additional byte credit. Both call relocations
+are STRICT and bind to SortGetType at `0x13af0`.
+
+[EVIDENCE] Header delta: remove `int SortGetType(int type);` from CDecor's
+member list and declare that same function in the existing file-scope helper
+declaration block beside GetCel/GetVector. This declares the helper actually
+defined by canonical decmove.cpp, instead of a nonexistent nonstatic member
+definition. The target uses cdecl caller cleanup and a bare-ret callee;
+canonical's global helper already matches those bytes. No constants, members,
+record offsets, sizes, inline implementations or other declarations change.
+
+[OPEN] Machine code does not uniquely recover an original prototype's spelling
+or physical location, nor distinguish all possible source-level cdecl helpers.
+The proposed declaration is an ordinary declaration of the real used function,
+consistent with its existing canonical definition; it is not evidence that the
+1998 header had this exact line at this exact location.
+
+[EVIDENCE] Full common-header check: `common_header_gate.py` copies the flat
+canonical sources/headers into the worker directory, changes only decor.h and
+the six duplicate bodies, and substitutes every manifest TU in one verifier
+run. `package_context.py` verifies all other copied files are byte-identical.
+`common-header/verify.log`, `results.json` and archived `objects/` preserve the
+result: **exit 0; every active accepted function preserved; decmove 39 STRICT**.
+Sort remains formally withdrawn in canonical recon.json until the supervisor
+integrates/promotes it. Full-run Icon is STRICT; its isolated asmscore result
+still lacks the other data objects and is not the acceptance evidence.
+
+```powershell
+.pyenv\python.exe scratch/sol-decmove/common_header_gate.py
+.pyenv\python.exe scratch/sol-decmove/package_context.py
+```
+
+### Context measurements and rejected candidates
+
+[EVIDENCE] All runs use pinned VC5 SP3 `/W3 /GX /O2 /ML /Gd /Gy`, canonical
+headers except explicitly named experiments, and private build-dir sol-decmove.
+Trials and compiles were sequential. `context-ledger.jsonl` and trial directories
+retain source/object/results, status, extent, score and instruction prefix.
+
+| Probe on post-Pollution baseline | Sort result |
+|---|---|
+| Before includes: 0, 1, 4, 8 names | MISMATCH / 17 |
+| Before includes: 9-12, 16-20, 24-26, 32-33, 40-41, 64, 128, 136 sampled | STRICT / 0 |
+| Before includes: 137, 138, 140, 144, 152, 160, 192, 224, 256 | MISMATCH / 17 |
+| Immediately before Sort: 1, 4, 8, 12, 16, 32, 128 | MISMATCH / 17 |
+| End: 1, 8, 12, 16, 32, 128 | MISMATCH / 17 |
+| Before decor/misc/dectables include, or NetDataFlush/TreatNetData/MoveObjectStep: 16 | STRICT / 0 |
+
+[EVIDENCE] Measured adjacent boundaries are 8/9 and 136/137; the interior
+was sampled, not exhaustively checked. Some larger failing top probes also
+regress MockeryDetect. There is no claim of an observed internal counter or
+proven periodicity. The later placement probes supersede the initial impression
+that restoration required placement before includes.
+
+[EVIDENCE] Removing only the stale member declaration is inert (`c02`). An
+early declaration of the actual global helper restores Sort even while retaining
+the stale member (`c08`); deleting the stale member and placing the global
+prototype immediately before its definition is inert (`c09`). The final repair
+uses the existing header helper-declaration block and removes the false member.
+It works both with the six duplicate bodies still present (`c00-global-sort-decl`)
+and with them removed (`c01-no-duplicates-global-sort-decl`, common-header gate).
+Thus the duplicate cleanup is not compensation required by the declaration fix.
+
+[EVIDENCE] Additional real duplicate definitions removed from the final candidate:
+MoveObjectPlouf (`decblupi.cpp`, STRICT `0xfdd0`), MoveObjectTiplouf (`0xfe20`),
+MoveObjectBlup (`0xfe80`), SearchDistRight (`0x103b0`), ObjectStart's four-argument
+overload (`decnet.cpp`, target block `0x106b0`) and ObjectDelete (`decnet.cpp`,
+STRICT `0x108a0`). Canonical owner files independently define those same method
+signatures; two definitions could not link. ObjectStart remains an existing
+unmatched decnet owner; removing its duplicate claims no new match. Their
+removal alone leaves Sort at score 17 and preserves every active accepted entry.
+
+[EVIDENCE] Removing the twelve unlocated SB2 helpers makes Sort STRICT but
+regresses MockeryDetect (544 -> 528-byte extent, score 207). Isolated deletions
+trace the Sort change to DynamiteStart; its deletion also reverses the two
+grid-index division orders in Mockery. Other tested helper groups alone do not
+restore Sort. These wider removals are rejected: absent linked bodies alone do
+not prove absent original source. Their declarations/trajectory-tail cleanup,
+natural Mockery returns, shared icon/all function-scope locals, anonymous or
+shared bare-packet records, and natural MoveObject alignment padding do not close
+the combined gate. Sort's one-key/two-key locals score 21; reversed comparison
+also fails. None of these variants is retained. Private header experiments have
+no proposed delta beyond the helper declaration described above.
+
+### Compiler findings (context repair)
+
+- [EVIDENCE; `BLUPI-CTX-01`, `VC5-CTX-01..04`; blupi-specific] Trigger:
+  duplicate-body removal reverses evaluation of the two direct call operands
+  in Sort, 240 B/17 with identical frame/register roles. Top and late count
+  probes differ; early probes have measured adjacent boundaries 8/9, 136/137.
+  Original/candidate: stale nonstatic member prototype versus the real used
+  global helper declared in the header's file-scope block. Same SP3/full-TU
+  flags: 240 B/0, 234 B fixed prefix, both relocations STRICT, all 39 functions
+  and the complete accepted set pass with the header shared across all TUs.
+  This confirms declaration timing/scope as an SB1 context repair; an internal
+  numbering mechanism or universal window remains unverified.
+- [EVIDENCE; `BLUPI-CTX-01/02`, `VC5-CTX-04`; negative controls] Removing the
+  false member alone, or adding the real global prototype only immediately
+  before its definition, leaves 240 B/17. An early global prototype alone
+  suffices, so deleting an arbitrary class member is not the explanation.
+  Six proven duplicate-body deletions alone are also inert. No filler is a fix.
+- [EVIDENCE; `BLUPI-REG-01/02`, `VC5-CTX-07`; negative] Removing unlocated
+  DynamiteStart changes Sort to STRICT but commutes Mockery's two signed grid
+  divisions and changes allocation/size. Function-scope locals and natural
+  return forms do not repair that combined candidate. Under these flags,
+  a standalone strict gain cannot validate a TU context; the full gate rejects it.
+
+[EVIDENCE] Next step: supervisor review/integration of the two-file patch and
+reaccept Sort. No remaining decmove oracle miss or background process remains.
 
 ## Round 1 result and reproduction (historical)
 

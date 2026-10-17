@@ -842,33 +842,31 @@ void CEvent::ReadInput()
 			{
 				if (bSkateboard)
 				{
-					newKeyPress = m_keyPress & ~(KEY_DOWN | KEY_UP) | KEY_JUMP;
+					m_keyPress = m_keyPress & ~(KEY_DOWN | KEY_UP) | KEY_JUMP;
 					
 				}
 				else
 				{
-					newKeyPress = m_keyPress & ~KEY_DOWN | KEY_UP | KEY_JUMP;
+					m_keyPress = m_keyPress & ~KEY_DOWN | KEY_UP | KEY_JUMP;
 				}
-				m_keyPress = newKeyPress;
 			}
 			if ((BYTE)joyInfo.dwButtons & JOY_BUTTON3)
 			{
 				if (bHelicopter)
 				{
-					newKeyPress = m_keyPress | KEY_DOWN;
+					m_keyPress = m_keyPress | KEY_DOWN;
 				}
 				else
 				{
 					if (bSkateboard)
 					{
-						newKeyPress = m_keyPress & ~(KEY_DOWN | KEY_UP) | KEY_JUMP;
+						m_keyPress = m_keyPress & ~(KEY_DOWN | KEY_UP) | KEY_JUMP;
 					}
 					else
 					{
-						newKeyPress = m_keyPress | KEY_DOWN | KEY_JUMP;
+						m_keyPress = m_keyPress | KEY_DOWN | KEY_JUMP;
 					}
 				}
-				m_keyPress = newKeyPress;
 				m_keyPress &= ~KEY_UP; // lol
 			}
 			if ((BYTE)joyInfo.dwButtons & JOY_BUTTON4)
@@ -928,23 +926,24 @@ void CEvent::NetStartPlay()
 	char data[2];
 	char str[52];
 
-	OutputNetDebug("CEvent::NetStartPlay");
+	OutputNetDebug("CEvent::NetStartPlay\r\n");
 
 	if (m_pNetwork->IsHost())
 	{
 		data[0] = 2;
 		data[1] = MESS_START;
 		m_pNetwork->Send(data, 2, DPSEND_GUARANTEED);
-		OutputNetDebug("Sending MESS_START");
+		OutputNetDebug("Sending MESS_START\r\n");
 	}
 	m_pDecor->SetTeam(0);
 
-	int i = 0;
-	while (!(m_pNetwork->m_players[i].bIsPresent && m_pNetwork->m_players[i].dpid == m_pNetwork->m_dpid))
+	int i;
+	for (i = 0; i < MAXNETPLAYER; i++)
 	{
-		i++;
-		if (i >= MAXNETPLAYER) goto noMatch;
+		if (m_pNetwork->m_players[i].bIsPresent && m_pNetwork->m_dpid == m_pNetwork->m_players[i].dpid) goto found;
 	}
+	goto noMatch;
+found:
 	m_pDecor->SetTeam(m_pNetwork->m_players[i].team);
 	sprintf(str, "color=%d\r\n", m_pNetwork->m_players[i].team);
 	OutputNetDebug(str);
@@ -1001,17 +1000,20 @@ void CEvent::ChatPush(char *str)
 {
 	int i;
 
-	for (i = 0; m_chatZone[i][0] != '\0'; i++)
+	char *dest;
+	for (i = 0; i < MAXCHAT; i++)
 	{
-		if (i >= MAXCHAT)
+		if (m_chatZone[i][0] == 0)
 		{
-			ChatPop();
-			i = MAXCHAT - 1;
-			break;
+			dest = m_chatZone[i];
+			goto found;
 		}
 	}
-	strcpy(m_chatZone[i], str);
-	m_pSound->PlayImage(SOUND_TRESOR, POINT( LXIMAGE / 2, LYIMAGE / 2 ), -1);
+	ChatPop();
+	dest = m_chatZone[MAXCHAT - 1];
+found:
+	strcpy(dest, str);
+	m_pSound->PlayImage(SOUND_TRESOR, POINT( LXIMAGE / 2, LYIMAGE / 2 ), -1, 0);
 }
 
 void CEvent::ChatFlush()
@@ -1025,10 +1027,9 @@ void CEvent::ChatFlush()
 void CEvent::ChatPop()
 {
 	int i;
-
-	for (i = MAXCHAT - 1; i != 0; i--)
+	for (i = 0; i < MAXCHAT - 1; i++)
 	{
-		memcpy(m_chatZone[i - 1], m_chatZone[i], strlen(m_chatZone[i]));
+		strcpy(m_chatZone[i], m_chatZone[i + 1]);
 	}
 	m_chatZone[MAXCHAT - 1][0] = '\0';
 }
@@ -1784,15 +1785,14 @@ BOOL CEvent::TextInputDelete()
 }
 
 BOOL CEvent::TreatTextInput(UINT message, WPARAM wParam, LPARAM lParam) {
-	int len, start;
-	
+	int len, i;
 	if (message == WM_CHAR)
 	{
 		TextInputDelete();
-		len = strlen(m_textInput) + 1;
-		if (len - 1 < 40 && wParam >= 0x20 && wParam <= 0xff)
+		len = strlen(m_textInput);
+		if (len < 40 && wParam >= 0x20 && wParam <= 0xff)
 		{
-			for (int i = len; i > m_textHiliStart; --i)
+			for (i = len + 1; i > m_textHiliStart; i--)
 			{
 				m_textInput[i] = m_textInput[i - 1];
 			}
@@ -1802,87 +1802,76 @@ BOOL CEvent::TreatTextInput(UINT message, WPARAM wParam, LPARAM lParam) {
 			m_textCursorIndex = 0;
 			return TRUE;
 		}
-
-		if (message != WM_KEYDOWN) return FALSE;
-
-		if (wParam == VK_BACK && !TextInputDelete())
+	}
+	if (message == WM_KEYDOWN)
+	{
+	if (wParam == VK_BACK && !TextInputDelete() && m_textHiliStart > 0)
+	{
+		len = strlen(m_textInput);
+		for (i = m_textHiliStart - 1; i < len; i++)
 		{
-			if (m_textHiliStart > 0)
-			{
-				len = strlen(m_textInput) + 1;
-				for (int i = m_textHiliStart - 1; i < len - 1; i++)
-				{
-					m_textInput[i] = m_textInput[i + 1];
-				}
-				m_textHiliStart--;
-				m_textHiliEnd--;
-				m_textCursorIndex = 0;
-				return TRUE;
-			}
+			m_textInput[i] = m_textInput[i + 1];
 		}
-		if (wParam == VK_DELETE && !TextInputDelete() && (start = m_textHiliStart) < (len = strlen(m_textInput) + 1))
+		m_textHiliStart--;
+		m_textHiliEnd--;
+		m_textCursorIndex = 0;
+		return TRUE;
+	}
+	if (wParam == VK_DELETE && !TextInputDelete())
+	{
+		len = strlen(m_textInput);
+		if (m_textHiliStart < len)
 		{
-			do
+			for (i = m_textHiliStart; i < len; i++)
 			{
-				m_textInput[start] = m_textInput[start + 1];
-				start++;
-			} while (start < len - 1);
-
+				m_textInput[i] = m_textInput[i + 1];
+			}
+			m_textCursorIndex = 0;
+			return TRUE;
+		}
+	}
+	if (wParam == VK_LEFT)
+	{
+		if (m_textHiliStart < m_textHiliEnd) m_textHiliEnd = m_textHiliStart;
+		if (m_textHiliStart > 0)
+		{
+			m_textHiliStart--;
+			m_textHiliEnd--;
 			m_textCursorIndex = 0;
 			return TRUE;
 		}
 		else
 		{
-			switch (wParam)
-			{
-			case VK_LEFT:
-				if (m_textHiliStart < m_textHiliEnd)
-				{
-					m_textHiliEnd = m_textHiliStart;
-				}
-				if (m_textHiliStart > 0)
-				{
-					m_textCursorIndex = 0;
-					m_textHiliStart--;
-					m_textHiliEnd--;
-					return TRUE;
-				}
-				else
-				{
-					m_textCursorIndex = 0;
-					return TRUE;
-				}
-			case VK_RIGHT:
-				if (m_textHiliStart < m_textHiliEnd)
-				{
-					m_textHiliStart = m_textHiliEnd;
-				}
-				if (m_textHiliStart < len - 1)
-				{
-					m_textHiliStart++;
-					m_textHiliEnd++;
-					m_textCursorIndex = 0;
-					return TRUE;
-				}
-				else
-				{
-					m_textCursorIndex = 0;
-					return TRUE;
-				}
-			case VK_UP:
-			case VK_HOME:
-				m_textHiliStart = 0;
-				m_textHiliEnd = 0;
-				m_textCursorIndex = 0;
-				return TRUE;
-			case VK_DOWN:
-			case VK_END:
-				m_textHiliStart = len - 1;
-				m_textHiliEnd = len - 1;
-				m_textCursorIndex = 0;
-				return TRUE;
-			}
+			m_textCursorIndex = 0;
+			return TRUE;
 		}
+	}
+	if (wParam == VK_RIGHT)
+	{
+		len = strlen(m_textInput);
+		if (m_textHiliStart < m_textHiliEnd) m_textHiliStart = m_textHiliEnd;
+		if (m_textHiliStart < len)
+		{
+			m_textHiliStart++;
+			m_textHiliEnd++;
+		}
+		m_textCursorIndex = 0;
+		return TRUE;
+	}
+	if (wParam == VK_UP || wParam == VK_HOME)
+	{
+		m_textHiliStart = 0;
+		m_textHiliEnd = 0;
+		m_textCursorIndex = 0;
+		return TRUE;
+	}
+	if (wParam == VK_DOWN || wParam == VK_END)
+	{
+		m_textHiliStart = strlen(m_textInput);
+		m_textHiliEnd = m_textHiliStart;
+		m_textCursorIndex = 0;
+		return TRUE;
+	}
 	}
 	return FALSE;
 }
@@ -2932,15 +2921,16 @@ BOOL CEvent::IsMulti()
 	return m_bMulti;
 }
 
-int CEvent::GetWorldGroup()
+void CEvent::GetWorldGroup()
 {
 	if (m_mission % 10 != 0 && m_mission != 99)
 	{
 		m_mission = (m_mission / 10) * 10;
-		return -(m_mission >> 31);
 	}
-	m_mission = 1;
-	return m_mission / 10;
+	else
+	{
+		m_mission = 1;
+	}
 }
 
 void CEvent::SetMission(int index)
@@ -2959,7 +2949,14 @@ void CEvent::TryInsert()
 {
 	if ( m_tryInsertCount == 0 )
 	{
-		ChangePhase(m_tryPhase);
+		if (CheckWorld1())
+		{
+			ChangePhase(m_tryPhase);
+		}
+		else
+		{
+			m_tryInsertCount = 40;
+		}
 	}
 	else
 	{
@@ -2977,9 +2974,9 @@ void CEvent::ReadAll()
 
 	bUser = FALSE;
 
-	if ((-1 < m_fileIndex) && (*(int*)((int)(m_filenameBuffer + -1) + m_fileIndex * 4 + 216) != 0))
+	if ((m_fileIndex >= 0) && (m_bNamesExist[m_fileIndex] != 0))
 	{
-		mission = m_pDecor->CurrentWrite(m_gamer, 999, bUser);
+		mission = m_pDecor->CurrentWrite(m_gamer, 999);
 		
 		if (mission != FALSE)
 		{
@@ -4037,13 +4034,15 @@ void CEvent::DemoRecStop()
 {
 	FILE* 		 file = NULL;
 	DemoHeader   header;
+	char filename[MAX_PATH];
 
 	if ( m_bDemoPlay ) return;
 
 	if ( m_pDemoBuffer != NULL )
 	{
-		DeleteFile("data\\demo.3d.blp");
-		file = fopen("data\\demo.3d.blp", "wb");
+		sprintf(filename, "data\\demo%.3d.blp", GetWorld());
+		DeleteFile(filename);
+		file = fopen(filename, "wb");
 		if ( file != NULL )
 		{
 			memset(&header, 0, sizeof(DemoHeader));
@@ -4158,7 +4157,7 @@ void CEvent::DemoStep()
 			input = m_pDemoBuffer[m_demoIndex].input;
 			m_keyPress = input;
 			m_demoIndex++;
-			m_pDecor->KeyChange(input);
+			m_pDecor->KeyChange(m_keyPress);
 
 			if (m_demoIndex >= m_demoEnd)
 			{
@@ -4666,12 +4665,9 @@ BOOL CEvent::CheckWorld1()
 	strcpy(buf, "data\\world001.blp");
 	AddCDPath(buf);
 	file = fopen(buf, "rb");
-	if (file)
-	{
-		fclose(file);
-		return TRUE;
-	}
-	return FALSE;
+	if (file == NULL) return FALSE;
+	fclose(file);
+	return TRUE;
 #else
 	return TRUE;
 #endif
@@ -4743,8 +4739,10 @@ void CEvent::NetAdjustLobbyButtons()
 		{
 			SetHide(button - 10, FALSE);
 			SetHide(button, FALSE);
-			SetEnable(button - 10, ((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid && !((NetPlayer*)((char*)m_pNetwork->m_players + offset))->ready);
-			SetEnable(button, ((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid);
+			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid && !((NetPlayer*)((char*)m_pNetwork->m_players + offset))->ready) SetEnable(button - 10, TRUE);
+			else SetEnable(button - 10, FALSE);
+			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->dpid == m_pNetwork->m_dpid) SetEnable(button, TRUE);
+			else SetEnable(button, FALSE);
 			int icon = ((NetPlayer*)((char*)m_pNetwork->m_players + offset))->team + 108;
 			SetIconMenu(button - 10, &icon, 1);
 			if (((NetPlayer*)((char*)m_pNetwork->m_players + offset))->ready)
@@ -4767,7 +4765,7 @@ void CEvent::NetAdjustLobbyButtons()
 		}
 		offset += sizeof(NetPlayer);
 		button++;
-	} while (button < WM_BUTTON11 + MAXNETPLAYER);
+	} while (button - WM_BUTTON11 < MAXNETPLAYER);
 
 	if (m_pNetwork->IsHost())
 	{
@@ -4775,10 +4773,13 @@ void CEvent::NetAdjustLobbyButtons()
 		SetDemo(WM_PREV, TRUE);
 		SetDemo(WM_NEXT, TRUE);
 #else
-		SetEnable(WM_PREV, m_multi > 1 && !(allReady && nbReady > 1));
-		SetEnable(WM_NEXT, m_multi < 12 && !(allReady && nbReady > 1));
+		if (m_multi > 1 && !(allReady && nbReady > 1)) SetEnable(WM_PREV, TRUE);
+		else SetEnable(WM_PREV, FALSE);
+		if (m_multi < 10 && !(allReady && nbReady > 1)) SetEnable(WM_NEXT, TRUE);
+		else SetEnable(WM_NEXT, FALSE);
 #endif
-		SetEnable(WM_PHASE_DP_STARTMULTI, allReady && nbReady > 1);
+		if (allReady && nbReady > 1) SetEnable(WM_PHASE_DP_STARTMULTI, TRUE);
+		else SetEnable(WM_PHASE_DP_STARTMULTI, FALSE);
 	}
 	else
 	{
@@ -4794,14 +4795,13 @@ BOOL CEvent::CurrentRead(int rank)
 	int mission;
 	BOOL bPrivate;
 	
-	if (m_pDecor->CurrentRead(m_gamer, rank, &mission, &bPrivate))
+	if (!m_pDecor->CurrentRead(m_gamer, rank, &mission, &bPrivate)) return FALSE;
 	{
 		m_bPrivate = bPrivate;
 		SetMission(mission);
 		m_saveIndex = rank;
 		return TRUE;
 	}
-	return FALSE;
 }
 
 // Passe les images d'introduction.

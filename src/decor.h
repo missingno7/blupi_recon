@@ -422,7 +422,6 @@ public:
 	int		MoveBalleDetect(POINT pos);
 	void		MoveObjectDelete(POINT pos);
 	int		MoveObjectFree();
-	int		SortGetType(int type);
 	void	MoveObjectSort();
 	void	MoveObjectPriority(int i);
 	int		MoveObjectSearch(POINT pos, int type);
@@ -614,6 +613,7 @@ protected:
 POINT GetCel(int x, int y);
 POINT GetCel(POINT cel, int x, int y);
 POINT GetVector(int direct);
+int SortGetType(int type);
 
 inline BOOL CDecor::IsValidCel(POINT cel)
 {

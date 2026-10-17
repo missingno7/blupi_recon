@@ -61,7 +61,7 @@ public:
 	void	SetFullScreen(BOOL bFullScreen);
 	void	SetMouseType(int mouseType);
 	int		GetWorld();
-	int		GetWorldGroup();
+	void	GetWorldGroup();
 	void	SetMission(int index);
 	BOOL	ChangePhase(UINT phase);
 	BOOL	LoadImageFromDisc();
