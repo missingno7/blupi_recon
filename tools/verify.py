@@ -94,7 +94,10 @@ def run_compiles(commands: list[list[str]]) -> list[subprocess.CompletedProcess]
     def run(command: list[str]) -> subprocess.CompletedProcess:
         return subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               text=True, encoding="mbcs", errors="replace")
-    with ThreadPoolExecutor(max_workers=max(1, min(len(commands), os.cpu_count() or 1))) as pool:
+    # Capped on purpose: Codex sandbox commands run on a separate desktop with a small desktop heap; dozens of
+    # concurrent console compiles (x several workers) exhausted it and froze the host (2026-10-17).
+    jobs = int(os.environ.get("BLUPI_JOBS", "4"))
+    with ThreadPoolExecutor(max_workers=max(1, min(len(commands), jobs))) as pool:
         return list(pool.map(run, commands))
 
 

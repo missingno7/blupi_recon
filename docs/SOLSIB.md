@@ -315,7 +315,141 @@ alone. No proposed way of recovering that layout has yet been verified.
 **[OPEN]** The exact internal c2 ordering key remains unknown. The catalog
 rule should specify the tested index-identity pattern and its counterexamples,
 not promise a universal mapping from local scope to any register choice.
-The best retained TreatEventBase is the refreshed canonical body; the failed
+The best retained TreatEventBase at that checkpoint was the refreshed canonical body; the failed
 variants remain evidence only. ChangeButtons remains STRICT. Next investigate
 the differing Escape/Return action sharing using the decoded switch/label
 map, then retest the two early scalar-register residues in that closer shape.
+
+## Escape action follow-up
+
+**[EVIDENCE]** `runs/t3_no_intro` is the new best checkpoint: 7,072-byte COFF
+section (6,616 instruction bytes plus 456 switch-table/alignment bytes), 273
+relocations, exactly eight non-relocated byte differences at RVA `0x1d230`.
+It remains MISMATCH. Escape owns its separate GAMER action at `+0x9bb`, STOP
+at `+0x9d9`, Return starts at `+0x9f7`, and the dispatch jump now reaches the
+exact target `+0xc17`. All branch spans and complete switch data match.
+Remaining bytes: `41b,421,423,426,428,42e` (ECX/EDX toggle roles), `6f4,6ff`
+(EAX/EDX HWND load/push). Fixed prefix: 1,051 bytes; no new STRICT function.
+
+**[EVIDENCE]** The fix combines positive Return phase checks and shared
+PLAYTEST action with the target keyboard behavior: assignment inside each
+KeyChange call, direct TRUE returns for Pause/F1..F4/Home, default FALSE,
+and shared event recording. Failed CurrentRead reaches a fresh GAMEWRITE
+test. The rest of Return is then placed at target `+0x1870`.
+
+**[EVIDENCE]** Other target-backed corrections: WM_CHAR normalizes BOOL;
+WM_MOUSEMOVE omits ShowCursor; mouse down/up include PLAYTEST; 50 button
+IDs share ChangeButtons with DONAME/DOCLEAR/DOWRITE/DOREAD; phase action order
+is DEMO, DOPLAY, PRIVATE, general ChangePhase. PLAY/PRIVATE/PREV/NEXT phase
+requests normalize BOOL (INSERT still forwards it). Multiplayer reads use
+offset 100 and NEXT clamps to 10; NEXT's mission limit is build-enabled
+220, otherwise 20, with selection based only on m_bPrivate. Separate used
+private/official phase actions recover the target clamp blocks. Unsupported
+INTRO1/INTRO2 labels accounted for the last two switch-map differences.
+
+**[EVIDENCE] Header delta:** private def.h starts from canonical and adds only
+WM_BUTTON40..49 = WM_USER+240..249 (`0x4f0..0x4f9`), proved by the original
+dispatch interval `0x4c8..0x4f9` ending at its range test. No existing header
+entry changed; event.h remains canonical. Only TreatEventBase changed in cpp.
+
+### Compiler findings: recovered layout
+
+**[EVIDENCE]** Same full TU / VC5 SP3 `/W3 /GX /O2 /ML /Gd /Gy` throughout.
+Escape suffix ladder, negative suffix, explicit label (3) are byte-inert;
+whole ladder adds unrelated blocks. Positive Return restores Escape's
+30-byte action; the keyboard call-expression form is also required for
+the complete layout. Eight Return polarity combinations (`t3_shapes_00..07`)
+give exact `+0xc17` in shapes 00/05; none fixes the early registers. Explicit
+Return joins/physical outlining do not fix them either. VC5-CTL-01 /
+BLUPI-REG-01: positive layout transfer, negative scalar-register transfer.
+
+**[EVIDENCE]** Later semantic/order corrections reduce fixed differences
+888 -> 620 -> 10; removing INTRO gives eight. VC5-SEM-01 / VC5-CTL-01,
+Blupi-specific reconstruction evidence. Four used-local controls (life counts
+in i, NEXT bound in fwKeys, root j for lives, shared root j for lives/bound)
+are inert in this recovered layout. Packet BYTE, DWORD bEnable, and duplicated
+DemoRecEvent/TRUE instead of the recording goto are also inert. BYTE cheat
+character regresses prefix to 48. BLUPI-REG-01 / VC5-LOC-01: negative here.
+
+**[OPEN]** Exact layout does not determine the two remaining register choices.
+The controlled shared-index SIB rule above remains valid only with its
+stated conditions/counterexamples; it is not a universal allocation rule.
+
+## Escape action and complete TreatEventBase layout recovery
+
+**[EVIDENCE]** Follow-up to the separate Escape GAMER-action lead. The retained
+candidate is `scratch/solsib/event.cpp`; the reference checkpoint is
+`scratch/solsib/runs/t3_no_intro/`. Only TreatEventBase differs from the
+`34fb42e` event.cpp baseline. It has a 7,072-byte COFF function section:
+6,616 bytes of instructions through the final `ret`, then 456 bytes of switch
+tables/alignment. Comparing that complete section with the original at
+`0x1d230` leaves **eight non-relocated byte differences**, all register
+encodings. This is **MISMATCH**, not STRICT or a new byte-coverage claim.
+The section has 273 relocations; strict relocation proof remains required.
+
+**[EVIDENCE]** The retained layout has the target's separate Escape
+INFO/LOSTMULTI -> GAMER call/TRUE-return action at `+0x9bb`, STOP action at
+`+0x9d9`, and Return entry at `+0x9f7`. Return's PLAYTEST action is at `+0xa34`,
+its shared GAMER action at `+0xa8d`, and its other phase handling starts out
+of line at `+0x1870`. The jump at `+0x2d8` is now exactly
+`0f 87 39 09 00 00`, reaching `+0xc17`. Space, Pause, all six movement/fire
+arms, and F1..F4 have their exact target entries. Generic TRUE/FALSE exits
+are at `+0x1820` / `+0x1861`, and the keyboard mask/store/call tail is at
+`+0xcfd`. Both earlier branch-span and later block-placement residues are
+therefore resolved without padding or unused source constructs.
+
+**[EVIDENCE]** A positive sequence of Return phase checks, with a shared
+PLAYTEST action, first restored the Escape action, but did not by itself
+restore the whole layout. Combining it with the target keyboard behavior
+and call-expression form puts the remaining Return checks out of line.
+The keyboard source calls `KeyChange(m_keyPress = m_keyPress | mask)` (and
+the corresponding `&` expressions on keyup), then records the event. Pause
+and F1..F4 return TRUE directly; Home returns TRUE; unhandled keys return
+FALSE. The source also lets an unsuccessful CurrentRead reach a fresh
+GAMEWRITE member test. These behaviors and the shared call tails follow
+the actual target CFG; the old post-switch phase guard was not present.
+
+**[EVIDENCE]** Continuing through the same function recovered these additional
+source differences from the original instructions/mapper:
+
+- WM_CHAR tests TreatTextInput's result and returns TRUE on success rather
+  than forwarding an arbitrary nonzero BOOL value.
+- WM_MOUSEMOVE has no ShowCursor call. Mouse-down and mouse-up include
+  PLAYTEST as well as PLAY.
+- The ChangeButtons dispatcher covers `0x4c8..0x4f9` (50 button IDs). The
+  six DONAME/DOCLEAR/DOWRITE/DOREAD cases share that same source action.
+- The leading phase actions are DEMO, DOPLAY, PRIVATE, then the general
+  ChangePhase group. Successful PLAY/PRIVATE/previous/next phase requests
+  normalize their result to TRUE; the INSERT return still forwards its BOOL.
+- Previous/next multiplayer image reads use mission offset 100; NEXT clamps
+  the multiplayer mission to 10. Its private and official mission limit is
+  `m_bBuildOfficialMissions ? 220 : 20`; the private selection tests only
+  m_bPrivate. Keeping the used private/official phase requests in their
+  respective branches also recovers the target's duplicated clamp actions.
+- INTRO1/INTRO2 are not handled by this dispatcher: their target mapper
+  entries select the default FALSE exit. Removing those two labels fixes
+  the final two table-byte differences (`+0x1b75`, `+0x1b76`).
+
+**[EVIDENCE] Header delta.** Private `scratch/solsib/def.h` starts from the
+canonical header and adds only WM_BUTTON40..WM_BUTTON49, with values
+`WM_USER+240..249` (`0x4f0..0x4f9`). Evidence is the original outer range
+test ending at `0x4f9` and its complete ChangeButtons dispatch interval.
+No existing constant, member, offset, declaration, or canonical header was
+changed. Private event.h remains identical to canonical event.h.
+
+### Compiler findings: layout versus remaining register choices
+
+| Trigger / controlled family | Flags, variation, measured effect | Rule / classification |
+|---|---|---|
+| Escape's missing 30-byte action | Complete event TU, VC5 SP3 `/W3 /GX /O2 /ML /Gd /Gy`. Escape suffix ladder, negative suffix, and explicit Escape label (3) are byte-inert; the whole Escape ladder adds unrelated blocks. Positive Return checks restore the independent action at `+0x9bb`. | VC5-CTL-01, BLUPI-REG-01; **SB1 layout evidence**, not a general no-merging guarantee. |
+| Return layout with the target keyboard suffix | Eight controlled combinations of positive/negative first Return phase checks (`t3_shapes_00..07`). Shapes 00 and 05 restore the `+0xc17` dispatch destination; the other six do not. Shape 00 is retained. All eight leave the two scalar-register residues unchanged. Explicit Return joins and physically outlining its remaining checks also fail to improve them. | VC5-CTL-01; **positive source-shape transfer for layout, negative for these registers**. |
+| Later loads, constants, and branch spans | Restored target behaviors listed above, phase action order, and shared ChangeButtons dispatch. Separate private/official actions reduce fixed differences 888 -> 620 -> 10; removing unsupported INTRO cases gives eight. The first fixed mismatch advances to `+0x41b` (1,051-byte prefix). | VC5-SEM-01 / VC5-CTL-01; **Blupi-specific reconstruction evidence**, no separate optimizer rule for each semantic correction. |
+| Local identities in the recovered layout | Four valid near-match controls: reuse i for both life counts; reuse fwKeys for the NEXT limit; one used root j for life counts alone; one shared root j for life counts plus NEXT limit. All retain exactly the same eight register bytes (plus the two INTRO table bytes in that checkpoint). | BLUPI-REG-01, VC5-LOC-01; **negative transfer in this pattern**. |
+| Byte/BOOL types and recording tail | In the eight-byte checkpoint, unsigned packet BYTE and DWORD bEnable are byte-inert. Replacing the shared recording goto with actual DemoRecEvent/TRUE returns in each mask arm is also byte-inert. Changing the signed cheat character to BYTE regresses the prefix to 48 and changes the frame/use graph. | BLUPI-REG-01 / VC5-SEM-01; **negative controls**, no type change retained. |
+
+**[OPEN]** The residual bytes are `+0x41b`, `+0x421`, `+0x423`, `+0x426`,
+`+0x428`, `+0x42e` (ECX input / EDX result instead of EDX input / ECX result)
+and `+0x6f4`, `+0x6ff` (EAX HWND load/push instead of EDX). Identical block
+layout has not made those physical-register choices match. The earlier
+controlled shared-index SIB rule remains valid under its stated conditions;
+it is not a universal register-allocation predictor.

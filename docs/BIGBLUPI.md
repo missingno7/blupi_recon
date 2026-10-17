@@ -169,3 +169,244 @@ The raw-access tables are from Capstone over the oracle bytes and current SP3 CO
 ## Next alignment steps
 
 [OPEN] Resolve the six-dword frame excess by matching candidate local lifetimes/slots to the 15 target dwords and four-byte target gap; the tested point and rectangle scope families did not produce that layout. Once the frame is `0xa4`, align from the prologue forward. The target's 16-action compare order, movement tables, and major callees are mapped; continue removing only SB2 blocks lacking an oracle counterpart by tables, offsets, callees, sounds, or action values, and reconstruct any differing switch/teleporter behavior from the oracle bytes. The five queue-field names/offsets above are a precise header delta for infra to integrate across TUs; no canonical header was edited here.
+
+## Senior pass — sol-blupistep, 2026-10-17
+
+### Result and reproduction
+
+[EVIDENCE] `scratch/solblupi/decblupi.cpp` changes only `BlupiStep`; its prefix before that definition and suffix beginning with `BlupiDead` equal the starting canonical source. It uses a private `scratch/solblupi/decor.h`, described below. No canonical source/header, manifest, catalog, assets, or external repository was changed by this pass.
+
+[EVIDENCE] Final verifier size is **25,024 bytes**, frame **`0xa4`**, raw identical prefix **21 bytes**, status **MISMATCH** at target RVA `0x9280`. The candidate's `ret` ends at offset `0x61bd` (25,021 bytes), followed by three NOPs in its COFF extent; the oracle ends at `0x62b5` (25,269 bytes). Thus the remaining body deficit is 248 bytes; the verifier-extent deficit is 245 bytes. Neither frame equality nor the call alignment is a STRICT match.
+
+```powershell
+.pyenv\python.exe tools\verify.py --tu src/decblupi.cpp=scratch\solblupi\decblupi.cpp --build-dir solblupi
+.pyenv\python.exe scratch\solblupi\audit.py
+.pyenv\python.exe scratch\solblupi\calls.py
+.pyenv\python.exe scratch\solblupi\slots.py
+```
+
+[EVIDENCE] All candidate evaluations used that verifier with the full TU/object set, pinned SP3, `/O2 /GX /ML /Gd /Gy`, and repository TMP/TEMP. Final log: `scratch/solblupi/verify-final.log`; results: `build/verify-solblupi/results.json`. The run reports one accepted-function regression: unchanged canonical `DecorDetect`, whose member names encode the old header layout. This scratch candidate must not be promoted wholesale. Incidental unchanged peers `IsLave` (`0x10150`, 88 inventoried body bytes) and `IsRessort` (`0x101b0`, 94 body bytes) are STRICT; the comparator reports 96-byte extents including their oracle alignment bytes. Do not count the padding as recovered code or count either peer twice if already recovered elsewhere.
+
+### Iteration log
+
+Sizes below consistently use the verifier/COFF extent, as in the earlier log. Every BlupiStep result is MISMATCH. Snapshots and logs remain under `scratch/solblupi/`.
+
+| Step | Change | Bytes | Frame | Prefix |
+|---|---|---:|---:|---:|
+| 00 | Fresh canonical copy | 29,216 | `bc` | 2 |
+| 01 | Fixed collision rectangles; upper collision result evaluated before spring/fall gates | 28,912 | `ac` | 2 |
+| 02 | Remove unsupported vehicle/state/terrain blocks; restore object detection after mockery | 24,304 | `a8` | 2 |
+| 03 | Explicit SB1 predicates/death resets; remove helicopter wall helper | 24,256 | `a8` | 2 |
+| 04 | Private layout; separate ammunition/inventory from timers | 24,480 | `a8` | 2 |
+| 05 | Reuse saved point through path retries and old-position snapshot | 24,480 | `a8` | 2 |
+| 06 | Four independent spring vehicle destructions; collision threshold/order | 24,800 | `a8` | 2 |
+| 07 | Declare upper collision result at function scope | 24,800 | `a8` | 2 |
+| 08 | Reuse `icon` for upper collision result | 24,800 | `a8` | 2 |
+| 09 | Explicit sound locality/object multiplayer arguments | 24,944 | `a8` | 2 |
+| 10 | Reuse saved point as GetPosDecor output | 24,944 | `a8` | 2 |
+| 11 | Initialize a distinct block-local GetPosDecor output; reverted | 24,944 | `ac` | 2 |
+| 12 | Spring input chain, vent eligibility, BOOL object-start success tests | 24,976 | `a8` | 2 |
+| 13 | Fix lift/OUF4 index variable reuse | 24,960 | `a8` | 2 |
+| 14 | Move the sole `str[100]` to function scope | 24,960 | `a8` | 2 |
+| 15 | Restore network-cloud collision, including `NetPlayerCollide(..., &num)` | 26,336 | **`a4`** | **21** |
+| 16 | Remove colored-key pickups and creature contact | 24,960 | `a4` | 21 |
+| 17 | Motor sound transitions; remove jeep edge/slope behavior; combine magic trails | 24,768 | `a4` | 21 |
+| 18 | Independent motor checks, treasure/glue/shield/personal-bomb responses, world/scroll constants | 24,928 | `a4` | 21 |
+| 19 | Correct shield/power slots, skateboard jump speeds, vehicle pickup sounds/grace gates | 25,136 | `a4` | 21 |
+| 20 | Explicit endpoint x/y sums instead of point copy plus increments; reverted | 25,120 | `a4` | 21 |
+| Context | 1, 2, 3, 4, 7, 8, 12, 16 extern declarations immediately before the function; diagnostic only | 25,136 each | `a4` | 21 |
+| 21 | Target input release/crate/hazard/mockery predicates; retained final | **25,024** | **`a4`** | **21** |
+| 22 | Separate/reorder snapshot declarations while retaining initialization order; reverted | 25,024 | `a4` | 21 |
+
+[EVIDENCE] Context probes were evaluated through the required verifier using `scratch/solblupi/probe.cpp`, never retained in the deliverable candidate. All eight emitted identical BlupiStep bytes. Their logs and `context-results.json` record the negative result. The entry residue is not resolved by this tested declaration-count family.
+
+### Corrected complete target stack map
+
+[EVIDENCE] `slots.py` walks the instruction CFG and accounts for pushes, explicit ESP arithmetic, and each callee's `ret N` (including the sound overload ABI). For the oracle it visits **all 6,505 instructions with no unknown call cleanup and no conflicting stack depths**. The earlier raw-displacement table must not be treated as a fixed-local map: arguments pushed before an access change the literal displacement.
+
+[EVIDENCE] Coordinates below are relative to ESP after `sub esp,0xa4` and the four saved-register pushes, i.e. entry ESP minus `0xb4`. The final candidate has the same set of effective local offsets. Access counts are target/final candidate, excluding indirect reads through returned pointers.
+
+| Fixed offset | Entry-ESP coordinate | Source role | Direct uses T/C |
+|---|---|---|---:|
+| `10` | `E-a4` | `end.x` | 122 / 120 |
+| `14` | `E-a0` | `end.y` | 104 / 103 |
+| `18` | `E-9c` | `num`: tile/object/lift/network index; address escapes to NetPlayerCollide | 72 / 66 |
+| `1c` | `E-98` | `bIsOpen` | 20 / 20 |
+| `20` | `E-94` | `bIsOpen2` | 19 / 19 |
+| `24` | `E-90` | `bAirStart` | 16 / 16 |
+| `28`, `2c` | `E-8c`, `E-88` | Saved attempted endpoint, then old Blupi position; later point-return storage | 13, 8 / 13, 8 |
+| `30` | `E-84` | Four-byte `BOOL bNear`, passed to MoveObjectDetect | 8 / 8 |
+| `34` | `E-80` | Rectangle left component stays in registers; no effective direct access | 0 / 0 |
+| `38` | `E-7c` | `rect.top` scalar spill across calls | 16 / 16 |
+| `3c` | `E-78` | Rectangle right component stays in registers; no effective direct access | 0 / 0 |
+| `40` | `E-74` | `rect.bottom` scalar spill across calls | 11 / 11 |
+| `44` | `E-70` | `lastBlupiAction`, later vertical scroll distance | 5 / 5 |
+| `48` | `E-6c` | `bLastBlupiAir`, later object-position/point-return x storage | 8 / 8 |
+| `4c` | `E-68` | Corresponding point y storage | 1 / 1 |
+| `50..b3` | `E-64..E-1` | `str[100]` | 2 / 2 addresses |
+
+[EVIDENCE] This corrects two earlier interpretations: `local_84[2]` is not proof of an eight-byte output local, and the target does not lack an ordinary 16-byte RECT. Its left/right components need no stack reads; top/bottom spill. The effective local area has 56 directly accessed bytes plus two four-byte rectangle component positions, before the 100-byte buffer. The upper collision result is kept in `ebp` in the target, rather than requiring another persistent scalar slot. BLUPI-LOC-01 has no second source array to order here; moving the single text buffer's scope was inert.
+
+### Region reconciliation
+
+[EVIDENCE] With the following corrections, `calls.py` aligns **346 target calls and 346 candidate calls in identical order**, with no inserted/deleted call. It maps unresolved target names by the established behavior/RVA correspondences; this is an analysis aid, not a relocation proof or a normalized match claim.
+
+| Oracle region (seeded pseudocode) | Senior-pass source correction |
+|---|---|
+| Entry/fall/spring, lines 45–311 | Replace BlupiRect aggregate-return calls with the target fixed rectangles. Evaluate upper collision before state changes. Destroy helicopter/jeep/tank/skate separately on springs. Restore skateboard-specific jump speeds `-17/-13`, the `-13` injury threshold, shared collision sound call, BOOL object-start success tests, and the actual returned lift index. |
+| Input, lines 455–870 | Expand SB1 state predicates; key releases exclude state flags without press-time action exclusions. Crate push requires down plus the appropriate horizontal key, with the opposite key/jump clear. |
+| Vehicles, lines 871–1277 | Remove hovercraft/balloon/crushed-state blocks. Restore independent high/low motor-channel transitions, helicopter acceleration of one, and jeep up/down exit gate. Remove SB2 helicopter wall helper and jeep edge/slope acceleration. |
+| Water/platform/path/timers, lines 1278–2054 | Use target rectangle dimensions and swimming/surf rectangle branch. Reuse one saved point across path retries/old-position restore. Remove AscenseurShift checks and inverse/balloon/crushed timers. Power or shield produces one common TYPE_MAGICTRACK trail. |
+| Hazards/pickups, lines 2051–2670 | Remove trap/drop/saw/crusher/bridge/colored-door, creature, colored-key, and inverse pickup behavior absent from this body. Restore object detection after mockery, vehicle grace-point gates/pickup sounds, separate ammunition count, shield deletion, ordinary glue-contact expansion, treasure coordinates without SB2 tracks/door helper, team-relative personal bombs and GetIconPerso. |
+| Missing network contact, immediately before crate continuation | Add NetPlayerCollide, cloud-sector test, NetStopCloud, electro state, conditional vehicle ejections/channel stops and sound. The escaped `&num` is essential to the target's allocation. |
+| Death/end/scroll tail | Separate front-display flag from shield timer; use target world 99, remove the respawn x-minus-30 and scroll endpoint plus-30 additions, and send PK_LOST on falling beyond the world. |
+
+[OPEN] Call-order agreement does not prove the remaining branch nesting, conditions, source forms, or relocation bindings. The first byte residue is instruction offset `0x15`: candidate reads the saved action into ECX, target into EDX; dependent position/vector load scheduling also differs. The final effective local map agrees, but code is still 248 bytes short through `ret`. Continue with actual instruction/basic-block comparison, especially the six residual `num` access differences and world/water/input conditions. Do not preserve count probes or manufacture declarations to change register choices.
+
+### Private header deltas for infra
+
+[EVIDENCE] The private header starts from this round's canonical header, which already has TimeShield/TimeFire/TimeMockery/TimeOuf/ActionOuf at `c964..c974`. Those five placements are retained. The main function's explicit calls select existing PlaySound/ObjectStart overloads; no new method declaration was added.
+
+| Target offsets | Private member mapping | Evidence |
+|---|---|---|
+| `c90c`, `c910`, `c914`, `c918` | Helico, Jeep, Tank, Skate | Four spring destructions; distinct movement, firing and pickup blocks; object types 13/19/28/24. |
+| `c91c`, `c920`, `c924`, `c928` | Nage, Surf, Vent, Suspend | Movement table references, water changes, vent tile test and bar/hanging tests. |
+| `c92c`, `c930`, `c934`, `c938`, `c93c` | JumpAie, Shield, Power, Cloud, Hide | Jump collision, hazard immunity, powered velocities, charge and invisibility lifecycle. Shield precedes Power, unlike canonical. |
+| `c940/c944`, `c948/c94c` | PosHelico, PosMagic | Thirty-pixel vehicle grace box and forty-pixel magic-trail distance. |
+| `c950`, `c954`, `c958`, `c95c`, `c960` | Restart, Front, Bullet, Perso, NoBarre | Respawn gate; front flag set at win/byes and cleared at death completion; ammunition pickup/fire; team bomb stock; five-tick hanging-bar inhibition. |
+| `c978` | FifoNb alone | FIFO save/reset operation is separate from NoBarre at `c960`; remove their canonical union alias. |
+
+[EVIDENCE] Private changes remove Over, Invert, Balloon and Ecrase from this target flag region; add Front/Bullet/Perso/NoBarre before the existing timers; split the FIFO alias; and swap Shield/Power. Over/Invert/Balloon/Ecrase declarations are kept in the existing SB2 compatibility tail solely to compile untouched non-owned functions. **[OPEN] Their tail positions and the resulting whole-class size are not SB1 layout claims.** No new constants are introduced.
+
+[EVIDENCE] `DecorDetect` explains the final verifier rejection: canonical source tests `m_blupiHelico || m_blupiSkate || m_blupiNage`, which under the old header encoded target offsets `c90c/c91c/c920`. In the proposed correct naming those are Helico/Nage/Surf; leaving that non-owned body unchanged makes it read `c90c/c918/c91c`. Infra must reconcile the header and all affected source names together. This worker did not edit that body or waive the regression.
+
+### Compiler findings
+
+- `[VC5-SEM-01; Blupi-specific]` Trigger: extra aggregate-return calls and frame `bc`. Fixed coordinate construction in place of BlupiRect returns, plus target-timed upper detection, changed 29,216/`bc` to 28,912/`ac`. Target evidence is direct rectangle argument arithmetic, not a smaller RECT type. Full TU/SP3 flags above; MISMATCH.
+- `[VC5-SEM-01; Blupi-specific, measured allocation effect]` Trigger: one remaining frame dword and wrong index allocation. Restoring the genuinely missing network-cloud contact block, including `NetPlayerCollide(...,&num)`, changed 24,960/`a8`/prefix 2 to 26,336/`a4`/prefix 21. Address-taking moves `num` to the target fixed slot and affects code throughout the body. This is a source omission, not a prescription to add an arbitrary address-taking call. MISMATCH; all final effective slots subsequently agree.
+- `[VC5-LOC-03; negative]` Saved-point reuse, declaring collision output at function scope, reusing `icon`, and assigning GetPosDecor into the saved point were individually inert for frame/size at their tested stages. A separate initialized block-local POINT increased `a8 -> ac` without reducing code; reverted. This narrows the remaining scope explanation; do not repeat those probes.
+- `[BLUPI-LOC-01; negative scope test]` Single `str[100]`, block scope versus function scope: 24,960 bytes and frame `a8` in both tested builds. Its effective address remains `E-64`. No array-order family is available.
+- `[VC5-CTX-01..04; negative]` At step 19, eight before-definition extern-count probes (1/2/3/4/7/8/12/16) all emitted byte-identical 25,136-byte BlupiStep bodies, frame `a4`, prefix 21. Scratch diagnostic only; no authentic declaration inferred, no STRICT gain.
+- `[VC5-SEM-01; source-form effect, unverified for exact original form]` Point copy plus component increments versus explicit endpoint sums changed 25,136 to 25,120 bytes and the load/SIB schedule, while frame/prefix stayed `a4`/21. Explicit sums were reverted because the copy/increment form follows the target entry shape more closely. Separating/reordering the two snapshot declarations at step 21 was byte-inert and reverted.
+- `[VC5-CTL-03; Blupi-specific source form]` Independent motor transition checks retain target rechecks after sound calls; if/else versions merged PlaySound sites. The final independent checks restore the target call sequence. This pass has no full-function STRICT result and does not claim a general compiler rule from that effect.
+
+
+## Senior pass follow-up - header reconciliation and byte alignment
+
+[EVIDENCE] This section supersedes the preceding senior pass's 248-byte deficit and next-step text. All evaluations use the required `tools/verify.py --tu src/decblupi.cpp=<candidate> --build-dir solblupi`, pinned SP3 and the manifest flags. Only owned scratch files and this document were edited. No catalog, canonical source/header, assets, toolchain or external repository was changed.
+
+### DecorDetect layout conflict resolved
+
+[EVIDENCE] The proposed state/inventory/FIFO layout is retained exactly as tabulated above. There is no honest alternative member permutation that makes both the BlupiStep skate access at `this+c918` and the stale DecorDetect source name `m_blupiSkate` mean the target's `this+c91c`. DecorDetect requires the source predicate `m_blupiHelico || m_blupiNage || m_blupiSurf`. In the private header these read `c90c/c91c/c920`.
+
+[EVIDENCE] With the private layout, the unchanged predicate reads `c90c/c918/c91c`. Exactly two fixed bytes differ in DecorDetect: function offsets `+0x57` (`18 -> 1c`) and `+0x61` (`1c -> 20`), in the displacements of instructions at `+0x55/+0x5f`. Changing only the two stale names restores DecorDetect STRICT at `0xf640`, 640 body bytes, all three relocations proved. The same full verifier run keeps IsLave STRICT (`0x10150`, 88 body bytes, 96-byte extent) and IsRessort STRICT (`0x101b0`, 94 body bytes, 96-byte extent). Neither helper accesses the state fields: their relevant layout dependencies are decor base `+0x10` and dimensions/bounds. Their strictness must not be cited as proof of a different skate/swim mapping. First proof: `followup/f01-headerproof`; the later diagnostic candidates retain the three STRICT results.
+
+[EVIDENCE] Final state delta remains: Air `c908`; Helico/Jeep/Tank/Skate `c90c/c910/c914/c918`; Nage/Surf/Vent/Suspend `c91c/c920/c924/c928`; JumpAie/Shield/Power/Cloud/Hide `c92c/c930/c934/c938/c93c`; PosHelico `c940/c944`; PosMagic `c948/c94c`; Restart/Front/Bullet/Perso/NoBarre `c950/c954/c958/c95c/c960`; timers/action `c964..c974`; FifoNb `c978`; FIFO points `c97c` onward. Remove Over/Invert/Balloon/Ecrase from that region, swap Shield/Power, add Front/Bullet/Perso/NoBarre, and split the old FifoNb/NoBarre union. Compatibility-tail positions remain unproved. No new numeric header constant was introduced.
+
+### Measurement and iteration ledger
+
+[EVIDENCE] `tools/asmscore.py` is used as supplied. Its oracle span includes 11 alignment bytes (25,280 versus 25,269 body bytes), and its relocation projection/difflib score is diagnostic, never STRICT evidence. `raw prefix` stops at a literal COFF relocation: after entry is fixed it reaches 149, the first call operand. `instruction prefix` is asmscore's relocation-normalized count. `fixed.py` separately locates differing non-relocated bytes; those ignored-relocation spans are not matches. Every BlupiStep row below remains MISMATCH. Frame is `0xa4` in every successful row. Objects, headers, verifier logs and metrics are archived in `scratch/solblupi/followup/<label>/`.
+
+| Iteration / construct | COFF bytes | Raw prefix | Instruction prefix | asmscore |
+|---|---:|---:|---:|---:|
+| f00-baseline | 25,024 | 21 | 8 | 12,623 |
+| f01-headerproof | 25,024 | 21 | 8 | 12,623 |
+| f02-shared-icon3 | 25,024 | 21 | 8 | 12,623 |
+| f03-shared-icon4 | 25,024 | 21 | 8 | 12,623 |
+| f04-shared-scroll | 25,024 | 21 | 8 | 12,623 |
+| f05-grid-point | 25,024 | 21 | 8 | 9,683 |
+| f06-grid-scalars | 25,024 | 21 | 8 | 12,623 |
+| f07-grid-yfirst | 25,024 | 21 | 8 | 12,535 |
+| f08-end-assign | 25,024 | 21 | 8 | 9,683 |
+| f09-spring-if | 25,040 | 21 | 8 | 9,699 |
+| f10-jump-if | 25,088 | 21 | 8 | 9,781 |
+| f11-snapshot-order | 25,088 | 16 | 7 | 9,789 |
+| f12-grid-localpoint | 25,088 | 21 | 8 | 9,945 |
+| f13-shared-savedpoint | 25,088 | 21 | 8 | 9,945 |
+| f14-shared-destpoint | 25,088 | 21 | 8 | 9,781 |
+| f15-sucette-phase | 25,072 | 21 | 8 | 9,705 |
+| f16-grid-sharedints | 25,072 | 21 | 8 | 10,029 |
+| f17-injury | 25,088 | 21 | 8 | 9,581 |
+| f18-surfstop | 25,120 | 21 | 8 | 8,379 |
+| f19-exclusive | 25,200 | 21 | 8 | 9,505 |
+| f20-emptyammo | 25,232 | 21 | 8 | 8,949 |
+| f21-sharedcrate | 25,232 | 21 | 8 | 8,577 |
+| f22-walkguards | 25,248 | 21 | 8 | 8,697 |
+| f23-pickups | 25,296 | 21 | 8 | 7,983 |
+| f24-shared-netindex | 25,328 | 21 | 8 | 7,961 |
+| f25-stopguards | 25,312 | 21 | 8 | 7,499 |
+| f26-mask-bomb-path | 25,344 | 21 | 8 | 13,719 |
+| f27-idleform | 25,344 | 21 | 8 | 8,039 |
+| f28-hazards | 25,312 | 21 | 8 | 5,839 |
+| f30-shared-count | 25,312 | 21 | 8 | 5,839 |
+| f31-grid-scalars-yfirst | 25,312 | 21 | 8 | 5,839 |
+| f29b-shared-collision | 25,312 | 21 | 8 | 5,839 |
+| f31b-grid-scalars | 25,312 | 21 | 8 | 6,851 |
+| f32-charge-front | 25,296 | 21 | 8 | 5,833 |
+| f33-electro | 25,296 | 21 | 8 | 5,791 |
+| f34-swimform | 25,280 | 21 | 8 | 5,553 |
+| f35-firstmask | 25,280 | 21 | 8 | 5,293 |
+| f36b-independent-idle | 25,280 | 21 | 8 | 3,321 |
+| f37-getbarre-prototype | 25,280 | 21 | 8 | 2,959 |
+| f38-helicopter-form | 25,280 | 21 | 8 | 559 |
+| f39-semantic | 25,280 | 21 | 8 | 395 |
+| f40-endfirst | 25,280 | 149 | 2050 | 343 |
+| f41-endafteraction | 25,280 | 21 | 8 | 395 |
+| f42-action-later | 25,280 | 21 | 8 | 395 |
+| f43-heli-exit | 25,280 | 149 | 2992 | 331 |
+| f44-bar-storeorder | 25,280 | 149 | 3563 | 319 |
+| f45-edge-order | 25,280 | 149 | 3554 | 303 |
+| f46-edge-second | 25,280 | 149 | 4611 | 279 |
+| f47-mockery-order | 25,280 | 149 | 5812 | 271 |
+| f48-netpoints | 25,280 | 149 | 5812 | 271 |
+| f49-netshared | 25,280 | 149 | 5812 | 271 |
+| f50-netlocals | 25,280 | 149 | 5812 | 271 |
+| f51-packet-width | 25,280 | 149 | 5812 | 49 |
+| f52-fifo-shield | 25,280 | 149 | 5812 | 45 |
+| f53-netvehicle-points | 25,296 | 41 | 11 | 1,117 |
+| f54-netheli-yfirst | 25,280 | 149 | 5812 | 45 |
+| f55-default-prototypes | 25,280 | 149 | 5812 | 45 |
+| f56-ctx-top-32 | 25,280 | 149 | 5812 | 45 |
+| f56-ctx-top-64 | 25,280 | 149 | 5812 | 45 |
+| f56-ctx-before-32 | 25,280 | 149 | 5812 | 45 |
+| f56-ctx-before-64 | 25,280 | 149 | 5812 | 45 |
+| f56-ctx-end-32 | 25,280 | 149 | 5812 | 45 |
+| f56-ctx-end-64 | 25,280 | 149 | 5812 | 45 |
+| f57-body-only-final | 25,280 | 149 | 2920 | 2,885 |
+| f58-layout-final | 25,280 | 149 | 2920 | 2,885 |
+
+[EVIDENCE] The f29 and f36 intermediate files had transcription compile errors, corrected in f29b/f36b; they provide no compiler evidence. f31's intended substitution did not apply (a no-op); the actual scalar-coordinate test is f31b. Rejected variants are retained only as diagnostic evidence.
+
+### Structural reconciliation in this follow-up
+
+[EVIDENCE] Call order alone hid real differences. The retained body now restores: explicit spring/jump if/else stores; severe injury `<= -14` with branch-local sounds (the compiler shares the call opcode); the first lift top at `end.y+25`; SUCETTE phase 36; exclusive left/right movement; two independent swim/surf idle-stop predicates; missing empty personal-bomb-stock action/sound; team-relative bomb types; separate rectangle construction in both swimming/path arms; power/drink eligibility checks; skateboard turn phase 7, no-input phase 130 and up/down exit; hanging-bar input mask/store order; vehicle edge rectangle dimensions; surf sound 25 and upward water probe 60 pixels; bullet destination x=450; mockery flag order; GLU completion phase 90; electro state 57; and FIFO immunity testing Shield rather than JumpAie.
+
+[EVIDENCE] The multiplayer count loop uses the same escaped `num` as its loop index; its following win sound reads `m_moveObject[num].posCurrent` (num reaches 4), not the player's position. This surprising source behavior is required by the oracle's fixed `esp+18` index reload and `+9c6c/+9c70` reads. The old unconditional death-completion Front reset has no target store and was removed. Lava clears Air and snaps y before gauges, with Restart true.
+
+### Additional prototype evidence and integration boundary
+
+[EVIDENCE] GetTypeBarre at `0x10050` returns full EAX: `mov eax,1` at `0x100e3`, `mov eax,2` at `0x10100`. Its BlupiStep callers compare EAX at `BlupiStep+2bce/+417f` vicinity, whereas canonical `char GetTypeBarre(POINT)` introduces `movsx eax,al` at the first caller and a byte comparison at the second. Diagnostic declaration AND definition return type `int` remove those width differences. The callee body itself remains MISMATCH and no new strict callee is claimed.
+
+[EVIDENCE] The life-count packet argument at `BlupiStep+5de7` loads full ECX from `this+ce9c`; the canonical `NetSendBarePacket(BYTE,short)` emits `mov cx,word ptr [...]`, one byte longer. Private `NetSendBarePacket(BYTE,int)` restores that load and the exact 25,269-byte body length. [OPEN] This changes the decorated symbol from `...EF@Z` to `...EH@Z`; the owning definition in decmove.cpp and all declarations/callers require coordinated integration and relocation proof. The diagnostic run's overall verifier exit 0 means no accepted regression; BlupiStep remains MISMATCH and its new packet binding is not proved. No canonical prototype was changed.
+
+[EVIDENCE] To respect BlupiStep-only source ownership, `scratch/solblupi/decblupi.cpp` is the body-only deliverable, with its surrounding canonical text preserved. The stronger diagnostic candidates under `argwidth/` additionally change only the DecorDetect predicate and GetTypeBarre definition signature, using a separate private header with the two prototype experiments. Do not promote one entire diagnostic TU without these explicit integration edits.
+
+### Compiler findings
+
+- `[VC5-LOC-03 / BLUPI-REG-01; confirmed source-order effect, BlupiStep still unverified]` Trigger: saved action ECX versus target EDX at entry, plus early index/call register differences. Moving the real `POINT end = m_blupiPos` initializer before the saved-state locals (f40), with identical behavior and no dummy declaration, fixes all early residues through `+1f21`. Raw prefix 21 -> 149; normalized instruction prefix 8 -> 2,050; score 395 -> 343. Moving it only after the saved action or moving only the saved-action initialization later is inert (f41/f42). SP3/full TU/header-prototype context as archived. This is actual initializer order, not a local-name trick.
+- `[VC5-ORD-01 / VC5-CTL-03; Blupi-specific source form]` Trigger: common sound temporary makes injury branch four bytes short; ternary velocity stores use neg/sbb arithmetic where target branches. Branch-local literal sound calls tail-share one call opcode; explicit velocity if/else stores restore target branches. Inverting the outer up/jump test in swimming/surfing and helicopter control restores target down/neutral/upper arm placement. Most notably f37 -> f38: score 2,959 -> 559, frame and extent unchanged. Full function remains MISMATCH.
+- `[VC5-ORD-01; Blupi-specific]` Trigger: Focus store precedes vehicle-position copy, hanging-bar stores reorder, and second edge predicate branches differ. StopBlupi() plus the genuine later Focus=true assignment, target-timed bar fields, and second edge predicate `bIsOpen2 && !bIsOpen` advance normalized prefixes 2,050 -> 2,992 -> 3,563 -> 4,611. Swapping BOTH edge predicates regresses the first difference; only the second swap is retained. Flags/context unchanged; MISMATCH.
+- `[VC5-SEM-01; Blupi-specific]` Fixed constants, offsets, masks, inventory source omissions and prototype widths were corrected from oracle instructions, not treated as allocator noise. Independent idle-stop blocks with the actual full mask restore target common-value reuse; putting the swim stop inside the vehicle idle outer block does not. No individual semantic correction is promoted to a compiler rule.
+- `[VC5-LOC-03 / BLUPI-REG-01; negative local-reuse families]` Sharing icon with num3/num4/scroll scratch/OUF4 result/count is inert at the tested stages; grid POINT versus actual scalar locals is worse; shared saved/destination points do not improve entry. At the ten-byte network residue, explicit components, y-first heli components, separate block POINTs, and existing tinyPoint5 reuse are inert; caching direct jeep/tank position arguments in tinyPoint regresses entry to 41 and size to 25,296. No artificial construct was retained.
+- `[VC5-CTX-01..04; negative declaration experiment]` Replacing the two hack overload declarations by ordinary default arguments is byte-inert for BlupiStep (f55); it is a diagnostic header experiment, not an integration recommendation. Wide top/before/end count probes are recorded separately below and are never claimed source.
+
+
+### Final preserved artifacts and remaining work
+
+[EVIDENCE] Strongest diagnostic: `scratch/solblupi/argwidth/f52-fifo-shield.cpp`, private `argwidth/decor.h`, archived full verification in `followup/f52-fifo-shield`. BlupiStep body is **25,269 bytes**, COFF extent 25,280, frame `a4`, raw prefix **149**, normalized instruction prefix **5,812**, asmscore **45** (22 instruction edits; 6,505 of 6,516 normalized instructions match). `fixed.py` finds exactly **ten** differing non-relocated bytes, first at `+58c8`, in ten instructions at `+58c7/+58d2`, `+58e2/+58e8/+58f2/+58f3`, and `+5959/+595f/+5966/+5967`. They are register encodings in jeep ObjectStart, tank ObjectStart and electro PlaySound; all literal offsets, conditions and body length now agree. Every target/candidate call remains in the same 346-call order and at the same relative position when packet declaration names are mapped by behavior. That mapping does not prove the new packet symbol binding.
+
+[EVIDENCE] Six wide count probes (32/64 declarations at top, immediately before BlupiStep, and TU end) are **byte-identical** to f52, not merely equal scores. No context probe or overload-removal experiment is retained as proposed source. The tested local-identity and context families have diminishing returns for the ten-byte residue.
+
+[EVIDENCE] Ownership-preserving deliverable: `scratch/solblupi/decblupi.cpp` (f57) has only BlupiStep changed relative to current canonical text. With the still-canonical char/short prototypes its body is 25,272 bytes, frame a4, raw prefix 149, score 2,885; those prototype residues explain why this version is weaker than f52. Its unchanged DecorDetect retains the known two-byte regression under the proposed layout. `scratch/solblupi/header-proof.cpp` (f58) changes only the two additional DecorDetect member names; full verifier exit 0 and all three peers STRICT reproduce the final layout solution independently of the prototype experiments. Last worker build is f58. No BlupiStep bytes are credited as STRICT.
+
+[OPEN] Next integration: retain the state/inventory/FIFO layout and correct DecorDetect to Helico/Nage/Surf; coordinate GetTypeBarre's int return declaration/definition and NetSendBarePacket's int argument declaration/definition across owning TUs; then continue from the ten register bytes in f52 and prove every relocation, especially the new decorated callee names. GetTypeBarre itself and the new NetSendBarePacket signature are not certified STRICT by this worker. No background worker processes remain.

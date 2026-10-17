@@ -15,6 +15,7 @@ import random
 import re
 import subprocess
 import sys
+import time
 from typing import Callable
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -120,6 +121,13 @@ def infer_type(expression: str, local_types: dict[str, str]) -> str | None:
     return current.replace("const ", "").strip()
 
 
+@lru_cache(maxsize=2)
+def call_signature_text(translation_unit: str) -> str:
+    chunks = [translation_unit]
+    chunks.extend(path.read_bytes().decode("cp1252", "replace") for path in (ROOT / "src").glob("*.h"))
+    return mask("\n".join(chunks))
+
+
 def _match_if_blocks(text: str):
     clean = mask(text)
     for item in re.finditer(r"\bif\s*\(", clean):
@@ -152,12 +160,21 @@ def _match_if_blocks(text: str):
             yield item.start(), p, q, first, first_end, after, second, second_end
 
 
-def mutations(body: str, preserve_lines: bool = False) -> list[tuple[str, str]]:
+def mutations(body: str, preserve_lines: bool = False, translation_unit: str = "") -> list[tuple[str, str]]:
     made: list[tuple[str, str]] = []
 
     def add(label: str, changed: str) -> None:
         if changed != body and (not preserve_lines or changed.count("\n") == body.count("\n")):
             made.append((label, changed))
+
+    def pure_value(value: str) -> bool:
+        return not re.search(r"\w\s*\(|\+\+|--|(?<![<>=!])=(?!=)|\bthrow\b", value)
+
+    def local_name() -> str:
+        name = "permuteValue"
+        while re.search(r"\b" + name + r"\b", body):
+            name += "X"
+        return name
 
     # Swap adjacent plain assignments to distinct fields/locals with no data dependency.
     lhs_rx = SIMPLE
@@ -166,6 +183,31 @@ def mutations(body: str, preserve_lines: bool = False) -> list[tuple[str, str]]:
     offsets = [0]
     for line in lines:
         offsets.append(offsets[-1] + len(line))
+    assignment_matches = []
+    for index, line in enumerate(lines):
+        match = assignment_line.fullmatch(line.rstrip("\r\n"))
+        if match and pure_value(match.group("r")):
+            lhs = match.group("l")
+            # Multi-part lvalues can alias through pointers or overlapping fields.
+            if re.fullmatch(r"[A-Za-z_]\w*", lhs):
+                reads = set(re.findall(r"[A-Za-z_]\w*", match.group("r")))
+                assignment_matches.append((index, match, {lhs}, reads))
+    # Move an assignment across up to four plain assignments when every crossed
+    # statement is independent by identifier read/write sets.
+    for left_index, (line_index, first, first_writes, first_reads) in enumerate(assignment_matches):
+        for next_index in range(left_index + 1, min(left_index + 5, len(assignment_matches))):
+            next_line_index, second, _second_writes, _second_reads = assignment_matches[next_index]
+            between = assignment_matches[left_index:next_index + 1]
+            if next_line_index - line_index > 4 or len(between) != next_line_index - line_index + 1:
+                continue
+            group = [(item[2], item[3]) for item in between]
+            if any(w1 & (w2 | r2) or w2 & r1 for pos, (w1, r1) in enumerate(group)
+                   for w2, r2 in group[pos + 1:]):
+                continue
+            moved = lines.copy()
+            moved.insert(line_index, moved.pop(next_line_index))
+            add("move-independent-assignment", "".join(moved))
+
     for index, (line_a, line_b) in enumerate(zip(lines, lines[1:])):
         a_text, b_text = line_a.rstrip("\r\n"), line_b.rstrip("\r\n")
         a_match, b_match = assignment_line.fullmatch(a_text), assignment_line.fullmatch(b_text)
@@ -174,7 +216,7 @@ def mutations(body: str, preserve_lines: bool = False) -> list[tuple[str, str]]:
         la, lb, ra, rb = (a_match.group("l"), b_match.group("l"),
                           a_match.group("r"), b_match.group("r"))
         roots = {re.split(r"\.|->|\[", lhs.lstrip("*"))[0] for lhs in (la, lb)}
-        pure = all(not re.search(r"\w+\s*\(|\+\+|--|(?<![<>=!])=(?!=)", rhs) for rhs in (ra, rb))
+        pure = all(pure_value(rhs) for rhs in (ra, rb))
         if la != lb and pure and not (set(re.findall(r"[A-Za-z_]\w*", ra)) | set(re.findall(r"[A-Za-z_]\w*", rb))) & roots:
             swapped = b_text + line_b[len(b_text):] + a_text + line_a[len(a_text):]
             start, end = offsets[index], offsets[index + 2]
@@ -189,6 +231,64 @@ def mutations(body: str, preserve_lines: bool = False) -> list[tuple[str, str]]:
         value = "if (!({})){}{}{}else{}{}".format(cond, gap, body[second:second_end + 1], between, gap2,
                                                    body[first:first_end + 1])
         add("invert-if-else", body[:start] + value + body[second_end + 1:])
+
+    # Combine/split adjacent side-effect-free guards with identical exits.
+    guard_pair = re.compile(r"(?m)^(?P<i>[ \t]*)if\s*\((?P<a>[^()\r\n]+)\)\s*(?P<r>return(?:\s+[^;\r\n]+)?;)\s*\r?\n(?P=i)if\s*\((?P<b>[^()\r\n]+)\)\s*(?P=r)\s*$")
+    for m in guard_pair.finditer(body):
+        if pure_value(m.group("a")) and pure_value(m.group("b")):
+            add("merge-guard-returns", body[:m.start()] +
+                f"{m.group('i')}if (({m.group('a').strip()}) || ({m.group('b').strip()})) {m.group('r')}" + body[m.end():])
+    guard_or = re.compile(r"(?m)^(?P<i>[ \t]*)if\s*\((?P<a>[^|()\r\n]+)\s*\|\|\s*(?P<b>[^|()\r\n]+)\)\s*(?P<r>return(?:\s+[^;\r\n]+)?;)\s*$")
+    for m in guard_or.finditer(body):
+        if pure_value(m.group("a")) and pure_value(m.group("b")):
+            add("split-guard-return", body[:m.start()] +
+                f"{m.group('i')}if ({m.group('a').strip()}) {m.group('r')}\n{m.group('i')}if ({m.group('b').strip()}) {m.group('r')}" + body[m.end():])
+
+    # A top-level void early return is equivalent to guarding the remaining
+    # straight-line tail, provided that tail has no alternate exit or label.
+    guard_void = re.compile(r"(?m)^(?P<i>[ \t]*)if\s*\((?P<c>[^()\r\n]+)\)\s*return\s*;[ \t]*\r?\n")
+    clean = mask(body)
+    for m in guard_void.finditer(clean):
+        depth = body[:m.start()].count("{") - body[:m.start()].count("}")
+        tail_start = m.end()
+        tail_end = body.rfind("}")
+        if depth != 1 or tail_end < tail_start:
+            continue
+        tail = body[tail_start:tail_end]
+        if re.search(r"\b(return|goto|break|continue|case|default)\b|^[ \t]*[A-Za-z_]\w*\s*:", mask(tail), re.M):
+            continue
+        add("early-return-to-fallthrough-block", body[:m.start()] +
+            f"{m.group('i')}if (!({m.group('c').strip()})) {{{tail}{m.group('i')}}}" + body[tail_end:])
+
+    # Fold or expand one nested braced if into a short-circuit condition.
+    clean = mask(body)
+    nested = re.compile(r"\bif\s*\((?P<a>[^()\r\n]+)\)\s*\{\s*if\s*\((?P<b>[^()\r\n]+)\)\s*\{")
+    for m in nested.finditer(clean):
+        if not pure_value(m.group("a")) or not pure_value(m.group("b")):
+            continue
+        first_brace = clean.find("{", m.start(), m.end())
+        inner_if = clean.find("if", first_brace + 1, m.end())
+        inner_brace = clean.find("{", inner_if, m.end())
+        inner_end = matching(clean, inner_brace, "{", "}")
+        outer_end = matching(clean, first_brace, "{", "}")
+        if inner_end is None or outer_end is None:
+            continue
+        between = body[inner_end + 1:outer_end]
+        if mask(between).strip():
+            continue
+        inside = body[inner_brace + 1:inner_end]
+        changed = f"if (({m.group('a').strip()}) && ({m.group('b').strip()})) {{{inside}}}"
+        add("nested-if-to-and", body[:m.start()] + changed + body[outer_end + 1:])
+    and_if = re.compile(r"\bif\s*\(\s*(?P<a>[^()&|\r\n]+)\s*&&\s*(?P<b>[^()&|\r\n]+)\s*\)\s*\{")
+    for m in and_if.finditer(clean):
+        if not pure_value(m.group("a")) or not pure_value(m.group("b")):
+            continue
+        brace = clean.find("{", m.start(), m.end())
+        end = matching(clean, brace, "{", "}")
+        if end is not None:
+            inside = body[brace + 1:end]
+            changed = f"if ({m.group('a').strip()}) {{ if ({m.group('b').strip()}) {{{inside}}} }}"
+            add("and-to-nested-if", body[:m.start()] + changed + body[end + 1:])
 
     # Reverse relational operand order for side-effect-free scalar atoms.
     cmp_rx = re.compile(r"(?<![<>=!])(?P<a>" + ATOM + r")\s*(?P<op><=|>=|<|>)\s*(?P<b>" + ATOM + r")(?![=])")
@@ -269,6 +369,62 @@ def mutations(body: str, preserve_lines: bool = False) -> list[tuple[str, str]]:
     types = {m.group("n"): re.sub(r"\s+", " ", m.group("t")).strip()
              for m in local_decl.finditer(mask(body))
              if m.group("t") not in {"if", "else", "return", "case", "while", "for"}}
+
+    # BLUPI-REG-02: merge duplicate scalar index locals only when both are
+    # initialized to the same pure value in adjacent declarations and neither
+    # is subsequently written. This is deliberately a narrow identity rewrite.
+    initialized = list(re.finditer(r"(?m)^(?P<i>[ \t]*)(?P<t>" + SCALAR + r")\s+(?P<n>[A-Za-z_]\w*)\s*=\s*(?P<e>" + ATOM + r");[ \t]*$", body))
+    for left, right in zip(initialized, initialized[1:]):
+        if left.group("t") != right.group("t") or left.group("e") != right.group("e") or not pure_value(left.group("e")):
+            continue
+        if mask(body[left.end():right.start()]).strip():
+            continue
+        a, b = left.group("n"), right.group("n")
+        if a == b or not re.search(r"\[\s*" + re.escape(a) + r"\s*\]", clean) or not re.search(r"\[\s*" + re.escape(b) + r"\s*\]", clean):
+            continue
+        writes_a = list(re.finditer(r"(?<![=!<>])\b" + re.escape(a) + r"\b\s*(?:=|\+=|-=|\+\+|--)", clean))
+        writes_b = list(re.finditer(r"(?<![=!<>])\b" + re.escape(b) + r"\b\s*(?:=|\+=|-=|\+\+|--)", clean))
+        if len(writes_a) != 1 or len(writes_b) != 1:
+            continue
+        if left.start() > writes_a[0].start() or right.start() > writes_b[0].start():
+            continue
+        changed = body[:right.start()] + body[right.end():]
+        changed = re.sub(r"\b" + re.escape(b) + r"\b", a, changed)
+        add("merge-index-locals", changed)
+
+    # Split a shared index identity in one block after its fresh assignment.
+    # The original local is retained because later code may use it elsewhere.
+    clean = mask(body)
+    uninit_index = re.compile(r"(?m)^(?P<i>[ \t]*)(?P<t>" + SCALAR + r")\s+(?P<n>[A-Za-z_]\w*)\s*;[ \t]*$")
+    for declaration in uninit_index.finditer(body):
+        name, typ = declaration.group("n"), declaration.group("t")
+        if not re.search(r"\[\s*" + re.escape(name) + r"\s*\]", clean):
+            continue
+        for block in re.finditer(r"\bif\s*\([^\n]*?\)\s*\{", clean):
+            brace = clean.find("{", block.start(), block.end())
+            end = matching(clean, brace, "{", "}")
+            if end is None or declaration.start() > block.start():
+                continue
+            inner = body[brace + 1:end]
+            assigned = re.search(r"(?m)^(?P<i>[ \t]*)" + re.escape(name) + r"\s*=\s*(?P<e>" + ATOM + r");[ \t]*\r?\n", inner)
+            if not assigned or not pure_value(assigned.group("e")):
+                continue
+            rest = inner[assigned.end():]
+            masked_rest = mask(rest)
+            if re.search(r"\b" + re.escape(name) + r"\b\s*(?:=|\+=|-=|\+\+|--)", masked_rest):
+                continue
+            indices = list(re.finditer(r"\[\s*" + re.escape(name) + r"\s*\]", masked_rest))
+            if not indices:
+                continue
+            residue = re.sub(r"\[\s*" + re.escape(name) + r"\s*\]", "[]", masked_rest)
+            if re.search(r"\b" + re.escape(name) + r"\b", residue):
+                continue
+            new_name = "permuteIndex"
+            while re.search(r"\b" + new_name + r"\b", body):
+                new_name += "X"
+            rewritten = re.sub(r"\[\s*" + re.escape(name) + r"\s*\]", "[" + new_name + "]", rest)
+            inner2 = (inner[:assigned.end()] + assigned.group("i") + typ + " " + new_name + " = " + name + ";\n" + rewritten)
+            add("split-index-local", body[:brace + 1] + inner2 + body[end:])
 
     # Small flat switches and scalar comparison chains can change form.
     clean = mask(body)
@@ -369,6 +525,51 @@ def mutations(body: str, preserve_lines: bool = False) -> list[tuple[str, str]]:
             output += f" {label if label == 'default' else 'case ' + label}: {{ {content} }} break;"
         output += " }"
         add("if-chain-to-switch", body[:first.start()] + output + body[cursor:])
+
+    # Equality tests on the same stable scalar are mutually exclusive, so
+    # branch order can vary while each branch body stays attached to its value.
+    for first in chain_head.finditer(clean):
+        expression = first.group("x")
+        branches = []
+        cursor = first.start()
+        head = first
+        valid = True
+        while True:
+            if head.group("x") != expression:
+                valid = False
+                break
+            brace = clean.find("{", head.start(), head.end())
+            end = matching(clean, brace, "{", "}")
+            if end is None:
+                valid = False
+                break
+            branches.append((head.group("v"), body[brace:end + 1]))
+            cursor = end + 1
+            while cursor < len(clean) and clean[cursor].isspace():
+                cursor += 1
+            if not clean.startswith("else", cursor):
+                break
+            cursor += 4
+            while cursor < len(clean) and clean[cursor].isspace():
+                cursor += 1
+            if not clean.startswith("if", cursor):
+                valid = False
+                break
+            head = chain_head.match(clean, cursor)
+            if head is None:
+                valid = False
+                break
+        if not valid or len(branches) < 2:
+            continue
+        for index in range(len(branches) - 1):
+            if branches[index][0] == branches[index + 1][0]:
+                continue
+            ordered = branches.copy()
+            ordered[index], ordered[index + 1] = ordered[index + 1], ordered[index]
+            output = ""
+            for branch_index, (value, content) in enumerate(ordered):
+                output += ("if" if branch_index == 0 else " else if") + f" ({expression} == {value}) " + content
+            add("reorder-exclusive-else-if", body[:first.start()] + output + body[cursor:])
     # Reassociate only integer chains; floating-point addition is not associative.
     chain = re.compile(r"(?<![\w)])(?P<a>" + ATOM + r")\s*(?P<op>[+|])\s*(?P<b>" + ATOM + r")\s*(?P=op)\s*(?P<c>" + ATOM + r")")
     for m in chain.finditer(mask(body)):
@@ -418,6 +619,47 @@ def mutations(body: str, preserve_lines: bool = False) -> list[tuple[str, str]]:
             changed_rest = _replace(rest, use.start(), use.end(), m.group("e"))
             add("remove-temporary", body[:m.start()] + changed_rest)
 
+    # Name a scalar call result before assigning it. This keeps the call count
+    # and order unchanged and gives VC5 a source-level local allocation choice.
+    result_assign = re.compile(r"(?m)^(?P<i>[ \t]*)(?:(?P<decl>" + SCALAR + r")\s+)?(?P<l>[A-Za-z_]\w*)\s*=\s*(?P<rhs>[A-Za-z_]\w*\s*\([^;\r\n]*\));(?P<t>[^\r\n]*)$")
+    for m in result_assign.finditer(body):
+        typ = m.group("decl") or types.get(m.group("l"))
+        if not typ:
+            continue
+        name = local_name()
+        declaration = (m.group("decl") + " " if m.group("decl") else "")
+        eol = "\r\n" if "\r\n" in body else "\n"
+        changed = (f"{m.group('i')}{typ} {name} = {m.group('rhs').strip()};{eol}"
+                   f"{m.group('i')}{declaration}{m.group('l')} = {name};{m.group('t')}")
+        add("name-call-result", body[:m.start()] + changed + body[m.end():])
+
+    # Materialize an inner call result when all its sibling arguments are
+    # integer/boolean literals. This prevents a call-order or aliasing change.
+    if translation_unit:
+        signature_text = call_signature_text(translation_unit)
+        nested_call = re.compile(r"(?m)^(?P<i>[ \t]*)(?P<ret>return\s+)?(?P<outer>[A-Za-z_]\w*)\s*\((?P<args>[^;\r\n]*)\);(?P<t>[^\r\n]*)$")
+        literal = re.compile(r"\s*(?:-?\d+|0x[0-9a-fA-F]+|NULL|TRUE|FALSE)\s*")
+        for m in nested_call.finditer(body):
+            args = m.group("args")
+            inner = re.search(r"(?P<callee>[A-Za-z_]\w*)\s*\((?P<inner>[^()]*)\)", args)
+            if not inner:
+                continue
+            siblings = args[:inner.start()] + args[inner.end():]
+            if any(part.strip() and not literal.fullmatch(part) for part in siblings.split(",")):
+                continue
+            callee = inner.group("callee")
+            found_types = re.findall(r"\b(" + SCALAR + r"(?:\s*\*)?)\s+(?:[A-Za-z_]\w*::)?" + re.escape(callee) + r"\s*\(", signature_text)
+            found_types = list(dict.fromkeys(re.sub(r"\s+", " ", item).strip() for item in found_types))
+            if len(found_types) != 1:
+                continue
+            name = local_name()
+            call = args[inner.start():inner.end()].strip()
+            changed_args = args[:inner.start()] + name + args[inner.end():]
+            eol = "\r\n" if "\r\n" in body else "\n"
+            changed = (f"{m.group('i')}{found_types[0]} {name} = {call};{eol}"
+                       f"{m.group('i')}{m.group('ret') or ''}{m.group('outer')}({changed_args});{m.group('t')}")
+            add("materialize-call-argument", body[:m.start()] + changed + body[m.end():])
+
     # Move trivial local scalar declarations across a single braced if boundary.
     clean = mask(body)
     for m in re.finditer(r"\bif\s*\([^\n]*?\)\s*\{", clean):
@@ -445,6 +687,33 @@ def mutations(body: str, preserve_lines: bool = False) -> list[tuple[str, str]]:
             continue
         changed = body[:m.start()] + m.group("i") + "\n" + m.group("if") + (m.group("nl") or "") + m.group("indent") + m.group("t") + " " + m.group("n") + " = " + m.group("e") + ";" + body[m.end():]
         add("move-declaration-into-block", changed)
+
+    # BLUPI-LOC-01: fixed local arrays can move between function and a sole
+    # braced scope. Restrict this to POD-like scalar element arrays without an
+    # initializer; the only generated difference is lexical lifetime/layout.
+    array_decl = re.compile(r"(?m)^(?P<i>[ \t]*)(?P<t>char|BYTE|WORD|DWORD|int|short|long)\s+(?P<n>[A-Za-z_]\w*)\s*\[(?P<size>\d+)\];[ \t]*$")
+    for declaration in array_decl.finditer(body):
+        name = declaration.group("n")
+        for block in re.finditer(r"\bif\s*\([^\n]*?\)\s*\{", clean):
+            brace = clean.find("{", block.start(), block.end())
+            end = matching(clean, brace, "{", "}")
+            if end is None:
+                continue
+            inner = body[brace + 1:end]
+            outside = body[:declaration.start()] + body[declaration.end():brace] + body[end + 1:]
+            uses_inner = list(re.finditer(r"\b" + re.escape(name) + r"\b", mask(inner)))
+            uses_outside = re.search(r"\b" + re.escape(name) + r"\b", mask(outside))
+            if declaration.end() < brace and uses_inner and not uses_outside:
+                moved_decl = body[declaration.start():declaration.end()]
+                without = body[:declaration.start()] + body[declaration.end():]
+                new_brace = brace - len(moved_decl)
+                changed = without[:new_brace + 1] + "\n" + moved_decl + without[new_brace + 1:]
+                add("move-array-into-block", changed)
+            elif brace < declaration.start() < end and uses_inner and not uses_outside:
+                moved_decl = body[declaration.start():declaration.end()]
+                changed = (body[:block.start()] + moved_decl + "\n" + body[block.start():declaration.start()] +
+                           body[declaration.end():])
+                add("move-array-out-of-block", changed)
 
     return made
 
@@ -501,7 +770,8 @@ def main() -> int:
     parser.add_argument("--function", required=True, help="decorated COFF function symbol")
     parser.add_argument("--rva", required=True, type=lambda value: int(value, 0))
     parser.add_argument("--budget", type=int, default=80, help="total compiles, including baseline")
-    parser.add_argument("--jobs", type=int, default=max(1, os.cpu_count() or 1))
+    parser.add_argument("--jobs", type=int, default=int(os.environ.get("BLUPI_JOBS", "4")),
+                        help="concurrent compiles (default $BLUPI_JOBS or 4; keep low - sandbox desktop heap)")
     parser.add_argument("--seed", type=int, default=1)
     args = parser.parse_args()
     if args.budget < 1 or args.jobs < 1:
@@ -525,8 +795,8 @@ def main() -> int:
     unit_stem = canonical_path.stem
     unit_config = next(item for item in manifest["translation_units"] if item["source"] == canonical)
     slug = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.function).strip("._")
-    output_root = ROOT / "build" / "permute" / slug
-    variants_root = ROOT / "scratch" / "permute" / slug / "variants"
+    output_root = ROOT / "build" / "permute" / slug / f"seed_{args.seed}"
+    variants_root = ROOT / "scratch" / "permute" / slug / f"seed_{args.seed}" / "variants"
     output_root.mkdir(parents=True, exist_ok=True)
     variants_root.mkdir(parents=True, exist_ok=True)
     rng = random.Random(args.seed)
@@ -539,6 +809,7 @@ def main() -> int:
         path.write_bytes(full.encode("cp1252"))
         return path, full
 
+    started = time.perf_counter()
     baseline_path, baseline_text = materialize(original_body, 0)
     baseline_worker = output_root / "workers" / "w00000"
     baseline = compile_and_score(baseline_path, baseline_worker / f"00_{unit_stem}.obj",
@@ -561,7 +832,7 @@ def main() -> int:
         labels = []
         count = rng.choice((1, 1, 1, 2, 2, 3))
         for _ in range(count):
-            options = mutations(current, preserve_lines)
+            options = mutations(current, preserve_lines, source)
             options = [item for item in options if digest(item[1]) not in compiled_hashes]
             if not options:
                 break
@@ -577,7 +848,7 @@ def main() -> int:
                 parent_hash = digest(parent["body"])
                 if parent_hash in expanded_hashes:
                     continue
-                options = mutations(parent["body"], preserve_lines)
+                options = mutations(parent["body"], preserve_lines, source)
                 rng.shuffle(options)
                 for label, body in options:
                     key = digest(body)
@@ -621,15 +892,21 @@ def main() -> int:
             for item, future in zip(batch, futures):
                 result = future.result()
                 attempts += 1
+                prior_best = min((entry["score"]["score"] for entry in scored), default=None)
                 if result.get("compile") == "ok" and "score" in result:
                     entry = {"body": item[2], "text": item[3], "score": result,
                              "path": item[5], "mutations": item[4]}
                     scored.append(entry)
-                    print(f"compile {attempts}/{args.budget}: score={result['score']} status={result['status']} "
-                          f"prefix={result['identical_prefix']} via {','.join(item[4])}")
+                    is_improvement = prior_best is None or result["score"] < prior_best
                 else:
-                    print(f"compile {attempts}/{args.budget}: {result.get('compile')} "
-                          f"{result.get('score_error', '')}")
+                    is_improvement = False
+                if is_improvement or attempts % 100 == 0:
+                    if result.get("score") is not None:
+                        print(f"compile {attempts}/{args.budget}: score={result['score']} status={result['status']} "
+                              f"prefix={result['identical_prefix']} via {','.join(item[4])}")
+                    else:
+                        print(f"compile {attempts}/{args.budget}: {result.get('compile')} "
+                              f"{result.get('score_error', '')}")
             ranked = sorted(scored, key=lambda item: (item["score"]["score"], -item["score"]["exact_matching_instructions"]))
             unique = []
             hashes = set()
@@ -648,9 +925,11 @@ def main() -> int:
         diff = difflib.unified_diff(source.splitlines(keepends=True), item["text"].splitlines(keepends=True),
                                     fromfile="candidate.cpp", tofile=f"best-{index:02d}.cpp")
         (output_root / f"best-{index:02d}.diff").write_text("".join(diff), encoding="utf-8")
+    elapsed = max(time.perf_counter() - started, 1e-9)
     summary = {"tu": canonical, "candidate": str(candidate_path), "function": args.function,
                "rva": f"0x{args.rva:08x}", "seed": args.seed, "budget": args.budget,
                "compiles_attempted": attempts, "compiled_and_scored": len(scored),
+               "elapsed_seconds": round(elapsed, 3), "compiles_per_second": round(attempts / elapsed, 3),
                "baseline": baseline, "best": [{k: v for k, v in item["score"].items() if k not in ("relocations",)}
                                                 | {"mutations": item["mutations"], "source": str(item["path"])}
                                                 for item in best]}
@@ -659,7 +938,8 @@ def main() -> int:
         top = ranked[0]["score"]
         print(f"best: {args.function} RVA {args.rva:#x} score={top['score']} status={top['status']} "
               f"exact={top['exact_matching_instructions']}/{top['oracle_instructions']} "
-              f"prefix={top['identical_prefix']} compiles={attempts}")
+              f"prefix={top['identical_prefix']} compiles={attempts} "
+              f"elapsed={elapsed:.1f}s rate={attempts / elapsed:.2f}/s")
         print(f"results: {output_root}")
         return 0
     print(f"no scoreable variants; baseline compile result: {baseline}")
