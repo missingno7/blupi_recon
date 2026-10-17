@@ -67,6 +67,8 @@ def main() -> int:
     parser.add_argument("--name", default="default", help="private output folder build/fnprobe/<name>")
     parser.add_argument("--aligned", type=int, metavar="ORACLE_SIZE",
                         help="also align instructions (tools/residues.py) against this oracle code size")
+    parser.add_argument("--regions", action="store_true", help="with --aligned: print each differing region")
+    parser.add_argument("--nostack", action="store_true", help="with --aligned: mask [esp+N] offsets and frame size")
     parser.add_argument("--tree", help="compiler tree override (experiments only)")
     parser.add_argument("--extra-flag", action="append", default=[], help="additional cl flag for experiments only")
     args = parser.parse_args()
@@ -94,10 +96,17 @@ def main() -> int:
         print("  offsets: " + " ".join(f"+{k:#x}" for k in diffs[:24]) + (" ..." if len(diffs) > 24 else ""))
     if args.aligned:
         import residues
+        residues.NOSTACK = args.nostack
         result = residues.analyse(func, cmpfunc.Coff(obj), pe.get_data(rva, max(len(func.data), args.aligned) + 1024),
                                   pe.OPTIONAL_HEADER.ImageBase + rva, args.aligned)
         print(f"  aligned: equal={result['equal_insns']}/{result['oracle_insns']} oracle instructions, "
               f"regions={len(result['regions'])}")
+        if args.regions:
+            for reg in result["regions"]:
+                print(f"  [{reg['class']}] cand +{reg['cand_off']:#x} / oracle +{reg['oracle_off']:#x}")
+                for a, b in zip(reg["cand"] + [""] * 12, reg["oracle"] + [""] * 12):
+                    if a or b:
+                        print(f"      {a:<44} {b}")
     if args.region:
         lo, hi = (int(x, 0) for x in args.region.split(":"))
         md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)

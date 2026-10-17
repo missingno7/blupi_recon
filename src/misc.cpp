@@ -149,24 +149,14 @@ void GetCurrentDir(char *pName, int lg)
 void AddCDPath(char *pFilename)
 {
 	char	temp[MAX_PATH];
-	int		lg;
-	BOOL	bDaniel = FALSE;
 
 	if ( g_CDPath[0] == 0 )  return;
 
-	lg = strlen(g_CDPath);
-	if ( lg > 14 && strstr(g_CDPath+lg-14, "\\daniel\\blupi\\") )
-	{
-		bDaniel = TRUE;
-	}
-
-#if _DEMO
-	strcpy(temp, g_CDPath);
-	strcat(temp, pFilename);
-#else
-	if ( !bDaniel &&
-		 (strstr(pFilename, "image\\") == pFilename ||
-		  strstr(pFilename, "movie\\") == pFilename) )
+	if ( strstr(pFilename, "data\\")    == pFilename ||
+		 strstr(pFilename, "image\\")   == pFilename ||
+		 strstr(pFilename, "image08\\") == pFilename ||
+		 strstr(pFilename, "image16\\") == pFilename ||
+		 strstr(pFilename, "movie\\")   == pFilename )
 	{
 		strcpy(temp, g_CDPath);
 		strcat(temp, "..\\");
@@ -177,7 +167,6 @@ void AddCDPath(char *pFilename)
 		strcpy(temp, g_CDPath);
 		strcat(temp, pFilename);
 	}
-#endif
 
 	strcpy(pFilename, temp);
 }

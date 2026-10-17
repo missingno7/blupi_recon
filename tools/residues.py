@@ -36,6 +36,7 @@ import pefile  # noqa: E402
 
 REG = r"\b(e?[abcd]x|[abcd][lh]|e?[sd]i|e?[sb]p)\b"
 GAME_END = 0x238B0
+NOSTACK = False  # set by --nostack: mask stack offsets (frame-size differences)
 
 
 def _fold_address(text: str) -> str:
@@ -55,7 +56,11 @@ def norm(insn, masked: set[int] | None) -> str:
     elif any(insn.address + k in masked for k in range(insn.size)):
         # only the relocated operand is unknown; keep register structure, drop numbers
         text = re.sub(r"(?<![\w*])(0x[0-9a-f]+|\d+)(?![\w*])", "A", text)
-    return _fold_address(text)
+    text = _fold_address(text)
+    if NOSTACK:
+        text = re.sub(r"\[esp \+ 0x[0-9a-f]+\]", "[esp+S]", text)
+        text = re.sub(r"\b(add|sub) esp, (0x[0-9a-f]+|\d+)", r"\1 esp, S", text)
+    return text
 
 
 def shape(text: str) -> str:
@@ -132,7 +137,10 @@ def analyse(func, coff, target: bytes, target_va: int, oracle_size: int) -> dict
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--detail", help="print every region of the function at this oracle RVA")
+    parser.add_argument("--nostack", action="store_true", help="mask [esp+N] offsets and frame size")
     args = parser.parse_args()
+    global NOSTACK
+    NOSTACK = args.nostack
     manifest = json.loads((ROOT / "recon.json").read_text(encoding="utf-8"))
     accepted = {int(a["rva"], 0) for a in manifest["accepted_functions"] if not a.get("withdrawn")}
     rows = [r for r in csv.DictReader(open(ROOT / "oracle" / "tu_map.csv", encoding="utf-8-sig"))
