@@ -735,10 +735,10 @@ Term;
 #define WM_DECOR9	1052
 #define WM_DECOR10	1053
 #define WM_DECOR11	1054
-#define WM_DIMS1	1265
-#define WM_DIMS2	1266
-#define WM_DIMS3	1267
-#define WM_DIMS4	1268
+#define WM_DIMS1	1255
+#define WM_DIMS2	1256
+#define WM_DIMS3	1257
+#define WM_DIMS4	1258
 #define WM_PHASE_1531	1531
 #define WM_PHASE_1538	1538
 #define WM_PHASE_READDESIGN	1560

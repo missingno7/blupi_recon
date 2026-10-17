@@ -64,4 +64,16 @@
 
 **[EVIDENCE]** `event.h` now uses the worker-proven SB1 name/file layout: `m_name[96]`; ten name rows with a 4-byte prefix and 96-byte text; `m_bNamesExist` at `+0x8d8`; one dword at `+0x900`; and `m_filenameBuffer[256][100]` at `+0x904`, leaving `m_nbFiles` at `+0x6d04`. `CEventNameRow` converts to its `text` member so existing event call sites pass the target string address without changing row storage.
 
-**[EVIDENCE]** `CEvent::DrawButtons` uses the improved `scratch/ev_drawbuttons/event.cpp` reconstruction. It remains MISMATCH at 7,392 candidate bytes versus 7,419 oracle bytes, with 4,886 leading bytes identical; this is the best known source body and is intentionally not accepted. `TreatEventBase` was left unchanged because its latest candidate remains MISMATCH.
+**[EVIDENCE]** `CEvent::DrawButtons` uses the improved `scratch/ev_drawbuttons/event.cpp` reconstruction. It remains MISMATCH at 7,392 candidate bytes versus 7,419 oracle bytes, with 4,886 leading bytes identical; this is the best known source body and is intentionally not accepted. `TreatEventBase` was subsequently integrated in Follow-up 11 as the best known non-strict reconstruction.
+
+## Follow-up 11
+
+**[EVIDENCE]** `def.h` sets `WM_DIMS1..4` to `1255..1258` (`0x4e7..0x4ea`), matching target IDs.
+
+**[EVIDENCE]** `decor.h` names the early `CDecor` slots `+0xc964..+0xc974` as `m_blupiTimeShield`, `m_blupiTimeFire`, `m_blupiTimeMockery`, `m_blupiTimeOuf`, and `m_blupiActionOuf`; `decblock.cpp`, `decblupi.cpp`, and `decor.cpp` uses follow those meanings. The five later, same-sized source-ancestry fields are retained as `m_sb2*` placeholders so subsequent offsets stay fixed; their SB1 meanings are not established.
+
+**[OPEN]** The `m_blupiVent`/`m_blupiSurf` order remains as in the canonical header. The worker's proposed reversal is supported by the non-strict `BlupiStep` analysis, not yet by a STRICT function.
+
+**[EVIDENCE]** `event.cpp` now carries the best known `TreatEventBase` (6,944 bytes versus the 6,616-byte target; 730-byte fixed prefix) and `ChangeButtons` (3,024 bytes versus 2,854; 1,531-byte fixed prefix) bodies. Both remain mismatches and are guarded only by the accepted-function gate.
+
+**[EVIDENCE]** The non-strict `BlupiStep` reconstruction was integrated because it removes target-absent behavior supported by oracle analysis and shortens the body. The original canonical body was 31,264 bytes, frame `0xc8`, with a 2-byte raw prefix; the worker candidate before field rebinding was 29,488 bytes, frame `0xbc`, also with a 2-byte prefix. The integrated object after queue-field rebinding is 29,216 bytes, still MISMATCH; the oracle body is 25,269 bytes with frame `0xa4`.

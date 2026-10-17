@@ -69,10 +69,10 @@ void CDecor::PlayPrepare(BOOL bTest)
 	m_blupiTimeMockery = 0;
 	m_blupiValidPos = m_blupiPos;
 	m_blupiEnergyUnused = 100;
-	m_blupiBullet = 0;
-	m_blupiCle = 0;
-	m_blupiPerso = 0;
-	m_blupiDynamite = 0;
+	m_blupiTimeFire = 0;
+	m_blupiTimeMockery = 0;
+	m_blupiTimeOuf = 0;
+	m_blupiActionOuf = 0;
 	m_nbTresor = 0;
 	m_totalTresor = 0;
 	for (int i = MAXMOVEOBJECT; i != 0; i--)
@@ -125,7 +125,7 @@ void CDecor::PlayPrepare(BOOL bTest)
 	m_bHelicoStop = FALSE;
 	m_bJeepMarch = FALSE;
 	m_bJeepStop = FALSE;
-	m_blupiFront = FALSE;
+	m_blupiTimeShield = FALSE;
 	m_blupiNoBarre = 0;
 	m_blupiValidPos = m_blupiPos;
 	m_blupiFifoNb = 0;

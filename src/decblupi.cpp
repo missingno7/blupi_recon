@@ -392,28 +392,27 @@ void CDecor::BlupiStep()
 	BOOL bNear;
 	int icon;
 	POINT tinyPoint;
-	POINT tinyPoint2 = m_blupiPos; // = m_blupiPos ?
-	BlupiAdjust();
 	//m_blupiLastPos = m_blupiPos;
-	POINT end = m_blupiPos;
-	int lastBlupiAction = m_blupiAction;
-	BOOL bLastBlupiAir = m_blupiAir;
 	BOOL bAirStart = FALSE;
+	BOOL bLastBlupiAir = m_blupiAir;
+	int lastBlupiAction = m_blupiAction;
 	BOOL bIsOpen = FALSE;
 	BOOL bIsOpen2 = FALSE;
 	int num;
+	POINT end = m_blupiPos;
 	end.x += m_blupiVector.x;
 	end.y += m_blupiVector.y;
 	RECT rect;
 	if (m_blupiVector.x != 0 || m_blupiVector.y != 0)
 	{
-		rect = BlupiRect(m_blupiPos);
+		rect.left = m_blupiPos.x + 12;
+		rect.right = m_blupiPos.x + DIMBLUPIX - 12;
 		rect.top = m_blupiPos.y + 11;
 		rect.bottom = m_blupiPos.y + DIMBLUPIY - 2;
 		TestPath(rect, m_blupiPos, &end);
 	}
 	m_blupiVent = FALSE;
-	if (m_blupiTransport == -1 && !m_blupiJeep && !m_blupiTank && !m_blupiSkate
+	if (m_blupiTransport == -1 && !m_blupiOver && !m_blupiJeep && !m_blupiTank
 		&& m_blupiFocus)
 	{
 		num = m_decor[(end.x + DIMBLUPIX / 2) / DIMOBJX][(end.y + DIMBLUPIY / 2) / DIMOBJY].icon;
@@ -443,7 +442,6 @@ void CDecor::BlupiStep()
 			TestPath(rect, m_blupiPos, &end);
 		}
 	}
-	m_blupiVent = FALSE;
 	if (m_blupiTransport == -1)
 	{
 		rect = BlupiRect(end);
@@ -458,7 +456,6 @@ void CDecor::BlupiStep()
 	rect = BlupiRect(end);
 	rect.top = end.y + 10;
 	rect.bottom = end.y + 20;
-	int detectIcon = m_detectIcon;
 	if (!m_blupiAir &&
 		!IsBlupiMotorVehicle() &&
 		!m_blupiBalloon &&
@@ -588,7 +585,7 @@ void CDecor::BlupiStep()
 			}
 			else
 			{
-				PlaySound(SoundEnviron(SOUND_JUMPTOC, detectIcon), end);
+			PlaySound(SoundEnviron(SOUND_JUMPTOC, m_detectIcon), end);
 			}
 			m_blupiVitesse.y = 1;
 		}
@@ -660,22 +657,20 @@ void CDecor::BlupiStep()
 		}
 	} // if (m_blupiAir)
 
-	switch (m_blupiAction)
+	if (m_blupiAction == ACTION_JUMPAIE && m_blupiPhase == 30)
 	{
-	case ACTION_JUMPAIE:
-		if (m_blupiPhase == 30) StopBlupi(TRUE);
-		break;
-	case ACTION_CHARGE:
-		if (m_blupiPhase == 64)
-		{
-			StopBlupi(TRUE);
-			m_blupiCloud = TRUE;
-			m_blupiTimeShield = 100;
-			m_jauges[JAUGE_POWER].SetHide(FALSE);
-			PlaySound(ACTION_DRINK, end);
-		}
-		break;
-	case ACTION_HELICOGLU:
+		StopBlupi(TRUE);
+	}
+	if (m_blupiAction == ACTION_CHARGE && m_blupiPhase == 64)
+	{
+		StopBlupi(TRUE);
+		m_blupiCloud = TRUE;
+		m_blupiTimeShield = 100;
+		m_jauges[JAUGE_POWER].SetHide(FALSE);
+		PlaySound(ACTION_DRINK, end);
+	}
+	if (m_blupiAction == ACTION_HELICOGLU)
+	{
 		if (m_blupiPhase == 8)
 		{
 			tinyPoint.x = m_blupiPos.x;
@@ -689,117 +684,97 @@ void CDecor::BlupiStep()
 			{
 				PlaySound(SOUND_FIREOK, m_blupiPos);
 				m_blupiTimeFire = 10;
-				m_blupiBullet--;
+				m_blupiTimeFire--;
 			}
 		}
 		if (m_blupiPhase == 14) StopBlupi(TRUE);
-		break;
-	case ACTION_OUF1a:
-	case ACTION_OUF1b:
-		if (m_blupiPhase == 29) StopBlupi(TRUE);
-		break;
-	case ACTION_OUF2:
-		if (m_blupiPhase == 32) StopBlupi(TRUE);
-		break;
-	case ACTION_OUF3:
-		if (m_blupiPhase == 34) StopBlupi(TRUE);
-		break;
-	case ACTION_OUF4:
-		if (m_blupiPhase == 40)
+	}
+	if ((m_blupiAction == ACTION_OUF1a || m_blupiAction == ACTION_OUF1b) && m_blupiPhase == 29)
+	{
+		StopBlupi(TRUE);
+	}
+	if (m_blupiAction == ACTION_OUF2 && m_blupiPhase == 32) StopBlupi(TRUE);
+	if (m_blupiAction == ACTION_OUF3 && m_blupiPhase == 34) StopBlupi(TRUE);
+	if (m_blupiAction == ACTION_OUF4 && m_blupiPhase == 40)
+	{
+		StopBlupi(TRUE);
+		icon = MoveObjectDetect(end, &bNear);
+		if (icon != -1 && !bNear && end.y - BLUPIFLOOR == m_moveObject[num].posCurrent.y)
 		{
-			StopBlupi(TRUE);
-			icon = MoveObjectDetect(end, &bNear);
-			if (icon != -1 && !bNear && end.y - BLUPIFLOOR == m_moveObject[num].posCurrent.y)
+			if (m_blupiDir == DIR_RIGHT && end.x < m_moveObject[num].posCurrent.x)
 			{
-				if (m_blupiDir == DIR_RIGHT && end.x < m_moveObject[num].posCurrent.x)
+				tinyPoint.x = end.x - 16;
+				tinyPoint.y = end.y;
+				int num2 = MoveObjectDetect(tinyPoint, &bNear);
+				if (num2 == -1)
 				{
-					tinyPoint.x = end.x - 16;
-					tinyPoint.y = end.y;
-					int num2 = MoveObjectDetect(tinyPoint, &bNear);
-					if (num2 == -1)
-					{
-						m_blupiAction = ACTION_RECEDE;
-						m_blupiPhase = 0;
-					}
+					m_blupiAction = ACTION_RECEDE;
+					m_blupiPhase = 0;
 				}
-				if (m_blupiDir == DIR_LEFT && end.x > m_moveObject[num].posCurrent.x)
+			}
+			if (m_blupiDir == DIR_LEFT && end.x > m_moveObject[num].posCurrent.x)
+			{
+				tinyPoint.x = end.x + 16;
+				tinyPoint.y = end.y;
+				int num2 = MoveObjectDetect(tinyPoint, &bNear);
+				if (num2 == -1)
 				{
-					tinyPoint.x = end.x + 16;
-					tinyPoint.y = end.y;
-					int num2 = MoveObjectDetect(tinyPoint, &bNear);
-					if (num2 == -1)
-					{
-						m_blupiAction = ACTION_RECEDE;
-						m_blupiPhase = 0;
-					}
+					m_blupiAction = ACTION_RECEDE;
+					m_blupiPhase = 0;
 				}
 			}
 		}
-		break;
-	case ACTION_OUF5:
+	}
+	if (m_blupiAction == ACTION_OUF5)
+	{
 		if (m_blupiPhase == 4) PlaySound(SOUND_OUF2, m_blupiPos);
 		if (m_blupiPhase == 44) StopBlupi(TRUE);
-		break;
-	case ACTION_MOCKERY:
+	}
+	if (m_blupiAction == ACTION_MOCKERY)
+	{
 		if (m_blupiPhase == 1)
 		{
 			PlaySound(SOUND_MOCKERY, m_blupiPos);
-			m_blupiTimeMockery = 300;
+			m_blupiTimeMockery = 200;
 		}
 		if (m_blupiPhase == 92) StopBlupi(TRUE);
-		break;
-	case ACTION_MOCKERYi:
+	}
+	if (m_blupiAction == ACTION_MOCKERYi)
+	{
 		if (m_blupiPhase == 6)
 		{
 			PlaySound(SOUND_MOCKERY, m_blupiPos);
-			m_blupiTimeMockery = 300;
+			m_blupiTimeMockery = 200;
 		}
 		if (m_blupiPhase == 104) StopBlupi(TRUE);
-		break;
-	case ACTION_MOCKERYp:
-		if (m_blupiPhase == 4) PlaySound(SOUND_OUF2, m_blupiPos);
-		if (m_blupiPhase == 60) StopBlupi(TRUE);
-		break;
-	case ACTION_NON:
-		if (m_blupiPhase == 18) StopBlupi(TRUE);
-		break;
-	case ACTION_STOPMARCH:
-		if (m_blupiPhase == 3) StopBlupi();
-		break;
-	case ACTION_STOPJUMP:
-		if (m_blupiPhase == 5) StopBlupi();
-		break;
-	case ACTION_STOPJUMPh:
-		if (m_blupiPhase == 2)
-		{
-			m_blupiAction = ACTION_AIR;
-			m_blupiPhase = 0;
-			m_blupiVitesse.y = -12;
-			m_blupiAir = TRUE;
-			bLastBlupiAir = TRUE;
-		}
-	case ACTION_SUCETTE:
-		if (m_blupiPhase == 32)
-		{
-			//ObjectStart(m_sucettePos, m_sucetteType, 0); // respawn item (winphone behavior)
-			StopBlupi(TRUE);
-			m_blupiPower = TRUE;
-			m_blupiTimeShield = 100;
-			m_blupiPosMagic = m_blupiPos;
-			m_jauges[JAUGE_POWER].SetHide(FALSE);
-			PlaySound(SOUND_STARTPOWER, end);
-		}
-	case ACTION_DRINK:
-		if (m_blupiPhase == 36)
-		{
-			//ObjectStart(m_sucettePos, m_sucetteType, 0); // respawn item (winphone behavior)
-			StopBlupi(TRUE);
-			m_blupiHide = TRUE;
-			m_blupiTimeShield = 100;
-			m_blupiPosMagic = m_blupiPos;
-			m_jauges[JAUGE_POWER].SetHide(FALSE);
-			PlaySound(SOUND_STARTHIDE, end);
-		}
+	}
+	if (m_blupiAction == ACTION_STOPMARCH && m_blupiPhase == 3) StopBlupi();
+	if (m_blupiAction == ACTION_STOPJUMP && m_blupiPhase == 5) StopBlupi();
+	if (m_blupiAction == ACTION_STOPJUMPh && m_blupiPhase == 2)
+	{
+		m_blupiAction = ACTION_AIR;
+		m_blupiPhase = 0;
+		m_blupiVitesse.y = -12;
+		m_blupiAir = TRUE;
+		bLastBlupiAir = TRUE;
+	}
+	if (m_blupiAction == ACTION_SUCETTE && m_blupiPhase == 32)
+	{
+		StopBlupi(TRUE);
+		m_blupiPower = TRUE;
+		m_blupiTimeShield = 100;
+		m_blupiPosMagic = m_blupiPos;
+		m_jauges[JAUGE_POWER].SetHide(FALSE);
+		PlaySound(SOUND_STARTPOWER, end);
+	}
+	if (m_blupiAction == ACTION_DRINK && m_blupiPhase == 36)
+	{
+		StopBlupi(TRUE);
+		m_blupiHide = TRUE;
+		m_blupiTimeShield = 100;
+		m_blupiPosMagic = m_blupiPos;
+		m_jauges[JAUGE_POWER].SetHide(FALSE);
+		PlaySound(SOUND_STARTHIDE, end);
 	}
 
 	if (m_keyPress & KEY_UP &&
@@ -1272,7 +1247,7 @@ void CDecor::BlupiStep()
 			m_blupiAction != ACTION_HELICOGLU &&
 			bAirStart)
 		{
-			if (m_blupiBullet == 0)
+			if (m_blupiTimeFire == 0)
 			{
 				PlaySound(SOUND_FIREKO, m_blupiPos);
 			}
@@ -1760,7 +1735,7 @@ void CDecor::BlupiStep()
 		}
 		if (m_keyPress & KEY_FIRE && m_blupiTimeFire == 0 && m_blupiAction != ACTION_TURN)
 		{
-			if (m_blupiBullet == 0)
+			if (m_blupiTimeFire == 0)
 			{
 				PlaySound(SOUND_FIREKO, m_blupiPos);
 			}
@@ -1786,7 +1761,7 @@ void CDecor::BlupiStep()
 					m_blupiPhase = 0;
 					PlaySound(SOUND_FIREOK, m_blupiPos);
 					m_blupiTimeFire = 10;
-					m_blupiBullet--;
+					m_blupiTimeFire--;
 				}
 			}
 		}
@@ -2153,7 +2128,6 @@ void CDecor::BlupiStep()
 		num = table_vitesse_surf[m_blupiPhase % 12 / 2];
 		end.x += (int)(m_blupiVitesse.x * num / 10);
 	}
-	POINT tinyPoint4;
 	if (m_blupiSuspend && m_blupiFocus)
 	{
 		if (m_keyPress & KEY_LEFT && m_blupiAction == 2)
@@ -2167,14 +2141,14 @@ void CDecor::BlupiStep()
 		num = GetTypeBarre(end);
 		if (num == 2)
 		{
-			tinyPoint4.x = end.x;
-			tinyPoint4.y = end.y / 64 * 64 + BLUPIOFFY;
-			rect = BlupiRect(tinyPoint4);
+		tinyPoint.x = end.x;
+		tinyPoint.y = end.y / 64 * 64 + BLUPIOFFY;
+		rect = BlupiRect(tinyPoint);
 			if (!DecorDetect(rect, TRUE))
 			{
 				m_blupiSuspend = FALSE;
 				StopBlupi();
-				end = tinyPoint4;
+		end = tinyPoint;
 				m_blupiPos = end;
 			}
 		}
@@ -2222,29 +2196,7 @@ void CDecor::BlupiStep()
 		m_blupiTransport == -1 &&
 		m_blupiFocus)
 	{
-		if (m_blupiDynamite > 0)
-		{
-
-			rect.left = end.x + 18;
-			rect.right = end.x + 20;
-			rect.top = end.y + 60 - 2;
-			rect.bottom = end.y + 60;
-			bIsOpen = !DecorDetect(rect);
-			rect.left = end.x + 60 - 20;
-			rect.right = end.x + 60 - 18;
-			rect.top = end.y + 60 - 2;
-			rect.bottom = end.y + 60;
-			bIsOpen2 = !DecorDetect(rect);
-			if (!bIsOpen && !bIsOpen2 && ObjectStart(end, TYPE_DYNAMITEf, 0) != -1)
-			{
-				m_blupiAction = ACTION_PUTDYNAMITE;
-				m_blupiPhase = 0;
-				m_blupiFocus = FALSE;
-				PlaySound(SOUND_PERSOPOSE, end);
-				m_blupiDynamite--;
-			}
-		}
-		else if (m_blupiPerso > 0)
+		if (m_blupiTimeOuf > 0)
 		{
 			num = MoveObjectDetect(end, &bNear);
 			if (num == -1 || m_moveObject[num].type != TYPE_BOMBEPERSO1)
@@ -2266,7 +2218,7 @@ void CDecor::BlupiStep()
 					m_blupiPhase = 0;
 					m_blupiFocus = FALSE;
 					PlaySound(SOUND_PERSOPOSE, end);
-					m_blupiPerso--;
+					m_blupiTimeOuf--;
 				}
 			}
 			if (m_blupiFocus)
@@ -2278,33 +2230,33 @@ void CDecor::BlupiStep()
 		}
 	}
 	rect = BlupiRect(m_blupiPos);
-	tinyPoint4 = end;
+	tinyPoint = end;
 	TestPath(rect, m_blupiPos, &end);
-	if (bLastBlupiAir && m_blupiPos.x == end.x && m_blupiPos.x != tinyPoint4.x)
+	if (bLastBlupiAir && m_blupiPos.x == end.x && m_blupiPos.x != tinyPoint.x)
 	{
-		end.y = tinyPoint4.y;
+		end.y = tinyPoint.y;
 		TestPath(rect, m_blupiPos, &end);
 	}
-	if (m_blupiVent && m_blupiPos.y == end.y && m_blupiPos.y != tinyPoint4.y)
+	if (m_blupiVent && m_blupiPos.y == end.y && m_blupiPos.y != tinyPoint.y)
 	{
-		end.x = tinyPoint4.x;
+		end.x = tinyPoint.x;
 		TestPath(rect, m_blupiPos, &end);
 	}
-	if (m_blupiTransport != -1 && m_blupiPos.x == end.x && m_blupiPos.x != tinyPoint4.x)
+	if (m_blupiTransport != -1 && m_blupiPos.x == end.x && m_blupiPos.x != tinyPoint.x)
 	{
-		end.y = tinyPoint4.y;
+		end.y = tinyPoint.y;
 		TestPath(rect, m_blupiPos, &end);
 	}
 	if (m_blupiHelico || m_blupiOver || m_blupiBalloon || m_blupiEcrase || m_blupiJeep || m_blupiTank || m_blupiSkate || m_blupiNage)
 	{
-		if (m_blupiPos.x == end.x && m_blupiPos.x != tinyPoint4.x)
+		if (m_blupiPos.x == end.x && m_blupiPos.x != tinyPoint.x)
 		{
-			end.y = tinyPoint4.y;
+			end.y = tinyPoint.y;
 			TestPath(rect, m_blupiPos, &end);
 		}
-		else if (m_blupiPos.y == end.y && m_blupiPos.y != tinyPoint4.y)
+		else if (m_blupiPos.y == end.y && m_blupiPos.y != tinyPoint.y)
 		{
-			end.x = tinyPoint4.x;
+			end.x = tinyPoint.x;
 			TestPath(rect, m_blupiPos, &end);
 		}
 	}
@@ -2787,9 +2739,9 @@ void CDecor::BlupiStep()
 			PlaySound(SOUND_DROWN, m_blupiPos);
 			m_jauges[JAUGE_AIR].SetHide(TRUE);
 		}
-		tinyPoint4.x = m_blupiPos.x;
-		tinyPoint4.y = m_blupiPos.y - DIMOBJY;
-		if ((m_blupiSurf || m_blupiNage) && (m_blupiPos.y % DIMOBJY == DIMOBJY - BLUPISURF || m_blupiPos.y % DIMOBJY == DIMOBJY / 2) && IsOutWater(tinyPoint4) && m_keyPress & KEY_JUMP)
+		tinyPoint.x = m_blupiPos.x;
+		tinyPoint.y = m_blupiPos.y - DIMOBJY;
+		if ((m_blupiSurf || m_blupiNage) && (m_blupiPos.y % DIMOBJY == DIMOBJY - BLUPISURF || m_blupiPos.y % DIMOBJY == DIMOBJY / 2) && IsOutWater(tinyPoint) && m_keyPress & KEY_JUMP)
 		{
 			m_blupiNage = FALSE;
 			m_blupiSurf = FALSE;
@@ -2883,12 +2835,12 @@ void CDecor::BlupiStep()
 	}
 	if (m_blupiFocus && !m_blupiSuspend && !m_blupiHelico && !m_blupiOver && !m_blupiBalloon && !m_blupiEcrase && !m_blupiJeep && !m_blupiTank && !m_blupiSkate && !m_blupiNage && !m_blupiSurf && m_blupiNoBarre == 0 && GetTypeBarre(m_blupiPos) == 1)
 	{
-		tinyPoint4.x = m_blupiPos.x;
-		tinyPoint4.y = (m_blupiPos.y + 22) / DIMOBJY * DIMOBJY + BLUPISUSPEND;
-		rect = BlupiRect(tinyPoint4);
+		tinyPoint.x = m_blupiPos.x;
+		tinyPoint.y = (m_blupiPos.y + 22) / DIMOBJY * DIMOBJY + BLUPISUSPEND;
+		rect = BlupiRect(tinyPoint);
 		if (!DecorDetect(rect, TRUE))
 		{
-			m_blupiPos = tinyPoint4;
+			m_blupiPos = tinyPoint;
 			m_blupiSuspend = TRUE;
 			m_blupiAir = FALSE;
 			StopBlupi();
@@ -2904,7 +2856,7 @@ void CDecor::BlupiStep()
 	{
 		if (m_blupiFocus && !m_blupiShield && !m_blupiHide && !m_bSuperBlupi)
 		{
-			BlupiDead(ACTION_CLEAR1, ACTION_CLEAR2);
+			BlupiDead(ACTION_CLEAR1, -1);
 		}
 		tinyPoint.x = m_blupiPos.x - 34;
 		tinyPoint.y = m_blupiPos.y - 34;
@@ -2924,23 +2876,17 @@ void CDecor::BlupiStep()
 			m_blupiAction = ACTION_BYE;
 			m_blupiPhase = 0;
 			m_blupiFocus = FALSE;
-			m_blupiFront = TRUE;
+			m_blupiTimeShield = TRUE;
 		}
 	}
 	int num27 = MoveObjectDetect(m_blupiPos, &bNear);
 	POINT tinyPoint5;
-	if (m_blupiAction != ACTION_CLEAR1 &&
-		m_blupiAction != ACTION_CLEAR2 &&
-		m_blupiAction != ACTION_CLEAR3 &&
-		m_blupiAction != ACTION_CLEAR4 &&
-		m_blupiAction != ACTION_CLEAR5 &&
-		m_blupiAction != ACTION_CLEAR6 &&
-		m_blupiAction != ACTION_CLEAR7 &&
-		m_blupiAction != ACTION_CLEAR8)
+	if (m_blupiAction != ACTION_CLEAR1)
 	{
+		POINT tinyPoint2;
 		if (IsLave(m_blupiPos) && !m_blupiShield && !m_blupiHide && !m_bSuperBlupi)
 		{
-			BlupiDead(ACTION_CLEAR3, -1);
+			BlupiDead(ACTION_CLEAR1, -1);
 			m_blupiRestart = TRUE;
 			m_blupiPos.y = m_blupiPos.y / DIMOBJY * DIMOBJY + BLUPIOFFY;
 			PlaySound(SOUND_FALL, m_blupiPos);
@@ -2962,20 +2908,10 @@ void CDecor::BlupiStep()
 		}
 		if (IsScie(m_blupiPos) && !m_blupiOver && !m_blupiJeep && !m_blupiTank && !m_blupiShield && !m_blupiHide && !m_bSuperBlupi && m_blupiFocus)
 		{
-			BlupiDead(ACTION_CLEAR4, -1);
-			m_blupiFront = TRUE;
+			BlupiDead(ACTION_CLEAR1, -1);
+			m_blupiTimeShield = TRUE;
 			m_blupiRestart = TRUE;
 			m_blupiAir = TRUE;
-		}
-		if ( (num27 == -1 || !bNear) && IsSwitch(m_blupiPos, &tinyPoint) && !m_blupiOver && !m_blupiBalloon && !m_blupiJeep && !m_blupiTank && !m_blupiSkate && !m_blupiShield && !m_blupiHide && !m_bSuperBlupi && m_blupiFocus)
-		{
-
-			ActiveSwitch(m_decor[tinyPoint.x][tinyPoint.y].icon == 385, tinyPoint);
-			m_blupiAction = ACTION_SWITCH;
-			m_blupiPhase = 0;
-			m_blupiFocus = FALSE;
-			m_blupiVitesse.x = 0;
-			m_blupiVitesse.y = 0;
 		}
 		if (IsBlitz(m_blupiPos, FALSE) && !m_blupiShield && !m_blupiHide && !m_bSuperBlupi)
 		{
@@ -3024,19 +2960,6 @@ void CDecor::BlupiStep()
 			m_decorAction = 2;
 			m_decorPhase = 0;
 		}
-		if (IsTeleporte(m_blupiPos) != -1 && !m_blupiHelico && !m_blupiOver && !m_blupiBalloon && !m_blupiEcrase && !m_blupiJeep && !m_blupiTank && !m_blupiSkate && !m_blupiAir && m_blupiFocus && m_blupiPosHelico.x == -1)
-		{
-			m_blupiAction = ACTION_TELEPORTE;
-			m_blupiPhase = 0;
-			m_blupiVitesse.x = 0;
-			m_blupiVitesse.y = 0;
-			m_blupiFocus = FALSE;
-			m_blupiPos.x = m_blupiPos.x / DIMOBJX * DIMOBJX;
-			PlaySound(SOUND_TELEPORTE, m_blupiPos);
-			tinyPoint.x = m_blupiPos.x;
-			tinyPoint.y = m_blupiPos.y - 5;
-			ObjectStart(tinyPoint, TYPE_EXPLO7, 0);
-		}
 		if (IsBridge(m_blupiPos, &tinyPoint2) && m_blupiFocus)
 		{
 			tinyPoint2.x *= DIMOBJX;
@@ -3044,10 +2967,10 @@ void CDecor::BlupiStep()
 			ObjectStart(tinyPoint2, TYPE_BRIDGE, 0);
 		}
 		int num2 = IsDoor(m_blupiPos, &tinyPoint2);
-		if (num2 != -1 && (m_blupiCle & (1 << num2) - 334) != 0)
+		if (num2 != -1 && (m_blupiTimeMockery & (1 << num2) - 334) != 0)
 		{
 			OpenDoor(tinyPoint2);
-			m_blupiCle &= ~((1 << num2) - 334);
+			m_blupiTimeMockery &= ~((1 << num2) - 334);
 			tinyPoint.x = 520;
 			tinyPoint.y = 418;
 			tinyPoint5.x = tinyPoint2.x * 64 - m_posDecor.x;
@@ -3055,7 +2978,7 @@ void CDecor::BlupiStep()
 			VoyageInit(tinyPoint, tinyPoint5, 214 + (num2 - 334) * 7, 10);
 		}
 	}
-	if (!m_blupiHelico && !m_blupiSuspend && !m_blupiOver && !m_blupiBalloon && !m_blupiEcrase && !m_blupiSkate && !m_blupiJeep && !m_blupiTank && !m_blupiJeep && m_blupiFocus)
+	if (!m_blupiHelico && !m_blupiOver && !m_blupiJeep && !m_blupiTank && m_blupiFocus)
 	{
 		num = MockeryDetect(m_blupiPos);
 		if (num != 0)
@@ -3164,18 +3087,18 @@ void CDecor::BlupiStep()
 				m_jauges[JAUGE_POWER].SetHide(TRUE);
 			}
 		}
-		if (m_moveObject[num].type == TYPE_BULLET && m_blupiFocus && m_blupiBullet < 10)
+		if (m_moveObject[num].type == TYPE_BULLET && m_blupiFocus && m_blupiTimeFire < 10)
 		{
 			ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
 			tinyPoint.x = m_moveObject[num].posCurrent.x - m_posDecor.x;
 			tinyPoint.y = m_moveObject[num].posCurrent.y - m_posDecor.y;
-			tinyPoint5.x = 570;
-			tinyPoint5.y = 430;
-			VoyageInit(tinyPoint, tinyPoint5, 177, 10);
-			m_blupiBullet += 10;
-			if (m_blupiBullet > 10)
+		tinyPoint5.x = 570;
+		tinyPoint5.y = 430;
+		VoyageInit(tinyPoint, tinyPoint5, 177, 10);
+			m_blupiTimeFire += 10;
+			if (m_blupiTimeFire > 10)
 			{
-				m_blupiBullet = 10;
+				m_blupiTimeFire = 10;
 			}
 		}
 		if ( m_moveObject[num].type == TYPE_SKATE &&
@@ -3244,7 +3167,7 @@ void CDecor::BlupiStep()
 				{
 					m_blupiAir = TRUE;
 				}
-				BlupiDead(ACTION_CLEAR1, ACTION_CLEAR2);
+				BlupiDead(ACTION_CLEAR1, -1);
 			}
 			if (m_moveObject[num].type == TYPE_POISSON || m_moveObject[num].type == TYPE_OISEAU)
 			{
@@ -3424,7 +3347,7 @@ void CDecor::BlupiStep()
 		}
 		if (m_moveObject[num].type == TYPE_CLE1 &&
 			(m_voyageIcon != 215 || m_voyageChannel != CHELEMENT) &&
-			!(m_blupiCle & CLE_RED))
+			!(m_blupiTimeMockery & CLE_RED))
 		{
 			ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
 			tinyPoint.x = m_moveObject[num].posCurrent.x - m_posDecor.x;
@@ -3440,7 +3363,7 @@ void CDecor::BlupiStep()
 		}
 		if (m_moveObject[num].type == TYPE_CLE2 &&
 			(m_voyageIcon != 222 || m_voyageChannel != CHELEMENT) &&
-			!(m_blupiCle & CLE_GREEN))
+			!(m_blupiTimeMockery & CLE_GREEN))
 		{
 			ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
 			tinyPoint.x = m_moveObject[num].posCurrent.x - m_posDecor.x;
@@ -3456,7 +3379,7 @@ void CDecor::BlupiStep()
 		}
 		if (m_moveObject[num].type == TYPE_CLE3 &&
 			(m_voyageIcon != 229 || m_voyageChannel != CHELEMENT) &&
-			!(m_blupiCle & CLE_BLUE))
+			!(m_blupiTimeMockery & CLE_BLUE))
 		{
 			ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
 			tinyPoint.x = m_moveObject[num].posCurrent.x - m_posDecor.x;
@@ -3564,21 +3487,21 @@ void CDecor::BlupiStep()
 		{
 			if (m_moveObject[num].type == TYPE_BOMBEPERSO1)
 			{
-				if (m_blupiPerso < 5 )
+				if (m_blupiTimeOuf < 5 )
 				{
 
 					ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
 					tinyPoint.x = m_moveObject[num].posCurrent.x - m_posDecor.x;
 					tinyPoint.y = m_moveObject[num].posCurrent.y - m_posDecor.y;
-					tinyPoint5.x = 0;
-					tinyPoint5.y = 438;
-					VoyageInit(tinyPoint, tinyPoint5, 108, CHBUTTON);
+			tinyPoint5.x = 0;
+			tinyPoint5.y = 438;
+			VoyageInit(tinyPoint, tinyPoint5, 108, CHBUTTON);
 				}
 			}
 			else if (!m_blupiShield && !m_bSuperBlupi)
 			{
 				ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
-				BlupiDead(ACTION_CLEAR1, ACTION_CLEAR2);
+				BlupiDead(ACTION_CLEAR1, -1);
 				tinyPoint = m_moveObject[num].posCurrent;
 				tinyPoint.x -= 34;
 				tinyPoint.y -= 34;
@@ -3587,22 +3510,6 @@ void CDecor::BlupiStep()
 				m_decorAction = 1;
 				m_decorPhase = 0;
 			}
-		}
-		if (m_moveObject[num].type == TYPE_DYNAMITE &&
-			m_blupiFocus &&
-			m_blupiDynamite == 0 &&
-			(m_voyageIcon != 252 || m_voyageChannel != CHELEMENT) )
-		{
-
-			ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
-			tinyPoint.x = m_moveObject[num].posCurrent.x - m_posDecor.x;
-			tinyPoint.y = m_moveObject[num].posCurrent.y - m_posDecor.y;
-			tinyPoint5.x = 505;
-			tinyPoint5.y = 414;
-			VoyageInit(tinyPoint, tinyPoint5, 252, CHELEMENT);
-			m_blupiAction = ACTION_TAKEDYNAMITE;
-			m_blupiPhase = 0;
-			m_blupiFocus = FALSE;
 		}
 		if (m_moveObject[num].type == 12 &&
 			!IsBlupiVehicle() &&
@@ -3653,7 +3560,7 @@ void CDecor::BlupiStep()
 					m_blupiAction = ACTION_WIN;
 					m_blupiPhase = 0;
 					m_blupiFocus = FALSE;
-					m_blupiFront = TRUE;
+					m_blupiTimeShield = TRUE;
 					m_blupiPos.y = m_moveObject[num].posCurrent.y;
 				}
 				else
@@ -3784,8 +3691,7 @@ void CDecor::BlupiStep()
 			m_blupiActionOuf = 0;
 		}
 		if ((m_blupiActionOuf == ACTION_MOCKERY ||
-			m_blupiActionOuf == ACTION_MOCKERYi ||
-			m_blupiActionOuf == ACTION_MOCKERYp)
+			m_blupiActionOuf == ACTION_MOCKERYi)
 			&& m_blupiAction == ACTION_STOP)
 		{
 			if (m_blupiTimeOuf < 20)
@@ -3799,7 +3705,6 @@ void CDecor::BlupiStep()
 	if (m_blupiAction == ACTION_MARCH &&
 		m_blupiActionOuf != ACTION_MOCKERY &&
 		m_blupiActionOuf != ACTION_MOCKERYi &&
-		m_blupiActionOuf != ACTION_MOCKERYp &&
 		!m_blupiSurf &&
 		!m_blupiNage)
 	{
@@ -3813,14 +3718,6 @@ void CDecor::BlupiStep()
 	{
 		m_blupiTimeMockery--;
 	}
-	if (m_blupiAction == ACTION_TAKEDYNAMITE && m_blupiPhase == 18)
-	{
-		StopBlupi(TRUE);
-	}
-	if (m_blupiAction == ACTION_PUTDYNAMITE && m_blupiPhase == 26)
-	{
-		StopBlupi(TRUE);
-	}
 	if (m_blupiPos.x - 30 > m_blupiPosHelico.x || m_blupiPos.x + 30 < m_blupiPosHelico.x || m_blupiPos.y - 30 > m_blupiPosHelico.y || m_blupiPos.y + 30 < m_blupiPosHelico.y)
 	{
 		m_blupiPosHelico.x = -1;
@@ -3828,22 +3725,6 @@ void CDecor::BlupiStep()
 	if (m_blupiTimeFire > 0)
 	{
 		m_blupiTimeFire--;
-	}
-	if (m_blupiAction == ACTION_TELEPORTE && m_blupiPhase == 128)
-	{
-		POINT blupiPos2;
-		if (SearchTeleporte(m_blupiPos, &blupiPos2))
-		{
-			m_blupiPos = blupiPos2;
-			ObjectStart(m_blupiPos, TYPE_MAGICTRACK, 20);
-			ObjectStart(m_blupiPos, TYPE_MAGICTRACK, -20);
-		}
-		m_blupiFocus = TRUE;
-		m_blupiPosHelico = m_blupiPos;
-	}
-	if (m_blupiAction == ACTION_SWITCH && m_blupiPhase == 10)
-	{
-		StopBlupi(TRUE);
 	}
 	//// winphone ?
 	//if (m_keyPress & KEY_FIRE && m_blupiAction == ACTION_STOP)
@@ -3853,19 +3734,13 @@ void CDecor::BlupiStep()
 	//	PlaySound(SOUND_ERROR, m_blupiPos);
 	//}
 	if ((m_blupiAction == ACTION_CLEAR1 && m_blupiPhase == 70) ||
-		(m_blupiAction == ACTION_CLEAR2 && m_blupiPhase == 100) ||
-		(m_blupiAction == ACTION_CLEAR3 && m_blupiPhase == 70) ||
-		(m_blupiAction == ACTION_CLEAR4 && m_blupiPhase == 110) ||
-		(m_blupiAction == ACTION_CLEAR5 && m_blupiPhase == 90) ||
-		(m_blupiAction == ACTION_CLEAR6 && m_blupiPhase == 90) ||
-		(m_blupiAction == ACTION_CLEAR7 && m_blupiPhase == 90) ||
-		(m_blupiAction == ACTION_CLEAR8 && m_blupiPhase == 90) ||
 		(m_blupiAction == ACTION_DROWN && m_blupiPhase == 90) ||
 		(m_blupiAction == ACTION_GLU && m_blupiPhase == 100) ||
 		(m_blupiAction == ACTION_ELECTRO && m_blupiPhase == 90))
 	{
 		if (m_nbVies > 0)
 		{
+			POINT tinyPoint2;
 			m_blupiAction = ACTION_HIDE;
 			m_blupiIcon = -1;
 			m_blupiPhase = 0;
@@ -3873,9 +3748,9 @@ void CDecor::BlupiStep()
 			{
 				m_blupiPos = m_blupiValidPos;
 			}
-			POINT posDecor = GetPosDecor(m_blupiPos);
-			tinyPoint.x = m_blupiPos.x - posDecor.x - 30;
-			tinyPoint.y = m_blupiPos.y - posDecor.y;
+		tinyPoint2 = GetPosDecor(m_blupiPos);
+		tinyPoint.x = m_blupiPos.x - tinyPoint2.x - 30;
+		tinyPoint.y = m_blupiPos.y - tinyPoint2.y;
 			VoyageInit(VoyageGetPosVie(m_nbVies), tinyPoint, 48, GetBlupiChannelStandard());
 			NetSendBarePacket(PK_DIE, m_nbVies);
 		}
@@ -3886,7 +3761,7 @@ void CDecor::BlupiStep()
 			DoorsLost();
 			NetSendBarePacket(PK_LOST, 0);
 		}
-		m_blupiFront = FALSE;
+		m_blupiTimeShield = FALSE;
 	}
 	if (m_bMulti && m_blupiAction != ACTION_WIN)
 	{
@@ -3903,7 +3778,7 @@ void CDecor::BlupiStep()
 			m_blupiAction = ACTION_WIN;
 			m_blupiPhase = 0;
 			m_blupiFocus = FALSE;
-			m_blupiFront = TRUE;
+			m_blupiTimeShield = TRUE;
 			m_blupiAir = FALSE;
 			m_blupiHelico = FALSE;
 			m_blupiOver = FALSE;
@@ -3996,32 +3871,13 @@ void CDecor::BlupiStep()
 		StopSound(SOUND_MOCKERY);
 		NetStopSound(SOUND_MOCKERY);
 	}
-	if (lastBlupiAction == ACTION_MOCKERYp && m_blupiAction != ACTION_MOCKERYp)
-	{
-		StopSound(SOUND_OUF2);
-		NetStopSound(SOUND_OUF2);
-	}
 	if (m_blupiFocus &&
 		!m_blupiAir &&
-		(!m_blupiHelico || BlupiIsGround()) &&
-		(!m_blupiOver || BlupiIsGround()) &&
-		!m_blupiBalloon &&
-		!m_blupiEcrase &&
-		!m_blupiShield &&
-		!m_blupiHide &&
+		!m_blupiHelico &&
+		!m_blupiJumpAie &&
 		!bIsOpen &&
 		!bIsOpen2 &&
-		m_blupiTransport == -1 &&
-		!IsLave(m_blupiPos) &&
-		!IsPiege(m_blupiPos) &&
-		!IsGoutte(m_blupiPos, TRUE) &&
-		!IsScie(m_blupiPos) &&
-		!IsBridge(m_blupiPos, &tinyPoint) &&
-		IsTeleporte(m_blupiPos) == -1 &&
-		!IsBlitz(m_blupiPos, TRUE) &&
-		!IsTemp(m_blupiPos) &&
-		!IsBalleTraj(m_blupiPos) &&
-		!IsMoveTraj(m_blupiPos))
+		m_blupiTransport == -1)
 	{
 		if (m_blupiFifoNb > 0)
 		{
@@ -4074,9 +3930,7 @@ void CDecor::BlupiStep()
 			m_scrollPoint.y = end.y;
 		}
 	}
-	if ((m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST) &&
-		m_blupiAction != ACTION_CLEAR2 &&
-		m_blupiAction != ACTION_CLEAR3)
+	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST)
 	{
 		m_posDecor = GetPosDecor(m_scrollPoint);
 	}
@@ -4088,11 +3942,6 @@ void CDecor::BlupiStep()
 
 	m_lastKeyPress = m_keyPress;
 
-	// DEBUG v
-	sprintf(m_notifText[0], "time %d", m_time);
-	sprintf(m_notifText[1], "act %d", m_blupiAction);
-	m_notifTime = 200;
-	// DEBUG ^
 }
 
 
