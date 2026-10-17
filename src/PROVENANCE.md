@@ -184,3 +184,13 @@ the corrected semantic names without that regression. `decor.cpp` retains its
 previous strict `VoyageStep`/`CurrentWrite` source forms.
 
 \r\n
+
+## Follow-up 20: initialized animation tables
+
+[EVIDENCE] src/dectables.cpp now defines table_shield, table_shield_blupi, table_power, table_decor_lave, table_decor_eau1, and table_decor_eau2 in target .data order. The shield payload is 144..151,150,149,148,147,146,145; power is 136..143. The four decblock initializers retain the values from scratch/soldecblock/recovered-tables.cpp; all 68 initialized bytes match the oracle, as recorded in scratch/soldecblock/table-proof.json.
+
+[EVIDENCE] Target payload starts are table_shield RVA 0x2e6e8, table_shield_blupi 0x2e720, table_power 0x2e730, table_decor_lave 0x2e7e0, table_decor_eau1 0x2e7f8, and table_decor_eau2 0x2e808. table_shield, table_power, and the unique decblock payloads were validated from caller relocations or exact initialized-payload hits. MoveObjectStepIcon is STRICT at 0x11bd0 (4,165-byte oracle body; 4,176-byte object extent), with all 62 relocations verified, including table_shield -> 0x42e6e8 and table_power -> 0x42e730.
+
+[OPEN] table_decor_eau1 has identical aligned payload hits at oracle RVAs 0x2e7f8 and 0x33b18. The verifier does not create a unique-payload binding for it; the current report contains no caller relocation proof selecting one occurrence, so neither address is claimed.
+
+[EVIDENCE] Clean verify.py --accept accepted one newly STRICT function and no folded functions. The clean combined result reports 338 STRICT and 3 FOLDED object functions, with 78,656 / 141,488 game .text bytes covered; the accepted-function manifest remains the regression gate.

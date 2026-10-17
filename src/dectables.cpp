@@ -352,3 +352,10 @@ int table_tutorial[] = {
 	69, 70, 0, 7, -1, 0x19c,
 	-1
 };
+
+int table_shield[] = { 144, 145, 146, 147, 148, 149, 150, 151, 150, 149, 148, 147, 146, 145 };
+int table_shield_blupi[] = { 151, 150, 151, 150 };
+int table_power[] = { 136, 137, 138, 139, 140, 141, 142, 143 };
+int table_decor_lave[] = { 68, 69, 70, 71, 72 };
+int table_decor_eau1[] = { 92, 93, 94, 95 };
+int table_decor_eau2[] = { 91, 96, 97, 98 };
