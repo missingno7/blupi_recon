@@ -52,8 +52,10 @@ remain `STRICT`.
 - **STRICT** means one proved code location matches every non-relocation byte;
   the location can be unique by bytes, placed by TU order or verified references, or
   anchored by an accepted `--at` assertion;
-  each relocation has one run-wide symbol binding; imports resolve to their
-  IAT slots; calls to reconstructed functions land at their unique matched
+  each relocation has one run-wide symbol binding; `__imp_` imports resolve to
+  their IAT slots, while plain import calls may resolve through a `.text`
+  linker thunk only when its bytes are exactly `ff 25` plus that same import's
+  IAT VA; calls to reconstructed functions land at their unique matched
   RVA; other calls land at an exact start in `oracle/functions.csv`; and
   reconstructed data lands in its expected PE section with identical
   initialized bytes. An explicitly mapped external data symbol must land in

@@ -294,11 +294,27 @@ def closest_candidate(func: Function, exe_text: bytes) -> tuple[int | None, int 
 
 
 def import_map(pe: pefile.PE) -> dict[str, int]:
+    # DPLAYX is imported by ordinal in this executable. The pinned DX6 import
+    # library identifies these public symbols; the PE records their slots as
+    # ordinals 1 and 2 rather than carrying import-by-name strings.
+    ordinal_aliases = {
+        ("dplayx.dll", 1): ("DirectPlayCreate",),
+        ("dplayx.dll", 2): ("DirectPlayEnumerateA",),
+    }
     result = {}
     for entry in getattr(pe, "DIRECTORY_ENTRY_IMPORT", []):
+        dll = entry.dll.decode("ascii", "replace").casefold()
         for imp in entry.imports:
             if imp.name:
-                result[normalize_import(imp.name.decode("ascii", "replace"))] = imp.address
+                names = (imp.name.decode("ascii", "replace"),)
+            else:
+                names = ordinal_aliases.get((dll, imp.ordinal), ())
+            for name in names:
+                key = normalize_import(name)
+                previous = result.get(key)
+                if previous is not None and previous != imp.address:
+                    raise ValueError(f"import alias {name} resolves to multiple IAT slots")
+                result[key] = imp.address
     return result
 
 
@@ -463,6 +479,39 @@ def section_kind(name: str) -> str:
     if value.startswith(".bss"):
         return "bss"
     return "other"
+
+
+def verify_import_relocation(pe: pefile.PE, symbol: Symbol, reloc: Relocation,
+                             symbol_va: int, effective_va: int, addend: int,
+                             imports: dict[str, int]) -> dict[str, Any] | None:
+    """Verify an import reference as an IAT address or linker-generated thunk."""
+    if symbol.section != 0:
+        return None
+    iat_va = imports.get(normalize_import(symbol.name))
+    if iat_va is None:
+        return None
+    if symbol.name.lower().startswith("__imp_"):
+        ok = symbol_va == iat_va and effective_va == iat_va
+        return {"verified": ok, "status": "STRICT" if ok else "MISMATCH",
+                "reason": "import IAT slot" if ok else f"expected IAT slot 0x{iat_va:08x}",
+                "import_iat_va": f"0x{iat_va:08x}"}
+    if reloc.typ != 0x0014:
+        return {"verified": False, "status": "RELOC-UNVERIFIED",
+                "reason": "non-IAT import reference is not a REL32 thunk call",
+                "import_iat_va": f"0x{iat_va:08x}"}
+
+    thunk_section, _ = pe_section_at(pe, symbol_va)
+    thunk_bytes = pe_bytes(pe, symbol_va, 6)
+    expected = b"\xff\x25" + struct.pack("<I", iat_va)
+    section_name = (thunk_section.Name.rstrip(b"\0").decode("ascii", "replace")
+                    if thunk_section is not None else "")
+    ok = (addend == 0 and effective_va == symbol_va and thunk_section is not None
+          and section_kind(section_name) == "text" and thunk_bytes == expected)
+    return {"verified": ok, "status": "STRICT" if ok else "MISMATCH",
+            "reason": ("import jump thunk targets the matching IAT slot" if ok else
+                       f"REL32 import target is not an ff 25 thunk to IAT 0x{iat_va:08x}"),
+            "import_iat_va": f"0x{iat_va:08x}",
+            "thunk_bytes": thunk_bytes.hex(" ") if thunk_bytes is not None else None}
 
 
 def data_extent(coff: Coff, symbol: Symbol, addend: int) -> tuple[int, bytes] | None:
@@ -712,6 +761,15 @@ def verify_eh_sections(pe: pefile.PE, coff: Coff, obj_path: Path,
                 continue
             symbol_va, effective_va, addend = target
             key = symbol_map_key(obj_path, symbol)
+            import_result = verify_import_relocation(pe, symbol, reloc, symbol_va,
+                                                     effective_va, addend, imports)
+            if import_result is not None:
+                detail.update(import_result)
+                if import_result["status"] != "STRICT":
+                    mismatch |= import_result["status"] == "MISMATCH"
+                    unresolved |= import_result["status"] != "STRICT"
+                relocation_details.append(detail)
+                continue
             if symbol.section == section.index:
                 expected_symbol_va = base_va + symbol.value
             elif (symbol.section > 0 and symbol.section <= len(coff.sections)
@@ -879,13 +937,12 @@ def resolve_sites(func: Function, base_offset: int, exe_text: bytes, text_rva: i
             unresolved = True
             continue
 
-        target_import = imports.get(normalize_import(symbol.name)) if symbol.section == 0 else None
-        if target_import is not None:
-            ok = symbol_va == target_import and effective_va == target_import
-            entry.update({"verified": ok, "status": "STRICT" if ok else "MISMATCH",
-                          "reason": "import IAT slot" if ok else f"expected IAT slot 0x{target_import:08x}"})
-            hard_mismatch |= not ok
-            unresolved |= not ok
+        import_result = verify_import_relocation(pe, symbol, reloc, symbol_va,
+                                                 effective_va, addend, imports)
+        if import_result is not None:
+            entry.update(import_result)
+            hard_mismatch |= import_result["status"] == "MISMATCH"
+            unresolved |= import_result["status"] != "STRICT"
             reports.append(entry)
             continue
         if symbol.name in explicit:

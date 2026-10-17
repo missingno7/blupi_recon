@@ -572,8 +572,8 @@ void CEvent::Create(HINSTANCE hInstance, HWND hWnd, CPixmap *pPixmap, CDecor *pD
 	m_pPixmap = pPixmap;
 	m_pDecor  = pDecor;
 	m_pSound  = pSound;
-	m_pMovie  = pMovie;
 	m_pNetwork = pNetwork;
+	m_pMovie  = pMovie;
 	m_gamer = 1;
 
 	ReadInfo(1);
@@ -894,9 +894,9 @@ void CEvent::ChangePause(BOOL bPause, BOOL bMulti)
 	}
 	if (m_bMulti && bMulti)
 	{
-		data[2] = bPause;
 		data[0] = 3;
 		data[1] = PK_PAUSE;
+		data[2] = bPause;
 		m_pNetwork->Send(&data, 3, DPSEND_GUARANTEED);
 	}
 }
@@ -916,7 +916,7 @@ int	CEvent::NetSearchPlayer(DPID dpid)
 {
 	for (int i = 0; i < MAXNETPLAYER; i++)
 	{
-		if (m_pNetwork->m_players[i].dpid == dpid)
+		if (m_pNetwork->m_players[i].bIsPresent && dpid == m_pNetwork->m_players[i].dpid)
 			return i;
 	}
 	return -1;
@@ -955,14 +955,12 @@ noMatch:
 
 void CEvent::NetSendBarePacket(int message, short data)
 {
-	char packet[4];
+	struct Packet { BYTE size; BYTE message; short data; } packet;
 
-	packet[2] = 0;
-	packet[3] = 0;
-	packet[1] = message;
-	packet[0] = 4;
-	*(short*)&packet[2] = data;
-	m_pNetwork->Send(packet, 4, DPSEND_GUARANTEED);
+	packet.size = 4;
+	packet.message = message;
+	packet.data = data;
+	m_pNetwork->Send(&packet, 4, DPSEND_GUARANTEED);
 }
 
 void CEvent::NetDraw()
@@ -1775,19 +1773,19 @@ void CEvent::PutTextInputBox(POINT pos)
 BOOL CEvent::TextInputDelete()
 {
 	int start;
-	char* pText;
 
 	start = m_textHiliStart;
-	if (start >= m_textHiliEnd) return FALSE;
+	if (start < m_textHiliEnd)
+	{
+		do {
+			m_textInput[start] = m_textInput[m_textHiliEnd + start - m_textHiliStart];
+			start++;
+		} while (m_textInput[start - 1] != 0);
 
-	do {
-		m_textInput[start] = m_textInput[m_textHiliEnd + start - m_textHiliStart];
-		pText = m_textInput + start;
-		start++;
-	} while (*pText != 0);
-
-	m_textHiliEnd = m_textHiliStart;
-	return TRUE;
+		m_textHiliEnd = m_textHiliStart;
+		return TRUE;
+	}
+	return FALSE;
 }
 
 BOOL CEvent::TreatTextInput(UINT message, WPARAM wParam, LPARAM lParam) {

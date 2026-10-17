@@ -934,6 +934,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?Create@CEvent@@QAEXPAX0PAVCPixmap@@PAVCDecor@@PAVCSound@@PAVCNetwork@@PAVCMovie@@@Z",
+      "rva": "0x000164a0",
+      "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?GetButtonIndex@CEvent@@QAEHH@Z",
       "rva": "0x00016500",
       "size": 80,
@@ -1012,9 +1018,27 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?ChangePause@CEvent@@QAEXHH@Z",
+      "rva": "0x00016c60",
+      "size": 128,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?NetSendLobby@CEvent@@QAEXXZ",
       "rva": "0x00016ce0",
       "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?NetSearchPlayer@CEvent@@IAEHK@Z",
+      "rva": "0x00016d30",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?NetSendBarePacket@CEvent@@IAEXHF@Z",
+      "rva": "0x00016e50",
+      "size": 48,
       "tu": "src/event.cpp"
     },
     {
@@ -1207,6 +1231,12 @@
       "symbol": "?ChatSend@CEvent@@IAEXXZ",
       "rva": "0x0001cc10",
       "size": 352,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?TextInputDelete@CEvent@@IAEHXZ",
+      "rva": "0x0001cf00",
+      "size": 96,
       "tu": "src/event.cpp"
     },
     {
@@ -1807,6 +1837,12 @@
       "symbol": "??1CSound@@QAE@XZ",
       "rva": "0x00022d10",
       "size": 80,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?Create@CSound@@QAEHPAX@Z",
+      "rva": "0x00022d60",
+      "size": 96,
       "tu": "src/sound.cpp"
     },
     {
