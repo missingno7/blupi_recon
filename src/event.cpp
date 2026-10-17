@@ -1656,10 +1656,10 @@ BOOL CEvent::DrawButtons()
 			DrawTextLeft(m_pPixmap, pos, text, m_fileIndex == i ? FONTGOLD : FONTWHITE);
 
 			// manually split the string into two draw calls if it contains a newline
+			pos.x = 330;
 			char* line2 = strchr(m_filenameBuffer[i], '\n');
 			if (line2 == NULL)
 			{
-				pos.x = 330;
 				DrawTextLeft(m_pPixmap, pos, m_filenameBuffer[i], ((m_fileIndex != i) - 1) & 2);
 				pos.y += DIMBUTTONY;
 			}
@@ -1669,10 +1669,10 @@ BOOL CEvent::DrawButtons()
 				text[line2 - m_filenameBuffer[i]] = '\0';
 				pos.x = 330;
 				pos.y -= DIMTEXTY / 2;
-				DrawTextLeft(m_pPixmap, pos, text, ((m_fileIndex != i) - 1) & 2);
+				DrawTextLeft(m_pPixmap, pos, text, m_fileIndex == i ? FONTSELECTED : FONTWHITE);
 				pos.y += DIMTEXTY;
 				pos.x = 330;
-				DrawTextLeft(m_pPixmap, pos, line2 + 1, ((m_fileIndex != i) - 1) & 2);
+				DrawTextLeft(m_pPixmap, pos, line2 + 1, m_fileIndex == i ? FONTSELECTED : FONTWHITE);
 				pos.y += DIMBUTTONY - DIMTEXTY / 2;
 			}
 		}
@@ -2460,8 +2460,7 @@ OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
 		m_filePageOffset = 0;
 		m_fileIndex = 0;
 		SetHide(WM_BUTTON10, TRUE);
-		bHide = FALSE;
-		if (m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6) bHide = TRUE;
+		bHide = m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6;
 		SetHide(WM_BUTTON11, bHide);
 		for (i = 0; i < 6; ++i)
 		{
@@ -2485,8 +2484,7 @@ OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
 		m_filePageOffset = 0;
 		m_fileIndex = 0;
 		SetHide(WM_BUTTON10, 1);
-		bHide = FALSE;
-		if (m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6) bHide = TRUE;
+		bHide = m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6;
 		SetHide(WM_BUTTON11, bHide);
 		for (i = 0; i < 6; ++i)
 		{

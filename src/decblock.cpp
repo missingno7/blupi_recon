@@ -511,8 +511,8 @@ void CDecor::Build(RECT rect, POINT mousePos)
 						m_pPixmap->QuickIcon(CHEXPLO, (i + j + m_time) % 6 + 48, pos);
 					}
 				}
-				int team = m_pNetwork->m_players[i].team;
 				int blupiChannel = m_netBlupiTransport[i];
+				int team = m_pNetwork->m_players[i].team;
 				if (blupiChannel == 2 && team > 0) blupiChannel = CHBLUPI1 - 1 + team;
 				m_pPixmap->QuickIcon(blupiChannel, m_netBlupiIcon[i], tinyPoint);
 				tinyPoint.x += 10;
@@ -524,9 +524,9 @@ void CDecor::Build(RECT rect, POINT mousePos)
 
 	if (m_phase != WM_PHASE_BUILD)
 	{
+		m_blupiSec = 0;
 		if (!m_blupiFront)
 		{
-			m_blupiSec = 0;
 			tinyPoint.x = m_blupiPos.x - posDecor.x;
 			tinyPoint.y = m_blupiPos.y - posDecor.y;
 			if (m_blupiShield)

@@ -256,7 +256,11 @@ BOOL CDecor::DrawMap(BOOL bPlay, int team)
 	if (m_posDecor.y > maxy) m_posDecor.y = maxy;
 
 	m_scrollPoint = m_posDecor;
-	Build(RECT(0, 0, LXIMAGE, LYIMAGE), POINT(320, 240));
+	{
+		RECT clip = { 0, 0, LXIMAGE, LYIMAGE };
+		POINT pos = { 320, 240 };
+		Build(clip, pos);
+	}
 	m_pPixmap->DrawMap(8, RECT(0, 0, 522, 400), RECT(0, 0, 206, 158));
 	m_posDecor = oldPosDecor;
 	m_scrollPoint = oldScrollPoint;
