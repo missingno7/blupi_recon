@@ -151,3 +151,29 @@ Using the Blood II phase model (one TU-wide symbol counter; front-end and back-e
 - The simple rotor model mispredicts one choice in TreatEventBase's cheat code (`lea ecx,[edi+1]`), so the real
   free-choice rule has more inputs than the micro corpus shows. [OPEN] Reading the selection routine in c2.exe
   (Ghidra) is the remaining route for these two functions.
+
+### Rotor refinements ([EVIDENCE], build/tmp/ra lab, VC5 SP3 /O2)
+
+- The rotor continues across if/else arms, join blocks and early-return arms in layout order (`if1`, `if2`,
+  `ifelse`, `ret_in*`). A loop body is allocated before the loop's entry test (`loop`).
+- A load used only by a compare/test (`if (g[9])`, `if (g[2] == 0)`) takes the first free register and does not
+  advance the rotor.
+- `g = !g` / `if (g) g = 0; else g = 1;` give identical code: the tested load is first-free and the sete result
+  takes the rotor register. When the toggled value is reused afterwards through CSE (`V1(g[1])`), the roles swap:
+  the load takes the rotor register and the result the first free one. This is the shape of TreatEventBase's
+  oracle toggle at +0x41a (load edx, result ecx with eax live); the candidate has the non-swapped shape. [OPEN]
+  which original use makes the swap; copying the result into a register local (`b = g[1]`, `b = g = !g`) does not.
+- `add2` (`g[5] = g[6] + g[7]` between rotating loads) separates the rotor from an LRU model: only the rotor
+  predicts it.
+
+### c2.exe internals ([EVIDENCE], static only; project build/c2, export build/c2/out/all.c)
+
+- c2.exe (SP3, 660,240 bytes) is basic-block reordered: functions are split into hot and cold chunks far apart,
+  so Ghidra's function bodies are fragments. Assertion strings name the back-end sources (`P2egasg.c`,
+  `P2\color.c`, `P2\code.c`, `lower.c`, `schedmd.c`, ...): register assignment is a graph-colouring
+  allocator (color.c, chunks around 0x4676b8-0x46930a) plus regasg.c (0x46ee34, 0x478192, 0x478503).
+- Register numbers: 0 noreg, 1 eax, 2 ecx, 3 edx, 4 ebx, 5 esp, 6 ebp, 7 esi, 8 edi (name table at 0x49d924
+  downwards; regasg code loops over registers below 9 and skips 5). Hidden option table at 0x49a45a (`-Bd`,
+  `-off#`, `-db#`, `-il#`, `-noblend`, ...) has no IR or allocation dump switch.
+- [OPEN] The rotor's implementation was not located by text search of the decompilation; reading color.c needs
+  chunk reassembly (or a dynamic trace of c2.exe, which is a toolchain binary, not game code).
