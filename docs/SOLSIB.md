@@ -36,6 +36,13 @@ to `scratch/solsib/`; the last verification is in `build/verify-solsib/`.
 
 ## A testable SIB rule
 
+**[EVIDENCE, follow-up clarification]** The deciding variable in the reduced
+test below is **one index identity versus two index identities**, not block
+nesting by itself. Two distinct indices both declared at function scope emit
+the same complete 112-byte section as the two block-local indices. A single
+shared index emits the commuted SIB. Thus "shared versus separate locals" is
+more precise than "function scope versus block scope".
+
 **[EVIDENCE; proposed extension to BLUPI-REG-01]** A source local's identity
 and scope can select SIB base/index order even when its values, physical
 registers, instruction scheduling, and generated body size do not change.
@@ -105,6 +112,29 @@ the unused Net prefix fields produces the same one-byte effect with displacement
 `1`; independently reducing Player stride from 32 to 16 also preserves it.
 These are three controlled pairs / six compiles, not three different rules.
 
+**[EVIDENCE] Exact measured conditions and orientation.** In this model the
+first guarded group mutates an indexed player field; the second computes
+another index, toggles its ready byte, reloads `net` after that aliasing byte
+store, copies the ready byte into a packet and calls `send`. At the final
+ready load EAX is the scaled player offset and ECX is the reloaded network
+pointer. Distinct indices select **base EAX, index ECX** (`SIB 08`); one shared
+index selects **base ECX, index EAX** (`SIB 01`). The earlier ready-toggle
+load/address computations have the same bytes in both forms. Neither the
+physical registers nor their load order decides this pair: both are fixed
+and identical. In the complete ChangeButtons transfer, the analogous scaled
+offset is ESI, giving `SIB 0e -> 31`.
+
+**[EVIDENCE] Boundary controls added in the follow-up.** Six further objects
+(`micro_identity_boundaries.py`) test two root indices versus one root index,
+pointer-addition spelling in each form, and unsigned-ready-byte type in each
+form. Every outcome keeps the corresponding orientation above; the two-root
+and two-block-local sections are byte-identical. Thirty-six scratch-only
+local-count controls (`micro_symbol_count.py`: two identity forms, top/end
+placement, unused-local counts 0-8) produce exactly one complete function
+section per identity form. Unused local count does not explain this result.
+These count controls are diagnostic micro inputs and are never candidate
+reconstruction source.
+
 **[EVIDENCE]** Reduction controls: the full 272-byte two-group model differs
 only at `+0xe9` (`0f -> 39`); removing the first group's send, wrap test and
 draw/adjust calls yields a 176-byte pair with the same phenomenon. Nine first
@@ -144,7 +174,10 @@ valid, but does not by itself identify the compiler pass responsible.
 
 ## Header deltas requiring supervisor integration
 
-Only `scratch/solsib/event.h` differs from canonical headers:
+**[EVIDENCE] Integrated in supervisor commit `34fb42e`.** The two deltas below
+describe the first round. In the follow-up, `scratch/solsib/event.h` was
+refreshed from canonical and is byte-identical to `src/event.h`; no new header
+delta is requested.
 
 | Declaration delta | Evidence and limit |
 |---|---|
@@ -200,5 +233,89 @@ differences identified in EVENT_TU.md; DrawButtons retains the suffix-copy
 scheduling difference. Their tested local-scope transfers did not improve
 either function. Reconstructing those blocks further is a better next step
 than repeating the disproven width, spelling, count, or compiler-tree sweeps.
-The next integration step is the two ABI declarations and the focused
-ChangeButtons body from this candidate, followed by canonical verification.
+The first round's ChangeButtons body and ABI declarations were subsequently
+integrated in `34fb42e`; the follow-up below supersedes this integration step.
+
+## TreatEventBase follow-up
+
+**[EVIDENCE]** Checked `git log -1 -- src/event.cpp`; after ChangeButtons
+integration appeared as `34fb42e`, refreshed `event.cpp`, `event.h`, and the
+round's baseline `treat_start.cpp` from `src/`. The refreshed TreatEventBase
+reproduces the prior 6,944-byte section, 730-byte fixed prefix, ECX-input/EDX-
+result toggle at `+0x41a`, and EAX HWND load at `+0x6f3`. All subsequent
+experiments changed only TreatEventBase. DrawButtons was not worked on in
+this follow-up.
+
+**[EVIDENCE] The refreshed branch-span residue is 13 bytes, not seven.** Both
+WM_KEYDOWN entries are at `+0x32f`. The jump instruction at `+0x2d8` is
+`0f 87 46 09 00 00`, reaching `+0xc24`; target is `0f 87 39 09 00 00`,
+reaching `+0xc17`. Byte `+0x2da` is its displacement. This measurement is
+retained as `t2_refreshed_baseline_metrics.json` and the paired disassemblies.
+No run in this follow-up established a seven-byte residue in the refreshed
+canonical shape.
+
+### Compiler findings: transfer tests
+
+**[EVIDENCE]** Thirty-six distinct valid TreatEventBase variants were measured
+with the pinned flags, the complete TU and `--build-dir solsib`; none improves
+the three requested sites while preserving the preceding target shape. The
+following are negative transfers of BLUPI-REG-01's local-identity diagnostic,
+not evidence that the original SIB observation was a physical-register rule.
+
+| Family | Controlled inputs / count | Result |
+|---|---|---|
+| Toggle inputs and result form | Used cached BOOL input, cached result, assignment chain, ternary (4); shared BOOL input/result across cheats 0/1 (2); bool input, chained branch outputs, branch-local enable result, existing-i input (4); parallel outputs, explicit outputs in both branches, reversed assignment chain (3) | 13 variants. Cached input and shared input are code-inert at the sites. Result-first forms move the ESI copy before the store; explicit outputs retain extra branches. A larger branching form happens to choose EDX for the later HWND, but changes many preceding instructions and is not a fix. No target ECX-result toggle was recovered. |
+| Other actual variable identities and lifetimes | Remove fwKeys alias; separate/direct sound point; separate cheat index; separate network indices; local/shared HWND (7); shared/separate completion character and folded preincrement (3); reuse i or fwKeys for enable, i for phase (3); narrow received-player ID alone or ID plus packet data to the MULTI block (2) | 15 variants. Scalar/index/HWND copies are mostly inert. Point separation and receive-block narrowing change the frame/stack map and regress the prefix to 2 bytes. Sharing enable/phase with existing root integers changes neither early register site. |
+| Keyboard shared value / call-argument source form | Shared root i, fwKeys, or dedicated keyPress (3); direct member assignment inside each KeyChange call, with a shared DemoRecEvent tail (1) | 4 variants. First three choose EAX masks and regress the early SIB to prefix 172. The direct member-expression form preserves prefix 730 and reproduces the target's EDX mask arms, EDX-to-EAX argument copy, and shared member store/call, but shifted later in a 7,008-byte MISMATCH section. Its dispatch destination is `+0xc56`, still wrong. |
+| VK_RETURN/QUITPLAYTEST shape | Put positive PLAYTEST action first with a shared label; duplicate ordinary calls; positive-first ordinary calls; positive-first plus the direct keyboard form (4) | All preserve the original early register residues and worsen or fail to improve the dispatch span. No such control-flow rewrite is retained. |
+
+**[EVIDENCE]** One initial overlap between two probe batches reused the same
+private build directory. Those ambiguous outputs were discarded; affected
+identity tests were rerun sequentially. Four intermediate malformed probes
+failed compilation and contributed no measured result. Source/object/result
+snapshots for the valid runs are in `scratch/solsib/runs/t2_*/`.
+
+### An independent register-choice control
+
+**[EVIDENCE]** `micro_assignment.py` (three objects) shows that
+`int x=*p|k; *p=x; call(x);` and `int x=*p|k; call(*p=x);` are byte-identical,
+whereas `call(*p=*p|k);` selects a different register path and adds a copy into
+EAX before the push. `micro_keyboard.py` (three objects) confirms the same
+source distinction with two switch arms: separate member update followed by
+the common call uses ECX; placing the member assignment inside each call uses
+EDX and a common `mov eax,edx; push eax` tail. Expanded versus compound
+assignment inside the call is byte-identical. These are measured compiler
+controls; the related TreatEventBase variant matches that target sub-sequence
+but remains MISMATCH as a whole. It is not a new STRICT function or proof of
+the original source spelling.
+
+### Static location of the remaining layout differences
+
+**[EVIDENCE]** `treat_switches.py` decodes the actual oracle switch mapper and
+COFF switch-table relocations. It does not normalize them into a match.
+
+| Case entry | Target | Refreshed baseline | Direct-keyboard experiment |
+|---|---:|---:|---:|
+| Escape | `+0x736` | `+0x736` | `+0x736` |
+| Return | `+0x9f7` | `+0x9d9` | `+0x9d9` |
+| Space | `+0xaab` | `+0xb68` | `+0xaea` |
+| Pause | `+0xadf` | `+0xafd` | `+0xb1e` |
+| Left / Right | `+0xb0b / +0xb19` | `+0xb1c / +0xb42` | `+0xb4a / +0xb58` |
+| F1 / F4 | `+0xb5f / +0xbe9` | `+0xba8 / +0xbe1` | `+0xb9e / +0xc28` |
+
+**[EVIDENCE]** With the target-shaped direct keyboard tail, all entries from
+Space through F4 have the same +63-byte displacement. Escape's region is 30
+bytes short and Return's region is 93 bytes too large relative to the target.
+The target INFO/LOSTMULTI Escape action owns a separate 30-byte GAMER action at
+`+0x9bb`; the current candidate merges it with the later Return GAMER action.
+This is a concrete block-sharing/source-form lead for further work; it is
+not explained by changing an arbitrary SIB byte or by the net 13-byte span
+alone. No proposed way of recovering that layout has yet been verified.
+
+**[OPEN]** The exact internal c2 ordering key remains unknown. The catalog
+rule should specify the tested index-identity pattern and its counterexamples,
+not promise a universal mapping from local scope to any register choice.
+The best retained TreatEventBase is the refreshed canonical body; the failed
+variants remain evidence only. ChangeButtons remains STRICT. Next investigate
+the differing Escape/Return action sharing using the decoded switch/label
+map, then retest the two early scalar-register residues in that closer shape.

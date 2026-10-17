@@ -2102,6 +2102,48 @@
         "doc_ref": "docs/EVENT_TU.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-REG-02",
+      "section": "registers",
+      "title": "SIB base/index order follows the identity of the index variable (shared vs separate locals)",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "sib_order",
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Same effective address, base and index commuted (e.g. 8a 54 0e 25 vs 8a 54 31 25); address spellings, context probes and compiler builds do not change it.",
+      "construct": "Whether two loops/blocks reuse ONE index local or use separate locals for the same role.",
+      "explanation": "VC5 SP3 /O2: the choice of base vs index register for [reg+reg+disp] followed which variable supplied the index; reusing a single player-index local (as the original did) reproduced the target order, separate locals commuted it. Lexical scope and the count of unused locals alone did not matter. Reproduced in a 112-byte micro TU.",
+      "experiment": "For each commuted SIB, identify the index variable; try merging same-role index locals into one (or splitting a shared one) and recompile; confirm in a micro TU when unsure.",
+      "not_when": "If wide context probes flip it, treat it as TU context; if a later block's control-flow shape flips it, see BLUPI-REG-01.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/SOLSIB.md",
+          "tier": "PROVEN",
+          "counts": "CEvent::ChangeButtons 0x1b220 became STRICT (2,854 B, 83 relocations) after sharing one player-index local; 112-byte micro reproduction; TreatEventBase: 36 variants show index identity matters, scope/unused locals do not"
+        }
+      ],
+      "keywords": "sib base index commuted shared local index variable identity loop",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::ChangeButtons",
+        "rva": "0x1b220",
+        "tu": "event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": "bounded",
+        "outcome": "STRICT",
+        "doc_ref": "docs/SOLSIB.md"
+      },
+      "legacy_ids": []
     }
   ]
 }
