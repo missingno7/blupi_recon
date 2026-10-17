@@ -2438,6 +2438,47 @@
         "doc_ref": "docs/COMPILER_STUDY.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-REG-05",
+      "section": "registers",
+      "title": "Expression temporaries rotate eax/ecx/edx; plain-copy register locals take the first free register",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Identical code except scratch registers; the oracle's choice is one or two steps further along eax -> ecx -> edx than the candidate's at a free-choice site.",
+      "construct": "Whether a loaded value is an expression temporary (`V1(h[k])`, `h[a] = h[b] + 1`) or a named local that is a plain copy of a load (`t = h[k]; V1(t);`).",
+      "explanation": "VC5 SP3 /O2 micro TUs (build/tmp/ra): serialized loads separated by calls get eax, ecx, edx, eax... - a per-function rotor carried across calls and blocks in emission order (BLUPI-REG-04). Every free temporary takes the rotor's next register and advances it; forced registers (call results, cdq/idiv, shift counts) do not advance it; `a + b` advances it twice. A local that is a plain copy of a load is allocated to the first free register (eax) and does not advance the rotor. Both forms emit identical bytes whenever the rotor points at the first free register, but leave the rotor in different states, which changes later free choices.",
+      "experiment": "Count the rotor steps needed (oracle vs candidate at the first differing free site, mod 3). In code emitted before that site, look for single-use loads that could be plain-copy locals in the original (or the reverse) and convert one; verify bytes before the site stay identical.",
+      "not_when": "Locals used more than once may be promoted to callee-saved registers instead; computed locals (`t = x + 1`) behave as temporaries.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#rotor",
+          "tier": "PROVEN",
+          "counts": "micro corpus ~40 compiles"
+        }
+      ],
+      "keywords": "register rotor round robin eax ecx edx temporary local copy first free allocation",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "micro corpus",
+        "rva": "-",
+        "tu": "-",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 40,
+        "outcome": "rule established",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

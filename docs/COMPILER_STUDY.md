@@ -118,3 +118,30 @@ source difference nearby.
 - [EVIDENCE] Removing the 14 POINT operator helpers from def.h compiles every TU (none uses them) but regresses four
   accepted functions (IsDeepWater, MockeryDetect, MoveObjectSort, QuickIcon): their context currently depends on
   those definitions, which therefore stand in for some genuine original context. Kept until that is identified.
+
+## Round 3: allocator measurements (build/tmp/ra lab)
+
+### Rotor ([EVIDENCE], BLUPI-REG-05)
+
+Serialized loads (each followed by a call) take eax, ecx, edx, eax, ... - a per-function rotor that calls do not
+reset. Free expression temporaries take the next register and advance it; forced registers (call results, cdq/idiv,
+`cl` shift counts) do not; `a + b` advances it twice (ecx, edx), which looks like a reset. A plain-copy local
+(`t = h[k]; V1(t);`) takes the first free register (eax) and leaves the rotor alone; a computed local (`t = h[k] + 1`)
+behaves as a temporary; a local used twice goes to a callee-saved register.
+
+### Counter domains ([EVIDENCE])
+
+Using the Blood II phase model (one TU-wide symbol counter; front-end and back-end numbered decisions):
+- TreatEventBase: no change for 0-300 `extern` probes at the end of event.cpp (back-end domain), 0-256 at the top,
+  0-256 directly before the function. Its two residues are not symbol-number decisions.
+- DrawButtons: no change for 0-128 probes directly before it or 0-64 at the top; a few large top counts make it worse
+  (78). Not a small counter offset either.
+
+### Negative ([EVIDENCE])
+
+- Local/temporary conversions of single-use loads emitted before TreatEventBase's toggle (network block, prologue,
+  text-input guard, WM_NCMOUSEMOVE) are inert in the full function.
+- DrawButtons: selection/font locals at the split-title site are worse.
+- The simple rotor model mispredicts one choice in TreatEventBase's cheat code (`lea ecx,[edi+1]`), so the real
+  free-choice rule has more inputs than the micro corpus shows. [OPEN] Reading the selection routine in c2.exe
+  (Ghidra) is the remaining route for these two functions.
