@@ -320,61 +320,6 @@ variants remain evidence only. ChangeButtons remains STRICT. Next investigate
 the differing Escape/Return action sharing using the decoded switch/label
 map, then retest the two early scalar-register residues in that closer shape.
 
-## Escape action follow-up
-
-**[EVIDENCE]** `runs/t3_no_intro` is the new best checkpoint: 7,072-byte COFF
-section (6,616 instruction bytes plus 456 switch-table/alignment bytes), 273
-relocations, exactly eight non-relocated byte differences at RVA `0x1d230`.
-It remains MISMATCH. Escape owns its separate GAMER action at `+0x9bb`, STOP
-at `+0x9d9`, Return starts at `+0x9f7`, and the dispatch jump now reaches the
-exact target `+0xc17`. All branch spans and complete switch data match.
-Remaining bytes: `41b,421,423,426,428,42e` (ECX/EDX toggle roles), `6f4,6ff`
-(EAX/EDX HWND load/push). Fixed prefix: 1,051 bytes; no new STRICT function.
-
-**[EVIDENCE]** The fix combines positive Return phase checks and shared
-PLAYTEST action with the target keyboard behavior: assignment inside each
-KeyChange call, direct TRUE returns for Pause/F1..F4/Home, default FALSE,
-and shared event recording. Failed CurrentRead reaches a fresh GAMEWRITE
-test. The rest of Return is then placed at target `+0x1870`.
-
-**[EVIDENCE]** Other target-backed corrections: WM_CHAR normalizes BOOL;
-WM_MOUSEMOVE omits ShowCursor; mouse down/up include PLAYTEST; 50 button
-IDs share ChangeButtons with DONAME/DOCLEAR/DOWRITE/DOREAD; phase action order
-is DEMO, DOPLAY, PRIVATE, general ChangePhase. PLAY/PRIVATE/PREV/NEXT phase
-requests normalize BOOL (INSERT still forwards it). Multiplayer reads use
-offset 100 and NEXT clamps to 10; NEXT's mission limit is build-enabled
-220, otherwise 20, with selection based only on m_bPrivate. Separate used
-private/official phase actions recover the target clamp blocks. Unsupported
-INTRO1/INTRO2 labels accounted for the last two switch-map differences.
-
-**[EVIDENCE] Header delta:** private def.h starts from canonical and adds only
-WM_BUTTON40..49 = WM_USER+240..249 (`0x4f0..0x4f9`), proved by the original
-dispatch interval `0x4c8..0x4f9` ending at its range test. No existing header
-entry changed; event.h remains canonical. Only TreatEventBase changed in cpp.
-
-### Compiler findings: recovered layout
-
-**[EVIDENCE]** Same full TU / VC5 SP3 `/W3 /GX /O2 /ML /Gd /Gy` throughout.
-Escape suffix ladder, negative suffix, explicit label (3) are byte-inert;
-whole ladder adds unrelated blocks. Positive Return restores Escape's
-30-byte action; the keyboard call-expression form is also required for
-the complete layout. Eight Return polarity combinations (`t3_shapes_00..07`)
-give exact `+0xc17` in shapes 00/05; none fixes the early registers. Explicit
-Return joins/physical outlining do not fix them either. VC5-CTL-01 /
-BLUPI-REG-01: positive layout transfer, negative scalar-register transfer.
-
-**[EVIDENCE]** Later semantic/order corrections reduce fixed differences
-888 -> 620 -> 10; removing INTRO gives eight. VC5-SEM-01 / VC5-CTL-01,
-Blupi-specific reconstruction evidence. Four used-local controls (life counts
-in i, NEXT bound in fwKeys, root j for lives, shared root j for lives/bound)
-are inert in this recovered layout. Packet BYTE, DWORD bEnable, and duplicated
-DemoRecEvent/TRUE instead of the recording goto are also inert. BYTE cheat
-character regresses prefix to 48. BLUPI-REG-01 / VC5-LOC-01: negative here.
-
-**[OPEN]** Exact layout does not determine the two remaining register choices.
-The controlled shared-index SIB rule above remains valid only with its
-stated conditions/counterexamples; it is not a universal allocation rule.
-
 ## Escape action and complete TreatEventBase layout recovery
 
 **[EVIDENCE]** Follow-up to the separate Escape GAMER-action lead. The retained
@@ -453,3 +398,52 @@ and `+0x6f4`, `+0x6ff` (EAX HWND load/push instead of EDX). Identical block
 layout has not made those physical-register choices match. The earlier
 controlled shared-index SIB rule remains valid under its stated conditions;
 it is not a universal register-allocation predictor.
+
+## Post-restart verification and remaining scalar registers
+
+**[EVIDENCE]** After the desktop-heap host failure, checked the surviving
+sources, refreshed scratch event.cpp/event.h/def.h from canonical, and reapplied
+only the measured TreatEventBase body. Latest event.cpp commit was still
+`34fb42e`. Both `r4_rebased` and the final `r4_final` verification reproduce
+the eight-byte near match above. The working `scratch/solsib/event.cpp` is now
+restored and verified; the earlier restoration uncertainty is resolved.
+Its SHA-256 is `f44f94cae8252d1326b9adc7c3291655fc3b90dd518902335c26a08aa2d9ad7f`.
+Only TreatEventBase differs from current canonical source, event.h is identical,
+and def.h has only the ten added button macros already documented.
+
+**[EVIDENCE]** `round4_audit.json` records the final 69 STRICT / 1
+RELOC-UNVERIFIED / 39 MISMATCH event results. ChangeButtons stays STRICT at
+`0x1b220`, 2,854 original instruction bytes. No new STRICT function or unique
+byte coverage is claimed. TreatEventBase still has 273 relocations requiring
+strict proof; eight equal-address/register encodings cannot be wildcarded
+into a match. The comparison covers all 7,072 section bytes, including the
+456 table/alignment bytes following the 6,616 instruction bytes.
+
+**[EVIDENCE]** Decoded all 16 keyboard cases again: every entry equals the
+target, including Home/default TRUE at `+0x1820`. The separate Escape GAMER
+action is `+0x9bb`, STOP is `+0x9d9`, Return is `+0x9f7`, and the dispatch
+instruction is exactly `0f 87 39 09 00 00` at `+0x2d8`. The remaining first
+fixed difference is `+0x41b`, a register field in the instruction at `+0x41a`.
+
+### Compiler findings: completed interrupted controls
+
+All nine valid probes below used the complete TU and pinned SP3 flags with
+`verify.py --build-dir solsib`. The worker helper sets `BLUPI_JOBS=4` and
+awaits each verification before starting another. No permuter campaign was run.
+
+| Trigger / actual source variation | Count and measured effect | Rule / classification |
+|---|---|---|
+| Toggle input local identity | Assign the original member input to existing bEnable or existing i inside the condition before toggling/storing it. | 2; byte-inert, same eight residues. BLUPI-REG-01 / VC5-LOC-01, **negative**. |
+| Escape/Return phase identity | Cache phase separately in the two cases versus one used shared root phase; preserve the fresh GAMEWRITE member read after CurrentRead. | 2; byte-inert, same eight residues. BLUPI-REG-01, **negative**. |
+| Cheat rank identity | Cache the rank used by the first two cheat conditions in existing i versus a distinct used rank local. | 2; byte-inert, same eight residues. BLUPI-REG-01 / VC5-LOC-01, **negative**. |
+| Return-only phase cache | Complete the previously unrun cached-Return probe from its older ten-byte checkpoint. | 1; preserves its eight register residues and its two pre-existing INTRO mapper differences. No transfer to the scalar-register sites. VC5-LOC-01, **negative**. |
+| Toggle arm ordering / result expression | Negative condition with swapped TRUE/FALSE arms versus negative ternary assignment followed by member reload. | 2; swapped arms are byte-inert. The ternary moves the ESI copy ahead of the member store, raising fixed differences 8 -> 14, while retaining the wrong register roles. VC5-ORD-01 / VC5-CTL-01, **negative**. |
+
+**[OPEN]** The two scalar-register choices remain unexplained. All instruction
+sizes, branch spans, switch-case entries, and non-relocated bytes outside those
+two instructions/sequences now agree. More equivalent access spellings or
+repeating already negative count/compiler sweeps has diminishing returns.
+The next useful input is a new source-identity or c2 operand-order hypothesis
+with a controlled positive example for these scalar loads, rather than treating
+the confirmed shared-index SIB rule as a universal allocation rule. All worker
+verification commands have completed; no background campaign is left running.

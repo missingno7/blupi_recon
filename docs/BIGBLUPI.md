@@ -410,3 +410,145 @@ Sizes below consistently use the verifier/COFF extent, as in the earlier log. Ev
 [EVIDENCE] Ownership-preserving deliverable: `scratch/solblupi/decblupi.cpp` (f57) has only BlupiStep changed relative to current canonical text. With the still-canonical char/short prototypes its body is 25,272 bytes, frame a4, raw prefix 149, score 2,885; those prototype residues explain why this version is weaker than f52. Its unchanged DecorDetect retains the known two-byte regression under the proposed layout. `scratch/solblupi/header-proof.cpp` (f58) changes only the two additional DecorDetect member names; full verifier exit 0 and all three peers STRICT reproduce the final layout solution independently of the prototype experiments. Last worker build is f58. No BlupiStep bytes are credited as STRICT.
 
 [OPEN] Next integration: retain the state/inventory/FIFO layout and correct DecorDetect to Helico/Nage/Surf; coordinate GetTypeBarre's int return declaration/definition and NetSendBarePacket's int argument declaration/definition across owning TUs; then continue from the ten register bytes in f52 and prove every relocation, especially the new decorated callee names. GetTypeBarre itself and the new NetSendBarePacket signature are not certified STRICT by this worker. No background worker processes remain.
+# Senior pass: post-restart closure and combined integration audit
+
+[EVIDENCE] All resumed verification used `--build-dir solblupi`, with
+`BLUPI_JOBS=4` and one sequential campaign at a time. The interrupted evaluations
+from the earlier host failure were not counted as results. The winning source
+is `scratch/solblupi/close/r04-sound-copy-init.cpp`; the coordinated payload is
+`scratch/solblupi/package/decblupi.cpp`. Package instructions and the exact
+integration file list are in `scratch/solblupi/package/README.md`.
+
+[EVIDENCE] **BlupiStep is now STRICT in the combined 20-object comparison:**
+RVA `0x9280`, **25,269 unique body bytes**, frame `0xa4`, compared extent 25,280
+(11 boundary NOPs), **all 350 relocations verified**. The result was read from
+`build/verify-solblupi/results.json` after the private-header combined run.
+The complete-run summary is retained in `package/verify-button-both-aggregate.log`.
+Standalone asmscore on the winning one object is 1 / RELOC-UNVERIFIED, zero
+instruction edits, normalized instruction prefix 6,516: only four external
+walking/swimming/surfing table relocations lack definitions in that one-object
+invocation. The combined run includes `dectables.obj` and proves all four.
+Raw prefix remains 149 because the first call's unlinked relocation begins
+there; it is not a remaining instruction mismatch.
+
+| Resumed iteration | Frame | COFF bytes | Raw prefix | Normalized instruction prefix | asmscore |
+|---|---:|---:|---:|---:|---:|
+| r01-index-player | a4 | 25280 | 149 | 5812 | 45 |
+| r02-index-num3 / index-num4 / index-icon | a4 | 25280 | 149 | 5812 | 45 |
+| r02-position-ref / position-pointer | a4 | 25280 | 149 | 5812 | 45 |
+| r02-end-reuse | a4 | 25312 | 149 | 5756 | 967 |
+| r02-aggregate-points | a4 | 25280 | 149 | 5860 | 17 |
+| r03-sound-xy / sound-scope / sound-tinypoint5 | a4 | 25280 | 149 | 5860 | 17 |
+| r03-sound-yx | a4 | 25280 | 149 | 5859 | 21 |
+| r03-sound-end | a4 | 25280 | 149 | 5756 | 797 |
+| **r04-sound-copy-init** | **a4** | **25280** | **149** | **6516** | **1 standalone; STRICT combined** |
+| r04-sound-tiny-xy / sound-const / sound-scalars | a4 | 25280 | 149 | 5860 | 17 |
+| r04-sound-tiny-yx | a4 | 25280 | 149 | 5859 | 21 |
+
+[EVIDENCE] Exact former ten-byte map (ours -> target): `+58c8 96->86`,
+`+58d2 52->50` (jeep x EDX->EAX); `+58e3 86->8e`, `+58e9 8e->86`,
+`+58f2 50->51`, `+58f3 51->50` (tank y EAX->ECX, x ECX->EAX);
+`+595a 96->8e`, `+5960 86->96`, `+5966 52->51`, `+5967 50->52`
+(electro sound y EDX->ECX, x EAX->EDX). Three branch-local aggregate POINT
+initializers fixed eight. Replacing ONLY the sound initializer by
+`POINT pos = m_blupiPos` fixed the final two at `+5960/+5967`.
+
+## Compiler findings
+
+- [BLUPI-REG-02 / VC5-LOC-03; blupi-specific source-form effect in this
+  aggregate argument pattern] SP3 complete decblupi TU, canonical flags `/W3 /GX /O2
+  /ML /Gd /Gy`, private corrected layout/prototypes. Direct member POINT call
+  arguments versus branch-local `POINT pos = {m_blupiPos.x,m_blupiPos.y}`
+  produce the same loads and pushes but different physical registers.
+  Aggregate initialization at jeep/tank/sound reduces ten fixed bytes to two,
+  score 45 -> 17, without frame/body/branch/call changes. The final sound's
+  actual POINT copy initialization instead of aggregate construction fixes
+  the remaining x-register identity: all fixed bytes equal, combined STRICT.
+  This is source aggregate/local identity evidence; it does not make arbitrary
+  scalar register residues instances of the shared-index SIB rule.
+- [VC5-ORD-01 / BLUPI-REG-01; negative] Explicit sound x/y component stores,
+  extra lexical scope, existing tinyPoint5 reuse, const POINT and scalar
+  initializer intermediates retain the two-byte residue. y-before-x regresses
+  to score 21. Existing end reuse changes the use graph and regresses scores
+  to 797/967 (the wider family adds 32 extent bytes). No variant retained.
+- [BLUPI-REG-02; negative] Player-collision index identities num3/num4/icon
+  and point reference/pointer aliases are byte-inert at the ten-byte checkpoint.
+  The previously measured shared-index rule does not predict these scalar
+  member-to-call register choices by itself.
+- [BLUPI-CTX-01 / VC5-CTX-01..04; new global integration limitation] Applying
+  the private decor.h to every TU (rather than just the changed CDecor TUs)
+  regresses accepted CButton::MouseMove to five load/register/SIB instruction
+  residues. Natural arithmetic association/subtraction forms, block/root
+  scalar caches, snapshots and const qualifiers, branch/return forms,
+  point references/copies and genuine include-order permutations did not
+  restore STRICT. Removing the five unused duplicate m_sb2 timer declarations
+  also did not restore it; that diagnostic header was reverted. No filler,
+  asm, volatile access or accepted-function withdrawal is proposed. Two late
+  grouped-header declaration controls stalled without a completed result and
+  are not compiler evidence.
+
+## Integration package and remaining gate
+
+[EVIDENCE] `package/README.md` enumerates exactly six proposed canonical files:
+`src/decblupi.cpp`, `src/decor.h`, `src/decmove.cpp`, `src/decblock.cpp`,
+`src/decor.cpp`, and `recon.json`. Header offsets/evidence and the existing
+unproved compatibility tail are explicitly recorded there. Duplicate
+GetTypeBarre definitions in BOTH decblupi and decblock must change to int.
+The NetSendBarePacket definition's second argument changes to int while its
+serialized packet field remains short; the new `...EH@Z` callee is STRICT at
+`0x10a60`, 48 bytes. Migrate only the accepted old `...EF@Z` symbol name at
+the same RVA/size; do not withdraw the function. The canonical manifest has
+322 entries, one already withdrawn; all 321 active entries were checked.
+
+[EVIDENCE] Corrected `DecorDetect` tests Helico/Nage/Surf at c90c/c91c/c920,
+STRICT `0xf640` / 640 body bytes. `IsLave` and `IsRessort` in decblupi are
+STRICT at `0x10150` / 88 and `0x101b0` / 94 body bytes (96-byte extents each).
+Under the new header, VoyageStep must increment Perso at c95c rather than the
+stale PosMagic.y name. CurrentWrite RHS names must follow the original physical
+offsets, retaining the inherited DescGameFile LHS names; both functions are
+STRICT again at `0x13ef0` / 352 and `0x14da0` / 1584 compared bytes.
+
+[OPEN] The raw full gate reports MouseMove plus the expected old packet-name
+lookup failure. The single proved packet-name migration leaves one actual
+accepted regression: MouseMove `0x2fd0` / 201 body bytes, 208-byte extent.
+The package is therefore reviewable but **not an all-accepted passing
+integration** yet. Preserve the strict BlupiStep body and solve authentic shared
+header/declaration context for MouseMove; do not hide the regression using a
+per-TU header or dummy declarations.
+
+[OPEN] The last sequential two-header control and subsequently unrelated
+read-only shell probes stopped responding. No new compiles were submitted
+after detecting that stall. The polling channel still worked, but Ctrl-C did
+not confirm termination of session 12441. Host-side process cleanup and the
+stalled control's completion remain unconfirmed; incomplete results are not
+matches. This is separate from the preserved completed STRICT proof above.
+
+### Final clean payload verification
+
+[EVIDENCE] The interrupted session subsequently ended. The ordinary command
+broker's shell probes remained unresponsive, but the available Node command
+channel worked; a fresh exact `tools/verify.py --tu ... --build-dir solblupi`
+20-TU build completed there with `BLUPI_JOBS=4`. No further header experiments
+were mixed into that run. The final payload is under
+`scratch/solblupi/package/payload/`; `integration.patch` and `inventory.json`
+record exactly the six proposed canonical changes. `finalize.py` reproducibly
+assembles the candidate, performs the complete verifier CLI, and audits the
+unchanged and one-name-migrated accepted gates. `evidence/results.json` archives
+the full comparison; `audit.json` records **STRICT**, 25,269 body / 25,280
+compared bytes, frame a4, zero fixed differences and **350/350 verified
+relocations** for BlupiStep. All 321 active accepted entries are checked:
+the raw gate has MouseMove and the old packet-name lookup; after the single
+proved packet-name migration, **320 pass and MouseMove alone fails**.
+
+[EVIDENCE] Process checks found no cl/c1xx/c2/Python worker remaining after the
+interrupted campaign. The fresh final verification has also completed; no
+background compiler campaign is intentionally left running. The command-channel
+incident is resolved for package production and does not weaken the recorded
+STRICT proof. The sole unresolved integration issue is the authentic shared
+header context needed to keep accepted MouseMove STRICT.
+
+[EVIDENCE] `git apply --check scratch/solblupi/package/integration.patch`
+passes against the current canonical files. A final process check after the
+clean build found no cl/c1xx/c2/Python worker. No canonical source, manifest,
+compiler catalog or validation document was edited by this worker.
+
