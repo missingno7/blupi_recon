@@ -2358,7 +2358,7 @@
     {
       "id": "BLUPI-REG-04",
       "section": "registers",
-      "title": "Switch case bodies are register-allocated in descending case-value order",
+      "title": "Free scratch-register choices follow allocations emitted earlier in layout order",
       "tier": "PROVEN",
       "scope": "general",
       "applies": {
@@ -2371,10 +2371,10 @@
           "regalloc_only"
         ]
       },
-      "symptom": "A free scratch-register choice inside one case of a large switch changes when code is added to a different case, independent of where that case appears in the source.",
-      "construct": "Which case labels (by value) contain allocations ahead of the residue's case.",
-      "explanation": "Micro TU (TreatEventBase shape, switch(message) with case 0x100): one extra scratch load in case 0x150 flips the 0x100 case's choices whether case 0x150 is written first or last in the source; the same load in case 0x50 never does. The rotation state of the free-choice allocator carries over case bodies in descending case-value order, then into lower-valued cases.",
-      "experiment": "For a register-only residue in a case body, look for differences in cases with higher case values (and in code before the switch), not in later source lines.",
+      "symptom": "A free scratch-register choice changes when code is added elsewhere in the function, including in a different switch case, without any change near the site.",
+      "construct": "Allocations in blocks emitted (laid out) before the residue site: code before it in the function, and switch case bodies that the dispatch places ahead of it.",
+      "explanation": "VC5 SP3 /O2. Micro TU: an extra scratch load in case 0x102/0x150 (emitted before the case 0x100 body) flips the 0x100 case's free choices whether the case is written first or last in the source; in case 0xA0/0x50 (emitted after) it never does. In TreatEventBase the same load flips the residues when placed in WM_NCMOUSEMOVE (dispatch emits it before WM_KEYDOWN) and not in WM_CHAR, WM_KEYUP, WM_MOUSEMOVE, WM_LBUTTONUP or WM_PHASE_DEMO (emitted after). Case value and source position as such do not decide; emission order does. A first write-up that said 'descending case value' was wrong and is corrected here.",
+      "experiment": "For a register-only residue, look for differences in code emitted before the site (including out-of-line case bodies placed ahead of it), not in later source lines.",
       "not_when": "Residues outside switch statements; the rule says which code can influence the choice, not how to find the original difference.",
       "evidence": [
         {
@@ -2390,7 +2390,7 @@
         "rva": "0x1d230",
         "tu": "event.cpp",
         "flags": "/O2 /GX /ML /Gd /Gy",
-        "compiles": 4,
+        "compiles": 11,
         "outcome": "rule established; TreatEventBase residue still open",
         "doc_ref": "docs/COMPILER_STUDY.md"
       },

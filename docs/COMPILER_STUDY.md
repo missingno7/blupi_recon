@@ -77,12 +77,16 @@ leave bytes identical but change temporaries) is the best remaining direction.
 | `CEvent::ChangePhase` 0x19310 | if-chain (not the SB2 `switch`), `WM_PHASE_DOQUIT`, `WM_PHASE_SETUPp`, demo worlds 200-219, `MESS_LEAVE`; Sol WIP integrated | 1,879/2,029 instructions; rest is the ebx/edi assignment of promoted 0 / `WM_PHASE_PLAY` |
 | `CDecor::Build` 0x4350 | `type >= 8 && type <= 11`; cloud loop like the net-blupi loop | 1,155/1,237 instructions; per-branch blupi QuickIcon tails still open |
 
-### Case order
+### Emission order (corrected)
 
-[EVIDENCE] Micro TU: an extra scratch load in `case 0x150` flips the free register choices inside `case 0x100` whether
-`case 0x150` is written before or after it; in `case 0x50` it never does. Switch case bodies are allocated in
-descending case-value order (BLUPI-REG-04). For `TreatEventBase` this means every case above `WM_KEYDOWN` (and the
-code before the switch) can carry the difference; body-blanking of individual such cases did not flip it.
+[EVIDENCE] A free scratch-register choice follows the allocations emitted before it in layout order (BLUPI-REG-04).
+Micro TU: an extra load in `case 0x102`/`case 0x150` (bodies emitted before the `case 0x100` body) flips the 0x100
+case's choices regardless of source position; in `case 0xA0`/`case 0x50` (emitted after) it never does. Real
+`TreatEventBase`: the same diagnostic load flips both residues in `WM_NCMOUSEMOVE` (emitted before `WM_KEYDOWN`) and
+in no case emitted after it. An earlier draft of this section said "descending case value"; that was wrong.
+Consequence: the original differs from our source in something emitted before the residue sites (function start,
+network receive block, dispatch, `WM_NCMOUSEMOVE`), although all of that code is byte-identical, so the difference
+must change free/forced allocation status without changing bytes.
 
 ### Zero promotion
 
