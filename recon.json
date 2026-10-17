@@ -168,6 +168,12 @@
       "tu": "src/button.cpp"
     },
     {
+      "symbol": "?Create@CButton@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HHI@Z",
+      "rva": "0x00002a30",
+      "size": 176,
+      "tu": "src/button.cpp"
+    },
+    {
       "symbol": "?SetIconMenu@CButton@@QAEXPAHH@Z",
       "rva": "0x00002ae0",
       "size": 48,
@@ -1149,9 +1155,15 @@
       "tu": "src/decor.cpp"
     },
     {
-      "symbol": "?AdaptMidBorder@CDecor@@QAEXUtagPOINT@@@Z",
+      "symbol": "?AdaptMidBorder@CDecor@@QAEXHH@Z",
       "rva": "0x000143d0",
       "size": 256,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?AdaptBorder@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x000144d0",
+      "size": 128,
       "tu": "src/decor.cpp"
     },
     {
@@ -1878,6 +1890,12 @@
       "symbol": "?LoadStringA@@YAXIPADH@Z",
       "rva": "0x0001f1f0",
       "size": 32,
+      "tu": "src/misc.cpp"
+    },
+    {
+      "symbol": "?ChangeSprite@@YAXH@Z",
+      "rva": "0x0001f210",
+      "size": 288,
       "tu": "src/misc.cpp"
     },
     {

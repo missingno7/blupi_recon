@@ -52,7 +52,6 @@ void ChangeSprite(int sprite)
 
     if ( g_mouseType != MOUSETYPEGRA && g_lastSprite != sprite )
     {
-        hCursor = (HCURSOR)sprite;
         if ( sprite == SPRITE_ARROW ) hCursor = LoadCursor(g_hInstance, "IDC_ARROW");
         if ( sprite == SPRITE_POINTER ) hCursor = LoadCursor(g_hInstance, "IDC_POINTER");
         if ( sprite == SPRITE_ARROWU ) hCursor = LoadCursor(g_hInstance, "IDC_ARROWU");

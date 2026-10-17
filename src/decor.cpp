@@ -160,23 +160,23 @@ BOOL CDecor::IsRightBorder(int x, int y, int dx, int dy)
 	return TRUE;
 }
 
-void CDecor::AdaptMidBorder(POINT cel)
+void CDecor::AdaptMidBorder(int x, int y)
 {
 	int num = 15;
-	if (cel.x < 0 || cel.x >= 100 || cel.y < 0 || cel.y >= 100) return;
-	if (!IsRightBorder(cel.x, cel.y + 1, 0, -1)) num = 14;
-	if (!IsRightBorder(cel.x, cel.y - 1, 0, 1)) num &= ~2;
-	if (!IsRightBorder(cel.x + 1, cel.y, -1, 0)) num &= ~4;
-	if (!IsRightBorder(cel.x - 1, cel.y, 1, 0)) num &= ~8;
+	if (x < 0 || x >= 100 || y < 0 || y >= 100) return;
+	if (!IsRightBorder(x, y + 1, 0, -1)) num = 14;
+	if (!IsRightBorder(x, y - 1, 0, 1)) num &= ~2;
+	if (!IsRightBorder(x + 1, y, -1, 0)) num &= ~4;
+	if (!IsRightBorder(x - 1, y, 1, 0)) num &= ~8;
 
-	int icon = m_decor[cel.x][cel.y].icon;
+	int icon = m_decor[x][y].icon;
 	for (int i = 0; i < 80; i++)
 	{
 		if (icon == table_adapt_decor[i])
 		{
 			icon = table_adapt_decor[i / 16 * 16 + num];
 			if (icon == 0x23 && rand() % 2 == 0) icon = 0x9c;
-			m_decor[cel.x][cel.y].icon = icon;
+			m_decor[x][y].icon = icon;
 			return;
 		}
 	}
@@ -184,11 +184,11 @@ void CDecor::AdaptMidBorder(POINT cel)
 
 void CDecor::AdaptBorder(POINT cel)
 {
-	AdaptMidBorder(cel);
-	AdaptMidBorder(POINT(cel.x + 1, cel.y));
-	AdaptMidBorder(POINT(cel.x - 1, cel.y));
-	AdaptMidBorder(POINT(cel.x, cel.y + 1));
-	AdaptMidBorder(POINT(cel.x, cel.y - 1));
+	AdaptMidBorder(cel.x, cel.y);
+	AdaptMidBorder(cel.x + 1, cel.y);
+	AdaptMidBorder(cel.x - 1, cel.y);
+	AdaptMidBorder(cel.x, cel.y + 1);
+	AdaptMidBorder(cel.x, cel.y - 1);
 	int icon = m_decor[cel.x][cel.y].icon;
 	if (icon != -1 && !IsPassIcon(icon)) MoveObjectDelete(cel);
 }

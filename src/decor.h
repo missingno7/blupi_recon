@@ -344,7 +344,7 @@ public:
 	BOOL	IsRightBorder(int x, int y, int dx, int dy);
 	BOOL	IsFromage(POINT cel);
 	BOOL	IsGrotte(POINT cel);
-	void	AdaptMidBorder(POINT cel);
+	void	AdaptMidBorder(int x, int y);
 	void	AdaptBorder(POINT cel);
 
 	// DecDesign.cpp

@@ -376,15 +376,14 @@
 
 #define SPRITE_ARROW		1
 #define SPRITE_POINTER		2
-#define SPRITE_MAP			3
-#define SPRITE_ARROWU		4
-#define SPRITE_ARROWD		5
-#define SPRITE_ARROWL		6
-#define SPRITE_ARROWR		7
-#define SPRITE_ARROWUL		8
-#define SPRITE_ARROWUR		9
-#define SPRITE_ARROWDL		10
-#define SPRITE_ARROWDR		11
+#define SPRITE_ARROWU		3
+#define SPRITE_ARROWD		4
+#define SPRITE_ARROWL		5
+#define SPRITE_ARROWR		6
+#define SPRITE_ARROWUL		7
+#define SPRITE_ARROWUR		8
+#define SPRITE_ARROWDL		9
+#define SPRITE_ARROWDR		10
 #define SPRITE_WAIT			11
 #define SPRITE_EMPTY		12
 #define SPRITE_FILL			14

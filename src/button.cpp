@@ -65,13 +65,11 @@ BOOL CButton::Create(HWND hWnd, CPixmap *pPixmap, CSound *pSound,
 	m_type = type;
 	m_bMinimizeRedraw = bMinimizeRedraw;
 	m_bEnable = TRUE;
-	m_bHide = FALSE;
 	m_bDemo = FALSE;
+	m_bHide = FALSE;
 	m_message = message;
-	m_pos.x = pos.x;
-	m_pos.y = pos.y;
-	m_dim.x = iconDim.x;
-	m_dim.y = iconDim.y;
+	m_pos = pos;
+	m_dim = iconDim;
 	m_nbMenu = 0;
 	m_nbToolTips = 0;
 	m_selMenu = 0;

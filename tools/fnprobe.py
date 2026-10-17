@@ -28,7 +28,7 @@ import pefile  # noqa: E402
 EXE = ROOT / "assets" / "Speedy Blupi" / "BLUPI.EXE"
 
 
-def compile_unit(canonical: str, source: Path, out_dir: Path) -> Path:
+def compile_unit(canonical: str, source: Path, out_dir: Path, extra_flags: list[str] | None = None) -> Path:
     manifest = json.loads((ROOT / "recon.json").read_text(encoding="utf-8"))
     tool = manifest["toolchain"]
     unit = next((u for u in manifest["translation_units"] if u["source"] == canonical), {"source": canonical})
@@ -44,7 +44,7 @@ def compile_unit(canonical: str, source: Path, out_dir: Path) -> Path:
         command += ["--include", str(include)]
     for define in tool.get("defines", []) + unit.get("defines", []):
         command += ["--define", define]
-    for flag in tool.get("flags", []):
+    for flag in tool.get("flags", []) + (extra_flags or []):
         command += ["--flag", flag]
     run = subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                          encoding="mbcs", errors="replace")
@@ -63,13 +63,14 @@ def main() -> int:
     parser.add_argument("rva", help="oracle RVA of the function, e.g. 0x1d230")
     parser.add_argument("--region", help="lo:hi function offsets to print side by side (unaligned sequences)")
     parser.add_argument("--name", default="default", help="private output folder build/fnprobe/<name>")
+    parser.add_argument("--extra-flag", action="append", default=[], help="additional cl flag for experiments only")
     args = parser.parse_args()
 
     canonical, _, candidate = args.unit.partition("=")
     source = (ROOT / (candidate or canonical)).resolve()
     out_dir = ROOT / "build" / "fnprobe" / args.name
     out_dir.mkdir(parents=True, exist_ok=True)
-    obj = compile_unit(canonical.replace("\\", "/"), source, out_dir)
+    obj = compile_unit(canonical.replace("\\", "/"), source, out_dir, args.extra_flag)
 
     functions = [f for f in cmpfunc.Coff(obj).functions() if args.function == f.name or args.function in f.name]
     if len(functions) != 1:
