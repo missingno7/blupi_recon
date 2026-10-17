@@ -259,3 +259,78 @@ foreach ($tu in @('sound','movie','misc','ddutil','pixmap')) {
 ```
 
 [EVIDENCE] The compile banner is VC5 compiler 11.00.7022; all five fresh object builds succeeded. The fresh raw comparator result is 22/1/5 sound, 13/0/0 movie, 6/3/3 misc, 8/0/1 ddutil, and 20/4/21 pixmap when all five objects are compared together. The isolated CPixmap compare is also 20/4/21. An explicit target-call map pass produces the same counts.
+## Residuals round (2026-10-17)
+
+[EVIDENCE] This section updates older residual statuses where the same target body was rechecked with the current source and comparator. All candidate and private-header changes below are under `scratch/`; no canonical source or header was changed by this worker. Compiler: VC5 SP3 11.00.7022, `/W3 /GX /O2 /ML /Gd /Gy`, with the per-TU defines from `recon.json`; TMP/TEMP were under `build/tmp`.
+
+### Sound helpers and cross-TU declaration context
+
+[EVIDENCE] The copied-tree experiment at `scratch/coreres/src_minimal_sound_order/` starts from the current `src/`, substitutes the scratch `sound.cpp`, and tests a private `sound.h`. Its minimum successful declaration set keeps the current public `Play` and `PlayImage` API, declares `StopSound(int)` after `Play`, retains the inherited `PlaySoundDS(DWORD,DWORD)` declaration, and adds `PlaySoundDS(int,int,int,int)` and `PlaySoundDS(int,int,int)` after it. `StopAllSounds()` is omitted in this successful variant. The all-object VC5 build and `cmpfunc.py` output are in `build/coreres/minimal_sound_order/`; the private header has since been copied to `scratch/tu/sound.h`.
+
+| Strict candidate body | RVA | Unique oracle bytes |
+|---|---:|---:|
+| `CSound::PlaySoundDS(int,int,int,int)` | 0x22F00 | 189 |
+| `CSound::PlaySoundDS(int,int,int)` | 0x22FC0 | 131 |
+| `CSound::StopSound(int)` | 0x23050 | 99 |
+| `CSound::PlayImage(int,POINT,int,int)` | 0x230C0 | 351 |
+| `CSound::Play(int,int,int)` | 0x23220 | 278 |
+
+[EVIDENCE] All five methods are `STRICT` together in the all-TU copied-tree comparison. The helper bodies at `0x22F00` and `0x22FC0` clean four and three stack arguments respectively; the strict caller bodies at `0x230C0` and `0x23220` confirm the argument use. The overload names are the source-level reconstruction; the oracle itself has no C++ symbols for these bodies.
+
+[EVIDENCE] The same copied-tree comparison has all three affected UI peers `STRICT`: `CButton::TreatEvent` at `0x2D60` (111 oracle bytes), `CButton::MouseMove` at `0x2FD0` (201), and `CMenu::TreatEvent` at `0x1F040` (117). The current `cmpfunc.py` proves their `$L...` switch-table relocations as same-function section-relative labels. This resolves the older `RELOC-UNVERIFIED` label from the stored pre-update report; it is a comparator proof, not a source change. Final one-TU verification is `build/verify-coreres_sound_minimal_verify/results.json`.
+
+[HYPOTHESIS] The successful context is consistent with the inherited `PlaySoundDS(DWORD,DWORD)` declaration contributing to VC5's TU-wide decisions (`VC5-CTX-01..04`). A separate tested variant that kept `StopAllSounds()` but omitted the inherited two-DWORD `PlaySoundDS` left `MouseMove` mismatched; the variants also differ in other API declarations, so this does not isolate a single cause. `StopAllSounds()` has no unique body in the target sound block and its SB1 signature remains open. The successful variant does not need its declaration. Do not promote a canonical sound-header change from this scratch result alone.
+
+**Compiler findings**
+
+- `[BLUPI-CTX-01]` **Blupi-specific / source-context hypothesis:** StopSound-only declaration context broke the three UI peers; keeping the inherited PlaySoundDS declaration and adding the reconstructed helper overloads restored strict bodies in the full copied-TU build. Variation: private header only, with real source declarations; result: all five sound bodies and all three UI peers strict. Related: `VC5-CTX-01..04`. Exact original SB1 declaration order remains unproven.
+
+### Pixmap layout and mouse source forms
+
+[EVIDENCE] Static target offsets establish `m_bFullScreen` at `+0`, `m_bTrueColorBack` at `+4`, and `m_mouseType` at `+8`; later member offsets remain unchanged. The private `pixmap.h` now uses this order and declares the target five-argument `Create(HWND,POINT,BOOL,BOOL,int)`. Target `Create` stores the true-colour argument at `+4`, uses `+8` for mouse type, creates a 64x64 mouse surface, and selects 16-bit versus 8-bit display mode from the true-colour field. The candidate is still `MISMATCH` at `0x21190`: 928 candidate bytes versus 902 oracle bytes.
+
+[EVIDENCE] The private `def.h` sets `CHBLUPI=10`; the target mouse routines access the surface pointer at `this+0x94`, which is index 10 from the array at `+0x6C`. The target cursor IDs in the scratch header are Arrow 1, Pointer 2, directional arrows 3 through 10, Wait 11, Empty 12, Disable 13. Target mouse routines skip 12/13, and `MouseBackClear` also skips 13.
+
+| Strict candidate body | RVA | Unique oracle bytes |
+|---|---:|---:|
+| `CPixmap::CPixmap` | 0x21040 | 133 |
+| `CPixmap::MouseUpdate` | 0x22370 | 326 |
+| `CPixmap::MouseBackClear` | 0x22590 | 18 |
+| `CPixmap::MouseBackSave` | 0x226C0 | 241 |
+| `CPixmap::MouseBackRestore` | 0x227C0 | 193 |
+| `CPixmap::MouseHotSpot` | 0x22910 | 43 |
+
+[EVIDENCE] `MouseHotSpot` uses a four-pair private table that matches the target's initialized data at `0x47B260`; the target code and both data relocations verify `STRICT`. The target accepts sprite values 1 through 11 while only the first four table pairs are established here. Reads for values 4 through 11 reach adjacent target data, so their source-level behavior remains open.
+
+[EVIDENCE] `MouseBackDraw` now calls a `void MouseRectSprite(RECT*,POINT*)` helper and uses the target rectangle-based clipping expressions. Target call setup and `ret 8` identify this helper ABI at `0x22890`; it selects ranks 37, 38, and 39 for the default, pointer, and wait cursors and reads six shorts per rank from static metadata at `0x47A712`. The candidate helper has the correct ABI and replaces the unsupported `MouseBackDebug` body, but remains `MISMATCH` at 112/123 bytes. `MouseBackDraw` remains `MISMATCH` at 272/268 bytes. The atlas metadata source is not reconstructed, and no binary-derived table was copied into candidate source.
+
+[EVIDENCE] The final isolated-TU verification is `build/verify-coreres_pixmap_final/results.json`: 29 strict, 1 relocation-unverified, and 28 mismatching candidate functions. The strict target spans listed above total 954 unique oracle bytes.
+
+**Header deltas and compiler findings**
+
+- `scratch/tu/pixmap.h`: field order places true-colour at `+4` and mouse type at `+8`; `Create` takes five logical arguments; `MouseRectSprite` takes `RECT*` and `POINT*`. Evidence is the constructor/Create stores, target helper call setup, and `ret 8`. These are private scratch declarations only.
+- `scratch/tu/def.h`: `CHBLUPI=10` and the target cursor ID sequence above. Evidence is target indexed surface access and the ChangeSprite/mouse-body immediates. No canonical header delta is proposed.
+- `[BLUPI-LAY-01]` **Blupi-specific, confirmed:** swapping the two four-byte fields and correcting `CHBLUPI` restores strict constructor, MouseUpdate, MouseBackSave and MouseBackRestore bodies; the evidence is the exact target offsets and full-TU comparison. `Create` remains a source/layout residual.
+- `[VC5-SEM-01]` **Blupi-specific, confirmed for these methods:** using the target cursor IDs and disable/empty guards yields strict MouseUpdate, MouseBackClear, MouseBackSave and MouseBackRestore bodies. The four-pair MouseHotSpot data correction also yields strict code and verified initialized-data relocations. Do not generalize this to other TUs.
+- `[VC5-SEM-01]` **Unverified source reconstruction:** the Create path and atlas metadata still differ; KB hints rank constants, displacements, loads and structure before source-form guessing. No candidate table was added for the unresolved atlas data.
+
+### Misc residuals
+
+| Candidate body | Result | Evidence |
+|---|---|---|
+| `AddUserPath` | `STRICT`, 0x1F560, 300 oracle bytes | All relocations verified in `build/verify-coreres_misc_final/results.json`. |
+| `TraceErrorDD` | `STRICT`, 0x1F690, 2,075 Ghidra bytes | Candidate COFF span is 2,320 bytes up to the next target function at `0x1FFA0`; all relocations verify. Unique-byte count follows the 2,075-byte oracle extent. |
+| `GetCurrentDir` | `RELOC-UNVERIFIED`, 0x1F360, 176/170 bytes | `__pgmptr` has no unique reconstructed definition. |
+| `ChangeSprite` | `MISMATCH`, forced 0x1F210, 288/285 bytes | Scratch cursor IDs now match target observations; branch/register residue remains. |
+| `Random` | `MISMATCH`, no unique target location | Oracle order has `InitRandom` at `0x1F350` followed by `GetCurrentDir` at `0x1F360`; no unique `Random` body was found. |
+
+[EVIDENCE] The original case-specific `sprintf(dderr, literal)` switch arms in the current source produce strict `TraceErrorDD`. A tested pointer-per-case plus one common `sprintf` variant is 1,968 bytes and remains `MISMATCH` at the forced `0x1F690` entry. KB tags that variation with branch, load, stack and structural differences (`VC5-CTL-01`, `VC5-CTL-03`, `VC5-INL-03`); it is a negative source-form result, not a reason to keep the pointer form. `ChangeSprite` remains a 288/285-byte mismatch after the cursor-ID correction (`VC5-SEM-01`, `BLUPI-DIA-01`).
+
+[EVIDENCE] `AddUserPath` and `TraceErrorDD` are strict in `build/verify-coreres_misc_final/results.json`; `GetCurrentDir` remains relocation-unverified and `ChangeSprite`/`Random` remain unmatched. `scratch/tu/misc.cpp` keeps the cursor experiment and the strict case-specific `TraceErrorDD` form. No canonical edits were made.
+
+**Compiler findings**
+
+- `[BLUPI-MISC-01]` **Blupi-specific / negative:** correcting cursor constants in `ChangeSprite` changed the candidate to 288 bytes but did not match the 285-byte target. Related: `VC5-SEM-01`, `BLUPI-DIA-01`. Keep the target ID evidence separate from unresolved register/control-flow source form.
+- `[BLUPI-MISC-02]` **Negative:** `TraceErrorDD` pointer assignment plus shared formatting changed 2,320 to 1,968 bytes and remained mismatched; the case-specific `sprintf` source form is strict. Related: `VC5-CTL-01`, `VC5-CTL-03`, `VC5-INL-03`.
+
+[EVIDENCE] Unique oracle spans for the strict candidate methods in this round total 4,377 bytes: 1,048 sound, 954 pixmap, and 2,375 misc. UI peer bodies are omitted from that tally because they were already accepted functions. This is a scratch-candidate inventory, not a net project-byte increase.

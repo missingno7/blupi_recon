@@ -1,6 +1,6 @@
 ﻿# Decor translation-unit reconstruction
 
-The owned candidate is [scratch/tu/decor.cpp](../scratch/tu/decor.cpp), with private headers in [scratch/tu/decor_include](../scratch/tu/decor_include/). The generator is [scratch/decor/build_candidate.py](../scratch/decor/build_candidate.py). It combines 21 methods in the SB1 oracle order from read-only SB2 decor.cpp, decio.cpp, and decblock.cpp sources. The canonical src tree and external reference repositories were not changed.
+The owned candidate is [scratch/tu/decor.cpp](../scratch/tu/decor.cpp). The minimal header recovery that restores the lost strict anchors is in [scratch/decor/recovered_headers](../scratch/decor/recovered_headers); the older SB2-derived copies in [scratch/tu/decor_include](../scratch/tu/decor_include/) are retained as comparison material. The generator is [scratch/decor/build_candidate.py](../scratch/decor/build_candidate.py). It combines 21 methods in the SB1 oracle order from read-only SB2 decor.cpp, decio.cpp, and decblock.cpp sources. The canonical src tree and external reference repositories were not changed.
 
 ## [EVIDENCE] SB1 map and save layouts
 
@@ -45,15 +45,21 @@ The target CDecor offsets measured by save/I/O stores and the compile-time layou
 | m_phase | 0xc1fc | m_missionTitle | 0xc218 |
 | m_rankCaisse | 0xc284 | m_linkCaisse | 0xc5a8 |
 | m_blupiPos | 0xc8c8 | m_blupiCle | 0xc96c |
-| m_blupiPerso | 0xc970 | m_blupiNoBarre | 0xc978 |
-| m_blupiFifoPos | 0xc97c | m_blupiStartPos | 0xc9cc |
-| m_jauges | 0xcd30 | m_bPrivate | 0xcdb0 |
-| m_bJoystick | 0xcdc8 | m_mission | 0xcdd0 |
-| m_doors | 0xcdd4 | m_nbVies | 0xce9c |
-| m_scrollFollow | 0xceac | m_voyageIcon | 0xcec0 |
-| m_decorAction | 0xcee0 |  |  |
+| m_blupiShield | 0xc934 | m_blupiPower | 0xc938 |
+| m_blupiPerso | 0xc970 | m_blupiDynamite | 0xc974 |
+| m_blupiNoBarre | 0xc978 | m_blupiFifoPos | 0xc97c |
+| m_blupiStartPos | 0xc9cc | m_blupiStartDir | 0xc9ec |
+| m_jauges | 0xcd30 | m_blupiLevel | 0xcd90 |
+| m_bFoundCle | 0xcda8 | m_bPrivate | 0xcdac |
+| m_bCheatDoors | 0xcdb0 | m_bSuperBlupi | 0xcdb4 |
+| m_bDrawSecret | 0xcdb8 | m_bJoystick | 0xcdc8 |
+| m_mission | 0xcdd0 | m_doors | 0xcdd4 |
+| m_nbVies | 0xce9c | m_scrollFollow | 0xceac |
+| m_voyageIcon | 0xcec0 | m_decorAction | 0xcee0 |
 
-m_jauges at +0xcd30 supports the private MAXNOTIF=4 constant: the original five notification rows placed it 100 bytes later. The private def.h records this target-supported change.
+m_jauges at +0xcd30 is consistent with MAXNOTIF=4. That value is already the same in the canonical and recovered def.h copies.
+
+CurrentWrite maps saved bFoundCle, bPrivate, bCheatDoors, bSuperBlupi, and bDrawSecret to CDecor offsets +0xcda8, +0xcdac, +0xcdb0, +0xcdb4, and +0xcdb8. AdaptDoors stores its bPrivate argument at +0xcdac and tests the door override at +0xcdb0. This corrects the earlier table entry that placed m_bPrivate at +0xcdb0: that address is m_bCheatDoors.
 
 ## [EVIDENCE] Comparison with the engine worker header
 
@@ -87,7 +93,20 @@ The two CDecor headers agree through m_blupiCle at +0xc96c and m_blupiPerso at +
 
 The engine header retains MAXNOTIF=5, m_bNetDebug, m_detectIcon, and byte doors. The target offsets support MAXNOTIF=4, omit the debug and detect-icon members from these positions, and use short doors[100]. CDecor’s m_doors occupies 200 bytes in both headers. The current engine layout agrees with the decor candidate through m_decor, m_bigDecor, m_moveObject, m_posDecor, m_phase, m_missionTitle, m_rankCaisse, and m_linkCaisse; it differs from the decor candidate after m_blupiCle/m_blupiPerso. Specifically, engine m_blupiNoBarre is +0xc9cc versus target +0xc978, engine m_blupiStartPos is +0xc9e8 versus target +0xc9cc, and engine m_jauges is +0xcdb0 versus target +0xcd30. Both headers put m_blupiFifoPos at +0xc97c, but the engine calls the preceding dword m_blupiFifoNb at +0xc978 while the target accesses that position as m_blupiNoBarre. The engine keeps its two trajectory arrays after m_lastDecorIndexes; SB1 evidence proves only their absence before m_moveObject, not their tail placement.
 
-Private header deltas used by this candidate: `decor.h` has the target 2-byte Cellule and 48-byte MoveObject records, the measured DescFile and DescGameFile layouts above, target CDecor offsets in the table, `short doors[100]`, and the two-argument CurrentWrite declaration. `def.h` uses MAXNOTIF=4, supported by m_jauges at +0xcd30. `sound.h` declares `PlayImage(int channel, POINT pos, int rank=-1, int playFlag=0)`: the target VoyageInit call pushes five stack words (channel, the two POINT words, rank -1, and a trailing zero), and the target callee at RVA 0x230c0 ends with `ret 0x14` and forwards that trailing word to its helper. The original parameter name is not established. The duplicate scratch/tu/decor.h copy has the same target layout declarations. Other inherited private declarations and constants remain compilation context, not evidence of SB1 layout unless cited above.
+## [EVIDENCE] Header recovery against canonical src headers
+
+The exact recovered-header set is in `scratch/decor/recovered_headers/`. Its `decor.h`, `def.h`, and `sound.h` were copied from the current canonical headers and changed only as listed below. With the same candidate source, `tools/verify.py --tu src/decor.cpp=scratch/decor/recovered_headers/decor.cpp --build-dir decor-follow-recovered` yields 12 STRICT functions. The candidate with canonical headers (`--build-dir decor-follow-canonical`) yields 8; the four lost functions return with the private deltas below. No class method declaration order change was needed for this recovery.
+
+| Header delta from canonical | Target evidence and strict effect |
+|---|---|
+| `decor.h`: move `m_blupiShield` before `m_blupiPower`. This places shield at `+0xc934` and power at `+0xc938`; canonical order reverses those names. | Target CurrentWrite stores those two state fields from these offsets. A controlled header variant that reverted only this order lost CurrentWrite (12→11 STRICT); restoring it restored CurrentWrite. |
+| `decor.h`: recovered copy spells the `+0xc978` slot as `int m_blupiNoBarre`; canonical uses an anonymous union with `m_blupiFifoNb`. | Both are one dword at the same offset. Replacing the recovered int with the canonical union did not change the strict count, so this spelling is not required for the matches. The target proves the slot and offset, not which alias name is canonical. |
+| `def.h`: `CHBUTTON` 10→4. | Target VoyageInit uses channel 4 for the button sound case. Together with the sound declaration below, the recovered header set restores VoyageInit. |
+| `def.h`: `ACTION_STOP` 0→1. | Target VoyageStep stores 1 to the action field at `CDecor+0xc8d8`; the target-backed value restores VoyageStep. |
+| `def.h`: define `LEGACY_CODE` (the value is immaterial to `#ifndef LEGACY_CODE`). | The candidate's guarded bounds check otherwise emits code absent from target OpenDoorsWin, whose body is a 17-byte store. Defining the macro restores the strict body. |
+| `sound.h`: replace the split three- and four-argument `PlayImage` declarations with `PlayImage(int channel, POINT pos, int rank=-1, int playFlag=0)`. | Target VoyageInit passes five stack words, including a trailing zero; callee RVA 0x230c0 uses `ret 0x14` and forwards that word. The unified defaulted signature selects this call shape and contributes to strict VoyageInit. The original parameter name is not established. |
+
+Apart from the shield/power order and the non-codegen NoBarre alias spelling above, the recovered and canonical `decor.h` copies agree on the DescFile/DescGameFile formats and measured CDecor save/map offsets; no method declaration order change was needed to regain these anchors. `MAXNOTIF=4` is already canonical, not part of this recovery delta. The independent engine-header comparison remains useful for wider layout integration: its DescGameFile size and post-link CDecor offsets differ from SB1 evidence.
 
 [OPEN] The private CDecor header omits SB2's `reserve[11]` and `dummy[100000]` tail placeholders. It retains inherited `m_lastDecorIndexes[200]`, whose SB1 tail placement is not established by these functions. No target access in the owned block reaches those tail members, so `sizeof(CDecor)` and the remaining tail layout are still unknown.
 
@@ -113,7 +132,7 @@ Method identities use SB2 ancestry plus target body shapes, constants, and offse
 
 ## [EVIDENCE] Strict comparison
 
-The final candidate is compiled with VC5 SP3, /W3 /GX /O2 /ML /Gd /Gy, WIN32, NDEBUG, _WINDOWS, and nullptr=0. TMP/TEMP remain under build/decor/tmp. cmpfunc.py compared the candidate together with all objects in build/verify/objects and forced the key save functions and SearchWorld to their oracle RVAs.
+The final candidate is compiled with VC5 SP3, /W3 /GX /O2 /ML /Gd /Gy, WIN32, NDEBUG, _WINDOWS, and nullptr=0. TMP/TEMP remain under build/decor/tmp. The fresh whole-manifest verification used the isolated build directory `build/verify-decor-follow-recovered`; the comparison includes all TU objects and the function placements/relocations shown below.
 
 | Candidate method | RVA | Strict object span | Oracle function body | Verified relocations |
 |---|---:|---:|---:|---:|
@@ -140,13 +159,15 @@ These are 3,328 distinct strict object bytes, including 110 matched alignment by
 - [EVIDENCE; confirmed Blupi-specific, VC5-SEM-01] VoyageDraw’s target only interpolates the start/end position and draws the active icon. Removing SB2’s special icon-40 animation/effects and using the target interpolation and QuickIcon call made the 112-byte object span STRICT against the 100-byte body at 0x14050 under the same flags; the single relocation is verified.
 - [EVIDENCE; confirmed Blupi-specific] The target’s 100-word FileExist scan and offsets prove doors[100] as 16-bit elements. Under the same SP3 decor-TU flags, the target OpenGoldsWin store at `m_doors[m_mission / 10]` (without SB2’s `+180` index or bounds guard) made OpenGoldsWin STRICT at 0x161a0. DoorsLost’s ten 16-bit stores starting at `(m_mission / 10) * 10` are STRICT at 0x161d0. FileExist remains a 544-byte candidate versus a 540-byte target body.
 - [EVIDENCE; confirmed Blupi-specific, VC5-SEM-01] CurrentWrite initially differed in its start-direction copy and final fwrite condition. Replacing four independent `blupiStartDir` assignments with one 16-byte `memcpy`, then assigning `fwrite` to the existing signed `int nb` and testing `nb < 1`, changed the compare from `block_reorder,condition_differs` to STRICT at 0x14da0. The 1,584-byte object span includes the matched 10-byte alignment gap around the 1,574-byte body; 14 relocations are verified. Flags/TU context: VC5 SP3 `/W3 /GX /O2 /ML /Gd /Gy`, same private decor headers.
-- [EVIDENCE; Blupi-specific, still mismatched] CurrentRead’s target restores nbVies, nbTresor, totalTresor, and goalPhase immediately after the 100-short door array. Adding those four stores (and the earlier nbLinkCaisse store) moved the candidate from 1,536 to 1,584 bytes against the 1,564-byte target. The member accesses now match, but the target falls through its buffer-validation failure cleanup and branches on exact size to the success body; the candidate still branches to its shared error tail. Label-based cleanup, nested success guards, and an immediate-return cleanup form under the SP3 decor-TU flags above remained non-STRICT; the immediate-return form also remained 1,584 bytes. Related rule: VC5-SEM-01.
-- [EVIDENCE; negative, VC5-SEM-01] For FileExist, a nested success guard under the same flags changed the candidate from 544/540 to 528/540 bytes; the explicit target-shaped success label returned it to 544/540. These validation and cleanup layouts remain mismatches despite the correct 100-word scan and record size. No compiler-only rule is inferred from these variants.
+- [EVIDENCE; confirmed Blupi-specific, VC5-SEM-01] After integration under canonical merged headers, VoyageInit, VoyageStep, CurrentWrite, and OpenDoorsWin fell out of STRICT. The controlled recovery above isolates the member-order change as CurrentWrite's cause; the target channel/action constants, presence of LEGACY_CODE, and PlayImage call ABI account for the other three. The exact recovered set restores all four and gives 12 STRICT versus 8 with canonical headers.
+- [EVIDENCE; negative, VC5-SEM-01] CurrentRead’s target restores nbVies, nbTresor, totalTresor, and goalPhase immediately after the 100-short door array. Adding those four stores (and the earlier nbLinkCaisse store) moved the candidate from 1,536 to 1,584 bytes against the 1,564-byte target. The member accesses now match, but the target compares fread's result with `cmp eax,1; jl`, then falls through a shared free/close/false cleanup on a bad size; only the equal-size branch skips that cleanup to the restore body. The current candidate branches to its shared error tail instead. Label-based cleanup, nested success guards, and explicit early-return cleanup under the SP3 decor-TU flags above remained non-STRICT; the immediate-return form also remained 1,584 bytes. No local-only compiler rule is confirmed.
+- [EVIDENCE; negative, VC5-SEM-01] FileExist remains 544 candidate bytes versus a 540-byte target body. A nested `nb > 0` success guard changed it to 528 bytes and emitted `test`/`jle` where target uses `cmp eax,1`/`jl`; preserving the target comparison in a branch-shaped variant returned it to 544. The target's 100-word door scan and saved-record offsets are correct, but validation and cleanup layout remain mismatches. No compiler-only rule is inferred from these variants.
 - [EVIDENCE; negative] Rewriting every large CurrentWrite/CurrentRead memcpy as independent pointer-increment dword loops produced 1,744/1,648-byte functions versus the 1,574/1,564-byte target bodies; it did not produce a strict save routine. The current candidate keeps the inherited memcpy forms while retaining target-evidenced size, revision, and counter stores.
-- [EVIDENCE; negative] Target pseudocode shows AdaptDoors scans ten door entries and a full 100×100 map. Under the SP3 decor-TU flags above, applying those bounds and scan direction to the SB2-derived source leaves a 704-byte candidate against the 840-byte target body. Remaining control-flow and call differences indicate more SB1-specific source work is needed.
+- [EVIDENCE; confirmed Blupi-specific, VC5-SEM-01] Target AdaptDoors writes bPrivate at `+0xcdac`, mission at `+0xcdd0`, and tests the override at `+0xcdb0` (`m_bCheatDoors`). Its first ten-entry scan indexes `m_doors[i]`; its second branch indexes `m_doors[mission+i]`, creates a MoveObject inline with icon `0xb6`, then updates all four start positions/directions. Applying these target-backed semantics moved the current candidate to 912 bytes against the 840-byte body; an earlier call-based second branch was 688 bytes, and an earlier bounds-only pass was 704. The behavior/offset evidence is settled, while source form and code layout remain open.
+- [EVIDENCE; negative] The remaining border/map candidates still mismatch under the same SP3 context: IsRightBorder 1,808 bytes versus 775; AdaptMidBorder 1,056 versus 253; AdaptBorder 224 versus 114; DrawMap 720 versus 805. Their source-level constant/offset work has not produced a strict function, so these remain lower-priority source reconstruction tasks after the save/door routines.
 - [EVIDENCE; compiler adaptation] SB2 decio.cpp redeclares i in two for loops and fails VC5 with C2086. The scratch candidate reuses the existing function-scope i; this enables SP3 compilation but is not itself a code match.
 - [EVIDENCE; negative, earlier baseline] An earlier same-header sweep produced four strict functions at /O2 and only VoyageGetPosVie at /O1. /O1 was not rerun after SearchWorld and door-layout fixes. Related catalog rule: VC5-FLG-01.
 
 ## [OPEN] Next work
 
-The save structure and door element width agree with target offsets. CurrentWrite is STRICT; CurrentRead and FileExist remain mismatches, as do AdaptDoors and the earlier border/map methods. The next high-value work is CurrentRead’s validation/cleanup layout, then FileExist’s error/result branch and AdaptDoors’s SB1-only state transitions.
+The save structure and door element width agree with target offsets. The private-header recovery restores the four lost anchors and yields 12 STRICT functions; the canonical headers still need the listed infra deltas. CurrentRead, FileExist, AdaptDoors, and the border/map methods remain mismatches. Next, continue source-form work on CurrentRead's shared cleanup, FileExist's validation/result branch, and AdaptDoors's inline object path, then revisit the border/map methods.

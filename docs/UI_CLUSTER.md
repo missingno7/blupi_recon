@@ -174,3 +174,36 @@ Sizes are written `oracle RVA / oracle bytes; candidate COFF bytes`. `—` means
 - Compile commands and VC5 logs: `build/ui/logs/`.
 - Candidate sources and include-context headers: `scratch/tu/` and `scratch/tu/ui_include/`.
 - No oracle executable was run. No source uses embedded oracle bytes or assembly byte emission.
+
+
+## Residuals round (2026-10-17)
+
+This round supersedes the earlier candidate-status rows above for these four TUs. Candidates started from current `src/` and were verified together with VC5 SP3 `/O2 /GX /ML` using `tools/verify.py --tu ... --build-dir uires-final`; all accepted checks passed. Canonical `src/` files were not changed. The final run has 14/14/9/8/5 STRICT bodies in button/ddutil/jauge/menu/text; relative to the source-to-self baseline, this round adds 255 unique `CJauge::Draw` function bytes and 48 `DrawText` bytes (303 total, excluding the gauge boundary NOP).
+
+### Strict additions
+
+- **[EVIDENCE] `CJauge::Draw` at `0x1ee50`: STRICT.** The private `def.h` value `CHJAUGE=5` matches the oracle's `DrawPart` channel. All three call relocations (candidate offsets 88, 179, 246) resolve to oracle function entries. The oracle function record is 255 bytes; the verifier compares a 256-byte candidate extent, whose last byte is the matching `0x90` at `0x1ef4f`, outside the recorded function. Count 255 unique function bytes. This resolves the three relocation gaps noted in `BLUPI-SEM-01` validation.
+- **[EVIDENCE] `DrawText` at `0x23770`: STRICT, 48 bytes.** The source loop `while (*pText != 0) DrawChar(..., *pText++, font)` matches the oracle body, including its call relocation to `DrawChar` at `0x236b0`.
+
+### Private header deltas
+
+- **[EVIDENCE] `scratch/tu/uires/jauge/def.h`:** `CHJAUGE` 12 to 5, supported by the channel argument in oracle `CJauge::Draw` and the strict result above.
+- **[EVIDENCE] `scratch/tu/uires/text/def.h`:** adds `#undef DrawText` and `#undef GetCharWidth` at the end of private `def.h`, after the Windows headers introduce those aliases. Without these undefs, the object emits `DrawTextA` and `GetCharWidthA`, so the SB1 symbols cannot be compared. `CHLITTLE=7` and `CHTEXT=6` already match current `src/def.h`; no change was needed here.
+- **[HYPOTHESIS] Tested and reverted:** `CHBUTTON` 10 to 4, following the `m_type+4` argument in oracle `CButton::Draw`. It removed the immediate-difference tag but did not make `Draw` strict, and the candidate made `TreatEvent` RELOC-UNVERIFIED. No member or declaration deltas were made.
+
+### Compiler findings
+
+- **[EVIDENCE] `DrawText`, text TU, `/O2 /GX /ML`:** replaced the temporary `char` plus separate pointer reads with the post-increment loop above; `DrawText` changed from mismatch to 48-byte STRICT with its relocation proven. Related rule `VC5-CTL-01`; classification: blupi-specific source-form match.
+- **[EVIDENCE] `CButton::Create`, button TU, `/O2 /GX /ML`:** reordered independent member stores to the oracle pseudocode order. It stayed MISMATCH at 176 candidate bytes versus the 161-byte oracle body; KB tags remain `reorder_only,block_reorder,store_reorder`. `VC5-ORD-01`; classification: negative on SB1 for this store-order rewrite.
+- **[EVIDENCE] `CButton::Draw`, button TU:** replacing `CHBUTTON=10` with 4 (and separately spelling `m_type+4`) removed the immediate-difference symptom, but the body remained MISMATCH at 336/325 bytes; the changed TU context also made `TreatEvent` relocation-unverified. `VC5-SEM-01`, `VC5-CTX-04`; classification: unverified source-value correction with a peer regression.
+- **[EVIDENCE] `CButton::GetToolTips`, button TU:** a source reconstruction from oracle control flow added the demo exception and the different tooltip bounds for expanded menus. It remained MISMATCH at 240/237 bytes and the experiment made accepted `TreatEvent` relocation-unverified and `MouseMove` mismatch. `VC5-SEM-01`, `VC5-CTX-04`; classification: semantic evidence is blupi-specific, exact source form remains open.
+- **[EVIDENCE] `DrawChar`, text TU:** the current `index=c` emits 144 bytes and differs at a displacement. Testing `(unsigned char)c`, as suggested by the oracle's `param & 0xff`, emitted 160 bytes versus 144 and still mismatched. `VC5-SEM-01`; classification: negative for this cast under VC5 SP3.
+- **[EVIDENCE] `GetCharWidth` table experiment:** in a combined trial with the `DrawChar` cast, replacing `GetOffset(c)` with `table_char[(unsigned char)c * 6]` emitted an 80-byte candidate and produced a byte hit at `0x23610`, but status is `RELOC-UNVERIFIED`: `oracle/tu_map.csv` assigns that 66-byte body to `sound.cpp`, not `text.cpp`, so this is not counted as a text-TU match. `VC5-SEM-01`; classification: unverified ownership and source reconstruction.
+
+### Remaining mapped residuals
+
+- **[OPEN]** `CButton::Create` (`0x2a30`, 161 bytes), `Draw` (`0x2b40`, 325), `GetToolTips` (`0x2e10`, 237), and `MouseDown` (`0x2f70`, 84) remain mismatches; current candidate extents are respectively 176, 336, 192, and 96 bytes. Oracle `MouseDown` pseudocode agrees with the current hit-test, state, redraw, and click-sound actions, but the emitted body is still larger.
+- **[OPEN]** `DrawChar` remains a 144/144-byte mismatch, with the SB2 glyph table not proven equal to SB1. Current `GetCharWidth` at 64 bytes does not match the 66-byte body mapped to `sound.cpp`.
+- **[EVIDENCE]** All mapped `CMenu` bodies remain strict in this run. `CMenu::Create`, `Draw`, and `Update` have no body assignment in `oracle/tu_map.csv`, so they were not treated as targets.
+
+Reproduction outputs: `build/verify-uires-final/results.json` and `build/verify-uires-final/logs/`.

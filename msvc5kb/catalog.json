@@ -885,7 +885,7 @@
         "tu": "button.cpp; sound.h included before member bodies",
         "flags": "VC5 SP3 cl 11.00.7022 /W3 /GX /O2 /ML /Gd /Gy",
         "compiles": 99,
-        "outcome": "SB1 SP3 count probes: top and before:MouseMove restore STRICT at counts 7-14 and 23-30; end probes do not restore through count 32. Pre-function declaration context is measured; exact counter phase is inferred from placement response.",
+        "outcome": "SB1 SP3 count probes: top and before:MouseMove restore STRICT at counts 7-14 and 23-30; end probes do not restore through count 32. Pre-function declaration context is measured; exact counter phase is inferred from placement response. SB1 confirmation incl. resolution by genuine declarations: see BLUPI-CTX-01.",
         "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-7"
       },
       "legacy_ids": [
@@ -923,7 +923,7 @@
         "tu": "button.cpp and menu.cpp include sound.h",
         "flags": "VC5 SP3 cl 11.00.7022 /W3 /GX /O2 /ML /Gd /Gy",
         "compiles": 27,
-        "outcome": "Across baseline, StopSound-only, and SB2-header full builds (9 TUs each), adding BOOL CSound::StopSound(int) changed accepted peers in button.cpp and menu.cpp; the StopSound-only candidate made all three STRICT baselines MISMATCH.",
+        "outcome": "Across baseline, StopSound-only, and SB2-header full builds (9 TUs each), adding BOOL CSound::StopSound(int) changed accepted peers in button.cpp and menu.cpp; the StopSound-only candidate made all three STRICT baselines MISMATCH. SB1 confirmation incl. resolution by genuine declarations: see BLUPI-CTX-01.",
         "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-7"
       },
       "legacy_ids": [
@@ -1947,12 +1947,17 @@
       "construct": "Recover the authentic declaration set and order from SB1 evidence; compare all peers after each header change.",
       "explanation": "Under the pinned SP3 build, MouseMove responds to pre-function count context in two bounded windows, while end-of-TU probes do not. A strict StopSound body therefore does not establish a safe header context.",
       "experiment": "Compile all accepted functions with baseline and real-declaration-only scratch headers; use top/before/end probes diagnostically, then remove them.",
-      "not_when": "Do not retain dummy declarations or guess missing helper prototypes to fit a probe window; this single TU result does not identify the original SB1 header contents.",
+      "not_when": "Never keep filler declarations to land in a probe window; the probe only shows that the original had a different preceding declaration count - find the real declarations (here: unreconstructed helper methods of the same class).",
       "evidence": [
         {
           "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#experiment-7",
           "tier": "PROVEN",
           "counts": "99 count-probe compiles; 27 full-TU builds across baseline, StopSound-only, and SB2-header contexts; 3 accepted peer regressions"
+        },
+        {
+          "ref": "blupi_recon:docs/CORE_CLUSTER.md#residuals-round",
+          "tier": "PROVEN",
+          "counts": "Resolution: real SB1 declarations for the sound helpers (PlaySoundDS(int,int,int,int) 0x22f00, PlaySoundDS(int,int,int) 0x22fc0, PlayImage 0x230c0, Play 0x23220) make StopSound STRICT while CButton::TreatEvent, CButton::MouseMove and CMenu::TreatEvent stay STRICT (copied-tree all-TU build)."
         }
       ],
       "keywords": "sound.h declaration count MouseMove StopSound peer regression",
@@ -1963,7 +1968,7 @@
         "tu": "sound.cpp; button.cpp and menu.cpp include sound.h",
         "flags": "VC5 SP3 cl 11.00.7022 /W3 /GX /O2 /ML /Gd /Gy",
         "compiles": 126,
-        "outcome": "StopSound is STRICT, but StopSound-only and SB2-header candidates break accepted peers. Pre-function probes restore MouseMove at counts 7-14 and 23-30; end probes do not through 32. No original header context is established.",
+        "outcome": "StopSound is STRICT, but StopSound-only and SB2-header candidates break accepted peers. Pre-function probes restore MouseMove at counts 7-14 and 23-30; end probes do not through 32. No original header context is established. RESOLVED (coreres round): the missing genuine helper declarations, not fillers, restored the original context; all four functions STRICT together.",
         "doc_ref": "docs/MSVC5KB_VALIDATION.md#experiment-7"
       },
       "legacy_ids": []
