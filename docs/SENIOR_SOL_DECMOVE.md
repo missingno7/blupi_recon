@@ -1,6 +1,12 @@
 # Senior decmove structural pass (sol-decmove, 2026-10-17)
 
-## Result and reproduction
+[EVIDENCE] **Latest result: the follow-up below adds 13 STRICT functions / 4,934
+unique original bytes and makes all 39 oracle-mapped decmove functions STRICT.**
+See [the follow-up result](#follow-up-after-canonical-integration). The earlier
+pass, hashes and unresolved data handoff below are historical; its three large
+matches and shield/power definitions have since been integrated by the supervisor.
+
+## Round 1 result and reproduction (historical)
 
 [EVIDENCE] Review candidate: `scratch/sol-decmove/decmove.cpp`, SHA-256
 `f10cbfb01c2e70e50353a3d048c6d5775f86d632444b92839c07913beb001d66`.
@@ -237,3 +243,184 @@ object-body equality for the inert variants and four diagnostic probes. It
 also counts **137 non-relocated byte differences** in Net, first at RVA
 `10cd7`, last at `10dd4`. This count includes changed instruction positions
 within that scheduling region; it is not a count of distinct source defects.
+
+## Follow-up after canonical integration
+
+### Review package and validation
+
+[EVIDENCE] Refreshed `scratch/sol-decmove/decmove.cpp` directly from canonical
+`src/decmove.cpp` before this pass. The canonical MoveObjectStep, MoveObjectStepLine
+and MoveObjectStepIcon bodies were not edited. The final candidate SHA-256 is
+`bdb5d5545124bacebc0873d0d1fb324f37d4e70d2b549b49a9c97036e03f7d38`.
+`scratch/sol-decmove/audit_round2.py` proves the only source differences from the
+refresh snapshot are the thirteen bodies listed below. There is no header delta,
+private header overlay, retained probe or change to any other canonical input.
+
+[EVIDENCE] Reproduction uses the same full verifier command above. Final evidence
+is archived at `scratch/sol-decmove/round2-final/`: source, object, `results.json`,
+transcript, exit status, scores, disassemblies, complete raw stack-operand maps,
+`audit.json`, and `decmove.patch`. All compilation was sequential through the
+repository tools, pinned SP3 and canonical manifest flags. No commit was made
+and no background process remains.
+
+| New STRICT function | RVA | Original body bytes | COFF extent | Verified relocations |
+|---|---:|---:|---:|---:|
+| TreatNetData | `10a90` | 1,545 | 1,552 | 21/21 |
+| DoNetSmooth | `110a0` | 187 | 192 | 1/1 |
+| NetAscenseurSynchro | `111b0` | 259 | 272 | 0/0 |
+| NetPlayerCollide | `112c0` | 217 | 224 | 1/1 |
+| AscenseurDetect | `12c20` | 324 | 336 | 2/2 |
+| AscenseurVertigo | `12d70` | 96 | 96 | 0/0 |
+| SearchLinkCaisse | `13020` | 453 | 464 | 3/3 |
+| MockeryDetect | `13320` | 532 | 544 | 1/1 |
+| BlupiElectro | `13540` | 151 | 160 | 1/1 |
+| MoveObjectDetect | `135e0` | 538 | 544 | 1/1 |
+| MovePersoDetect | `138a0` | 190 | 192 | 1/1 |
+| MoveBalleDetect | `13960` | 208 | 208 | 1/1 |
+| MoveObjectSort | `13b20` | 234 | 240 | 2/2 |
+
+[EVIDENCE] **13 new STRICT bodies, 4,934 unique original bytes.** All 39 rows
+assigned to decmove.cpp in oracle/tu_map.csv have exactly one STRICT owner in
+the candidate object, totaling **12,846 original body bytes**. NOP padding is
+excluded from these totals. Extra SB2 helper bodies still present in canonical
+source are not claimed as SB1 matches merely because they compile.
+
+[EVIDENCE] The final whole-tree verifier exits **1**, solely for the independent
+canonical `src/decblupi.cpp` IsDeepWater regression at `10290`. A control run
+substituting an untouched canonical decmove copy also exits 1 for that exact
+function; see `scratch/sol-decmove/control.log` and `control-results.json`.
+The final audit checks that each active accepted failure has the same status
+in the control. There are **no additional accepted-function regressions from
+this candidate**, and all accepted decmove functions remain STRICT.
+
+[EVIDENCE] During r07/r08, unrelated integration temporarily left
+`src/dectables.h`'s table_design_door declaration without its semicolon, stopping
+the full build. It was corrected outside this worker's scope; neither that header
+nor the independent IsDeepWater failure was edited or masked here. No manifest
+acceptance or withdrawal was attempted. Promotion should follow a clean shared
+tree check after the independent failure is resolved.
+
+### Frames and regions
+
+[EVIDENCE] The first-pass TreatNetData 2b4h frame map remains exact, as do the
+integrated large-body frame maps. New target/candidate maps were made before
+instruction tuning. E is entry ESP; S is ESP after local allocation and all
+ordinary prologue saves. Every literal ESP operand, including shifted argument
+views, is recorded in `round2-final/*-slots.json`.
+
+| Function | Frame / S | Local storage roles |
+|---|---|---|
+| DoNetSmooth | 8h; initial two saved registers | End POINT at E-8/E-4; EBP/EBX are saved only inside prediction arm; RECT is built directly on the outgoing argument stack |
+| NetAscenseurSynchro | 8h; S=E-18h | S+10 cached int type, S+14 vertical distance; horizontal distance in EBP |
+| NetPlayerCollide | 30h; S=E-40h | S+10 remote RECT, +20 incoming player's RECT, +30 intersection output |
+| AscenseurDetect | 30h; S=E-40h | S+10 swept player RECT, +20 lift RECT, +30 intersection; incoming oldpos.x is reused for index, newpos.x for pointer spill |
+| AscenseurVertigo | no locals | Three register saves only; incoming output pointers remain arguments |
+| SearchLinkCaisse | 44h; S=E-54h | S+10 outer index, +14 BOOL flag, +18 current linked object, +1c/+20 saved POINT, +24/+34/+44 three RECTs; dead incoming rank slot reused for pointer induction |
+| MockeryDetect | 34h; S=E-44h | S+10 saved this, +14 player RECT, +24 moving-object RECT, +34 intersection; tile-test POINT stays in registers |
+| BlupiElectro | 30h; S=E-30h | S+0 cloud RECT, +10 incoming RECT, +20 intersection output |
+| MoveObjectDetect | 40h; S=E-50h | S+10 object RECT, +20 player RECT, +30 near RECT, +40 intersection; dead incoming pos.x reused for index |
+| MovePersoDetect / MoveBalleDetect | 30h; S=E-40h | S+10 incoming RECT, +20 moving-object RECT, +30 intersection |
+| MoveObjectSort | 3ch; S=E-4ch | S+10 saved this, +14 loop counter, +18 loop limit, +1c..4b 48-byte MoveObject temporary; change flag ESI and first sort-key result EDI |
+
+[EVIDENCE] Region corrections, in TU-map order:
+
+- TreatNetData keeps the earlier packet regions and all 21 calls. Its final
+  motion-store region sets recentSenders before copying the old timestamp in
+  source, then writes the received coordinates component by component. The
+  scheduler emits the target store order; all fixed bytes and relocations agree.
+- DoNetSmooth computes the end POINT from member coordinates/velocity, builds
+  the rectangle from those members and passes the member POINT to TestPath.
+  Removing the saved start/POINT operator restores the 8-byte frame and reloads.
+- NetAscenseurSynchro snapshots int type, horizontal and vertical absolute
+  travel distances, then checks each same-type peer's distances before the
+  four timing fields. It uses indexed records, not SB2 pointer-local addressing.
+- NetPlayerCollide always constructs the peer rectangle, then expands its
+  existing sides by 40 for SEC_CLOUD. The old SEC_HIDE gate is unsupported.
+- AscenseurDetect removes the SB2 no-lift timer and conveyor variants. The
+  sweep step is +/-30 from the signed y difference, and both rectangle edges
+  advance by that step. Three real RECTs share function scope. AscenseurVertigo
+  ends after its two edge tests; the conveyor-shift aftermath is absent.
+- SearchLinkCaisse uses function-scope real loop/scalar/RECT locals and array
+  indexing. Its rectangles derive right/bottom from the already assigned
+  left/top plus 65. The repeat flag is BOOL. This restores the 44h frame and
+  the target's reload/store schedule without pointer or padding locals.
+- MockeryDetect checks icon 68 in both cells below an airborne player. Extra
+  SB2 enemy kinds and initialized output rectangles are removed. Both direction
+  paths reach the same reverse-mockery return through an ordinary goto label.
+- BlupiElectro tests the recovered Cloud member and returns a normalized BOOL;
+  the output RECT is not initialized. The cloud RECT declaration precedes the
+  incoming-player RECT, matching stack order.
+- MoveObjectDetect uses direct player bounds, excludes the target's five
+  inactive types, skips the crate during push/pop, and ignores the matching
+  vehicle at m_blupiPosHelico. It restores SB1 up-bomb/crate/bird/projectile
+  bounds. A bullet's right side is x+40 (DIMOBJX-24), and failure leaves pbNear
+  unwritten. Rectangle declaration order follows the recovered frame.
+- MovePersoDetect uses x+16..x+44 for personal bombs. MoveBalleDetect indexes
+  each record through all 200 entries, drops the SB2 wasp and omits destination
+  initialization. Their oracle geometry and call order are fully reproduced.
+- MoveObjectSort calls the already defined global ::SortGetType, rather than
+  the stale same-named CDecor declaration. Its two calls are the operands of
+  the comparison directly, preserving target evaluation order and allocation.
+
+### Follow-up score ledger
+
+[EVIDENCE] Complete extent, score, raw/fixed prefix and instruction-prefix
+measurements are in ledger.jsonl and each trial's scores.json. Scores are
+diagnostic; the full-run relocation proofs above determine acceptance.
+
+| Target | Key checkpoints: compared bytes / score |
+|---|---|
+| TreatNetData | r00 1552/117; r01 flag after timestamp 1552/25 rejected; r02 components in that order 1552/109; r03 zero-delta arm first 1552/125; r16 flag before previous timestamp 1552/93; r17 plus component stores **1552/0** |
+| DoNetSmooth | r00 208/227 -> r04 **192/0** |
+| NetAscenseurSynchro | r00 128/363 -> r04 208/301 -> r05 272/33 -> r06 **272/0** |
+| NetPlayerCollide | r00 176/171 -> r04 208/137 -> r05 **224/0** |
+| AscenseurDetect / Vertigo | r00 416/447 and 176/217 -> r09 **336/0 and 96/0** |
+| SearchLinkCaisse | r00 464/367 -> r09 464/371 -> r10 480/361 -> r11 496/211 -> r12 reversed comparisons 496/215 -> r13 **464/0** |
+| MockeryDetect | r00 512/471 -> r09 560/49 -> r10 544/37 -> r11 **544/0** |
+| BlupiElectro / MovePersoDetect / MoveBalleDetect | r00 176/129,224/175,256/237 -> r09 **160/0,192/0,208/0** |
+| MoveObjectDetect | r00 608/561 -> r10 544/13 -> r11 **544/0** |
+| MoveObjectSort | r00 256/175 -> r10 reversed comparison 256/175 -> r14 global calls 240/21 -> r15/r18 scope/control variants 240/21 -> r19 direct comparison **240/0** |
+
+### Compiler findings (follow-up)
+
+- [EVIDENCE; `VC5-ORD-01`, `BLUPI-REG-01`; blupi-specific] Net's original
+  117-score residue was source scheduling, not solved by the earlier count
+  probes. Flag-first source alone gives 93; component coordinates in that
+  context give STRICT, 21/21 relocations. Component assignment had been inert
+  in the earlier flag order. The lower-score r01 variant is rejected because
+  it emits a different actual store order. This is a context-dependent combined
+  source-form finding, not a universal assignment-order rule.
+- [EVIDENCE; `BLUPI-LOC-01`, `VC5-LOC-03`; blupi-specific] Sync's main distance
+  POINT reserves an unused component slot when only y spills: frame 0ch,
+  otherwise matching instruction stream, score 33. Real scalar dx/dy variables
+  remove that slot, restore frame 8h, and produce STRICT. The peer-distance
+  POINT stays in registers. No artificial declaration is retained.
+- [EVIDENCE; `BLUPI-LOC-01`, `VC5-ORD-01`; blupi-specific] SearchLinkCaisse's
+  scoped locals and explicit pointer loops kept a 48h frame. Real function-scope
+  variables and indexed loops produce 44h, but direct member-derived rectangle
+  endpoints remain 496 B/211. Restoring the ancestor's left/top-derived right
+  and bottom expressions yields 464 B/0 and STRICT. Comparison-operand reversal
+  (r12) worsens score to 215 and is rejected.
+- [EVIDENCE; `VC5-CTL-03`, `VC5-ORD-01`; blupi-specific] Mockery's semantically
+  equivalent immediate reverse-mockery returns duplicate an epilogue. A shared
+  authentic goto return removes that layout difference: 544 B/37 -> 544 B/0,
+  STRICT. Its earlier two-direction restructuring alone did not suffice.
+- [EVIDENCE; `VC5-SEM-01`; blupi-specific] MoveObjectDetect's last 13-score
+  differences were the actual bullet extent (DIMOBJX-24, not DIMBLUPIX-24)
+  and the y comparison's operand order. Correcting both yields STRICT; neither
+  was dismissed as a register-only residue.
+- [EVIDENCE; `VC5-SEM-01`, `BLUPI-REG-01`; blupi-specific] Sort's member/global
+  name collision selected thiscall and omitted caller cleanup. Explicit global
+  qualification restores cdecl and reduces 256 B/175 -> 240 B/21. Replacing
+  separate sort-key locals with the direct two-call comparison swaps flag/key
+  registers to target ESI/EDI and reaches STRICT with both calls proved. Moving
+  those locals to function scope (r15) and wrapping the final region instead
+  of an early return (r18) were byte-inert at their checkpoints. No filler or
+  header declaration removal was required.
+
+[EVIDENCE] All findings use the full canonical-header TU and pinned SP3 manifest
+flags. Every retained gain was checked against the integrated large matches and
+the active accepted set. The only unresolved verification issue is the independently
+reproduced IsDeepWater failure outside this worker's ownership. Next action is
+supervisor integration of the thirteen-body patch followed by the clean shared
+tree verifier; there is no remaining unmatched oracle function in this TU block.

@@ -29,183 +29,6 @@ int CDecor::GetBlupiChannelStandard()
 	else return CHBLUPI;
 }
 
-// get various flags relating to Blupi's current state
-// set blupi's current graphics icon according to his state
-// from ghidra
-void CDecor::BlupiSearchIcon()
-
-{
-	int phase;
-	int action = m_blupiAction;
-	int icon = 2;
-
-	if (m_blupiSuspend && !m_blupiHelico && !m_blupiJeep)
-	{
-		if (action == ACTION_STOP) action = ACTION_VERTIGO;
-		if (action == ACTION_MARCH) action = ACTION_PUSH;
-	}
-
-	if (m_blupiHelico)
-	{
-		if (action == ACTION_STOP) action = ACTION_STOPHELICO;
-		if (action == ACTION_MARCH) action = ACTION_MARCHHELICO;
-		if (action == ACTION_TURN) action = ACTION_TURNHELICO;
-		if (action == ACTION_ADVANCE) action = ACTION_STOPHELICO;
-		if (action == ACTION_RECEDE) action = ACTION_STOPHELICO;
-	}
-
-	if (m_blupiJeep)
-	{
-		if (action == ACTION_STOP) action = ACTION_STOPOVER;
-		if (action == ACTION_MARCH) action = ACTION_MARCHOVER;
-		if (action == ACTION_TURN) action = ACTION_TURNOVER;
-		if (action == ACTION_ADVANCE) action = ACTION_STOPOVER;
-		if (action == ACTION_RECEDE) action = ACTION_STOPOVER;
-	}
-
-	if (m_blupiTank)
-	{
-		if (action == ACTION_STOP) action = ACTION_STOPJEEP;
-		if (action == ACTION_MARCH) action = ACTION_MARCHJEEP;
-		if (action == ACTION_ADVANCE) action = ACTION_MARCHJEEP;
-		if (action == ACTION_TURN) action = ACTION_TURNJEEP;
-	}
-
-	if (m_blupiSkate)
-	{
-		if (action == ACTION_STOP) action = ACTION_STOPTANK;
-		if (action == ACTION_MARCH) action = ACTION_MARCHTANK;
-		if (action == ACTION_ADVANCE) action = ACTION_MARCHTANK;
-		if (action == ACTION_TURN) action = ACTION_TURNTANK;
-	}
-
-	if (m_blupiNage)
-	{
-		if (action == ACTION_STOP) action = ACTION_STOPSKATE;
-		if (action == ACTION_MARCH) action = ACTION_MARCHSKATE;
-		if (action == ACTION_ADVANCE) action = ACTION_MARCHSKATE;
-		if (action == ACTION_TURN) action = ACTION_TURNSKATE;
-		if (action == ACTION_TURNAIR) action = ACTION_TURNSKATE;
-		if (action == ACTION_JUMP) action = ACTION_JUMPSKATE;
-		if (action == ACTION_AIR) action = ACTION_AIRSKATE;
-	}
-
-	if (m_blupiSurf)
-	{
-		if (action == ACTION_STOP) action = ACTION_STOPNAGE;
-		if (action == ACTION_MARCH) action = ACTION_MARCHNAGE;
-		if (action == ACTION_TURN) action = ACTION_TURNNAGE;
-		if (m_blupiVitesse.x == 0)
-		{
-			if (action == ACTION_STOPNAGE) action = ACTION_STOPSURF;
-			if (action == ACTION_MARCHNAGE) action = ACTION_MARCHSURF;
-		}
-	}
-
-	if (m_blupiVent)
-	{
-		if (action == ACTION_STOP) action = ACTION_STOPSURF;
-		if (action == ACTION_MARCH) action = ACTION_MARCHSURF;
-		if (action == ACTION_TURN) action = ACTION_TURNSURF;
-	}
-
-	if (m_blupiJumpAie)
-	{
-		if (action == ACTION_STOP) action = ACTION_STOPSUSPEND;
-		if (action == ACTION_MARCH) action = ACTION_MARCHSUSPEND;
-		if (action == ACTION_TURN) action = ACTION_TURNSUSPEND;
-		if (action == ACTION_JUMP) action = ACTION_JUMPSUSPEND;
-	}
-
-	if (m_blupiPosMagic.x) action = ACTION_BALLOON;
-
-	if (m_blupiPosMagic.y)
-	{
-		if (action == ACTION_STOP) action = ACTION_STOPECRASE;
-		if (action == ACTION_MARCH) action = ACTION_MARCHECRASE;
-		if (action == ACTION_TURN) action = ACTION_MARCHECRASE;
-	}
-
-	if (action == ACTION_STOP)
-	{
-		phase = m_blupiPhase % 330;
-		if (phase == 125 ||
-			phase == 129 ||
-			phase == 135 ||
-			phase == 139 ||
-			phase == 215 ||
-			phase == 219 ||
-			phase == 225 ||
-			phase == 229 ||
-			phase == 235 ||
-			phase == 239 ||
-			phase == 245 ||
-			phase == 249 ||
-			phase == 255 ||
-			phase == 259 ||
-			phase == 265 ||
-			phase == 269)
-		{
-			PlaySound(SOUND_PATIENT, m_blupiPos, FALSE);
-		}
-	}
-	if (action == ACTION_STOPSUSPEND && (((phase = m_blupiPhase % 328, phase == 0x76 || (phase == 0xe6)) || (phase == 0x116))))
-	{
-		PlaySound(SOUND_SINGE, m_blupiPos, FALSE);
-	}
-	if ((action == ACTION_STOPSURF || action == ACTION_MARCHSURF) && m_blupiPhase % 12 == 0 && m_blupiVent)
-	{
-		MoveObjectTiplouf(m_blupiPos);
-	}
-	for (int i = 0; table_blupi[i] != 0; i += table_blupi[i + 1] + 3)
-	{
-		if (action == table_blupi[i])
-		{
-			phase = table_blupi[i + 2];
-			if (phase == 0 || m_blupiPhase <= phase)
-			{
-				phase = m_blupiPhase % table_blupi[i + 1];
-			}
-			icon = table_blupi[i + 3 + phase];
-			break;
-		}
-	}
-	if ((action == ACTION_CLEAR1 ||
-		action == ACTION_CLEAR2 ||
-		action == ACTION_CLEAR3 ||
-		action == ACTION_GLU ||
-		action == ACTION_ELECTRO) && icon < 0x10a)
-	{
-		m_blupiChannel = CHELEMENT;
-	}
-	else
-	{
-		m_blupiChannel = CHBLUPI;
-	}
-	if (m_blupiDir == DIR_LEFT || (m_blupiDir == DIR_RIGHT && m_blupiPosHelico.y))
-	{
-		if (m_blupiChannel == CHBLUPI)
-		{
-			if (action == ACTION_STOPSUSPEND)
-			{
-				if (icon == 0x90) icon = 0x9e;
-				if (icon == 0x8f) icon = 0x91;
-				if (icon == 0x97) icon = 0x92;
-			}
-			if (icon > -1 && icon < 0x14f)
-			{
-				icon = table_mirror[icon];
-			}
-		}
-		if (true && m_blupiChannel == CHELEMENT && icon > 0xa7 && icon < 0xac)
-		{
-			icon = (icon + 4);
-		}
-	}
-	m_blupiIcon = icon;
-	m_blupiPhase++;
-}
-
 BOOL CDecor::BlupiIsGround()
 {
 	if (m_blupiTransport == -1)
@@ -4407,6 +4230,75 @@ int CDecor::IsWorld(POINT pos)
 	return -1;
 }
 
+void CDecor::MoveObjectPlouf(POINT pos)
+{
+	for (int i = 0; i < MAXMOVEOBJECT; i++)
+	{
+		if (m_moveObject[i].type == TYPE_PLOUF) return;
+	}
+	pos.y -= 45;
+	PlaySound(SOUND_PLOUF, pos, FALSE);
+	ObjectStart(pos, TYPE_PLOUF, 0, TRUE);
+}
+
+void CDecor::MoveObjectTiplouf(POINT pos)
+{
+	for (int i = 0; i < MAXMOVEOBJECT; i++)
+	{
+		if (m_moveObject[i].type == TYPE_TIPLOUF) return;
+	}
+	if (m_blupiDir == DIR_RIGHT)
+	{
+		pos.x += 5;
+	}
+	else
+	{
+		pos.x -= 5;
+	}
+	pos.y -= 45;
+	PlaySound(SOUND_TIPLOUF, pos, FALSE);
+	ObjectStart(pos, TYPE_TIPLOUF, 0, TRUE);
+}
+
+void CDecor::MoveObjectBlup(POINT pos)
+{
+	PlaySound(SOUND_BLUP, pos, FALSE);
+	pos.y -= 20;
+	int num = 0;
+	POINT tinyPoint = pos;
+	while (tinyPoint.y > 0)
+	{
+		int icon = m_decor[(tinyPoint.x + 16) / DIMOBJX][tinyPoint.y / DIMOBJY].icon;
+		if (icon != 91 && icon != 92)
+		{
+			break;
+		}
+		num++;
+		tinyPoint.y -= DIMOBJY;
+	}
+	num--;
+	if (num <= 0)
+	{
+		return;
+	}
+	int num2 = MoveObjectFree();
+	if (num2 == -1)
+	{
+		return;
+	}
+	m_moveObject[num2].type = TYPE_BLUP;
+	m_moveObject[num2].phase = 0;
+	m_moveObject[num2].posCurrent.x = pos.x;
+	m_moveObject[num2].posCurrent.y = pos.y;
+	m_moveObject[num2].posStart = m_moveObject[num2].posCurrent;
+	m_moveObject[num2].posEnd.x = pos.x;
+	m_moveObject[num2].posEnd.y = pos.y - num * DIMOBJY;
+	m_moveObject[num2].timeStopStart = 0;
+	m_moveObject[num2].stepAdvance = num * 10;
+	m_moveObject[num2].step = STEP_ADVANCE;
+	m_moveObject[num2].time = 0;
+	MoveObjectStepIcon(num2);
+}
 int CDecor::GetTypeBarre(POINT pos)
 {
 	int x = pos.x + 30;
@@ -4429,6 +4321,41 @@ int CDecor::GetTypeBarre(POINT pos)
 		}
 	}
 	return 0;
+}
+
+int CDecor::SearchDistRight(POINT pos, POINT dir, int type)
+{
+	POINT cel;
+	int num = 0;
+	if (type == TYPE_POLLUTION ||
+		type == TYPE_TRESORTRACK ||
+		type == TYPE_INVERTSTART ||
+		type == TYPE_INVERTSTOP ||
+		type == TYPE_INVERTSPIN ||
+		type == TYPE_EXPLO8)
+	{
+		return 500;
+	}
+	cel.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
+	cel.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
+	while (IsValidCel(cel) && !IsBlocIcon(m_decor[cel.x][cel.y].icon))
+	{
+		if (type == TYPE_BALLE)
+		{
+			SetBalleTraj(cel);
+		}
+		num += DIMOBJX;
+		cel += dir;
+	}
+	if ((type == TYPE_GLU || type == TYPE_ELECTRO) && num >= DIMOBJX)
+	{
+		num -= DIMOBJX;
+	}
+	if (type == TYPE_BALLE && num >= 10)
+	{
+		num -= 10;
+	}
+	return num;
 }
 
 BOOL CDecor::IsLave(POINT pos)
@@ -4501,41 +4428,6 @@ BOOL CDecor::IsBlocIcon(int icon)
 		if (table_decor_quart[icon * 16 + i] == 0) return FALSE;
 	}
 	return TRUE;
-}
-
-int CDecor::SearchDistRight(POINT pos, POINT dir, int type)
-{
-	POINT cel;
-	int num = 0;
-	if (type == TYPE_POLLUTION ||
-		type == TYPE_TRESORTRACK ||
-		type == TYPE_INVERTSTART ||
-		type == TYPE_INVERTSTOP ||
-		type == TYPE_INVERTSPIN ||
-		type == TYPE_EXPLO8)
-	{
-		return 500;
-	}
-	cel.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
-	cel.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
-	while (IsValidCel(cel) && !IsBlocIcon(m_decor[cel.x][cel.y].icon))
-	{
-		if (type == TYPE_BALLE)
-		{
-			SetBalleTraj(cel);
-		}
-		num += DIMOBJX;
-		cel += dir;
-	}
-	if ((type == TYPE_GLU || type == TYPE_ELECTRO) && num >= DIMOBJX)
-	{
-		num -= DIMOBJX;
-	}
-	if (type == TYPE_BALLE && num >= 10)
-	{
-		num -= 10;
-	}
-	return num;
 }
 
 BOOL CDecor::IsVentillo(POINT pos)
@@ -4612,72 +4504,3 @@ BOOL CDecor::IsVentillo(POINT pos)
 	return TRUE;
 }
 
-void CDecor::MoveObjectPlouf(POINT pos)
-{
-	for (int i = 0; i < MAXMOVEOBJECT; i++)
-	{
-		if (m_moveObject[i].type == TYPE_PLOUF) return;
-	}
-	pos.y -= 45;
-	PlaySound(SOUND_PLOUF, pos, FALSE);
-	ObjectStart(pos, TYPE_PLOUF, 0, TRUE);
-}
-
-void CDecor::MoveObjectTiplouf(POINT pos)
-{
-	for (int i = 0; i < MAXMOVEOBJECT; i++)
-	{
-		if (m_moveObject[i].type == TYPE_TIPLOUF) return;
-	}
-	if (m_blupiDir == DIR_RIGHT)
-	{
-		pos.x += 5;
-	}
-	else
-	{
-		pos.x -= 5;
-	}
-	pos.y -= 45;
-	PlaySound(SOUND_TIPLOUF, pos, FALSE);
-	ObjectStart(pos, TYPE_TIPLOUF, 0, TRUE);
-}
-
-void CDecor::MoveObjectBlup(POINT pos)
-{
-	PlaySound(SOUND_BLUP, pos, FALSE);
-	pos.y -= 20;
-	int num = 0;
-	POINT tinyPoint = pos;
-	while (tinyPoint.y > 0)
-	{
-		int icon = m_decor[(tinyPoint.x + 16) / DIMOBJX][tinyPoint.y / DIMOBJY].icon;
-		if (icon != 91 && icon != 92)
-		{
-			break;
-		}
-		num++;
-		tinyPoint.y -= DIMOBJY;
-	}
-	num--;
-	if (num <= 0)
-	{
-		return;
-	}
-	int num2 = MoveObjectFree();
-	if (num2 == -1)
-	{
-		return;
-	}
-	m_moveObject[num2].type = TYPE_BLUP;
-	m_moveObject[num2].phase = 0;
-	m_moveObject[num2].posCurrent.x = pos.x;
-	m_moveObject[num2].posCurrent.y = pos.y;
-	m_moveObject[num2].posStart = m_moveObject[num2].posCurrent;
-	m_moveObject[num2].posEnd.x = pos.x;
-	m_moveObject[num2].posEnd.y = pos.y - num * DIMOBJY;
-	m_moveObject[num2].timeStopStart = 0;
-	m_moveObject[num2].stepAdvance = num * 10;
-	m_moveObject[num2].step = STEP_ADVANCE;
-	m_moveObject[num2].time = 0;
-	MoveObjectStepIcon(num2);
-}

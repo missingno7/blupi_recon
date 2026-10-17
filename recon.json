@@ -456,6 +456,24 @@
       "tu": "src/decdesign.cpp"
     },
     {
+      "symbol": "?PlaceDecor4@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00006530",
+      "size": 3632,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor5@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00007360",
+      "size": 1984,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?PlaceDecor7@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "rva": "0x00008340",
+      "size": 480,
+      "tu": "src/decdesign.cpp"
+    },
+    {
       "symbol": "?GetMissionTitle@CDecor@@QAEPADXZ",
       "rva": "0x00008520",
       "size": 16,
@@ -546,6 +564,12 @@
       "tu": "src/decdesign.cpp"
     },
     {
+      "symbol": "?CheatAction@CDecor@@QAEXH@Z",
+      "rva": "0x000086a0",
+      "size": 1696,
+      "tu": "src/decdesign.cpp"
+    },
+    {
       "symbol": "?GetSuperBlupi@CDecor@@QAEHXZ",
       "rva": "0x00008d40",
       "size": 16,
@@ -624,6 +648,12 @@
       "tu": "src/decdesign.cpp"
     },
     {
+      "symbol": "?BlupiSearchIcon@CDecor@@QAEXXZ",
+      "rva": "0x00008e80",
+      "size": 1024,
+      "tu": "src/decdesign.cpp"
+    },
+    {
       "symbol": "?BlupiStep@CDecor@@QAEXXZ",
       "rva": "0x00009280",
       "size": 25280,
@@ -693,7 +723,12 @@
       "symbol": "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z",
       "rva": "0x00010290",
       "size": 80,
-      "tu": "src/decblupi.cpp"
+      "tu": "src/decblupi.cpp",
+      "withdrawn": {
+        "reason": "Removing a duplicate animation-selector draft body that the original did not have from decblupi.cpp changed IsDeepWater's emitted coordinate order (decblupi.cpp TU context). Same class as the earlier GetBlupiInfo withdrawal: preceding decblupi bodies are still incomplete; restore by completing them, never by keeping the non-original duplicate.",
+        "evidence": "src/PROVENANCE.md (follow-up 21); docs/SENIOR_SOL_DECDESIGN.md",
+        "date": "2026-10-17"
+      }
     },
     {
       "symbol": "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z",
@@ -756,9 +791,33 @@
       "tu": "src/decmove.cpp"
     },
     {
+      "symbol": "?TreatNetData@CDecor@@QAEXXZ",
+      "rva": "0x00010a90",
+      "size": 1552,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?DoNetSmooth@CDecor@@QAEXH@Z",
+      "rva": "0x000110a0",
+      "size": 192,
+      "tu": "src/decmove.cpp"
+    },
+    {
       "symbol": "?NetAdjustToLift@CDecor@@QAEXXZ",
       "rva": "0x00011160",
       "size": 80,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetAscenseurSynchro@CDecor@@QAEXHF@Z",
+      "rva": "0x000111b0",
+      "size": 272,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?NetPlayerCollide@CDecor@@QAEXUtagPOINT@@PAH@Z",
+      "rva": "0x000112c0",
+      "size": 224,
       "tu": "src/decmove.cpp"
     },
     {
@@ -822,6 +881,18 @@
       "tu": "src/decmove.cpp"
     },
     {
+      "symbol": "?AscenseurDetect@CDecor@@QAEHUtagRECT@@UtagPOINT@@1@Z",
+      "rva": "0x00012c20",
+      "size": 336,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?AscenseurVertigo@CDecor@@QAEXHPAH0@Z",
+      "rva": "0x00012d70",
+      "size": 96,
+      "tu": "src/decmove.cpp"
+    },
+    {
       "symbol": "?AscenseurSynchro@CDecor@@QAEXH@Z",
       "rva": "0x00012dd0",
       "size": 64,
@@ -846,6 +917,12 @@
       "tu": "src/decmove.cpp"
     },
     {
+      "symbol": "?SearchLinkCaisse@CDecor@@QAEXHH@Z",
+      "rva": "0x00013020",
+      "size": 464,
+      "tu": "src/decmove.cpp"
+    },
+    {
       "symbol": "?AddLinkCaisse@CDecor@@QAEHH@Z",
       "rva": "0x000131f0",
       "size": 80,
@@ -864,9 +941,39 @@
       "tu": "src/decmove.cpp"
     },
     {
+      "symbol": "?MockeryDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00013320",
+      "size": 544,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?BlupiElectro@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00013540",
+      "size": 160,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectDetect@CDecor@@QAEHUtagPOINT@@PAH@Z",
+      "rva": "0x000135e0",
+      "size": 544,
+      "tu": "src/decmove.cpp"
+    },
+    {
       "symbol": "?MoveChargeDetect@CDecor@@QAEHUtagPOINT@@@Z",
       "rva": "0x00013800",
       "size": 160,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?MovePersoDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x000138a0",
+      "size": 192,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveBalleDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00013960",
+      "size": 208,
       "tu": "src/decmove.cpp"
     },
     {
@@ -885,6 +992,12 @@
       "symbol": "?SortGetType@@YAHH@Z",
       "rva": "0x00013af0",
       "size": 48,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+      "rva": "0x00013b20",
+      "size": 240,
       "tu": "src/decmove.cpp"
     },
     {
