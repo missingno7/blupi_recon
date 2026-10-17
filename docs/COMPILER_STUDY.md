@@ -288,3 +288,13 @@ keeps 330 in esi instead of rematerialising it; the title region is the source w
 
 The 4-byte residue is a Pentium scheduling swap (`sbb edi,edi` vs the vtable load). Inert: `!= 0`, reversed and
 `== FALSE` ternaries, parentheses, a local `depth`; an if/else with two calls changes the code.
+
+### Source worker round 2 (sol-srcres, negatives; scratch/sol-srcres/round2/FINDINGS.md)
+
+85 source trials and 24 rotor diagnostics on DrawButtons' split title, ChangePhase and Build; none retained.
+- Removing the split branch's second `pos.x = 330` fixes the pixmap-load schedule but keeps 330 in esi across both
+  calls (oracle rematerialises it in eax); moving the remaining assignment, or removing both, does not help.
+- Rotor shifts at assignments 303-314 of DrawButtons do not close the region (best: 311 +1, 63 -> 51 fixed bytes):
+  the residue needs a different temp structure, not only a different rotor state.
+- Aggregate POINT locals, POINT copies, literal/`pos.x` POINT arguments, pointer and control-flow variants of the
+  split draw: identical to HEAD or worse.
