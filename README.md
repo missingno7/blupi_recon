@@ -6,19 +6,23 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
-**246 functions STRICT + 2 FOLDED, 31,200 / 142,064 unique game `.text` bytes (22.0 %).**
+**259 functions STRICT + 2 FOLDED, 34,160 / 141,488 unique game `.text` bytes (24.1 %).**
 STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
 data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
 unverified, masked or behavioural similarity is never counted.
 
 | TU | strict | TU | strict | TU | strict |
 |---|---:|---|---:|---|---:|
-| blupi.cpp | 11 | decor.cpp | 12 | movie.cpp | 13 |
+| blupi.cpp | 11 | decor.cpp | 14 | movie.cpp | 13 |
 | button.cpp | 14 (+1 folded) | event.cpp | 54 | network.cpp | 15 |
-| ddutil.cpp | 8 | jauge.cpp | 9 | pixmap.cpp | 29 |
-| decblock.cpp | 12 | menu.cpp | 8 | sound.cpp | 26 |
-| decblupi.cpp | 7 | misc.cpp | 7 (+1 folded) | text.cpp | 5 |
-| decdesign.cpp | 4 | decmove.cpp | 12 | decnet.cpp | 5 |
+| ddutil.cpp | 8 | jauge.cpp | 9 | pixmap.cpp | 34 |
+| decblock.cpp | 13 | menu.cpp | 8 | sound.cpp | 26 |
+| decblupi.cpp | 7 | misc.cpp | 8 (+1 folded) | text.cpp | 6 |
+| decdesign.cpp | 7 | decmove.cpp | 12 | decnet.cpp | 5 |
+
+Largest open bodies (best-known reconstructions in `src/`, not yet strict): `CDecor::BlupiStep` 0x9280 (25 KB,
+candidate 29,216 B, frame 0xbc vs 0xa4), `CEvent::DrawButtons` (4,886-byte identical prefix of 7,419),
+`CEvent::TreatEventBase` (730 of 6,616), `CEvent::ChangeButtons` (1,531 of 2,854), `CEvent::ChangePhase` (6,919 B).
 
 Per-TU details, near misses and blockers: `docs/*_TU.md`, `docs/CORE_CLUSTER.md`, `docs/UI_CLUSTER.md`,
 `docs/ENGINE_PROBE.md`.
@@ -29,14 +33,14 @@ Per-TU details, near misses and blockers: `docs/*_TU.md`, `docs/CORE_CLUSTER.md`
   (RTM differs on some functions), `/O2 /GX /ML /Gd /Gy`, statically linked VC5 SP3 `LIBC.LIB`, linker 5.10 family
   (exact build open), identical-COMDAT folding observed. Original build path `F:\Profil\` (`__FILE__`).
 - **Layout** ([docs/TU_MAP.md](docs/TU_MAP.md), `oracle/tu_map.csv`): `.text` is TU blocks in alphabetical source
-  order, functions in source order; game code ends at RVA `0x23af0`, VC5 LIBC follows.
+  order, functions in source order; game code ends at RVA `0x238b0`, VC5 LIBC follows (no SB1 `wave.cpp`).
 - **Ancestry** ([docs/ANCESTRY_PLANETBLUPI.md](docs/ANCESTRY_PLANETBLUPI.md),
   [docs/ANCESTRY_SB2.md](docs/ANCESTRY_SB2.md)): Planet Blupi v1.8.0 sources compile to exact SB1 functions for
   sound/movie/misc/ddutil/pixmap/UI code; game logic is the Speedy Blupi engine (SB2 reconstruction is a structural
   hint; SB1's `CDecor` lacks SB2's trajectory arrays). Free Eggbert is a fork of sb2-decomp, not independent evidence.
 - **Compiler knowledge** ([msvc5kb/README.md](msvc5kb/README.md)): rule catalog compatible with Blood II's VC5 KB;
-  18 rules validated on SB1 (incl. TU symbol-count context: a correct declaration that breaks peers means the real
-  missing declarations must be found — resolved for `StopSound` with genuine sound helpers).
+  45 rules, 21 validated on SB1 (incl. TU symbol-count context resolved by genuine declarations for `StopSound`,
+  statement order VC5-ORD-01, local-array layout BLUPI-LOC-01, SIB order from function-wide block shape BLUPI-REG-01).
 
 ## Reproduce
 
@@ -58,9 +62,12 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 ## Where to continue
 
-1. `event.cpp` large handlers (`DrawButtons`, `TreatEventBase`, `ChangePhase` ≈ 21 KB) — biggest single prize.
-2. Engine blocks `decblupi.cpp` (~29.5 KB) and `decdesign.cpp` (~13.7 KB): behaviour-first reconstruction from
-   pseudocode + SB2 hints worked for `decblock`.
-3. `pixmap.cpp` drawing family, `decor.cpp` save/map methods, `button.cpp`/`text.cpp` residuals.
-4. Open questions: `CDecor` is allocated as 0x258d4 bytes but no member access beyond +0xdbec is known; exact
+1. `CDecor::BlupiStep` (25 KB, ~18 % of game code): fix the 6-dword frame excess, then remove remaining SB2-only
+   behaviour (docs/BIGBLUPI.md has the slot map and region table).
+2. `event.cpp` large handlers (`DrawButtons` +0x1316, `TreatEventBase` +0x2DA, `ChangeButtons` +0x5fb, `ChangePhase`
+   stack layout) — docs/EVENT_TU.md.
+3. Engine mid-large bodies (`decdesign`, `decmove` 0x11bd0, `decblock` 0x4350): behaviour-first reconstruction from
+   pseudocode + SB2 hints (worked for `decblock`).
+4. `pixmap.cpp` remaining bodies (`Create`, `QuickIcon`), `decor.cpp` save/map methods, `button.cpp`/`text.cpp` residuals.
+5. Open questions: `CDecor` is allocated as 0x258d4 bytes but no member access beyond +0xdbec is known; exact
    linker build (Rich header has no linker entry); `__FILE__` build path `F:\Profil\` (reported, not masked).
