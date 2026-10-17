@@ -5,6 +5,7 @@ Compiles ONE translation unit with the recon.json settings (flags, defines, incl
 through tools/msvc.py (machine-wide compile cap applies) in about a second, then compares one function's bytes
 with the oracle at the given RVA. Relocation fields are masked, so `diff=0` is NOT a strict match - use
 tools/verify.py for acceptance. Meant for tight source/compiler experiments (docs/COMPILER_STUDY.md).
+In Git Bash set MSYS_NO_PATHCONV=1 before --extra-flag=/X, or MSYS silently turns the flag into a path.
 
   .pyenv\\python.exe tools\\fnprobe.py src/event.cpp ?TreatEventBase@CEvent@@QAEHIIJ@Z 0x1d230
   .pyenv\\python.exe tools\\fnprobe.py src/event.cpp=scratch\\me\\event.cpp DrawButtons 0x16f70 --region 0x1a30:0x1ac1

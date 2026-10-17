@@ -2187,6 +2187,173 @@
         "doc_ref": "docs/LAYOUT_DEBT.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-REG-03",
+      "section": "registers",
+      "title": "Struct temporaries vs scalar call arguments change VC5 scratch-register choice",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Identical instruction shapes; the oracle rotates scratch registers (eax, ecx, edx, eax...) where the candidate reuses eax for every temporary, including in code unrelated to the calls.",
+      "construct": "A callee taking POINT (built per call by a helper/temporary) versus the same callee taking two ints (x, y).",
+      "explanation": "VC5 SP3 /O2: AdaptBorder calls AdaptMidBorder five times. With MAKE_POINT(...) struct temporaries every argument temporary is eax; with AdaptMidBorder(int x, int y) the same pushes rotate eax/ecx/edx/eax and the later m_decor index calculation follows (eax, ecx, edx). Bytes pushed are identical, and the callee body is byte-identical under either signature; only its mangled name differs, which a relocation hides. Passing an existing POINT variable is neutral; the inline helper's form (initializer, member stores, derived-class constructor) does not matter. Reproduced in a 30-line micro TU.",
+      "experiment": "When a register-only residue rotates in the oracle but not the candidate, look for calls whose struct-by-value arguments are built per call (POINT(...)/RECT(...)); try a scalar-parameter signature for the callee (check the callee body stays strict, then rename its accepted record).",
+      "not_when": "If the callee's own code reads the struct as a unit (e.g. copies it), the scalar signature changes code. TreatEventBase's residues did not respond (its POINT arguments are existing variables).",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#struct-temporaries",
+          "tier": "PROVEN",
+          "counts": "micro TU 7 variants; AdaptBorder STRICT, AdaptMidBorder still STRICT"
+        }
+      ],
+      "keywords": "point struct temporary by value scalar arguments signature register rotation make_point",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::AdaptBorder; CDecor::AdaptMidBorder",
+        "rva": "0x144d0; 0x143d0",
+        "tu": "decor.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 12,
+        "outcome": "STRICT after AdaptMidBorder(int x, int y)",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-CTL-02",
+      "section": "control",
+      "title": "A shared error block at the end of the source is laid out inline after the last check",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "block_reorder",
+          "branch_flip",
+          "structural"
+        ]
+      },
+      "symptom": "Oracle has the cleanup (free/fclose; return FALSE) right after the last validity check and jumps over it with je; the candidate tests the inverse (jne) and places the cleanup at the end.",
+      "construct": "`if (bad) goto error; ... success code ... return TRUE; error: cleanup; return FALSE;` (Planet Blupi decio style) versus `if (ok) goto success; error: cleanup; success: ...`.",
+      "explanation": "VC5 SP3 /O2 lays out the end-of-source error block directly after the last conditional goto (with jump threading into it from earlier NULL checks); the reconstruction's goto-success arrangement makes it move the block to the end instead. FileExist and CurrentRead became byte-identical with the Planet Blupi form.",
+      "experiment": "When a cleanup block is displaced, restore the ancestor's goto-error structure with the error label at the end of the function.",
+      "not_when": "Functions whose oracle really has the block at the end.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#error-block-placement",
+          "tier": "PROVEN",
+          "counts": "5 shapes; 2 functions STRICT"
+        }
+      ],
+      "keywords": "goto error cleanup block layout success label fopen fread free fclose",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::FileExist; CDecor::CurrentRead",
+        "rva": "0x159f0; 0x153d0",
+        "tu": "decor.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 6,
+        "outcome": "both STRICT",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SEM-02",
+      "section": "semantics",
+      "title": "An uninitialized local can read the dead parameter slot",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "load_reorder",
+          "structural"
+        ]
+      },
+      "symptom": "Oracle loads a value from a parameter's stack slot ([esp+N]) on a path where the candidate copies an initialized local or the cached parameter register.",
+      "construct": "Local left uninitialized on some path (original bug) versus an explicit default assignment.",
+      "explanation": "ChangeSprite: SB1 never assigns hCursor when no sprite matches. VC5 placed hCursor in the dead parameter slot of `sprite` (cached in edi), so the else path reads [esp+0xc]. `hCursor = (HCURSOR)sprite;` produced `mov eax, edi`.",
+      "experiment": "If the oracle reads a parameter slot where the source has a default assignment, try removing the assignment (the original may have relied on undefined behaviour).",
+      "not_when": "When the read value is used in a way that would be observably wrong.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#uninitialized-local",
+          "tier": "PROVEN",
+          "counts": "3 variants; ChangeSprite STRICT"
+        }
+      ],
+      "keywords": "uninitialized local parameter slot reuse bug changesprite hcursor",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangeSprite",
+        "rva": "0x1f210",
+        "tu": "misc.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 3,
+        "outcome": "STRICT",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-NEG-03",
+      "section": "negative",
+      "title": "TreatEventBase register residues do not respond to code-neutral source, context, toolchain or flags",
+      "tier": "PROVEN",
+      "scope": "negative",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Two coupled free-choice sites (toggle edx/ecx, PostMessage hwnd edx) choose the first free register in the candidate and the next one in the oracle; all other 6,608 code bytes and 62 jump-table entries match.",
+      "construct": "(none - negative result)",
+      "explanation": "About 150 single-TU probes, all with identical code elsewhere: local declaration order (13), shared case-label order, switch case source order, code-identical copies, dead stores, local types, local renames (12), blank lines, extern-declaration count probes 0-32 before the function, stubbing all 96 preceding function bodies, scalar signatures for its POINT callees, all seven VC5 compiler trees, and 25 code-generation flags (an earlier sweep was invalid: Git Bash had rewritten '/X' flags into paths; redone with MSYS_NO_PATHCONV=1). Reduced examples show the choice is function-global (code added after the sites can flip it, period 3 in inserted loads), so the original must differ in something code-producing elsewhere or in an untested invisible property.",
+      "experiment": "Do not repeat these families. Next candidates: argument/expression forms that leave bytes identical but change temporaries (see BLUPI-REG-03).",
+      "not_when": "Other functions where a code-neutral form did flip registers (BLUPI-REG-01/02/03).",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#treateventbase",
+          "tier": "PROVEN",
+          "counts": "~150 probes, 0 flips with identical code"
+        }
+      ],
+      "keywords": "treateventbase register rotation negative flags toolchain context probes declaration order",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::TreatEventBase",
+        "rva": "0x1d230",
+        "tu": "event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 150,
+        "outcome": "negative: 8 register bytes remain",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

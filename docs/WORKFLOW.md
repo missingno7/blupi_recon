@@ -53,6 +53,21 @@ removes the mapping again. It never touches an existing `F:`. Where the mapping 
 `F:` in use), the verifier prints `NOTE: regression gate INCOMPLETE`, checks that TU's accepted functions for
 identical code bytes only, and refuses `--accept`. See [BUILD_PATH.md](BUILD_PATH.md).
 
+## Difference-first matching loop
+
+Work from where the bytes differ, not from blind runs ([COMPILER_STUDY.md](COMPILER_STUDY.md)):
+
+```powershell
+.\.pyenv\python.exe tools\residues.py                    # all unmatched functions, classified differing regions
+.\.pyenv\python.exe tools\residues.py --detail 0x159f0    # every region of one function, candidate vs oracle
+.\.pyenv\python.exe tools\fnprobe.py src/decor.cpp=scratch\me\decor.cpp FileExist 0x159f0 --region 0x50:0xd0
+```
+
+`residues.py` reads the last canonical `verify.py` run. `fnprobe.py` compiles one TU in about a second and diffs
+one function (relocations masked, so `differing bytes=0` is a lead, not a strict match). Name the cause of each
+region (register / order / constant / missing code), form one hypothesis, test it with `fnprobe`, then confirm with
+`verify.py --tu`.
+
 ## Comparator statuses
 
 - **STRICT** means one proved code location matches every non-relocation byte;
