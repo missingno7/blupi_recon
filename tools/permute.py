@@ -21,7 +21,6 @@ from typing import Callable
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 import asmscore  # noqa: E402
-import msvc  # noqa: E402
 
 TOKEN_MASK = re.compile(r'//[^\r\n]*|/\*[\s\S]*?\*/|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'')
 SIMPLE = r"[A-Za-z_]\w*(?:(?:\.|->)[A-Za-z_]\w*|\[[0-9]+\])*"
@@ -725,29 +724,19 @@ def load_manifest() -> dict:
 def compile_and_score(source: Path, object_path: Path, function: str, rva: int,
                       unit_stem: str, unit: dict, manifest: dict, worker: Path) -> dict:
     tool = manifest["toolchain"]
-    tree = msvc.resolve_tree(tool["tree"]).resolve()
-    compiler_bin, vc_root, shared_bin, default_includes = msvc.tool_layout(tree, None)
     worker.mkdir(parents=True, exist_ok=True)
-    temp = worker / "tmp"
-    temp.mkdir(parents=True, exist_ok=True)
     object_path.parent.mkdir(parents=True, exist_ok=True)
-    include_dirs = [source.parent, ROOT / "src", *[(ROOT / p).resolve() if not Path(p).is_absolute() else Path(p)
+    include_dirs = [source.parent, *unit.get("_candidate_include_dirs", []), ROOT / "src",
+                   *[(ROOT / p).resolve() if not Path(p).is_absolute() else Path(p)
                                                        for p in tool.get("include_dirs", [])]]
-    command = [str(compiler_bin / "CL.EXE"), "/nologo", "/c", str(source), f"/Fo{object_path}"]
-    command += [f"/I{path.resolve()}" for path in include_dirs]
-    command += [f"/D{definition}" for definition in tool.get("defines", [])]
-    command += [f"/D{definition}" for definition in unit.get("defines", [])]
-    command += tool.get("flags", [])
-    path_dirs = [compiler_bin]
-    if shared_bin and shared_bin.is_dir():
-        path_dirs.append(shared_bin)
-    path_dirs.extend([Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32",
-                      Path(os.environ.get("SystemRoot", r"C:\Windows"))])
-    env = {"PATH": os.pathsep.join(map(str, path_dirs)),
-           "INCLUDE": os.pathsep.join(map(str, default_includes)),
-           "LIB": str(vc_root / "LIB"), "TMP": str(temp), "TEMP": str(temp),
-           "SystemRoot": os.environ.get("SystemRoot", r"C:\Windows")}
-    run = subprocess.run(command, cwd=ROOT, env=env, stdout=subprocess.PIPE,
+    command = [sys.executable, str(ROOT / "tools" / "msvc.py"), str(source),
+               "--tree", tool["tree"], "--out", str(object_path), "--log-dir", str(worker)]
+    for path in include_dirs:
+        command.extend(["--include", str(path.resolve())])
+    for definition in tool.get("defines", []) + unit.get("defines", []):
+        command.extend(["--define", definition])
+    command += ["--flag=" + flag for flag in tool.get("flags", [])]
+    run = subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT, text=True, encoding="mbcs", errors="replace")
     (worker / "compile.log").write_text(subprocess.list2cmdline(command) + "\n" + run.stdout, encoding="utf-8")
     if run.returncode:
@@ -755,13 +744,70 @@ def compile_and_score(source: Path, object_path: Path, function: str, rva: int,
     try:
         score = asmscore.score_function(object_path, function, rva)
     except Exception as exc:
-        return {"compile": "ok", "score_error": str(exc), "log": str(worker / "compile.log")}
+        return {"compile": "ok", "score_error": str(exc), "object": str(object_path),
+                "log": str(worker / "compile.log")}
     score.update({"compile": "ok", "object": str(object_path)})
     return score
 
 
 def digest(text: str) -> str:
     return hashlib.sha256(text.encode("cp1252", "replace")).hexdigest()
+
+
+def restricted_mutations(body: str, preserve_lines: bool, source: str,
+                         body_start: int, line_ranges: list[tuple[int, int]],
+                         operators: set[str]) -> list[tuple[str, str]]:
+    """One operator application, confined to each original inclusive line range.
+
+    Regions are sliced before rewriting, so a rewrite cannot reach across their
+    boundaries. Exhaustive mode enumerates this finite one-step neighborhood;
+    explicit reviewed variants supply combinations or unsupported families.
+    """
+    if not line_ranges:
+        regions = [(0, len(body))]
+    else:
+        starts = [0]
+        starts.extend(match.end() for match in re.finditer("\n", source))
+        starts.append(len(source))
+        regions = []
+        for first, last in line_ranges:
+            if first < 1 or last < first or last >= len(starts):
+                raise ValueError(f"invalid source line range {first}:{last}")
+            left, right = starts[first - 1] - body_start, starts[last] - body_start
+            if left < 0 or right > len(body):
+                raise ValueError(f"line range {first}:{last} is not inside the function body")
+            regions.append((left, right))
+    result = []
+    for left, right in regions:
+        for label, changed in mutations(body[left:right], preserve_lines, source):
+            if not operators or label in operators:
+                result.append((label, body[:left] + changed + body[right:]))
+    return result
+
+
+def explicit_variants(path: Path, source: str, body_start: int, body_end: int,
+                      line_ranges: list[tuple[int, int]]) -> list[tuple[str, str]]:
+    """Load [{label, source}] full-TU candidates; paths are relative to the list."""
+    result = []
+    for item in json.loads(path.read_text(encoding="utf-8")):
+        text = (path.parent / item["source"]).read_bytes().decode("cp1252")
+        if not text.startswith(source[:body_start]) or not text.endswith(source[body_end:]):
+            raise ValueError(f"explicit variant changes text outside function: {item['source']}")
+        if "__LINE__" in source and text.count("\n") != source.count("\n"):
+            raise ValueError(f"explicit variant shifts __LINE__ source lines: {item['source']}")
+        if line_ranges:
+            matcher = difflib.SequenceMatcher(a=source.splitlines(keepends=True),
+                                              b=text.splitlines(keepends=True), autojunk=False)
+            for tag, first, last, _bfirst, _blast in matcher.get_opcodes():
+                if tag == "equal":
+                    continue
+                # A zero-width insertion is allowed only within a selected range.
+                if not any(left <= first + 1 and max(first + 1, last) <= right
+                           for left, right in line_ranges):
+                    raise ValueError(f"explicit variant changes unselected lines: {item['source']}")
+        end = len(text) - len(source[body_end:]) if body_end < len(source) else len(text)
+        result.append((item["label"], text[body_start:end]))
+    return result
 
 
 def main() -> int:
@@ -773,6 +819,16 @@ def main() -> int:
     parser.add_argument("--jobs", type=int, default=int(os.environ.get("BLUPI_JOBS", "4")),
                         help="concurrent compiles (default $BLUPI_JOBS or 4; keep low - sandbox desktop heap)")
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--exhaustive", action="store_true",
+                        help="enumerate every unique one-step rewrite plus explicit variants; no beam/random search")
+    parser.add_argument("--lines", action="append", default=[], metavar="FIRST:LAST",
+                        help="inclusive original source lines; repeat for disjoint regions")
+    parser.add_argument("--operators", help="comma-separated mutation labels to allow")
+    parser.add_argument("--variants", type=Path,
+                        help="JSON list of reviewed {label, source} candidates, relative to the JSON file")
+    parser.add_argument("--plan-only", action="store_true", help="write the exhaustive plan without compiling")
+    parser.add_argument("--output-dir", type=Path, help="result directory below build/permute")
+    parser.add_argument("--scratch-dir", type=Path, help="variant directory below scratch")
     args = parser.parse_args()
     if args.budget < 1 or args.jobs < 1:
         parser.error("--budget and --jobs must be positive")
@@ -791,15 +847,58 @@ def main() -> int:
     source = candidate_path.read_bytes().decode("cp1252")
     body_start, body_end = locate_body(source, args.function)
     original_body = source[body_start:body_end]
+    try:
+        line_ranges = [tuple(map(int, value.split(":"))) for value in args.lines]
+        if any(len(value) != 2 for value in line_ranges):
+            raise ValueError("--lines requires FIRST:LAST")
+    except ValueError as exc:
+        parser.error(str(exc))
+    if (args.lines or args.operators or args.variants or args.plan_only) and not args.exhaustive:
+        parser.error("--lines, --operators, --variants and --plan-only require --exhaustive")
+    operators = set(args.operators.split(",")) if args.operators else set()
     preserve_lines = "__LINE__" in source
     unit_stem = canonical_path.stem
-    unit_config = next(item for item in manifest["translation_units"] if item["source"] == canonical)
+    unit_config = dict(next(item for item in manifest["translation_units"] if item["source"] == canonical))
+    unit_config["_candidate_include_dirs"] = [candidate_path.parent]
     slug = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.function).strip("._")
     output_root = ROOT / "build" / "permute" / slug / f"seed_{args.seed}"
     variants_root = ROOT / "scratch" / "permute" / slug / f"seed_{args.seed}" / "variants"
+    if args.output_dir:
+        output_root = (ROOT / args.output_dir).resolve()
+    if args.scratch_dir:
+        variants_root = (ROOT / args.scratch_dir).resolve()
+    if not output_root.is_relative_to((ROOT / "build" / "permute").resolve()):
+        parser.error("--output-dir must be below build/permute")
+    if not variants_root.is_relative_to((ROOT / "scratch").resolve()):
+        parser.error("--scratch-dir must be below scratch")
     output_root.mkdir(parents=True, exist_ok=True)
     variants_root.mkdir(parents=True, exist_ok=True)
     rng = random.Random(args.seed)
+    exhaustive_plan = []
+    if args.exhaustive:
+        try:
+            options = restricted_mutations(original_body, preserve_lines, source, body_start,
+                                           line_ranges, operators)
+            if args.variants:
+                options.extend(explicit_variants(args.variants.resolve(), source, body_start,
+                                                 body_end, line_ranges))
+        except ValueError as exc:
+            parser.error(str(exc))
+        seen = {digest(original_body)}
+        for label, body in options:
+            key = digest(body)
+            if key not in seen:
+                exhaustive_plan.append((label, body))
+                seen.add(key)
+        plan = {"mode": "exhaustive-one-step-and-explicit", "lines": line_ranges,
+                "operators": sorted(operators), "compiles_required": 1 + len(exhaustive_plan),
+                "variants": [{"label": label, "sha256": digest(body)} for label, body in exhaustive_plan]}
+        (output_root / "plan.json").write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
+        print(f"exhaustive plan: {1 + len(exhaustive_plan)} compiles including baseline", flush=True)
+        if args.plan_only:
+            return 0
+        if 1 + len(exhaustive_plan) > args.budget:
+            parser.error("exhaustive plan exceeds --budget; narrow the finite set (no compiles started)")
 
     def materialize(body: str, index: int) -> tuple[Path, str]:
         full = source[:body_start] + body + source[body_end:]
@@ -825,7 +924,10 @@ def main() -> int:
     compiled_hashes = {digest(original_body)}
     expanded_hashes: set[str] = set()
     pending: list[tuple[dict, str, list[str]]] = []
+    if args.exhaustive:
+        pending = [(base_entry, body, [label]) for label, body in exhaustive_plan]
     serial = 1
+    records = [{"index": 0, "source": str(baseline_path), "mutations": [], "result": baseline}]
 
     def random_child(parent: dict) -> tuple[str, list[str]] | None:
         current = parent["body"]
@@ -843,8 +945,8 @@ def main() -> int:
         return current, labels
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:
-        while attempts < args.budget and beam:
-            for parent in beam:
+        while attempts < args.budget and (pending if args.exhaustive else beam):
+            for parent in ([] if args.exhaustive else beam):
                 parent_hash = digest(parent["body"])
                 if parent_hash in expanded_hashes:
                     continue
@@ -869,7 +971,7 @@ def main() -> int:
                 worker = output_root / "workers" / f"w{index:05d}"
                 obj = worker / f"{index:05d}_{unit_stem}.obj"
                 batch.append((index, parent, body, full, labels, variant_path, worker, obj))
-            while len(batch) < generation and not pending:
+            while not args.exhaustive and len(batch) < generation and not pending:
                 parent = rng.choice(beam)
                 chosen = random_child(parent)
                 if chosen is None:
@@ -892,6 +994,8 @@ def main() -> int:
             for item, future in zip(batch, futures):
                 result = future.result()
                 attempts += 1
+                records.append({"index": item[0], "source": str(item[5]),
+                                "mutations": item[4], "result": result})
                 prior_best = min((entry["score"]["score"] for entry in scored), default=None)
                 if result.get("compile") == "ok" and "score" in result:
                     entry = {"body": item[2], "text": item[3], "score": result,
@@ -903,7 +1007,7 @@ def main() -> int:
                 if is_improvement or attempts % 100 == 0:
                     if result.get("score") is not None:
                         print(f"compile {attempts}/{args.budget}: score={result['score']} status={result['status']} "
-                              f"prefix={result['identical_prefix']} via {','.join(item[4])}")
+                              f"prefix={result['identical_prefix']} via {','.join(item[4])}", flush=True)
                     else:
                         print(f"compile {attempts}/{args.budget}: {result.get('compile')} "
                               f"{result.get('score_error', '')}")
@@ -927,12 +1031,15 @@ def main() -> int:
         (output_root / f"best-{index:02d}.diff").write_text("".join(diff), encoding="utf-8")
     elapsed = max(time.perf_counter() - started, 1e-9)
     summary = {"tu": canonical, "candidate": str(candidate_path), "function": args.function,
+               "mode": "exhaustive-one-step-and-explicit" if args.exhaustive else "beam-random",
+               "lines": line_ranges, "operators": sorted(operators),
                "rva": f"0x{args.rva:08x}", "seed": args.seed, "budget": args.budget,
                "compiles_attempted": attempts, "compiled_and_scored": len(scored),
                "elapsed_seconds": round(elapsed, 3), "compiles_per_second": round(attempts / elapsed, 3),
                "baseline": baseline, "best": [{k: v for k, v in item["score"].items() if k not in ("relocations",)}
                                                 | {"mutations": item["mutations"], "source": str(item["path"])}
                                                 for item in best]}
+    (output_root / "results.json").write_text(json.dumps(records, indent=2) + "\n", encoding="utf-8")
     (output_root / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     if ranked:
         top = ranked[0]["score"]

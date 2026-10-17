@@ -4,9 +4,23 @@ tools/permute.py searches ordinary C++ source variants for one function while co
 
 ## Usage
 
-    .\.pyenv\python.exe tools\permute.py --tu src/event.cpp=scratch\candidate\event.cpp --function '?DrawButtons@CEvent@@QAEHXZ' --rva 0x16f70 --budget 80 --jobs 8 --seed 41
+    .\.pyenv\python.exe tools\permute.py --tu src/event.cpp=scratch\candidate\event.cpp --function '?DrawButtons@CEvent@@QAEHXZ' --rva 0x16f70 --budget 80 --jobs 4 --seed 41
 
---budget counts the baseline compile. The default is 80 attempts and one worker per logical CPU; choose a lower --jobs if disk or memory pressure matters. The function body is found by its decorated name, then only that body is rewritten. Candidate-local quoted headers resolve beside the candidate first. Each attempt has its own object and TMP/TEMP directory under build/permute/<function>/workers/.
+--budget counts the baseline compile. The defaults are 80 attempts and four workers (or BLUPI_JOBS). Keep --jobs at four or less for this experiment and run only one campaign at a time. The function body is found by its decorated name, then only that body is rewritten. Candidate-local quoted headers are included before src/. Each attempt has its own object/log directory under build/permute/<function>/workers/. Compilation delegates to tools/msvc.py, including its machine-wide compile cap and repository build/tmp TMP/TEMP settings.
+
+For a deterministic finite experiment, use --exhaustive with repeatable
+--lines FIRST:LAST (inclusive original source lines), --operators with
+comma-separated mutation labels, and optionally --variants FILE.json. The
+JSON is a list of {"label": "family:choice", "source": "candidate.cpp"};
+source paths are relative to the list. Every unique one-step rewrite in the
+selected regions and every listed candidate is compiled, independently of
+score. This does not enumerate the transitive closure of rewrites; supply
+an explicit Cartesian product when testing interactions. Listed candidates
+are checked against the function and line boundaries. --plan-only writes
+the hashes/labels/count without compiling; an over-budget plan is rejected
+before its baseline compile. --output-dir must be below build/permute and
+--scratch-dir below scratch. plan.json, results.json and summary.json retain
+the complete finite plan, every result (including failures), and ranked bests.
 
 The summary records baseline and best scores, compile count, mutation labels, and paths to the source variants. best-NN.diff files are unified diffs against the input candidate. A diff is a proposal for review, not source to accept automatically. Run an apparent strict result through the normal full-TU verifier:
 
@@ -61,3 +75,206 @@ The compiler was MSVC 5.0 SP3 /O2 /GX /ML /Gd /Gy, using each function's real TU
 ## Open limits
 
 **[OPEN]** The tool does not prove variants meaning-preserving and its regex operators cover a C++ subset, not arbitrary syntax. **[OPEN]** Instruction alignment on very large repetitive bodies is heuristic. The selected stuck-function runs show that a lower score is not necessarily close to strict; score is a search guide, and verify.py remains the acceptance check.
+
+## AI-directed experiment
+
+### Plan recorded before the campaigns (2026-10-17)
+
+**[EVIDENCE]** Baseline is canonical commit `f778a36`, copied byte-for-byte to
+`scratch/permexp/{decblupi,event}.cpp`, canonical headers, pinned SP3
+`/W3 /GX /O2 /ML /Gd /Gy`. Full verification used
+`--build-dir permexp_baseline`. No source/header/manifest edits are proposed.
+`scratch/permexp/baselines.json` records asmscore and every non-relocation
+byte difference; these differences are diagnostics, never masked matches.
+
+**[EVIDENCE]** The task's BlupiStep checkpoint is stale. All ten listed bytes
+at `+58c8..+5967` already agree. Its current 25,280-byte section (25,269
+body bytes, frame `a4`) is MISMATCH: **117** fixed-byte differences in several
+instruction-scheduling islands, first `+29ff`; asmscore **49**, 6,504/6,516
+aligned instructions. The latest BIGBLUPI closure describes a private-header
+STRICT build, but that is not the measured canonical-header baseline here.
+The implicated target expressions remain branch-local jeep/tank POINT
+initializers (lines 3694/3695) and the electro-sound POINT copy (3709/3710).
+
+**[HYPOTHESIS]** BlupiStep's finite families, confined to original lines
+3676:3710, before looking at any campaign score:
+
+1. Aggregate lowering/local identity: direct member argument, aggregate
+   initialization, copy initialization, or copy assignment at each of three
+   POINT argument sites (4^3 subset).
+2. Component evaluation/store order: add explicit x-then-y and y-then-x forms
+   at each site, giving the complete **6^3** product including family 1.
+3. Shared versus separate used local: replace any nonempty subset of the
+   three locals with one used cloud-block POINT (**7** variants).
+4. Alias versus value identity: pointer and const reference at one site at
+   a time (**6** variants).
+
+All forms preserve source line count. Member fields are nonvolatile, and no
+side effect intervenes between the fresh POINT read and its by-value call.
+The shared local is genuinely used; no unused/context-padding declarations
+are included. Preselected AI-only shortlist: direct at each site separately,
+copy initialization at jeep/tank separately, aggregate initialization at
+sound (six candidates plus baseline). This is a retrospective coverage/cost
+comparison against that shortlist, not a blinded comparison of agents.
+
+**[EVIDENCE]** TreatEventBase baseline is MISMATCH with exactly eight fixed
+differences. `+41b/+421/+423/+426/+428/+42e` encode ECX input / EDX boolean
+result instead of EDX input / ECX result for `m_bBuildOfficialMissions`
+toggle and `bEnable`; `+6f4/+6ff` load/push HWND in EAX instead of EDX at
+PostMessage. These map to source lines 2062:2075 and 2179:2181 respectively.
+Its body is 6,616 bytes, COFF extent 7,072 including jump tables/alignment.
+Asmscore is **557**, 1,886/1,914 aligned decoded instructions, prefix 293;
+its oracle span is 7,104 bytes. The score decodes trailing tables as code
+and includes a 32-byte span delta, so eight fixed bytes is the more useful
+proximity measure. No scoring-tool change is owned by this experiment.
+
+**[EVIDENCE]** KB `hints` gives keyword matches only for both methods.
+BLUPI-REG-01/02 motivate experiments but do not predict these scalar loads.
+Prior negative probes in BIGBLUPI/SOLSIB are not counted as new results.
+
+**[HYPOTHESIS]** TreatEventBase finite families, declared before its campaign,
+confined to original lines **2062:2075** and **2179:2181**:
+
+1. Toggle result flow: member-then-result, result-then-member, assignment
+   chains in both directions, or a used BOOL/bool/BYTE result local. Together
+   with the original, these give eight forms. All normalize arbitrary BOOL
+   input to 0/1; no non-equivalent XOR toggle is used.
+2. Branch/result shape: assign bEnable in the two arms then copy to member,
+   use a branch-assigned BOOL local, chain both stores in each arm, or repeat
+   the two constant stores in each arm (**four** more forms; **12** total).
+3. Default bEnable placement: original FALSE initialization before rank-zero
+   handling, or FALSE in its else while rank zero assigns the actual result
+   (**two** positions). Subsequent rank tests and calls remain in order.
+4. HWND lifetime: direct argument; copy, split initialization, reference, or
+   pointer inside the BYE arm; or a used value local read before/after the
+   two independent cheat-reset stores (**seven** forms). No call intervenes
+   between these field reads/stores and the original BYE action.
+
+Enumerate the complete **12 x 2 x 7 = 168** grid (baseline included), plus
+every unique one-step rewrite emitted by the selected operators in the two
+regions. Preselected AI-only shortlist: result-member, chain-output,
+BOOL-local, branch-output (original placement/direct HWND), and block-copy
+and before-resets HWND (original toggle/placement); six plus baseline.
+No adaptive/random search or speculative declarations are allowed.
+
+### Measured results
+
+**[EVIDENCE]** BlupiStep completed **238/238** planned compiles, all scored,
+in **590.774 s** with four workers. There were 216 explicit POINT-product
+sources (one is a formatting-only baseline control), seven shared-local
+sources, six aliases, eight operator rewrites, and the canonical baseline.
+All remain MISMATCH. Best asmscore stays **49**, best fixed-byte count stays
+**117**; no candidate fixes the earlier scheduling islands. The 238 sources
+produce **34** distinct section-byte/relocation-name sequences. Eighteen
+tie on score 49, but two of those have 118 fixed differences: a score tie
+does not imply identical bytes. No additional full-TU check is needed for
+the unchanged best source; the canonical-header full-run baseline already
+verified it as MISMATCH.
+
+Artifacts: `build/permute/permexp/blupi/{plan,results,summary,byte-outcomes}.json`,
+`scratch/permexp/blupi-inputs/variants.json`, and the materialized sources in
+`scratch/permexp/blupi-run/`. Byte diagnostics exclude relocation slots only
+to list residues; they never replace relocation proof or establish a match.
+
+### TreatEventBase result and comparison
+
+**[EVIDENCE]** TreatEventBase completed **169/169** planned compiles, all
+compiled and scored, in **237.209 s** with four workers: the original plus
+167 explicit grid variants and one independent-store swap. All remain
+MISMATCH. Best score stays **557**, minimum fixed-byte count stays **8**.
+Five sources retain eight bytes; 35 others also score 557 but have fourteen
+fixed differences. The candidate extents are 7,072 (113 sources), 7,088 (42),
+or 7,120 (14). There are 37 distinct section-byte/relocation-name sequences.
+All compiled objects were audited, including a guard for possible score
+errors: there were no scoring errors and no zero-difference body.
+Event artifacts have the same filenames under `build/permute/permexp/event/`
+and `scratch/permexp/event-{inputs,run}/`.
+
+**[EVIDENCE]** Full-TU acceptance check:
+
+```powershell
+.pyenv\python.exe tools\verify.py --tu src/decblupi.cpp=scratch/permexp/blupi-run/v00000/decblupi.cpp --tu src/event.cpp=scratch/permexp/event-run/v00002/event.cpp --build-dir permexp
+```
+
+Exit 0; both requested methods remain MISMATCH, all accepted functions pass.
+The event representative is the equally close, ordinary used HWND copy
+inside the BYE arm. Blupi's best representative is its unchanged baseline.
+`build/verify-permexp/results.json` and
+`build/permute/permexp/{final-verify.log,comparison.json}` retain the proof.
+There is **no STRICT win, no integration diff, and no header delta**. These
+two canonical-source full runs add two target compiles per function beyond
+the search counts (240 BlupiStep / 171 TreatEventBase target compiles in all).
+
+| Fixed preselected comparison | AI shortlist incl. baseline | Exhaustive incl. baseline | Best score / minimum fixed bytes |
+|---|---:|---:|---|
+| BlupiStep | 7 | 238 | Both 49 / 117 |
+| TreatEventBase | 7 | 169 | Both 557 / 8 |
+
+The AI shortlists were selected before each campaign and evaluated as
+subsets of it, not separately timed. The extra **231 + 162 = 393** compiles
+find neither a lower score nor fewer fixed bytes. The total search cost is
+**407 target compiles / 827.983 s** (13 min 48 s), excluding candidate
+authoring, preflight plan construction, and full-TU checks. Zero useful
+matching improvements means there is no finite observed cost per successful
+result. These are measured negative results, not evidence that an arbitrary
+AI session would always outperform a permuter.
+
+### Compiler findings from the AI-directed experiment
+
+- **[EVIDENCE] BLUPI-REG-02 / VC5-LOC-03, negative in this canonical context:**
+  the trigger advertised in the task (ten POINT-call register bytes) is
+  already absent. SP3 full decblupi TU, canonical headers/manifest flags:
+  direct/aggregate/copy/assignment/component-order forms, seven shared-local
+  subsets, and six pointer/reference forms generate different register and
+  scheduling encodings, but none improves score 49 or the 117 fixed-byte
+  baseline. No new scalar-allocation rule or STRICT function is established.
+- **[EVIDENCE] VC5-ORD-01, negative:** eight one-step independent-store swaps
+  inside the same cloud block fail to improve BlupiStep. Some tie on the
+  instruction score while worsening raw fixed-byte count. This is evidence
+  for inspecting bytes after ranking, not a compiler-equivalence claim.
+- **[EVIDENCE] BLUPI-REG-01/02 / VC5-LOC-01, negative for these scalar loads:**
+  complete event TU, canonical headers, SP3 manifest flags. The 12 toggle
+  forms x two default-initialization positions x seven HWND lifetimes do not
+  improve the eight-byte baseline. Four HWND forms inside the selected BYE
+  arm retain exactly those eight fixed residues. Moving a window read before
+  the condition changes scheduling/layout and worsens the score; changing the
+  normalized result to BYTE can change frame/layout substantially. These
+  tests do not extend the shared-index SIB rule to scalar register allocation.
+- **[EVIDENCE] VC5-ORD-01, negative:** the one event independent-store swap
+  scores 561 with 18 fixed differences, versus 557/eight. Boolean value-flow
+  forms can tie at score 557 while moving the ESI result copy relative to
+  the member store and producing fourteen fixed differences, as earlier
+  SOLSIB probes did. The score alone does not identify strict progress.
+
+### Conclusion and reuse
+
+**[EVIDENCE]** This run adds exhaustive coverage of the declared finite sets,
+but **no matching value beyond the preselected AI shortlist**. The tool's
+automatic operators supplied only nine store-order variants, none useful;
+the POINT/toggle/HWND families and their Cartesian products were all
+AI-authored. It found no useful original-source form the shortlist missed.
+There is no new winning variant whose plausibility could support integration.
+Used POINT/HWND value locals are ordinary source; exploratory pointer,
+reference and byte-result forms have no new original-source evidence here.
+
+**[HYPOTHESIS / recommendation]** Use the permuter as a bounded enumeration
+and evidence-recording aid when a current near-match baseline and a small,
+source-supported family already exist, especially for interactions that are
+tedious to enumerate manually. Start with a positive control or the most
+promising few variants; inspect actual bytes and full relocation proof.
+Recheck integration state before spending the budget: the advertised ten
+BlupiStep register residues were already fixed. Do not expand this negative
+grid into random large-function searches. The next evidence needed is the
+canonical-context scheduling explanation for BlupiStep and a reduced
+positive scalar-register example for TreatEventBase, rather than another
+equivalent spelling sweep.
+
+**[EVIDENCE]** Tool changes: deterministic one-step/explicit enumeration,
+line/operator restrictions, checked plan budget, full result ledger, explicit
+scratch/output roots, original candidate include context, and compilation
+through msvc.py's machine-wide cap. Rejection checks covered an out-of-function
+candidate, an out-of-function region, an over-budget plan, and a line-shifting
+explicit candidate in a source using __LINE__; all rejected
+before creating compiler workers. Both complete plans' result counts and
+unique indices were checked. No canonical source, header, manifest, catalog,
+asset or external reference was edited; no game executable was run.
