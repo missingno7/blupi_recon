@@ -98,3 +98,16 @@ source difference nearby.
 - [OPEN] `TreatEventBase` (8 bytes), `DrawButtons` (split-title scheduling), `DrawMap` (per-field registers for the
   RECT/POINT temporaries), `CNetwork::Send` (parameters cached in esi/edi), `ChangePhase` (constant register swap),
   `Build` (tail sharing in the blupi block), `CPixmap::Create` (vtable load order), `DoInit` (CDecor size, layout debt).
+
+### DecorNextAction / GetBlupiInfo ([EVIDENCE], still open)
+
+- The DecorNextAction body (scratch/sol-build) is byte-identical to the oracle; inserting it before GetBlupiInfo swaps
+  both commutative OR operand pairs there (`m_blupiJeep|m_blupiTank`, `m_blupiSurf|m_blupiNage`).
+- Isolation: the action table alone is inert; a trivial `return m_posDecor;` body, or any free/static/member function
+  defined before GetBlupiInfo, causes the same swap; the same function after GetBlupiInfo is inert. Removing the 14
+  POINT operator helpers from def.h is inert. Operand spelling (natural, swapped, local-variable forms) is inert.
+- Extern-declaration probes before GetBlupiInfo (with DecorNextAction) fix only the jeep pair (counts 3-6, 11-16);
+  extra static functions give the same 2-byte state; no tested context reaches 0.
+- Conclusion: the original TU differs in the number/kind of definitions before GetBlupiInfo in a way not yet
+  identified. The non-inline POINT operators in def.h are a reconstruction convenience (they would also clash at
+  link time) and are recorded for cleanup, but they are not the cause here.
