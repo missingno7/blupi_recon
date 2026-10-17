@@ -305,6 +305,12 @@
       "tu": "src/decblock.cpp"
     },
     {
+      "symbol": "?InitDecor@CDecor@@QAEXXZ",
+      "rva": "0x00003b80",
+      "size": 752,
+      "tu": "src/decblock.cpp"
+    },
+    {
       "symbol": "?SetTime@CDecor@@QAEXH@Z",
       "rva": "0x00003e70",
       "size": 16,
@@ -344,6 +350,12 @@
       "symbol": "?GetIconPerso@CDecor@@QAEHXZ",
       "rva": "0x00004330",
       "size": 32,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?DrawInfo@CDecor@@QAEXXZ",
+      "rva": "0x00005270",
+      "size": 1024,
       "tu": "src/decblock.cpp"
     },
     {
