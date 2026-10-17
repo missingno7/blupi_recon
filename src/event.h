@@ -47,6 +47,13 @@ typedef struct
 DemoEvent;
 
 
+struct CEventNameRow
+{
+	char prefix[4];
+	char text[96];
+	operator char*() { return text; }
+};
+
 class CEvent
 {
 public:
@@ -189,10 +196,11 @@ protected:
 	int m_textHiliEnd;
 	int m_textCursorIndex;
 	char m_textInput[100];
-	char m_name[100];
-	char m_names[10][100];
+	char m_name[96];
+	CEventNameRow m_names[10];
 	BOOL m_bNamesExist[10];
-	char m_filenameBuffer[100][256];
+	int m_900;
+	char m_filenameBuffer[256][100];
 	int m_nbFiles;
 	int m_filePageOffset;
 	int m_fileIndex;
