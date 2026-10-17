@@ -24,7 +24,7 @@ void CDecor::NetDataFlush()
 	NetMessageIndexFlush();
 }
 
-void CDecor::NetSendBarePacket(BYTE type, short num)
+void CDecor::NetSendBarePacket(BYTE type, int num)
 {
 	struct BarePacket
 	{

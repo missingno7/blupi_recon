@@ -122,21 +122,10 @@ headers. This removes the synthetic per-TU header views; it does not prove
 that every inherited candidate declaration appeared in the original 1998
 headers.
 
-**[EVIDENCE]** A clean full build with the shared declarations reports 317
-STRICT and 3 FOLDED functions, covering 42,016 unique game `.text` bytes.
-`CButton::MouseMove` (`0x2fd0`) remains STRICT. The only mismatch among the
-previous accepted set is `CDecor::GetBlupiInfo` (`0x57b0`, `decblock.cpp`).
-Its accepted-function record remains in `recon.json` with an explicit
-withdrawal reason, evidence link, and date; it is excluded from regression
-failure and printed separately with its current candidate status.
-
-**[OPEN]** `GetBlupiInfo` emits an 80-byte candidate span against a 67-byte
-target body followed by 13 NOP bytes. Scratch-only declarations restore
-STRICT output when 24–27 or 32 are inserted at the top of `decblock.cpp` or
-before this definition; the same counts at end of file do not. This supports
-the hypothesis that earlier front-end symbols from unreconstructed or
-incomplete `decblock.cpp` bodies affect compiler context, but does not identify
-those declarations or bodies. These counts are not source material. Evidence:
+**[EVIDENCE; historical baseline]** Follow-up 17 had 317 STRICT and 3 FOLDED
+functions, with `CButton::MouseMove` STRICT and `CDecor::GetBlupiInfo`
+withdrawn. Earlier count probes linked that mismatch to missing preceding
+`decblock.cpp` context; their evidence remains in
 `docs/HEADERS.md#whole-tree-and-isolation-experiments`.
 
 **[EVIDENCE]** `tools/verify.py` keeps withdrawn functions in the manifest,
@@ -154,3 +143,44 @@ confirmed by the worker micro-experiment. Evidence: `docs/SOLSIB.md`.
 **[EVIDENCE]** `CEvent::CopyMission(char*, char*)` and `CEvent::AddUserExportPath(char*, char*)` are now
 declared `static`, matching their caller-cleanup ABI at oracle helpers `0x1b150` and `0x1b090`. The shared
 `event.h` declaration change was checked with a full-tree verification because several TUs include it.
+## Follow-up 19
+
+**[EVIDENCE]** `decblock.cpp` now contains the best-known `InitDecor`, `Build`,
+and `DrawInfo` reconstructions. They remain MISMATCH (752/744, 4,624/3,866,
+and 992/1,010 candidate/oracle bytes). The source uses the existing
+`POINT` components for the target slots `+0xc954/+0xc958/+0xc95c`; the
+`+0xc960` reset uses the existing member at that physical offset. These
+source aliases preserve the accepted shared-header context. `GetBlupiInfo`
+is defined only in `decblock.cpp`, STRICT at `0x57b0` (67 oracle body bytes;
+80-byte candidate extent), and was re-accepted through `verify.py --accept`.
+Its previous withdrawal is preserved under `withdrawal_history` in
+`recon.json`.
+
+**[EVIDENCE]** The best BlupiStep body is integrated using source-level member
+aliases into the retained shared layout. It compares as 25,269 body bytes
+(25,280-byte extent), frame `0xa4`, score 49, with 12 instruction edits and
+350 relocations. The prior canonical body scored 24,675 under the same
+relocation-aware score; this candidate remains MISMATCH. The remapping uses
+existing members at the oracle-proven offsets and adds no per-TU header view.
+`GetTypeBarre` now returns `int`; `NetSendBarePacket` takes an `int` second
+argument, and the accepted decorated symbol was migrated at `0x10a60`. The
+source-side duplicate `GetBlupiInfo` definition was removed from `decblupi.cpp`.
+
+**[EVIDENCE]** The integrated shared build accepts `IsLave` and `IsRessort`
+at `0x10150` and `0x101b0` (96-byte object extents each); `DecorDetect` remains
+STRICT. `event.cpp` keeps the strict `ChangeButtons` body and uses the
+sol-sib `TreatEventBase` reconstruction. `def.h` defines `WM_BUTTON40..49` as
+`WM_USER+240..249`. `TreatEventBase` remains MISMATCH: its best-known body has
+the exact target size and retains eight register-byte differences at
+`+0x41a` and `+0x6f3`.
+
+**[OPEN]** The proposed reordered `decor.h` state layout is not integrated.
+With it, the full shared-header build regressed accepted `CButton::MouseMove`
+at `0x2fd0`; removing or moving `decor.h` in `button.cpp` did not resolve the
+mismatch. The retained shared layout plus the evidence-backed prototype
+changes passes the accepted gate. The BlupiStep body therefore uses
+offset-equivalent legacy member expressions until a coherent header can encode
+the corrected semantic names without that regression. `decor.cpp` retains its
+previous strict `VoyageStep`/`CurrentWrite` source forms.
+
+\r\n

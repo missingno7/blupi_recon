@@ -2,6 +2,7 @@
 #include <def.h>
 #include "decor.h"
 #include <misc.h>
+#include <text.h>
 #include <obstacle.h>
 #include <dectables.h>
 
@@ -92,6 +93,103 @@ void CDecor::InitGamer()
 {
 	m_nbVies = 3;
 	for (int i = 0; i < 100; i++) m_doors[i] = 1;
+}
+
+void CDecor::InitDecor()
+{
+	int i;
+	m_posDecor.x = 0;
+	m_posDecor.y = 0;
+	m_dimDecor.x = 100;
+	m_dimDecor.y = 100;
+	m_music = 1;
+	m_region = 2;
+	m_missionTitle[0] = '\0';
+	m_decorAction = 0;
+	for (int x = 0; x < MAXCELX; x++)
+	{
+		for (int y = 0; y < MAXCELY; y++)
+		{
+			m_decor[x][y].icon = 0xffff;
+			m_bigDecor[x][y].icon = 0xffff;
+		}
+	}
+	m_decor[3][4].icon = 40;
+	m_decor[4][4].icon = 38;
+	m_decor[5][4].icon = 39;
+	for (i = 0; i < MAXMOVEOBJECT; i++)
+	{
+		m_moveObject[i].type = 0;
+	}
+	m_moveObject[0].type = TYPE_TRESOR;
+	m_moveObject[0].stepAdvance = 1;
+	m_moveObject[0].stepRecede = 1;
+	m_moveObject[0].timeStopStart = 0;
+	m_moveObject[0].timeStopEnd = 0;
+	m_moveObject[0].posStart = POINT( 258, 196 );
+	m_moveObject[0].posEnd = m_moveObject[0].posStart;
+	m_moveObject[0].posCurrent = m_moveObject[0].posStart;
+	m_moveObject[0].phase = 0;
+	m_moveObject[0].step = STEP_STOPSTART;
+	m_moveObject[0].time = 0;
+	m_moveObject[0].channel = CHELEMENT;
+	m_moveObject[0].icon = 0;
+	m_moveObject[1].type = TYPE_GOAL;
+	m_moveObject[1].stepAdvance = 1;
+	m_moveObject[1].stepRecede = 1;
+	m_moveObject[1].timeStopStart = 0;
+	m_moveObject[1].timeStopEnd = 0;
+	m_moveObject[1].posStart = POINT( 322, 196 );
+	m_moveObject[1].posEnd = m_moveObject[1].posStart;
+	m_moveObject[1].posCurrent = m_moveObject[1].posStart;
+	m_moveObject[1].phase = 0;
+	m_moveObject[1].step = STEP_STOPSTART;
+	m_moveObject[1].time = 0;
+	m_moveObject[1].channel = CHELEMENT;
+	m_moveObject[1].icon = 29;
+	for (i = 0; i < MAXNETPLAYER; i++)
+	{
+		m_blupiStartPos[i] = POINT( 194, 198 );
+		m_blupiStartDir[i] = DIR_RIGHT;
+	}
+	m_blupiAction = ACTION_STOP;
+	m_blupiPhase = 0;
+	m_blupiIcon = 0;
+	m_blupiChannel = 2;
+	m_blupiFocus = TRUE;
+	m_blupiAir = FALSE;
+	m_blupiHelico = FALSE;
+	m_blupiOver = FALSE;
+	m_blupiJeep = FALSE;
+	m_blupiTank = FALSE;
+	m_blupiSkate = FALSE;
+	m_blupiNage = FALSE;
+	m_blupiSurf = FALSE;
+	m_blupiSuspend = FALSE;
+	m_blupiJumpAie = FALSE;
+	m_blupiShield = FALSE;
+	m_blupiPower = FALSE;
+	m_blupiCloud = FALSE;
+	m_blupiHide = -1;
+	m_blupiInvert = FALSE;
+	m_blupiBalloon = FALSE;
+	m_blupiEcrase = FALSE;
+	m_blupiVent = FALSE;
+	m_blupiPosHelico.y = 0;
+	m_blupiPosMagic.x = 0;
+	m_blupiPosMagic.y = 0;
+	m_blupiActionOuf = 0;
+	m_blupiTimeMockery = 0;
+	m_blupiVitesse = POINT( 0, 0 );
+	m_blupiValidPos = m_blupiStartPos[0];
+	m_blupiEnergyUnused = 100;
+	m_nbTresor = 0;
+	m_totalTresor = 1;
+	m_goalPhase = 0;
+	m_scrollPoint = m_blupiStartPos[0];
+	m_scrollAdd = POINT( 0, 0 );
+	m_term = 0;
+	m_liftEnd = -1;
 }
 
 void CDecor::SetTime(int time)
@@ -204,14 +302,14 @@ void CDecor::PlayPrepare(BOOL bTest)
 	UpdateCaisse();
 	m_scrollPoint = m_blupiPos;
 	m_scrollAdd = POINT( 0, 0 );
-	m_blupiPosHelico.x = -1;
+	m_blupiHide = -1;
 	m_nbLinkCaisse = 0;
 	m_bHelicoMarch = FALSE;
 	m_bHelicoStop = FALSE;
 	m_bJeepMarch = FALSE;
 	m_bJeepStop = FALSE;
 	m_blupiTimeShield = FALSE;
-	m_blupiNoBarre = 0;
+	m_blupiRestart = 0;
 	m_blupiValidPos = m_blupiPos;
 	m_blupiFifoNb = 0;
 	m_blupiTimeFire = 0;
@@ -313,6 +411,512 @@ int CDecor::GetIconPerso()
 {
 	if (m_bMulti) return m_team + 0x6c;
 	return 0x6c;
+}
+
+void CDecor::Build(RECT rect, POINT mousePos)
+{
+	int i, j;
+	POINT tinyPoint;
+	RECT lastClip;
+
+	lastClip = m_pPixmap->GetClipping();
+	m_pPixmap->SetClipping(rect);
+
+	POINT posDecor = DecorNextAction();
+	POINT pos = { posDecor.x * 2 / 3 % DIMDECORX, posDecor.y * 2 / 3 % DIMDECORY };
+	tinyPoint.x = 0;
+
+	for (i = 0; i < ((DIMDECORX - DIMDECORX / LXIMAGE * LXIMAGE) ? 2 : 1) + LXIMAGE / DIMDECORX; i++)
+	{
+		tinyPoint.y = 0;
+		rect.top = pos.y;
+		for (j = 0; j < ((DIMDECORY - DIMDECORY / LYIMAGE * LYIMAGE) ? 2 : 1) + LYIMAGE / DIMDECORY; j++)
+		{
+			rect.left = i ? 0 : pos.x;
+			rect.right = DIMDECORX;
+			rect.bottom = DIMDECORY;
+			m_pPixmap->DrawPart(-1, CHDECOR, tinyPoint, rect, 1, FALSE);
+			tinyPoint.y = DIMDECORY * (j + 1) - pos.y;
+			rect.top = 0;
+		}
+		tinyPoint.x = DIMDECORX * (i + 1) - pos.x;
+
+	}
+
+	tinyPoint.x = -posDecor.x % DIMOBJX - DIMOBJX;
+	for (i = posDecor.x / DIMOBJX - 1; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 3; i++) {
+		tinyPoint.y = -posDecor.y % DIMOBJY + 2 - DIMOBJY;
+		for (j = posDecor.y / DIMOBJY - 1; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
+		{
+			if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY)
+			{
+				int num2 = m_bigDecor[i][j].icon;
+				int channel = 9;
+				if (num2 != -1)
+				{
+					if (num2 == 203)
+					{
+						num2 = table_marine[m_time / 3 % 11];
+						channel = 1;
+					}
+					m_pPixmap->QuickIcon(channel, num2, tinyPoint);
+				}
+			}
+			tinyPoint.y += DIMOBJY;
+		}
+		tinyPoint.x += DIMOBJX;
+	}
+
+	if (m_phase == WM_PHASE_BUILD)
+	{
+		for (int i = 3; i >= 0; i--)
+		{
+			int channel = i > 0 ? CHBLUPI1 - 1 + i : CHBLUPI;
+			int icon = m_blupiStartDir[i] == DIR_RIGHT ? 0 : 4;
+			POINT startIconPos = m_blupiStartPos[i] - m_posDecor;
+			m_pPixmap->QuickIcon(channel, icon, startIconPos);
+			m_pPixmap->QuickIcon(CHBUTTON, i + 120,
+				POINT( startIconPos.x, startIconPos.y - 20 ));
+		}
+	}
+
+	if (m_bMulti && m_phase != WM_PHASE_BUILD)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			if (m_netBlupiIcon[i] != -1 && (m_netBlupiIcon[i] < 276 || m_netBlupiIcon[i] > 284) && m_netBlupiSec[i] != SEC_HIDE)
+			{
+				POINT blupiIconPos = m_netBlupiPos[i] - m_posDecor;
+				if (m_netBlupiSec[i] == SEC_SHIELD)
+				{
+					m_pPixmap->QuickIcon(CHELEMENT, table_shield_blupi[m_time / 2 % 16], blupiIconPos - POINT(0, 2));
+					m_pPixmap->QuickIcon(CHELEMENT, table_shieldloop[m_time / 2 % 5], blupiIconPos);
+				}
+				if (m_netBlupiSec[i] == SEC_POWER)
+				{
+					m_pPixmap->QuickIcon(CHELEMENT, table_magicloop[m_time / 2 % 5], blupiIconPos);
+				}
+				if (m_netBlupiSec[i] == SEC_CLOUD)
+				{
+					for (int j = 0; j < 3; j++)
+					{
+						m_pPixmap->QuickIcon(CHEXPLO, (m_time + i + j) % 6 + 48, blupiIconPos - POINT(34, 34));
+					}
+				}
+				int team = m_pNetwork->m_players[i].team;
+				int blupiChannel = team == 0 ? CHBLUPI : CHBLUPI1 - 1 + team;
+				m_pPixmap->QuickIcon(blupiChannel, m_netBlupiIcon[i], blupiIconPos);
+				m_pPixmap->QuickIcon(CHBUTTON, team + 120, blupiIconPos + POINT(10, -20));
+			}
+		}
+	}
+
+	if (m_phase != WM_PHASE_BUILD)
+	{
+		m_blupiSec = 0;
+		if (!m_blupiPosHelico.y)
+		{
+			tinyPoint.x = m_blupiPos.x - posDecor.x;
+			tinyPoint.y = m_blupiPos.y - posDecor.y;
+			if (m_blupiJeep)
+			{
+				tinyPoint.y += BLUPIOFFY;
+			}
+			if (m_blupiShield)
+			{
+				m_blupiSec = SEC_SHIELD;
+				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
+				{
+					int num2 = table_shield_blupi[m_time / 2 % 16];
+					tinyPoint.y -= 2;
+					m_pPixmap->QuickIcon(CHELEMENT, num2, tinyPoint);
+					tinyPoint.y += 2;
+					num2 = table_shieldloop[m_time / 2 % 5];
+					m_pPixmap->QuickIcon(CHELEMENT, num2, tinyPoint);
+				}
+			}
+			else if (m_blupiPower)
+			{
+				m_blupiSec = SEC_POWER;
+				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
+				{
+					int num2 = table_magicloop[m_time / 2 % 5];
+					m_pPixmap->QuickIcon(CHELEMENT, num2, tinyPoint);
+				}
+			}
+			else if (m_blupiCloud)
+			{
+				m_blupiSec = SEC_CLOUD;
+				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
+				{
+					for (int k = 0; k < 3; k++)
+					{
+						int num2 = 48 + (m_time + k) % 6;
+						pos.x = tinyPoint.x - 34;
+						pos.y = tinyPoint.y - 34;
+						m_pPixmap->QuickIcon(CHEXPLO, num2, pos);
+					}
+				}
+			}
+			else if (m_blupiHide)
+			{
+				m_blupiSec = SEC_HIDE;
+				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
+				{
+					m_pPixmap->DrawIcon(CHTEMP, CHOBJECT, 0xF5, POINT( 0, 0 ), 0, TRUE);
+				}
+				else
+				{
+					m_pPixmap->DrawIcon(CHTEMP, GetBlupiChannelStandard(), m_blupiIcon, POINT( 0, 0 ), 1, FALSE);
+					m_pPixmap->DrawIcon(CHTEMP, CHOBJECT, 0xED, POINT( 0, 0 ), 0, TRUE);
+				}
+			}
+			m_pPixmap->QuickIcon(GetBlupiChannelStandard(), m_blupiIcon, tinyPoint);
+		}
+	}
+
+
+	MoveObject *pMoveObject = &m_moveObject[MAXMOVEOBJECT - 1];
+	for (i = MAXMOVEOBJECT; i != 0; i--)
+	{
+		if (pMoveObject->type != 0 && pMoveObject->posCurrent.x >= posDecor.x - 64 && pMoveObject->posCurrent.y >= posDecor.y - 64 && pMoveObject->posCurrent.x <= posDecor.x + LXIMAGE && pMoveObject->posCurrent.y <= posDecor.y + LYIMAGE && (pMoveObject->type < 8 || pMoveObject->type > 11) && pMoveObject->type != 1)
+		{
+			tinyPoint.x = pMoveObject->posCurrent.x - posDecor.x;
+			tinyPoint.y = pMoveObject->posCurrent.y - posDecor.y;
+			if (pMoveObject->type == TYPE_BULLDOZER || pMoveObject->type == TYPE_BLUPIHELICO || pMoveObject->type == TYPE_BLUPITANK)
+			{
+				tinyPoint.x += 2;
+				tinyPoint.y += BLUPIOFFY;
+			}
+			m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint);
+			if ((m_bDrawSecret || m_phase != WM_PHASE_PLAY) && pMoveObject->type == TYPE_CAISSE && pMoveObject->icon != 32 && pMoveObject->icon != 33 && pMoveObject->icon != 34)
+			{
+				m_pPixmap->QuickIcon(1, 214, tinyPoint);
+			}
+		}
+		pMoveObject--;
+	}
+	tinyPoint.x = -posDecor.x % 64;
+	for (i = posDecor.x / 64; i < posDecor.x / 64 + LXIMAGE / 64 + 2; i++)
+	{
+		tinyPoint.y = 0 - posDecor.y % 64;
+		for (j = posDecor.y / 64; j < posDecor.y / 64 + LYIMAGE / 64 + 2; j++)
+		{
+			if (i >= 0 && i < 100 && j >= 0 && j < 100 && m_decor[i][j].icon != -1)
+			{
+				int num2 = m_decor[i][j].icon;
+				pos.x = tinyPoint.x;
+				pos.y = tinyPoint.y;
+				if ((num2 >= 107 && num2 <= 109) || num2 == 157)
+				{
+					pos.y -= 7;
+				}
+				if (num2 == 211)
+				{
+					num2 = table_ressort[(m_time / 2 + i * 7) % 8];
+				}
+				if (num2 == 214 && !m_bDrawSecret)
+				{
+					num2 = -1;
+				}
+				if (num2 != 68 && num2 != 91 && num2 != 92 &&
+					(num2 < 110 || num2 > 137))
+				{
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+			}
+			tinyPoint.y += DIMOBJY;
+		}
+		tinyPoint.x += DIMOBJX;
+	}
+	pMoveObject = m_moveObject;
+	for (i = MAXMOVEOBJECT; i != 0; i--)
+	{
+		if (pMoveObject->type == TYPE_ASCENSEUR &&
+			pMoveObject->posCurrent.x >= posDecor.x - 64 &&
+			pMoveObject->posCurrent.y >= posDecor.y - 64 &&
+			pMoveObject->posCurrent.x <= posDecor.x + LXIMAGE &&
+			pMoveObject->posCurrent.y <= posDecor.y + LYIMAGE)
+		{
+			tinyPoint.x = pMoveObject->posCurrent.x - posDecor.x;
+			tinyPoint.y = pMoveObject->posCurrent.y - posDecor.y;
+			m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint);
+		}
+		if (m_phase == WM_PHASE_BUILD &&
+			(pMoveObject->type == TYPE_ASCENSEUR || pMoveObject->type == TYPE_BOMBEMOVE ||
+			 pMoveObject->type == TYPE_BULLDOZER || pMoveObject->type == TYPE_POISSON ||
+			 pMoveObject->type == TYPE_OISEAU || pMoveObject->type == TYPE_BLUPIHELICO ||
+			 pMoveObject->type == TYPE_BLUPITANK))
+		{
+			if (pMoveObject->posEnd.x >= posDecor.x - 64 &&
+				pMoveObject->posEnd.y >= posDecor.y - 64 &&
+				pMoveObject->posEnd.x <= posDecor.x + LXIMAGE &&
+				pMoveObject->posEnd.y <= posDecor.y + LYIMAGE)
+			{
+				tinyPoint.x = pMoveObject->posEnd.x - posDecor.x;
+				tinyPoint.y = pMoveObject->posEnd.y - posDecor.y;
+				m_pPixmap->QuickIcon(1, 31, tinyPoint);
+			}
+			if (pMoveObject->posStart.x >= posDecor.x - 64 &&
+				pMoveObject->posStart.y >= posDecor.y - 64 &&
+				pMoveObject->posStart.x <= posDecor.x + LXIMAGE &&
+				pMoveObject->posStart.y <= posDecor.y + LYIMAGE)
+			{
+				tinyPoint.x = pMoveObject->posStart.x - posDecor.x;
+				tinyPoint.y = pMoveObject->posStart.y - posDecor.y;
+				m_pPixmap->QuickIcon(1, 30, tinyPoint);
+			}
+		}
+		pMoveObject++;
+	}
+	tinyPoint.x = 0 - posDecor.x % DIMOBJX;
+	for (i = posDecor.x / DIMOBJX; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 2; i++)
+	{
+		tinyPoint.y = 0 - posDecor.y % DIMOBJY;
+		for (j = posDecor.y / DIMOBJY; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
+		{
+			if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY && m_decor[i][j].icon != -1)
+			{
+				int num2 = m_decor[i][j].icon;
+				pos = tinyPoint;
+				if (num2 == 68)
+				{
+					num2 = table_decor_lave[(i * 13 + j * 7 + m_time / 2) % 8];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 373)
+				{
+					num2 = ((!m_blupiFocus) ? table_decor_piege2[(i * 13 + j * 7 + m_time / 2) % 4] : table_decor_piege1[(i * 13 + j * 7 + m_time / 4) % 16]);
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 404 || num2 == 410)
+				{
+					num2 = table_decor_goutte[(i * 13 + j * 7 + m_time / 2) % 48];
+					pos.y -= 9;
+					m_pPixmap->QuickIcon(1, num2, pos);
+					if (num2 >= 404 && num2 <= 407)
+					{
+						m_decor[i][j].icon = 404;
+					}
+					else
+					{
+						m_decor[i][j].icon = 410;
+					}
+				}
+				if (num2 == 317)
+				{
+					num2 = table_decor_ecraseur[m_time / 3 % 10];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 378)
+				{
+					num2 = table_decor_scie[(i * 13 + j * 7 + m_time / 1) % 6];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 324)
+				{
+					num2 = table_decor_temp[m_time / 4 % 20];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 92)
+				{
+					num2 = table_decor_eau1[(i * 13 + j * 7 + m_time / 3) % 6];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 91)
+				{
+					int num5 = 3 + (i * 17 + j * 13) % 3;
+					num2 = table_decor_eau2[(i * 11 + j * 7 + m_time / num5) % 6];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 305 && BlitzActif(POINT( i, j )))
+				{
+					num2 = rand() % 4 + 305;
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 110)
+				{
+					num2 = table_decor_ventg[m_time / 1 % 4];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 114)
+				{
+					num2 = table_decor_ventd[m_time / 1 % 4];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 118)
+				{
+					num2 = table_decor_venth[m_time / 1 % 4];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 122)
+				{
+					num2 = table_decor_ventb[m_time / 1 % 4];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 126)
+				{
+					num2 = table_decor_ventillog[m_time / 2 % 3];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 129)
+				{
+					num2 = table_decor_ventillod[m_time / 2 % 3];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 132)
+				{
+					num2 = table_decor_ventilloh[m_time / 2 % 3];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+				if (num2 == 135)
+				{
+					num2 = table_decor_ventillob[m_time / 2 % 3];
+					m_pPixmap->QuickIcon(1, num2, pos);
+				}
+			}
+			tinyPoint.y += DIMOBJY;
+		}
+		tinyPoint.x += DIMOBJX;
+	}
+	for (i = 0; i < MAXMOVEOBJECT; i++)
+	{
+		if (m_moveObject[i].type != 0 &&
+			m_moveObject[i].posCurrent.x >= posDecor.x - DIMOBJX &&
+			m_moveObject[i].posCurrent.y >= posDecor.y - DIMOBJY &&
+			m_moveObject[i].posCurrent.x <= posDecor.x + LXIMAGE &&
+			m_moveObject[i].posCurrent.y <= posDecor.y + LYIMAGE &&
+			m_moveObject[i].type > 7 && m_moveObject[i].type < 12)
+		{
+			tinyPoint = m_moveObject[i].posCurrent - posDecor;
+			m_pPixmap->QuickIcon(m_moveObject[i].channel, m_moveObject[i].icon, tinyPoint);
+		}
+
+	}
+	if (m_blupiPosHelico.y && m_phase != WM_PHASE_BUILD)
+	{
+		tinyPoint = m_blupiPos - posDecor;
+		m_pPixmap->QuickIcon(m_blupiChannel, m_blupiIcon, tinyPoint);
+	}
+	DrawInfo();
+	VoyageDraw();
+	m_time++;
+}
+
+void CDecor::DrawInfo()
+{
+	POINT pos;
+	char text[100];
+	int i, x, y, icon;
+
+	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST)
+	{
+		pos.x = 10;
+		pos.y = 10;
+		for (i = 0; i < MAXNOTIF; i++)
+		{
+			if (m_notifText[i][0] != '\0')
+			{
+				DrawText(m_pPixmap, pos, m_notifText[i], FONTWHITE);
+			}
+			pos.y += DIMTEXTY;
+		}
+
+		pos.x = -5;
+		pos.y = 417;
+		for (i = 0; i < m_nbVies; i++)
+		{
+			m_pPixmap->QuickIcon(GetBlupiChannelStandard(), 48, pos);
+			pos.x += 16;
+		}
+
+		pos.x = 420;
+		pos.y = 442;
+		for (i = 0; i < m_blupiPosMagic.x; i++)
+		{
+			m_pPixmap->QuickIcon(CHELEMENT, 176, pos);
+			pos.x += 6;
+		}
+
+		if (m_blupiPosMagic.y > 0)
+		{
+			m_pPixmap->QuickIcon(CHBLUPI, GetIconPerso(), POINT( 520, 438 ));
+			sprintf(text, "= %d", m_blupiPosMagic.y);
+			DrawText(m_pPixmap, POINT( 552, 452 ), text, FONTWHITE);
+		}
+
+		if ((m_mission != 1 && m_mission % 10 != 0) || m_bPrivate)
+		{
+			sprintf(text, "%d/%d", m_nbTresor, m_totalTresor);
+			DrawText(m_pPixmap, POINT( 590, 452 ), text, FONTWHITE);
+		}
+
+		for (i = 0; i < 2; i++)
+		{
+			if (!m_jauges[i].GetHide()) m_jauges[i].Draw();
+		}
+
+		if (m_mission == 10 && m_phase == WM_PHASE_PLAY && !m_bPrivate)
+		{
+			if (m_nbTresor == 0 && m_blupiPos.x > 212) m_blupiPos.x = 212;
+			if (m_nbTresor == 1 && m_blupiPos.x > 788) m_blupiPos.x = 788;
+
+			POINT cel = { (m_blupiPos.x + DIMBLUPIX / 2) / DIMOBJX,
+				(m_blupiPos.y + DIMBLUPIY / 2) / DIMOBJY };
+			i = 0;
+			int* pTutorial = table_tutorial + 2;
+			int left = table_tutorial[0];
+			if (left != -1)
+			{
+				do
+				{
+					if (cel.x >= left &&
+						cel.x <= pTutorial[-1] &&
+						pTutorial[0] <= cel.y &&
+						cel.y <= pTutorial[1] &&
+						(pTutorial[2] == -1 || pTutorial[2] == m_nbTresor))
+					{
+						int stringId = table_tutorial[i + 5];
+						if (m_bJoystick) stringId += 100;
+						LoadString(stringId, text, 100);
+						DrawTextCenter(m_pPixmap, POINT( 360, 460 ), text);
+						break;
+					}
+					left = pTutorial[4];
+					pTutorial += 6;
+					i += 6;
+				} while (left != -1);
+			}
+		}
+	}
+
+	if (m_phase == WM_PHASE_BUILD)
+	{
+		if (m_posCelHili.x != -1)
+		{
+			pos.x = m_posCelHili.x * DIMOBJX - m_posDecor.x;
+			pos.y = m_posCelHili.y * DIMOBJY - m_posDecor.y;
+			icon = 0;
+			if (m_liftEnd != -1) icon = 31;
+
+			for (x = 0; x < m_dimCelHili.x; x++)
+			{
+				for (y = 0; y < m_dimCelHili.y; y++)
+				{
+					m_pPixmap->QuickIcon(CHOBJECT, icon,
+						POINT( pos.x + x * DIMOBJX, pos.y + y * DIMOBJY ));
+				}
+			}
+		}
+		LoadString(0x66, text, 100);
+		DrawText(m_pPixmap, POINT( 200, 460 ), text, FONTGOLD);
+	}
+
+	if (m_phase == WM_PHASE_PLAYTEST)
+	{
+		LoadString(0x67, text, 100);
+		DrawText(m_pPixmap, POINT( 200, 460 ), text, FONTGOLD);
+	}
 }
 
 void CDecor::KeyChange(int keyPress)
@@ -562,7 +1166,7 @@ void CDecor::ActiveSwitch(BOOL bState, POINT cel)
 	}
 }
 
-char CDecor::GetTypeBarre(POINT pos)
+int CDecor::GetTypeBarre(POINT pos)
 {
 	POINT pos2 = pos;
 	pos.x += 30;

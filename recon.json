@@ -369,11 +369,13 @@
       "rva": "0x000057b0",
       "size": 80,
       "tu": "src/decblock.cpp",
-      "withdrawn": {
-        "reason": "The complete shared-header, no-per-TU-define build mismatches this function. Top-of-file and before-definition count probes restore strict output only at 24-27 or 32 extra front-end declarations, while end-of-file probes do not; the original declarations or preceding decblock bodies remain unidentified.",
-        "evidence": "docs/HEADERS.md#whole-tree-and-isolation-experiments",
-        "date": "2026-10-17"
-      }
+      "withdrawal_history": [
+        {
+          "reason": "The complete shared-header, no-per-TU-define build mismatches this function. Top-of-file and before-definition count probes restore strict output only at 24-27 or 32 extra front-end declarations, while end-of-file probes do not; the original declarations or preceding decblock bodies remain unidentified.",
+          "evidence": "docs/HEADERS.md#whole-tree-and-isolation-experiments",
+          "date": "2026-10-17"
+        }
+      ]
     },
     {
       "symbol": "?PlaySoundA@CDecor@@QAEXHUtagPOINT@@H@Z",
@@ -652,6 +654,18 @@
       "tu": "src/decblupi.cpp"
     },
     {
+      "symbol": "?IsLave@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00010150",
+      "size": 96,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsRessort@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x000101b0",
+      "size": 96,
+      "tu": "src/decblupi.cpp"
+    },
+    {
       "symbol": "?IsSurfWater@CDecor@@QAEHUtagPOINT@@@Z",
       "rva": "0x00010210",
       "size": 128,
@@ -706,7 +720,7 @@
       "tu": "src/decnet.cpp"
     },
     {
-      "symbol": "?NetSendBarePacket@CDecor@@QAEXEF@Z",
+      "symbol": "?NetSendBarePacket@CDecor@@QAEXEH@Z",
       "rva": "0x00010a60",
       "size": 48,
       "tu": "src/decmove.cpp"

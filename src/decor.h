@@ -323,7 +323,7 @@ public:
 	int		SoundEnviron(int sound, int obstacle);
 	int		IsWorld(POINT pos);
 	void	ActiveSwitch(BOOL bState, POINT cel);
-	char	GetTypeBarre(POINT pos);
+	int GetTypeBarre(POINT pos);
 	BOOL	IsLave(POINT pos);
 	BOOL	IsPiege(POINT pos);
 	BOOL	IsGoutte(POINT pos, BOOL bAlways);
@@ -435,7 +435,7 @@ public:
 	void	NetPlaySound(short channel, POINT pos);
 	void	NetStopSound(short channel);
 	void	NetDataFlush();
-	void	NetSendBarePacket(BYTE _foo, short _bar);
+	void	NetSendBarePacket(BYTE _foo, int _bar);
 	void	TreatNetData();
 	void	DoNetSmooth(int player);
 	void	NetAdjustToLift();
