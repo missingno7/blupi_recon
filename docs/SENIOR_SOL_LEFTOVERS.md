@@ -154,3 +154,84 @@ its byte hit is not counted.
 GetToolTips and scheduling residues, and identifying CDecor's real missing
 tail for DoInit. Further equivalent branch/store rewrites have diminishing
 returns without new source or layout evidence. No background process remains.
+
+## Round 2: fresh sources after ce064e6
+
+[EVIDENCE] This round re-copied all eight owned TUs and every header from
+canonical src after integration of round 1. The final source-only patch is
+`scratch/sol-leftovers/round2.patch`; it changes blupi.cpp and button.cpp.
+All private headers match src exactly. No off-limits TU was edited or
+substituted. The final command, `scratch/sol-leftovers/run.py r2-final`,
+uses the same verifier/build directory described above and exits zero.
+Reports are `r2-final.log` and `r2-final-results.json`; all accepted functions
+remain STRICT. The whole-run reported coverage is **107,008 / 141,488**.
+
+| New round-2 STRICT body | RVA | Original instruction bytes | Compared span |
+|---|---:|---:|---:|
+| ReadConfig | 0x1030 | 673 | 688 |
+| CButton::GetToolTips | 0x2e10 | 237 | 240 |
+
+[EVIDENCE] These add **910 unique original instruction bytes**. The verifier
+increment is 928 bytes, including 18 alignment bytes. ReadConfig has 50
+proved relocations; GetToolTips has none. Existing Draw, MouseMove and every
+other accepted body remain strict. No header delta is required.
+
+### Compiler findings, round 2
+
+- [EVIDENCE; blupi-specific; BLUPI-REG-01, VC5-ORD-01] **ReadConfig:** the
+  remaining SIB residue came from the reconstructed pointer/difference loop,
+  not a missing declaration. Planet Blupi v1.8.0 `blupi.cpp:ReadConfig` keeps
+  the original CD-path loop under `#if 0`: initialize i to zero, test
+  `pText[i]` against NUL/LF/CR, then assign `g_CDPath[i] = pText[i]` and
+  increment i. Replacing the entire reconstructed loop with that ancestor
+  source form produces STRICT code in one candidate compile. VC5 generates
+  the native pointer-difference strength reduction itself, including SIB
+  byte 06 at +0x89 instead of 30. No casts, commuted-address spelling,
+  count probes, or extra declarations were needed. This does not invalidate
+  the earlier negative probes of individual expressions/local identities.
+- [EVIDENCE; blupi-specific context; BLUPI-CTX-01, VC5-CTX-01..04]
+  **GetToolTips / MouseMove:** the canonical CButton class declares SetDemo,
+  and CEvent source calls it, but button.cpp supplied no implementation.
+  The complete `CButton::SetDemo(BOOL)` body in read-only SB2 button.cpp
+  (after SetEnable) compares/stores m_bDemo, marks changed state for redraw,
+  and disables the button when demo is enabled. Restoring that real method
+  in the same source position supplies context that lets the round-1 strict
+  GetToolTips body coexist with strict MouseMove. The controlled
+  `r2-no-setdemo-control` run removes only SetDemo: GetToolTips remains STRICT
+  but MouseMove returns to its seven load/SIB differences. Restoring the
+  method passes. No dummy declaration, repeated definition, or padding code
+  is used; the implementation restores an existing declared source API.
+  GetToolTips retains the evidenced demo exception, expanded-menu bound,
+  selected-menu mapping, and negated demo tooltip value from round 1.
+- [EVIDENCE; negative; VC5-ORD-01, VC5-LOC-01] **Pixmap:** a new PB/SB2-based
+  Create member order with aggregate m_dim and a DWORD conditional color
+  depth expands the compared span to 928 and remains a mismatch. The
+  ten-byte near checkpoint with DWORD rather than int ternary depth is
+  byte-inert. A QuickIcon generic path copied from the ancestor DrawIcon
+  style (direct repeated m_iconDim accesses, separately computed nbx/nby,
+  then the combined rank guard) emits 768 bytes and still has the 0x10
+  rather than 0x14 frame. Restoring ancestor table-field assignment order
+  in that new generic context does not close it. These experiments preserve
+  accepted peers but add no strict body; all pixmap changes are reverted.
+
+[EVIDENCE] The restored SetDemo body has a 48-byte object span and **no placed
+SB1 body**. It is included only as the source-backed missing implementation
+needed for the verified context, and adds zero counted bytes. Its declaration
+and source callers are facts; SB2 supplies behavioral provenance.
+[HYPOTHESIS] The original SB1 source also contained this implementation (or
+equivalent inline visibility), and its out-of-line copy was discarded. That
+source/link history is not established by the context experiment or an oracle
+match. No native SetDemo address or strict result is claimed.
+
+[EVIDENCE] DoInit was rechecked: its only three fixed differences remain
+the CDecor allocation immediate, 0xdbd8 versus 0x258d4. The completed audit
+in `docs/LAYOUT_DEBT.md`, follow-up 2, already covers all game displacements,
+computed-address aliases, bulk operations, and the known ancestor tails.
+It found no evidence-backed member partition after d208. This round did not
+repeat that investigation, insert SB2's reserve/dummy placeholders, or
+override the allocation size.
+
+[OPEN] DoInit still needs independent original member/type evidence. Other
+round-1 residuals were left unchanged unless the new source ideas above
+justified a controlled test. No new network, miscellaneous or button-Create
+permutation campaign was run. No background process remains.

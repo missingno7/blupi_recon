@@ -95,6 +95,12 @@
       "tu": "src/blupi.cpp"
     },
     {
+      "symbol": "?ReadConfig@@YAHPAD@Z",
+      "rva": "0x00001030",
+      "size": 688,
+      "tu": "src/blupi.cpp"
+    },
+    {
       "symbol": "?UpdateFrame@@YAXXZ",
       "rva": "0x000012e0",
       "size": 528,
@@ -224,6 +230,12 @@
       "symbol": "?MouseOnButton@CButton@@QAEHUtagPOINT@@@Z",
       "rva": "0x00002df0",
       "size": 32,
+      "tu": "src/button.cpp"
+    },
+    {
+      "symbol": "?GetToolTips@CButton@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00002e10",
+      "size": 240,
       "tu": "src/button.cpp"
     },
     {

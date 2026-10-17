@@ -230,6 +230,18 @@ void CButton::SetEnable(BOOL bEnable)
 }
 
 
+void CButton::SetDemo(BOOL bDemo)
+{
+	if (m_bDemo != bDemo)
+	{
+		m_bRedraw = TRUE;
+	}
+
+	m_bDemo = bDemo;
+
+	if (bDemo) m_bEnable = FALSE;
+}
+
 BOOL CButton::GetHide()
 {
 	return m_bHide;
@@ -292,38 +304,35 @@ BOOL CButton::MouseOnButton(POINT pos)
 
 int CButton::GetToolTips(POINT pos)
 {
-	int		width = m_dim.x;
-	int		rank;
+	int width = m_dim.x;
+	int rank;
 
-	if ( m_bHide || !m_bEnable )  return -1;
-
-	if ( m_nbMenu > 1 && m_bMouseDown )  // sous-menu d�roul� ?
+	if (m_bHide || (!m_bEnable && !m_bDemo)) return -1;
+	if (m_nbMenu > 1 && m_bMouseDown)
 	{
 		width += 2+(m_dim.x-1)*m_nbMenu;
 	}
-
-	if ( pos.x < m_pos.x         ||
-		 pos.x > m_pos.x+width   ||
-		 pos.y < m_pos.y         ||
-		 pos.y > m_pos.y+m_dim.y )  return -1;
+	if (pos.x < m_pos.x || pos.x > m_pos.x+width ||
+		pos.y < m_pos.y || pos.y > m_pos.y+m_dim.y) return -1;
 
 	rank = (pos.x-(m_pos.x+2+1))/(m_dim.x-1);
-	if ( rank < 0 )  rank = 0;
-	if ( rank > m_nbToolTips )  return -1;
-
-	if ( m_nbMenu > 1 )
+	if (rank < 0) rank = 0;
+	if (m_nbMenu > 1 && m_bMouseDown)
 	{
-		if ( m_bMouseDown && rank > 0 )
-		{
-			rank --;
-		}
-		else
-		{
-			rank = m_selMenu;
-		}
+		if (rank > m_nbToolTips) return -1;
 	}
-
-	return m_toolTips[rank];
+	else
+	{
+		if (rank >= m_nbToolTips) return -1;
+	}
+	if (m_nbMenu > 1)
+	{
+		if (m_bMouseDown && rank > 0) rank--;
+		else rank = m_selMenu;
+	}
+	rank = m_toolTips[rank];
+	if (m_bDemo) rank = -rank;
+	return rank;
 }
 
 

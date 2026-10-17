@@ -125,19 +125,11 @@ BOOL ReadConfig(LPSTR lpCmdLine)
 	else
 	{
 		pText += 7;
-		char c = *pText;
 		i = 0;
-		if (c != 0)
+		while (pText[i] != 0 && pText[i] != '\n' && pText[i] != '\r')
 		{
-			nb = (int)g_CDPath - (int)pText;
-			while (c != 0)
-			{
-				if (c == '\n' || *pText == '\r') break;
-				*(char*)((int)pText + nb) = *pText;
-				c = pText[1];
-				i++;
-				pText++;
-			}
+			g_CDPath[i] = pText[i];
+			i++;
 		}
 		if (i > 0 && g_CDPath[i - 1] != '\\')
 		{
