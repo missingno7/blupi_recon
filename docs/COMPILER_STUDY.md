@@ -64,3 +64,37 @@ leave bytes identical but change temporaries) is the best remaining direction.
 - `DrawButtons` 0x16f70: split-title draw calls; the oracle loads `m_pPixmap` right before its push (strict
   right-to-left argument order), the candidate hoists it; ternary/pointer-store/POINT-temporary forms tested.
 - Larger: `ChangePhase`, `Build`, `DoInit` (CDecor size), pixmap `Create`/`QuickIcon` (frame), `AddCDPath`.
+
+## Round 2: tail functions (residue map driven)
+
+### Results ([EVIDENCE])
+
+| Function | Cause found | Result |
+|---|---|---|
+| `CPixmap::QuickIcon` 0x21b20 | generic path and clip/blit tail are Planet Blupi `DrawIcon` + `BltFast` code (nbx/nby, `limit`, `HRESULT ddrval`); the reconstruction's reused `num` produced the 0x10 vs 0x14 frame | STRICT |
+| `CPixmap::Create` 0x21190 | `SetDisplayMode(..., bTrueColor ? 16 : 8)` uses the parameter (oracle reads its register), `m_dim = dim`; this also removed the global zero-register promotion | 597 -> 4 bytes (one scheduling swap) |
+| `AddCDPath` 0x1f410 | SB1 prefix list from the oracle strings, no `daniel` case | 3 regions (copy-tail layout) |
+| `CEvent::ChangePhase` 0x19310 | if-chain (not the SB2 `switch`), `WM_PHASE_DOQUIT`, `WM_PHASE_SETUPp`, demo worlds 200-219, `MESS_LEAVE`; Sol WIP integrated | 1,879/2,029 instructions; rest is the ebx/edi assignment of promoted 0 / `WM_PHASE_PLAY` |
+| `CDecor::Build` 0x4350 | `type >= 8 && type <= 11`; cloud loop like the net-blupi loop | 1,155/1,237 instructions; per-branch blupi QuickIcon tails still open |
+
+### Case order
+
+[EVIDENCE] Micro TU: an extra scratch load in `case 0x150` flips the free register choices inside `case 0x100` whether
+`case 0x150` is written before or after it; in `case 0x50` it never does. Switch case bodies are allocated in
+descending case-value order (BLUPI-REG-04). For `TreatEventBase` this means every case above `WM_KEYDOWN` (and the
+code before the switch) can carry the difference; body-blanking of individual such cases did not flip it.
+
+### Zero promotion
+
+[EVIDENCE] `CPixmap::Create`: removing any one of four early zero uses (diagnostic only) stops VC5 from keeping 0 in
+a callee-saved register; the original had a different early register demand (the `bTrueColor` parameter kept live),
+not fewer zeros. Use `fnprobe` on single-substitution diagnostics to find such thresholds, then look for a real
+source difference nearby.
+
+### Negative / open
+
+- [EVIDENCE] Merged duplicate tails (`goto key_recorded` inlined) and all VC5 front-end/back-end mixes (42 pairs) leave
+  `TreatEventBase`, `DrawMap`, `Send`, `DrawButtons` unchanged.
+- [OPEN] `TreatEventBase` (8 bytes), `DrawButtons` (split-title scheduling), `DrawMap` (per-field registers for the
+  RECT/POINT temporaries), `CNetwork::Send` (parameters cached in esi/edi), `ChangePhase` (constant register swap),
+  `Build` (tail sharing in the blupi block), `CPixmap::Create` (vtable load order), `DoInit` (CDecor size, layout debt).
