@@ -257,3 +257,71 @@ hits and no new incoming-reference proof. It is neither promoted nor counted.
 DrawButtons and TreatEventBase remain untouched, even where their existing
 compiled bodies mismatch. No game or ISO executable was run, no compiler
 catalog was edited, no git commit was made, and no background process remains.
+
+
+## Round 3: sol-event-3, 2026-10-17 (HEAD 6dd29a5)
+
+[EVIDENCE] No new STRICT function or original code byte was recovered. The
+30 ChangePhase controls reached diminishing returns, followed by five
+DrawButtons and three TreatEventBase controls. All 38 valid controls and the
+baseline/final builds pass the existing acceptance gate. One intermediate
+fallback-phase probe failed C2360 because its initialized local crossed case
+labels; it was corrected to a root declaration with assignment at use before
+measurement and is excluded from these counts. No canonical source/header,
+manifest, compiler catalog, asset, reference repository or toolchain was edited.
+
+[EVIDENCE] `scratch/sol-event3/event.cpp` is current canonical event.cpp with
+only the ChangePhase body taken from `scratch/sol-event/runs/r2_wip_final/`.
+Every private header is a fresh, byte-identical copy of current src/. All
+failed controls are reverted. DrawButtons and TreatEventBase remain canonical.
+`scratch/sol-event3/delivery/changephase-wip.patch` is a source-only,
+git-apply-checked patch against `6dd29a5613f1270577c1a181b2a273fb5b9f49ec`.
+Applying it to a scratch copy reproduces the final compiled source exactly,
+with CP1252/CRLF retained. **This patch is the rebased, unmatched round-2 WIP,
+not an accepted integration gain.** No unsuccessful round-3 probe is retained.
+
+| Final unmatched body | Original RVA / body bytes | Candidate / residue |
+|---|---|---|
+| ChangePhase | `0x19310` / 6,919 | 6,922 instruction bytes, 6,928-byte section; first fixed residue +0x84; correct 0x45c frame and buffer/scalar map retained |
+| DrawButtons | `0x16f70` / 7,419 | Exact body size, 7,424-byte section; same 78 fixed bytes from +0x19c7 |
+| TreatEventBase | `0x1d230` / 6,616 | Exact body size, 7,072-byte section including switch data; same eight register bytes at +0x41b..+0x42e and +0x6f4/+0x6ff |
+
+[EVIDENCE] Final verification uses only
+`.pyenv\python.exe tools\verify.py --tu src/event.cpp=scratch\sol-event3\event.cpp --build-dir solevent3`.
+All **386 active accepted entries (383 STRICT, three FOLDED)** retain required
+status/RVA/size; event remains 86 STRICT, one RELOC-UNVERIFIED, 22 MISMATCH
+comparator symbols. Unique original coverage stays **104,624 / 141,488 bytes**.
+SetDemo remains ambiguous and uncounted. Header deltas: **none**.
+`delivery/verification_summary.json`, `delivery/results.json`, `delivery/verify.log`
+and `runs/final/` preserve the final evidence. `campaign_summary.json` indexes
+all 40 successful runs, with raw section hashes, sizes and diagnostic counts;
+each `runs/<name>/` has source, object, full verifier output and disassembly.
+Fixed-address differences in a shifted body are diagnostics, not partial matches.
+
+### Compiler findings
+
+All controls below use the full rebased event TU, canonical private headers,
+VC5 SP3 11.00.7022, `/W3 /GX /O2 /ML /Gd /Gy`, manifest defines, no PCH.
+Every compile runs through verify.py/msvc.py with repository TMP/TEMP, default
+job/slot limits, serial shell invocations. No artificial declaration-count
+probes, forced bytes, padding, or assembly were introduced.
+
+| Trigger / original construct | Controlled variation and measured effect | Strict result / rule / classification |
+|---|---|---|
+| ChangePhase SERVICE/SESSION hoists page-offset into EDI in the oracle; candidate computes it late | Six controls stage the actual next-page value in j, mission or a separate local; stage both next/last page in either order; or initialize the flag before next-page staging. All remain 6,922 B, prefix 132; scheduling/register families change but do not reproduce the oracle. | MISMATCH; VC5-LOC-01 / VC5-ORD-01 / BLUPI-REG-01; **negative**. Runs `page_j`, `page_block`, `page_mission`, `page_both_lr`, `page_both_rl`, `page_flag_first`. |
+| ChangePhase retains zero instead of PLAY across SearchPhase | Positive condition with explicit failure else, then enclosing the rest of the body in the nonnegative arm: 6,911 and 6,890 B respectively. Both keep first residue +0x84 and regress layout. The original 6,922 B is retained. | MISMATCH; VC5-CTL-01 / BLUPI-REG-01; **negative** for these source forms. Runs `search_positive`, `search_whole_positive`. |
+| Remaining ChangePhase scalar/call graph | Five separate phase loops reuse actual j; music/region values reuse actual num separately/together; chain reset stores; stage multiplayer mission, host flag or name pointer; vary packet array address; remove inherited unused mission. Three rebased baseline controls recheck the prior shared flag/cache flag/music-local negatives. These do not recover the early zero/PLAY allocation. Twenty-three of all 38 valid controls have all three target raw sections identical to baseline. | No new STRICT; BLUPI-REG-01/02 / VC5-LOC-01 / VC5-ORD-01; **negative**, no inferred universal allocation rule. Exact controls are in `phase_tests.py` and `campaign_summary.json`. |
+| ChangePhase private-mode flag is nested in Write/Read arguments | Assign the actual !m_bBuildOfficialMissions flag before Write; then before private Read as well. The first changes code at unchanged 6,922 B; the second emits 6,921 B. Neither changes +0x84 or restores the target. | MISMATCH; VC5-LOC-02 / VC5-ORD-01; **negative**. Runs `write_flag_stage`, `private_flags_stage`. |
+| ChangePhase door scan increments num in a conditional arm | Replace conditional increment with addition of the comparison result. Body grows 6,922 -> 6,924 B, with the early residue unchanged. A lower shifted fixed-byte count is not an improvement certificate. | MISMATCH; VC5-CTL-01; **negative**. Run `gamer_count_post`. |
+| DrawButtons remaining selected-title register/pointer graph | Save-only POINT lifetime is byte-inert. A separate title POINT copied from/to the number point grows body to 7,444 B and changes the frame (prefix 2). Assignment of strchr in the condition and named first-line length retain 78; reversing selected comparison operands gives 79. | MISMATCH; VC5-LOC-01 / VC5-ORD-01 / BLUPI-REG-01; **negative**. Five `draw_*` runs. |
+| TreatEventBase ECX/EDX toggle and EAX/EDX HWND residues | Swap independent fallback cheat-reset stores: 18 fixed differences at unchanged 6,616 B. Cache fallback phase before those stores: original eight bytes unchanged. Assign the used sound POINT inside each call: 6,608 B, different frame/prefix 2. No control closes either scalar-register site. | MISMATCH; VC5-ORD-01 / VC5-LOC-01 / BLUPI-REG-01; **negative**. Three `treat_*` runs. |
+
+[OPEN] ChangePhase's net +3 remains the known longer PLAY immediate comparison
+minus the shorter retained-zero push. None of this round's ordinary source
+controls changes the allocation at +0x84. SERVICE/SESSION pagination and
+multiplayer argument scheduling need a new source/IR-liveness explanation;
+further array-size or already-negative context/expression sweeps are unsupported.
+DrawButtons' pointer reassociation and the two TreatEventBase scalar-register
+choices also need a new positive lead. No new allocation rule or exact-source
+claim follows from the negative results. No executable from the game/ISO was
+run, no commit was made, and every compile campaign has finished.
