@@ -1080,6 +1080,12 @@
       "tu": "src/decor.cpp"
     },
     {
+      "symbol": "?IsRightBorder@CDecor@@QAEHHHHH@Z",
+      "rva": "0x000140c0",
+      "size": 784,
+      "tu": "src/decor.cpp"
+    },
+    {
       "symbol": "?AdaptMidBorder@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x000143d0",
       "size": 256,
@@ -1095,6 +1101,12 @@
       "symbol": "?Write@CDecor@@QAEHHHH@Z",
       "rva": "0x000148e0",
       "size": 528,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?Read@CDecor@@QAEHHHH@Z",
+      "rva": "0x00014af0",
+      "size": 624,
       "tu": "src/decor.cpp"
     },
     {

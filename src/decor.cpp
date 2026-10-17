@@ -122,10 +122,7 @@ BOOL CDecor::IsRightBorder(int x, int y, int dx, int dy)
 {
 	int num = (m_dimDecor.x != 0) ? 100 : 10;
 	int num2 = (m_dimDecor.y != 0) ? 100 : 8;
-	if (x < 0) return TRUE;
-	if (x >= num) return TRUE;
-	if (y < 0) return TRUE;
-	if (y >= num2) return TRUE;
+	if (x < 0 || x >= num || y < 0 || y >= num2) return TRUE;
 
 	int icon = m_decor[x][y].icon;
 	if (icon == -1) return FALSE;
@@ -136,17 +133,14 @@ BOOL CDecor::IsRightBorder(int x, int y, int dx, int dy)
 	if (icon >= 0x2d && icon <= 0x2f) return dy != 1;
 	if (icon == 0x0f || icon == 0x10 || icon == 0x4b || icon == 0x59 || icon == 0x5a || icon == 0x9b)
 	{
-		if (dx != -1)
-		{
-			if (dy != 1) return TRUE;
-			return FALSE;
-		}
-		return FALSE;
+		if (dx == -1 || dy == 1) return FALSE;
+		return TRUE;
 	}
+
 	if (icon == 0x11 || icon == 0x12 || icon == 0x4a || icon == 0x57 || icon == 0x58 || icon == 0x9a)
 	{
-		if (dx == 1) return FALSE;
-		if (dy == 1) return FALSE;
+		if (dx == 1 || dy == 1) return FALSE;
+		return TRUE;
 	}
 	else
 	{
@@ -202,11 +196,11 @@ void CDecor::AdaptBorder(POINT cel)
 BOOL CDecor::DrawMap(BOOL bPlay, int team)
 {
 	POINT oldPosDecor = m_posDecor;
-	UINT oldPhase = m_phase;
 	POINT oldScrollPoint = m_scrollPoint;
-	BOOL bOldMulti = m_bMulti;
+	UINT oldPhase = m_phase;
 	int oldBlupiChannel = m_blupiChannel;
 	int oldTeam = m_team;
+	BOOL bOldMulti = m_bMulti;
 	m_blupiChannel = 2;
 	m_team = 0;
 	m_phase = WM_PHASE_PLAY;
@@ -226,7 +220,7 @@ BOOL CDecor::DrawMap(BOOL bPlay, int team)
 				{
 					channel = CHBLUPI1 + playerTeam - 1;
 				}
-				if (team == i)
+				if (i == team)
 				{
 					m_blupiPos = m_blupiStartPos[playerTeam];
 					m_blupiDir = m_blupiStartDir[playerTeam];
@@ -237,8 +231,8 @@ BOOL CDecor::DrawMap(BOOL bPlay, int team)
 				else
 				{
 					m_netBlupiPos[i] = m_blupiStartPos[playerTeam];
-					m_netBlupiIcon[i] = icon;
 					m_netBlupiSec[i] = 0;
+					m_netBlupiIcon[i] = icon;
 					m_netBlupiTransport[i] = channel;
 				}
 			}
@@ -252,19 +246,18 @@ BOOL CDecor::DrawMap(BOOL bPlay, int team)
 		m_scrollAdd.y = 0;
 		m_bMulti = TRUE;
 	}
-	m_posDecor.x = m_scrollPoint.x - LXIMAGE / 2;
+	int maxx = (m_dimDecor.x != 0) ? MAXCELX * DIMOBJX - 522 : 118;
+	m_posDecor.x = m_scrollPoint.x - 522 / 2;
 	if (m_posDecor.x < 0) m_posDecor.x = 0;
-	int limit = (m_dimDecor.x != 0) ? MAXCELX * DIMOBJX - LXIMAGE : 118;
-	if (m_posDecor.x > limit) m_posDecor.x = limit;
-
+	if (m_posDecor.x > maxx) m_posDecor.x = maxx;
+	int maxy = (m_dimDecor.y != 0) ? MAXCELY * DIMOBJY - 400 : 80;
 	m_posDecor.y = m_scrollPoint.y - 200;
 	if (m_posDecor.y < 0) m_posDecor.y = 0;
-	limit = (m_dimDecor.y != 0) ? MAXCELY * DIMOBJY - LYIMAGE : 80;
-	if (m_posDecor.y > limit) m_posDecor.y = limit;
+	if (m_posDecor.y > maxy) m_posDecor.y = maxy;
 
 	m_scrollPoint = m_posDecor;
-	Build(RECT(0, 0, LXIMAGE, LYIMAGE));
-	m_pPixmap->DrawMap(CHMAP, RECT(0, 0, 522, 400), RECT(0, 0, 206, 158));
+	Build(RECT(0, 0, LXIMAGE, LYIMAGE), POINT(320, 240));
+	m_pPixmap->DrawMap(8, RECT(0, 0, 522, 400), RECT(0, 0, 206, 158));
 	m_posDecor = oldPosDecor;
 	m_scrollPoint = oldScrollPoint;
 	m_phase = oldPhase;
@@ -387,22 +380,22 @@ BOOL CDecor::Read(int gamer, int mission, BOOL bUser)
 	if (nb < MAXCELX * MAXCELY) goto error;
 	
 
-	if (majRev == 1 && minRev >= 1)
+	if (majRev != 1 || minRev != 0)
 	{
 		nb = fread(m_bigDecor, sizeof(Cellule), MAXCELX * MAXCELY, file);
 		if (nb < MAXCELX * MAXCELY) goto error;
 	}
 
-	memset(m_moveObject, 0, sizeof(MoveObject) * MAXMOVEOBJECT);
-	if (majRev == 1 && minRev >= 2)
+	if (majRev == 1 && minRev <= 1)
 	{
-		nb = fread(m_moveObject, sizeof(MoveObject), MAXMOVEOBJECT, file);
-		if (nb < MAXMOVEOBJECT) goto error;
+		memset(m_moveObject, 0, sizeof(MoveObject) * MAXMOVEOBJECT);
+		nb = fread(m_moveObject, sizeof(MoveObject), MAXMOVEOBJECT / 2, file);
+		if (nb < MAXMOVEOBJECT / 2) goto error;
 	}
 	else
 	{
-		nb = fread(m_moveObject, sizeof(MoveObject), MAXMOVEOBJECT / 2, file);
-		if (nb < MAXMOVEOBJECT / 2) goto error;
+		nb = fread(m_moveObject, sizeof(MoveObject), MAXMOVEOBJECT, file);
+		if (nb < MAXMOVEOBJECT) goto error;
 	}
 
 	free(pBuffer);

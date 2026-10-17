@@ -681,6 +681,7 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	WNDCLASSA wc;
 	BOOL bOK;
+	POINT totalDim, iconDim;
 
 	bOK = ReadConfig(lpCmdLine);
 	InitHInstance(hInstance);
@@ -730,7 +731,11 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	if (!g_pPixmap->Create(g_hWnd, POINT(LXIMAGE, LYIMAGE), g_bFullScreen, g_bTrueColorBack, g_mouseType))
 		return InitFail("Create pixmap", TRUE);
 	OutputDebug("Image: init\n");
-	if (!g_pPixmap->Cache(0, "image08\\init.blp", POINT(LXIMAGE, LYIMAGE), POINT(0, 0), TRUE)) return FALSE;
+	totalDim.x = LXIMAGE;
+	totalDim.y = LYIMAGE;
+	iconDim.x = 0;
+	iconDim.y = 0;
+	if (!g_pPixmap->Cache(0, "image08\\init.blp", totalDim, iconDim, TRUE)) return FALSE;
 	OutputDebug("SavePalette");
 	g_pPixmap->SavePalette();
 	OutputDebug("InitSysPalette");
@@ -739,44 +744,100 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	g_pPixmap->DrawImage(-1, 0, RECT(0, 0, LXIMAGE, LYIMAGE), 1);
 	g_pPixmap->Display();
 
-	if (!g_pPixmap->Cache(1, "image08\\object.blp", POINT(0x400, 0x500), POINT(0x40, 0x40), FALSE))
+	totalDim.x = 0x400;
+	totalDim.y = 0x500;
+	iconDim.x = 0x40;
+	iconDim.y = 0x40;
+	if (!g_pPixmap->Cache(1, "image08\\object.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache object.blp", TRUE);
 	g_pPixmap->SetTransparent(1, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(2, "image08\\blupi000.blp", POINT(0x3c0, 0x4b0), POINT(0x3c, 0x3c), FALSE))
+	totalDim.x = 0x3c0;
+	totalDim.y = 0x4b0;
+	iconDim.x = 0x3c;
+	iconDim.y = 0x3c;
+	if (!g_pPixmap->Cache(2, "image08\\blupi000.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache blupi.blp", TRUE);
 	g_pPixmap->SetTransparent(2, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(11, "image08\\blupi001.blp", POINT(0x3c0, 0x4b0), POINT(0x3c, 0x3c), FALSE))
+	totalDim.x = 0x3c0;
+	totalDim.y = 0x4b0;
+	iconDim.x = 0x3c;
+	iconDim.y = 0x3c;
+	if (!g_pPixmap->Cache(11, "image08\\blupi001.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache blupi001.blp", TRUE);
 	g_pPixmap->SetTransparent(11, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(12, "image08\\blupi002.blp", POINT(0x3c0, 0x4b0), POINT(0x3c, 0x3c), FALSE))
+	totalDim.x = 0x3c0;
+	totalDim.y = 0x4b0;
+	iconDim.x = 0x3c;
+	iconDim.y = 0x3c;
+	if (!g_pPixmap->Cache(12, "image08\\blupi002.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache blupi002.blp", TRUE);
 	g_pPixmap->SetTransparent(12, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(13, "image08\\blupi003.blp", POINT(0x3c0, 0x4b0), POINT(0x3c, 0x3c), FALSE))
+	totalDim.x = 0x3c0;
+	totalDim.y = 0x4b0;
+	iconDim.x = 0x3c;
+	iconDim.y = 0x3c;
+	if (!g_pPixmap->Cache(13, "image08\\blupi003.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache blupi003.blp", TRUE);
 	g_pPixmap->SetTransparent(13, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(14, "image08\\temp.blp", POINT(0x40, 0x40), POINT(0x40, 0x40), FALSE))
+	totalDim.x = 0x40;
+	totalDim.y = 0x40;
+	iconDim.x = 0x40;
+	iconDim.y = 0x40;
+	if (!g_pPixmap->Cache(14, "image08\\temp.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache temp.blp", TRUE);
 	g_pPixmap->SetTransparent(14, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(8, "image08\\map.blp", POINT(0xd0, 0xa0), POINT(0xd0, 0xa0), FALSE))
+	totalDim.x = 0xd0;
+	totalDim.y = 0xa0;
+	iconDim.x = 0xd0;
+	iconDim.y = 0xa0;
+	if (!g_pPixmap->Cache(8, "image08\\map.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache map.blp", TRUE);
 	g_pPixmap->SetTransparent(8, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(10, "image08\\element.blp", POINT(0x3c0, 0x4b0), POINT(0x3c, 0x3c), FALSE))
+	totalDim.x = 0x3c0;
+	totalDim.y = 0x4b0;
+	iconDim.x = 0x3c;
+	iconDim.y = 0x3c;
+	if (!g_pPixmap->Cache(10, "image08\\element.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache element.blp", TRUE);
 	g_pPixmap->SetTransparent(10, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(9, "image08\\explo.blp", POINT(0x800, 0x280), POINT(0x80, 0x80), FALSE))
+	totalDim.x = 0x800;
+	totalDim.y = 0x280;
+	iconDim.x = 0x80;
+	iconDim.y = 0x80;
+	if (!g_pPixmap->Cache(9, "image08\\explo.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache explo.blp", TRUE);
 	g_pPixmap->SetTransparent(9, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(3, "image08\\decor000.blp", POINT(LXIMAGE, LYIMAGE), POINT(0, 0), FALSE)) return FALSE;
-	if (!g_pPixmap->Cache(4, "image08\\button00.blp", POINT(0xf0, 0x348), POINT(0x28, 0x28), FALSE))
+	totalDim.x = LXIMAGE;
+	totalDim.y = LYIMAGE;
+	iconDim.x = 0;
+	iconDim.y = 0;
+	if (!g_pPixmap->Cache(3, "image08\\decor000.blp", totalDim, iconDim, FALSE)) return FALSE;
+	totalDim.x = 0xf0;
+	totalDim.y = 0x348;
+	iconDim.x = 0x28;
+	iconDim.y = 0x28;
+	if (!g_pPixmap->Cache(4, "image08\\button00.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache button00.blp", TRUE);
 	g_pPixmap->SetTransparent(4, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(5, "image08\\jauge.blp", POINT(0x7c, 0x58), POINT(0x7c, 0x16), FALSE))
+	totalDim.x = 0x7c;
+	totalDim.y = 0x58;
+	iconDim.x = 0x7c;
+	iconDim.y = 0x16;
+	if (!g_pPixmap->Cache(5, "image08\\jauge.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache jauge.blp", TRUE);
 	g_pPixmap->SetTransparent(5, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(6, "image08\\text.blp", POINT(0x100, 0x180), POINT(0x10, 0x10), FALSE))
+	totalDim.x = 0x100;
+	totalDim.y = 0x180;
+	iconDim.x = 0x10;
+	iconDim.y = 0x10;
+	if (!g_pPixmap->Cache(6, "image08\\text.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache text.blp", TRUE);
 	g_pPixmap->SetTransparent(6, RGB(0, 0, 255));
-	if (!g_pPixmap->Cache(7, "image08\\little.blp", POINT(0x100, 0x60), POINT(0x10, 0x0c), FALSE))
+	totalDim.x = 0x100;
+	totalDim.y = 0x60;
+	iconDim.x = 0x10;
+	iconDim.y = 0x0c;
+	if (!g_pPixmap->Cache(7, "image08\\little.blp", totalDim, iconDim, FALSE))
 		return InitFail("Cache little.blp", TRUE);
 	g_pPixmap->SetTransparent(7, RGB(0, 0, 255));
 
