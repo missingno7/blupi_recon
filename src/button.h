@@ -1,3 +1,5 @@
+#ifndef BUTTON_H
+#define BUTTON_H
 // Button.h
 
 
@@ -25,6 +27,9 @@ public:
 
 	BOOL	GetEnable();
 	void	SetEnable(BOOL bEnable);
+#ifdef SB1_EVENT_API
+	void	SetDemo(BOOL bDemo);
+#endif
 
 	BOOL	GetHide();
 	void	SetHide(BOOL bHide);
@@ -65,3 +70,5 @@ protected:
 };
 
 /////////////////////////////////////////////////////////////////////////////
+
+#endif

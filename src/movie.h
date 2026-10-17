@@ -1,3 +1,5 @@
+#ifndef MOVIE_H
+#define MOVIE_H
 // movie.h
 //
 
@@ -29,3 +31,5 @@ protected:
 	BOOL		m_fMovieOpen;	// Open flag: TRUE == movie open, FALSE = none
 };
 
+
+#endif

@@ -1,3 +1,5 @@
+#ifndef TEXT_H
+#define TEXT_H
 // Text.h
 
 #pragma once
@@ -6,6 +8,11 @@
 #define FONTRED		1
 #define FONTSLIM	2
 #define FONTLITTLE	10
+
+#ifdef SB1_EVENT_API
+#define FONTGOLD 1
+#define FONTSELECTED 2
+#endif
 
 extern
 void DrawText(CPixmap *pPixmap, POINT pos, char *pText, int font=0);
@@ -42,3 +49,5 @@ void DrawBignum(CPixmap *pPixmap, POINT pos, int num);
 extern
 int GetBignumWidth(int num);
 
+
+#endif /* TEXT_H */

@@ -1,6 +1,9 @@
 // Def.h
 //
 
+#ifndef DEF_H
+#define DEF_H
+
 #pragma once
 
 #include <Windows.h>
@@ -10,6 +13,23 @@
 #define _EGAMES			FALSE	// TRUE version pour eGames
 #define _SE				FALSE	// TRUE eGames Special Edition
 
+
+#define REQUIRE_CD		TRUE
+#define DREAM_IN_SB2	TRUE
+#define MAXGAMER	8
+#define MAXNETPLAYER	4
+#define MAXTEAM	4
+#define MAXNETMESSAGE	20
+#define MAXSESSION	100
+#define MAXMOVEOBJECT	200
+#define MAXNOTIF	4
+#define MAXFIFOPOS	10
+#define MAXCHAT	6
+#define MAXSAVE	6
+#define MAXDEMO	10000
+#define MAXINDEX	20
+#define MAXMESSAGEPERPACKET 5
+#define TRAJBYTEX	(MAXCELX - 1) / 8 + 1
 
 #define LXIMAGE			640		// dimensions de la fenêtre de jeu
 #define LYIMAGE			480
@@ -24,14 +44,14 @@
 #define DIMMAPX			128
 #define DIMMAPY			128
 
-#define MAXCELX			200		// nb max de cellules d'un monde
-#define MAXCELY			200
+#define MAXCELX			100		// nb max de cellules d'un monde
+#define MAXCELY			100
 
 #define DIMCELX			60		// dimensions d'une cellule (décor)
 #define DIMCELY			30
 
-#define DIMOBJX			120		// dimensions d'un objet
-#define DIMOBJY			120
+#define DIMOBJX			64		// dimensions d'un objet
+#define DIMOBJY			64
 
 #define DIMBLUPIX		60		// dimensions de blupi
 #define DIMBLUPIY		60
@@ -378,6 +398,9 @@
 #define WM_DECOR3				(WM_USER+22)
 #define WM_DECOR4				(WM_USER+23)
 #define WM_DECOR5				(WM_USER+24)
+#define WM_DECOR6				(WM_USER+25)
+#define WM_DECOR7				(WM_USER+26)
+#define WM_DECOR8				(WM_USER+27)
 
 #define WM_ACTION_GO			(WM_USER+30)
 #define WM_ACTION_ABAT1			(WM_USER+31)
@@ -582,6 +605,46 @@
 #define WM_PHASE_DEMO			(WM_USER+535)
 #define WM_PHASE_INTRO1			(WM_USER+536)
 #define WM_PHASE_INTRO2			(WM_USER+537)
+/* SB1 phase values beyond the Planet Blupi base set. */
+#define WM_PHASE_NAMEGAMER 1527
+#define WM_PHASE_CLEARGAMER 1528
+#define WM_PHASE_PLAYTEST 1530
+#define WM_PHASE_DOPLAY 1539
+#define WM_PHASE_QUITPLAYTEST 1542
+#define WM_PHASE_GAMER 1543
+#define WM_PHASE_WINDESIGN 1544
+#define WM_PHASE_LOSTDESIGN 1545
+#define WM_PHASE_WINMOVIEDESIGN 1546
+#define WM_PHASE_LOSTMULTI 1547
+#define WM_PHASE_WINMULTI 1548
+#define WM_PHASE_WINMOVIEMULTI 1549
+#define WM_PHASE_NAMEDESIGN 1555
+#define WM_PHASE_WRITEDESIGN 1556
+#define WM_PHASE_DONAMEGAMER 1557
+#define WM_PHASE_DOCLEARGAMER 1558
+#define WM_PHASE_DONAMEDESIGN 1559
+#define WM_PHASE_DOWRITEDESIGN 1560
+#define WM_PHASE_DOREADDESIGN 1561
+#define WM_PHASE_DOCLEARDESIGN 1562
+#define WM_PHASE_SERVICE 1563
+#define WM_PHASE_DP_DOSERVICE 1564
+#define WM_PHASE_DP_CANCELSERVICE 1565
+#define WM_PHASE_SESSION 1566
+#define WM_PHASE_DP_JOIN 1567
+#define WM_PHASE_DP_CREATELOBBY 1568
+#define WM_PHASE_DP_REFRESH 1569
+#define WM_PHASE_DP_CANCELSESSION 1570
+#define WM_PHASE_MULTI 1571
+#define WM_PHASE_DP_STARTMULTI 1572
+#define WM_PHASE_DP_CANCELMULTI 1573
+#define WM_PHASE_CREATE 1574
+#define WM_PHASE_DP_DOCREATE 1575
+#define WM_PHASE_DP_CANCELCREATE 1576
+#define WM_PHASE_GAMEWRITE 1578
+#define WM_PHASE_GAMEREAD 1580
+#define WM_PHASE_QUITPLAY 1581
+#define WM_PHASE_DOQUIT 1582
+
 
 #define WM_PREV					(WM_USER+600)
 #define WM_NEXT					(WM_USER+601)
@@ -615,3 +678,1162 @@ typedef struct
 }
 Term;
 
+
+/* SB1 engine names absent from the earlier Planet Blupi header. */
+#define CHDECOR	3
+#define CHEXPLO	9
+#define CHELEMENT	10
+#define CHBLUPI1	11
+#define CHBLUPI2	12
+#define CHBLUPI3	13
+#define CHTEMP	14
+#define CHMAX	14
+#define PK_MOVE	1
+#define PK_ABANDON	8
+#define PK_LOST	9
+#define PK_DIE	10
+#define PK_PAUSE	12
+#define PK_OBJECTSTART	20
+#define PK_OBJECTDELETE	21
+#define PK_MODIFDECOR	30
+#define PK_PLAYSOUND	40
+#define PK_STOPSOUND	41
+#define PK_ASCENSEURSTART	50
+#define PK_ASCENSEUREND	51
+#define PK_STOPCLOUD	60
+#define MESS_CLOSE	1
+#define MESS_JOIN	2
+#define MESS_LEAVE	3
+#define MESS_LOBBY	4
+#define MESS_TEAM	5
+#define MESS_READY	6
+#define MESS_START	7
+#define MESS_CHAT	11
+#define DIR_LEFT	1
+#define DIR_RIGHT	2
+#define SEC_SHIELD	1
+#define SEC_POWER	2
+#define SEC_CLOUD	3
+#define SEC_HIDE	4
+#define STEP_STOPSTART	1
+#define STEP_ADVANCE	2
+#define STEP_STOPEND	3
+#define STEP_RECEDE	4
+#define DECOR_EXPLO1	1
+#define DECOR_EXPLO2	2
+#define DECOR_EXPLO3	3
+#define DECOR_EXPLO4	4
+#define DECOR_BALLOON	5
+#define KEY_NONE	0
+#define KEY_LEFT	1
+#define KEY_RIGHT	2
+#define KEY_UP	4
+#define KEY_DOWN	8
+#define KEY_JUMP	16
+#define KEY_FIRE	32
+#define WM_DECOR9	1052
+#define WM_DECOR10	1053
+#define WM_DECOR11	1054
+#define WM_DIMS1	1265
+#define WM_DIMS2	1266
+#define WM_DIMS3	1267
+#define WM_DIMS4	1268
+#define WM_PHASE_1531	1531
+#define WM_PHASE_1538	1538
+#define WM_PHASE_READDESIGN	1560
+#define WM_PHASE_CLEARDESIGN	1561
+#define WM_PHASE_GAMEREADp	1585
+#define IC_BT_TECH	0
+#define IC_BT_SPECIALTECH	1
+#define IC_BT_TRIANGULARTECH	2
+#define IC_BT_9	3
+#define IC_BT_10	4
+#define IC_BT_BLUPI	5
+#define IC_BT_CANCEL	6
+#define IC_BT_TREASURE	7
+#define IC_BT_BOMB	8
+#define IC_BT_BOMBUP	9
+#define IC_BT_EGG	10
+#define IC_BT_GOAL	11
+#define IC_BT_CANCEL2	12
+#define IC_BT_HORIZONTAL	13
+#define IC_BT_VERTICAL	14
+#define IC_BT_HORIZONTALVERTICAL	15
+#define IC_BT_BULLDOZER	16
+#define IC_BT_CASE	17
+#define IC_BT_ACCEPT	18
+#define IC_BT_LIFTFAST	19
+#define IC_BT_LIFTNORMAL	20
+#define IC_BT_LIFTSLOW	21
+#define IC_BT_ROCK	22
+#define IC_BT_WOODENWALL	23
+#define IC_BT_HELICOPTER	24
+#define IC_BT_DREAM	25
+#define IC_BT_LAVA	26
+#define IC_BT_SECRETTECH	27
+#define IC_BT_LIFTFASTSLOW	28
+#define IC_BT_PALMTREE	29
+#define IC_BT_SUPPORT	30
+#define IC_BT_TREE	31
+#define IC_BT_VEGETATION	32
+#define IC_BT_HOUSE	33
+#define IC_BT_MECH	34
+#define IC_BT_SPECIALMECH	35
+#define IC_BT_DELETE	36
+#define IC_BT_BIGMECH	37
+#define IC_BT_WATER	38
+#define IC_BT_GRASS	39
+#define IC_BT_STOP	40
+#define IC_BT_WIND	41
+#define IC_BT_FAN	42
+#define IC_BT_CREATE	43
+#define IC_BT_MUSIC	44
+#define IC_BT_JOIN	45
+#define IC_BT_NAME	46
+#define IC_BT_SETUP	47
+#define IC_BT_PLAY	48
+#define IC_BT_DESIGN	49
+#define IC_BT_ARROWLEFT	50
+#define IC_BT_ARROWRIGHT	51
+#define IC_BT_READ	52
+#define IC_BT_WRITE	53
+#define IC_BT_MOVINGBOMB	54
+#define IC_BT_FISH	55
+#define IC_BT_BAR	56
+#define IC_BT_JEEP	57
+#define IC_BT_FURNITURE	58
+#define IC_BT_TRIANGULARROCK	59
+#define IC_BT_BIRD	60
+#define IC_BT_TINY	61
+#define IC_BT_LEVELSTART	62
+#define IC_BT_DOOR	63
+#define IC_BT_KEY	64
+#define IC_BT_FACADE	65
+#define IC_BT_ROOF	66
+#define IC_BT_SECRETMECH	67
+#define IC_BT_SECRETROCK	68
+#define IC_BT_MARINE	69
+#define IC_BT_SPRING	70
+#define IC_BT_SKATEBOARD	71
+#define IC_BT_ARROWUP	72
+#define IC_BT_ARROWDOWN	73
+#define IC_BT_SHIELD	74
+#define IC_BT_LOLLIPOP	75
+#define IC_BT_SECRETCASE	76
+#define IC_BT_CONTINUE	77
+#define IC_BT_HALT	78
+#define IC_BT_INVISIBLEBLOCK	79
+#define IC_BT_KIDSSTUFF	80
+#define IC_BT_SPECIALKIDSSTUFF	81
+#define IC_BT_BIGKIDSSTUFF	82
+#define IC_BT_MULTI	83
+#define IC_BT_DEMO	84
+#define IC_BT_TANK	85
+#define IC_BT_HELP	86
+#define IC_BT_DYNAMITE	87
+#define IC_BT_GLUE	88
+#define IC_BT_DRINK	89
+#define IC_BT_NOTREADY	90
+#define IC_BT_READY	91
+#define IC_BT_PERSO	92
+#define IC_BT_CHARGER	93
+#define IC_BT_SEND	94
+#define IC_BT_HELICOENEMY	95
+#define IC_BT_BLUPI1	96
+#define IC_BT_BLUPI2	97
+#define IC_BT_BLUPI3	98
+#define IC_BT_TANKENEMY	99
+#define IC_BT_CHEESE	100
+#define IC_BT_INVERTER	101
+#define IC_BT_PERSO0	102
+#define IC_BT_PERSO1	103
+#define IC_BT_PERSO2	104
+#define IC_BT_PERSO3	105
+#define IC_BT_PIPES	106
+#define IC_BT_HOMINGBOMB	107
+#define IC_BT_TEAM1	108
+#define IC_BT_TEAM2	109
+#define IC_BT_TEAM3	110
+#define IC_BT_TEAM4	111
+#define IC_BT_BRICKS	112
+#define IC_BT_WASP	113
+#define IC_BT_TEAMLITTLE1	114
+#define IC_BT_TEAMLITTLE2	115
+#define IC_BT_TEAMLITTLE3	116
+#define IC_BT_TEAMLITTLE4	117
+#define IC_BT_CAVE	118
+#define IC_BT_HOVERCRAFT	119
+#define IC_BT_LIGHTNING	120
+#define IC_BT_CONVEYOR	121
+#define IC_BT_CRUSHER	122
+#define IC_BT_VANISH	123
+#define IC_BT_TELEPORTER	124
+#define IC_BT_KEYCOLOR	125
+#define IC_BT_DOORCOLOR	126
+#define IC_BT_SECRETCAVE	127
+#define IC_BT_SECRETCHEESE	128
+#define IC_BT_SLIME	129
+#define IC_BT_BIGSLIME	130
+#define IC_BT_SLIMEFLOOR	131
+#define IC_BT_SAW	132
+#define IC_BT_LOWCOLORBACK	133
+#define IC_BT_TRUECOLORBACK	134
+#define IC_BT_LOWCOLORDECOR	135
+#define IC_BT_TRUECOLORDECOR	136
+#define IC_BT_PALACE	137
+#define IC_BT_PALACEELEMENT	138
+#define IC_BT_BIGPALACE	139
+#define IC_BT_SLIMECREATURE	140
+#define IC_BT_BRIDGE	141
+#define IC_BT_SPIDERWEB	142
+#define IC_BT_SLIMECEILING	143
+#define IC_BT_TREASUREDOOR	144
+#define _VALUE	FALSE
+#define DIMEXPLOX	128
+#define DIMEXPLOY	128
+#define DIMDECORX	640
+#define DIMDECORY	480
+#define ACTION_MARCH	2
+#define ACTION_TURN	3
+#define ACTION_JUMP	4
+#define ACTION_AIR	5
+#define ACTION_DOWN	6
+#define ACTION_UP	7
+#define ACTION_VERTIGO	8
+#define ACTION_RECEDE	9
+#define ACTION_ADVANCE	10
+#define ACTION_CLEAR1	11
+#define ACTION_SET	12
+#define ACTION_WIN	13
+#define ACTION_PUSH	14
+#define ACTION_STOPHELICO	15
+#define ACTION_MARCHHELICO	16
+#define ACTION_TURNHELICO	17
+#define ACTION_STOPNAGE	18
+#define ACTION_MARCHNAGE	19
+#define ACTION_TURNNAGE	20
+#define ACTION_STOPSURF	21
+#define ACTION_MARCHSURF	22
+#define ACTION_TURNSURF	23
+#define ACTION_DROWN	24
+#define ACTION_STOPJEEP	25
+#define ACTION_MARCHJEEP	26
+#define ACTION_TURNJEEP	27
+#define ACTION_STOPPOP	28
+#define ACTION_POP	29
+#define ACTION_BYE	30
+#define ACTION_STOPSUSPEND	31
+#define ACTION_MARCHSUSPEND	32
+#define ACTION_TURNSUSPEND	33
+#define ACTION_JUMPSUSPEND	34
+#define ACTION_HIDE	35
+#define ACTION_JUMPAIE	36
+#define ACTION_STOPSKATE	37
+#define ACTION_MARCHSKATE	38
+#define ACTION_TURNSKATE	39
+#define ACTION_JUMPSKATE	40
+#define ACTION_AIRSKATE	41
+#define ACTION_TAKESKATE	42
+#define ACTION_DEPOSESKATE	43
+#define ACTION_OUF1a	44
+#define ACTION_OUF1b	45
+#define ACTION_OUF2	46
+#define ACTION_OUF3	47
+#define ACTION_OUF4	48
+#define ACTION_SUCETTE	49
+#define ACTION_STOPTANK	50
+#define ACTION_MARCHTANK	51
+#define ACTION_TURNTANK	52
+#define ACTION_FIRETANK	53
+#define ACTION_GLU	54
+#define ACTION_DRINK	55
+#define ACTION_CHARGE	56
+#define ACTION_HELICOGLU	58
+#define ACTION_TURNAIR	59
+#define ACTION_STOPMARCH	60
+#define ACTION_STOPJUMP	61
+#define ACTION_STOPJUMPh	62
+#define ACTION_MOCKERY	63
+#define ACTION_MOCKERYi	64
+#define ACTION_OUF5	65
+#define ACTION_BALLOON	66
+#define ACTION_STOPOVER	67
+#define ACTION_MARCHOVER	68
+#define ACTION_TURNOVER	69
+#define ACTION_RECEDEq	70
+#define ACTION_ADVANCEq	71
+#define ACTION_STOPECRASE	72
+#define ACTION_MARCHECRASE	73
+#define ACTION_TELEPORTE	74
+#define ACTION_CLEAR2	75
+#define ACTION_CLEAR3	76
+#define ACTION_CLEAR4	77
+#define ACTION_CLEAR5	78
+#define ACTION_CLEAR6	79
+#define ACTION_CLEAR7	80
+#define ACTION_CLEAR8	81
+#define ACTION_SWITCH	82
+#define ACTION_MOCKERYp	83
+#define ACTION_NON	84
+#define ACTION_SLOWDOWNSKATE	85
+#define ACTION_TAKEDYNAMITE	86
+#define ACTION_PUTDYNAMITE	87
+#define TYPE_ASCENSEUR	1
+#define TYPE_BOMBEDOWN	2
+#define TYPE_BOMBEUP	3
+#define TYPE_BULLDOZER	4
+#define TYPE_TRESOR	5
+#define TYPE_EGG	6
+#define TYPE_GOAL	7
+#define TYPE_EXPLO1	8
+#define TYPE_EXPLO2	9
+#define TYPE_EXPLO3	10
+#define TYPE_EXPLO4	11
+#define TYPE_CAISSE	12
+#define TYPE_HELICO	13
+#define TYPE_PLOUF	14
+#define TYPE_BLUP	15
+#define TYPE_BOMBEMOVE	16
+#define TYPE_POISSON	17
+#define TYPE_TOMATES	18
+#define TYPE_JEEP	19
+#define TYPE_OISEAU	20
+#define TYPE_CLE	21
+#define TYPE_DOOR	22
+#define TYPE_BALLE	23
+#define TYPE_SKATE	24
+#define TYPE_SHIELD	25
+#define TYPE_POWER	26
+#define TYPE_MAGICTRACK	27
+#define TYPE_TANK	28
+#define TYPE_BULLET	29
+#define TYPE_DRINK	30
+#define TYPE_CHARGE	31
+#define TYPE_BLUPIHELICO	32
+#define TYPE_BLUPITANK	33
+#define TYPE_GLU	34
+#define TYPE_TIPLOUF	35
+#define TYPE_POLLUTION	36
+#define TYPE_CLEAR	37
+#define TYPE_ELECTRO	38
+#define TYPE_TRESORTRACK	39
+#define TYPE_INVERT	40
+#define TYPE_INVERTSTART	41
+#define TYPE_INVERTSTOP	42
+#define TYPE_INVERTSPIN	43
+#define TYPE_GUEPE	44
+#define TYPE_OVER	46
+#define TYPE_ASCENSEURs	47
+#define TYPE_ASCENSEURsi	48
+#define TYPE_CLE1	49
+#define TYPE_CLE2	50
+#define TYPE_CLE3	51
+#define TYPE_BRIDGE	52
+#define TYPE_TENTACULE	53
+#define TYPE_CREATURE	54
+#define TYPE_DYNAMITE	55
+#define TYPE_DYNAMITEf	56
+#define TYPE_SHIELDTRACK	57
+#define TYPE_HIDETRACK	58
+#define TYPE_EXPLO5	90
+#define TYPE_EXPLO6	91
+#define TYPE_EXPLO7	92
+#define TYPE_EXPLO8	93
+#define TYPE_EXPLO9	94
+#define TYPE_EXPLO10	95
+#define TYPE_BOMBEFOLLOW1	96
+#define TYPE_BOMBEFOLLOW2	97
+#define TYPE_SPLOUTCH1	98
+#define TYPE_SPLOUTCH2	99
+#define TYPE_SPLOUTCH3	100
+#define TYPE_BOMBEPERSO1	200
+#define TYPE_BOMBEPERSO2	201
+#define TYPE_BOMBEPERSO3	202
+#define TYPE_BOMBEPERSO4	203
+#define SOUND_JUMP1	1
+#define SOUND_JUMP2	2
+#define SOUND_JUMPEND	3
+#define SOUND_JUMPTOC	4
+#define SOUND_TURN	5
+#define SOUND_VERTIGO	6
+#define SOUND_DOWN	7
+#define SOUND_FALL	8
+#define SOUND_NEW	9
+#define SOUND_BOUM	10
+#define SOUND_TRESOR	11
+#define SOUND_EGG	12
+#define SOUND_ENDKO	13
+#define SOUND_ENDOK	14
+#define SOUND_HELICOSTART	15
+#define SOUND_HELICOHIGH	16
+#define SOUND_HELICOSTOP	17
+#define SOUND_HELICOLOW	18
+#define SOUND_LASTTRESOR	19
+#define SOUND_UP	20
+#define SOUND_LOOKUP	21
+#define SOUND_JUMP0	22
+#define SOUND_BLUP	24
+#define SOUND_SURF	25
+#define SOUND_DROWN	26
+#define SOUND_ERROR	27
+#define SOUND_JEEPSTART	28
+#define SOUND_JEEPHIGH	29
+#define SOUND_JEEPSTOP	30
+#define SOUND_JEEPLOW	31
+#define SOUND_BYE	32
+#define SOUND_DOOR	33
+#define SOUND_SUSPENDTOC	34
+#define SOUND_SUSPENDJUMP	35
+#define SOUND_SINGE	36
+#define SOUND_PATIENT	37
+#define SOUND_PUSH	38
+#define SOUND_POP	39
+#define SOUND_JUMPAIE	40
+#define SOUND_RESSORT	41
+#define SOUND_STARTSHIELD	42
+#define SOUND_STOPSHIELD	43
+#define SOUND_STARTPOWER	44
+#define SOUND_STOPPOWER	45
+#define SOUND_OUF1	46
+#define SOUND_OUF2	47
+#define SOUND_OUF3	48
+#define SOUND_OUF4	49
+#define SOUND_SUCETTE	50
+#define SOUND_GLU	51
+#define SOUND_FIREOK	52
+#define SOUND_FIREKO	53
+#define SOUND_TAKEGLU	54
+#define SOUND_STARTCLOUD	55
+#define SOUND_STOPCLOUD	56
+#define SOUND_DRINK	57
+#define SOUND_CHARGE	58
+#define SOUND_ELECTRO	59
+#define SOUND_PERSOTAKE	60
+#define SOUND_PERSOPOSE	61
+#define SOUND_STARTHIDE	62
+#define SOUND_STOPHIDE	63
+#define SOUND_TIPLOUF	64
+#define SOUND_MOCKERY	65
+#define SOUND_INVERTSTART	66
+#define SOUND_INVERTSTOP	67
+#define SOUND_OVERSTOP	68
+#define SOUND_BLITZ	69
+#define SOUND_ECRASE	70
+#define SOUND_BRIDGE1	72
+#define SOUND_BRIDGE2	73
+#define SOUND_ANGEL	74
+#define SOUND_SWITCHOFF	76
+#define SOUND_SWITCHON	77
+#define SOUND_JUMPENDb	78
+#define SOUND_JUMPTOCb	79
+#define SOUND_JUMPENDm	80
+#define SOUND_JUMPTOCm	81
+#define SOUND_JUMPENDg	82
+#define SOUND_JUMPTOCg	83
+#define SOUND_JUMPENDo	84
+#define SOUND_JUMPTOCo	85
+#define SOUND_JUMPENDk	86
+#define SOUND_JUMPTOCk	87
+#define SOUND_JUMPENDf	88
+#define SOUND_JUMPTOCf	89
+#define SOUND_JUMPENDh	90
+#define SOUND_JUMPTOCh	91
+#define SOUND_FOLLOW	92
+#define SPRITE_DISABLE	13
+#define CLE_RED	(1 << 0)
+#define CLE_GREEN	(1 << 1)
+#define CLE_BLUE	(1 << 2)
+#define JAUGE_AIR	0
+#define JAUGE_POWER	1
+
+namespace Object {
+	enum Object {
+		Empty = -1,
+		Hili,
+		TechSquare_1,
+		TechSquare_2,
+		TechSquare_3,
+		TechSquare_4,
+		TechSquare_5,
+		TechSquare_6,
+		TechSquare_7,
+		TechSquare_8,
+		TechSquare_9,
+		TechSquare_10,
+		TechSquare_11,
+		TechSquare_12,
+		TechSquare_13,
+		TechSquare_14,
+		TechTriRight_1,
+		TechTriRight_2, // 16
+		TechTriLeft_1,
+		TechTriLeft_2,
+		TechSpecial_1,
+		TechSpecial_2,
+		TechSpecial_3,
+		TechSecret_1,
+		TechSpecial_4,
+		TechSpecial_5,
+		TechSpecial_6,
+		TechSpecial_7,
+		TechSpecial_8,
+		TechSpecial_9,
+		TechSpecial_10,
+		LiftPoint_1,
+		LiftPoint_2,
+		Caisse_1, // 32
+		Caisse_2,
+		Caisse_3,
+		RockSquare_1,
+		RockSquare_2,
+		RockSquare_3,
+		RockSquare_4,
+		RockSquare_5,
+		RockSquare_6,
+		WoodWall_1,
+		WoodWall_2,
+		WoodWall_3,
+		WoodWall_4,
+		WoodWall_5,
+		WoodWall_6,
+		WoodWall_7,
+		Dream_1, // 48
+		Dream_2,
+		Dream_3,
+		Dream_4,
+		Dream_5,
+		Dream_6,
+		Dream_7,
+		Dream_8,
+		Dream_9,
+		Dream_10,
+		Dream_11,
+		Dream_12,
+		Dream_13,
+		Dream_14,
+		Dream_15,
+		Dream_16,
+		Dream_17,  // 64
+		Dream_18,
+		Dream_19,
+		Dream_20,
+		Lava_1,
+		Lava_2,
+		Lava_3,
+		Lava_4,
+		Lava_5,
+		TechSecret_2,
+		RockTriLeft_1,
+		RockTriRight_1,
+		Support_1,
+		Support_2,
+		MechSquare_1,
+		MechSquare_2,
+		MechSquare_3, // 80
+		MechSquare_4,
+		MechSquare_5,
+		MechSquare_6,
+		MechSquare_7,
+		MechSecret_1,
+		MechSecret_2,
+		MechSpecial_1,
+		MechSpecial_2,
+		MechSpecial_3,
+		MechSpecial_4,
+		WaterSquare_1,
+		WaterSurf_1,
+		WaterSurf_2,
+		WaterSurf_3,
+		WaterSurf_4,
+		WaterSquare_2, // 96
+		WaterSquare_3,
+		WaterSquare_4,
+		Splash_1,
+		Splash_2,
+		Splash_3,
+		Splash_4,
+		Bubble_1,
+		Bubble_2,
+		Bubble_3,
+		Bubble_4,
+		GrassSquare_1,
+		GrassLeft,
+		GrassRight,
+		WindLeft_1,
+		WindLeft_2, // 112
+		WindLeft_3,
+		WindLeft_4,
+		WindRight_1,
+		WindRight_2,
+		WindRight_3,
+		WindRight_4,
+		WindUp_1,
+		WindUp_2,
+		WindUp_3,
+		WindUp_4,
+		WindDown_1,
+		WindDown_2,
+		WindDown_3,
+		WindDown_4,
+		FanLeft_1,
+		FanLeft_2, // 128
+		FanLeft_3,
+		FanRight_1,
+		FanRight_2,
+		FanRight_3,
+		FanUp_1,
+		FanUp_2,
+		FanUp_3,
+		FanDown_1,
+		FanDown_2,
+		FanDown_3,
+		Bar_1,
+		Bookshelf_1,
+		Bookshelf_2,
+		Bookshelf_3,
+		Bookshelf_4,
+		Bookshelf_5,
+		RockSquare_7, // 144
+		RockSquare_8,
+		RockSquare_9,
+		RockSquare_10,
+		RockSquare_11,
+		RockSquare_12,
+		RockSquare_13,
+		RockSquare_14,
+		RockSquare_15,
+		RockSquare_16,
+		RockTriLeft_2,
+		RockTriRight_2,
+		RockSquare_17,
+		GrassSquare_2,
+		World_1,
+		World_2,
+		World_3, // 160
+		World_4,
+		World_5,
+		World_6,
+		World_7,
+		World_8,
+		WorldDone_1,
+		WorldDone_2,
+		WorldDone_3,
+		WorldDone_4,
+		WorldDone_5,
+		WorldDone_6,
+		WorldDone_7,
+		WorldDone_8,
+		Level_1,
+		Level_2,
+		Level_3, // 176
+		Level_4,
+		Level_5,
+		Level_6,
+		Level_7,
+		Level_8,
+		DoorLevel,
+		DoorCourse,
+		WorldBack,
+		RockSecret,
+		Facade_1,
+		Facade_2,
+		Facade_3,
+		Facade_4,
+		Facade_5,
+		Facade_6,
+		Facade_7, // 192
+		Roof_1,
+		Roof_2,
+		Roof_3,
+		Roof_4,
+		Roof_5,
+		Support_3,
+		Support_4,
+		Support_5,
+		Support_6,
+		Bar_2,
+		Marine_1,
+		Marine_2,
+		Marine_3,
+		Marine_4,
+		Marine_5,
+		Marine_6, // 208
+		Spring_1,
+		Spring_2,
+		Spring_3,
+		Spring_4,
+		Spring_5,
+		Invisible,
+		KidsSquare_1,
+		KidsSquare_2,
+		KidsSquare_3,
+		KidsSquare_4,
+		KidsSquare_5,
+		KidsSquare_6,
+		KidsSquare_7,
+		KidsSquare_8,
+		KidsSpecial_1,
+		KidsSpecial_2, // 224
+		KidsSpecial_3,
+		KidsSpecial_4,
+		KidsSpecial_5,
+		KidsSpecial_6,
+		KidsSpecial_7,
+		KidsSquare_9,
+		KidsSquare_10,
+		KidsSpecial_8,
+		KidsSquare_11,
+		KidsSquare_12,
+		Support_7,
+		Support_8,
+		DitherMask,
+		Charger_1,
+		Charger_2,
+		Charger_3, // 240
+		Charger_4,
+		Charger_5,
+		Charger_6,
+		Splash_5,
+		Unk_F5,
+		CheeseSquare_1,
+		CheeseSquare_2,
+		CheeseSquare_3,
+		CheeseSquare_4,
+		Pipes_1,
+		Pipes_2,
+		Pipes_3,
+		Pipes_4,
+		Pipes_5,
+		Pipes_6,
+		Pipes_7, // 256
+		Pipes_8,
+		Pipes_9,
+		Pipes_10,
+		Pipes_11,
+		Bricks_1,
+		Bricks_2,
+		Bricks_3,
+		CheeseSupport_1,
+		CheeseSupport_2,
+		CheeseSupport_3,
+		CheeseSupport_4,
+		CheeseSupport_5,
+		CheeseSupport_6,
+		CheeseSupport_7,
+		CheeseSupport_8,
+		CheeseSupport_9, // 272
+		CheeseSupport_10,
+		CheeseSupport_11,
+		CheeseSupport_12,
+		CheeseSupport_13,
+		CheeseSupport_14,
+		CheeseSupport_15,
+		CheeseSupport_16,
+		CheeseSupport_17,
+		CheeseSupport_18,
+		CheeseSupport_19,
+		Bricks_4,
+		Cave_1,
+		CaveSupport_1,
+		CaveSupport_2,
+		CaveSupport_3,
+		CaveSupport_4, // 288
+		CaveSupport_5,
+		CaveSupport_6,
+		CaveSupport_7,
+		CaveSupport_8,
+		CaveSupport_9,
+		CaveSupport_10,
+		CaveSupport_11,
+		CaveSupport_12,
+		CaveSupport_13,
+		CaveSupport_14,
+		CaveSupport_15,
+		CaveSupport_16,
+		Cave_2,
+		CaveSupport_17,
+		CaveSupport_18,
+		LightningMachine, // 304
+		Lightning_1,
+		Lightning_2,
+		Lightning_3,
+		Lightning_4,
+		World_9,
+		WorldDone_9,
+		Conveyor_1,
+		Conveyor_2,
+		Conveyor_3,
+		Conveyor_4,
+		Conveyor_5,
+		Conveyor_6,
+		Crusher_1,
+		Crusher_2,
+		Crusher_3,
+		Crusher_4, // 320
+		Crusher_5,
+		Crusher_6,
+		Crusher_7,
+		Vanish_1,
+		Vanish_2,
+		Vanish_3,
+		Vanish_4,
+		Vanish_5,
+		Vanish_6,
+		Teleporter_1,
+		Teleporter_2,
+		Teleporter_3,
+		Teleporter_4,
+		DoorRed,
+		DoorGreen,
+		DoorBlue, // 336
+		CaveSecret,
+		Cave_3,
+		CheeseSecret,
+		CheeseSquare_5,
+		Slime_1,
+		Slime_2,
+		Slime_3,
+		Slime_4,
+		Slime_5,
+		Slime_6,
+		Slime_7,
+		Slime_8,
+		Slime_9,
+		Slime_10,
+		Slime_11,
+		Slime_12, // 352
+		Slime_13,
+		Slime_14,
+		Slime_15,
+		Slime_16,
+		Slime_17,
+		Slime_18,
+		Slime_19,
+		Slime_20,
+		Slime_21,
+		Slime_22,
+		Slime_23,
+		FragileBridge_1,
+		FragileBridge_2,
+		FragileBridge_3,
+		FragileBridge_4,
+		FragileBridge_5, // 368
+		FragileBridge_6,
+		FragileBridge_7,
+		FragileBridge_8,
+		FragileBridge_9,
+		SlimeTrapFloor_1,
+		SlimeTrapFloor_2,
+		Support_9,
+		Support_10,
+		Support_11,
+		Saw_1,
+		Saw_2,
+		Saw_3,
+		Saw_4,
+		Saw_5,
+		Saw_6,
+		SawSwitchOn, // 384
+		SawSwitchOff,
+		Palace_1,
+		Palace_2,
+		Palace_3,
+		Palace_4,
+		Palace_5,
+		Palace_6,
+		Palace_7,
+		Palace_8,
+		Palace_9,
+		Palace_10,
+		Palace_11,
+		Palace_12,
+		PalaceElement_1,
+		PalaceElement_2,
+		PalaceElement_3, // 400
+		SpiderWeb_1,
+		SpiderWeb_2,
+		SpiderWeb_3,
+		SlimeTrapCeiling_1,
+		SlimeTrapCeiling_2,
+		SlimeTrapCeiling_3,
+		SlimeTrapCeiling_4,
+		SlimeTrapCeiling_5,
+		SlimeTrapCeiling_6,
+		SlimeTrapCeiling_7,
+		World_10,
+		World_11,
+		World_12,
+		World_13,
+		World_14,
+		WorldDone_10, // 416
+		WorldDone_11,
+		WorldDone_12,
+		WorldDone_13,
+		WorldDone_14,
+		DoorTreasure_1,
+		DoorTreasure_2,
+		DoorTreasure_3,
+		DoorTreasure_4,
+		DoorTreasure_5,
+		DoorTreasure_6,
+		DoorTreasure_7,
+		DoorTreasure_8,
+		DoorTreasure_9,
+		DoorTreasure_10,
+		DoorTreasure_11,
+		DoorTreasure_12,	// 432
+		DoorTreasure_13,
+		DoorTreasure_14,
+		DoorTreasure_15,
+		DoorTreasure_16,
+		DoorTreasure_17,
+		DoorTreasure_18,
+		DoorTreasure_19,
+		DoorTreasure_20
+	};
+}
+
+// hack to mimic array literals in old c++
+#if __cplusplus < 199711
+#define RECT(A,B,C,D) MAKE_RECT(A,B,C,D)
+#define POINT(X,Y) MAKE_POINT(X,Y)
+
+inline RECT MAKE_RECT(int left, int top, int right, int bottom)
+{
+	RECT r = { left, top, right, bottom };
+	return r;
+};
+
+inline POINT MAKE_POINT(int x, int y)
+{
+	POINT p = { x, y };
+	return p;
+};
+#else
+#define RECT(A,B,C,D) RECT{A,B,C,D}
+#define POINT(X,Y) POINT{X,Y}
+#endif
+
+// helpers for POINT
+
+POINT operator+(POINT p, const POINT& a)
+{
+	return POINT(a.x + p.x, a.y + p.y);
+}
+
+POINT operator-(POINT p, const POINT& a)
+{
+	return POINT(p.x - a.x, p.y - a.y);
+}
+
+POINT operator*(POINT p, const POINT& a)
+{
+	return POINT(a.x * p.x, a.y * p.y);
+}
+
+POINT operator/(POINT p, const POINT& a)
+{
+	return POINT(p.x / a.x, p.y / a.y);
+}
+
+POINT operator*(POINT p, const int& a)
+{
+	return POINT(p.x * a, p.y * a);
+}
+
+POINT operator/(POINT p, const int& a)
+{
+	return POINT(p.x / a, p.y / a);
+}
+
+POINT& operator+=(POINT& p, const POINT& a)
+{
+	p.x += a.x;
+	p.y += a.y;
+	return p;
+}
+
+POINT& operator-=(POINT& p, const POINT& a)
+{
+	p.x -= a.x;
+	p.y -= a.y;
+	return p;
+}
+
+POINT& operator*=(POINT& p, const POINT& a)
+{
+	p.x *= a.x;
+	p.y *= a.y;
+	return p;
+}
+
+POINT& operator/=(POINT& p, const POINT& a)
+{
+	p.x /= a.x;
+	p.y /= a.y;
+	return p;
+}
+
+POINT& operator*=(POINT& p, const int& a)
+{
+	p.x *= a;
+	p.y *= a;
+	return p;
+}
+
+POINT& operator/=(POINT& p, const int& a)
+{
+	p.x /= a;
+	p.y /= a;
+	return p;
+}
+
+bool operator!=(POINT a, const POINT& b)
+{
+	return a.x != b.x || a.y != b.y;
+}
+
+bool operator==(POINT a, const POINT& b)
+{
+	return a.x == b.x && a.y == b.y;
+}
+
+#ifdef SB1_EVENT_API
+/* The event TU uses the phase sequence confirmed against the SB1 phase table. */
+#undef WM_PHASE_INIT
+#define WM_PHASE_INIT 1524
+#undef WM_PHASE_PLAY
+#define WM_PHASE_PLAY 1525
+#undef WM_PHASE_BUILD
+#define WM_PHASE_BUILD 1526
+#undef WM_PHASE_NAMEGAMER
+#define WM_PHASE_NAMEGAMER 1527
+#undef WM_PHASE_CLEARGAMER
+#define WM_PHASE_CLEARGAMER 1528
+#undef WM_PHASE_INFO
+#define WM_PHASE_INFO 1529
+#undef WM_PHASE_PLAYTEST
+#define WM_PHASE_PLAYTEST 1530
+#undef WM_PHASE_1531
+#define WM_PHASE_1531 1531
+#undef WM_PHASE_WIN
+#define WM_PHASE_WIN 1532
+#undef WM_PHASE_LOST
+#define WM_PHASE_LOST 1533
+#undef WM_PHASE_SETUP
+#define WM_PHASE_SETUP 1534
+#undef WM_PHASE_MUSIC
+#define WM_PHASE_MUSIC 1535
+#undef WM_PHASE_PLAYMOVIE
+#define WM_PHASE_PLAYMOVIE 1536
+#undef WM_PHASE_WINMOVIE
+#define WM_PHASE_WINMOVIE 1537
+#undef WM_PHASE_1538
+#define WM_PHASE_1538 1538
+#undef WM_PHASE_DOPLAY
+#define WM_PHASE_DOPLAY 1539
+#undef WM_PHASE_LASTWIN
+#define WM_PHASE_LASTWIN 1540
+#undef WM_PHASE_SETUPp
+#define WM_PHASE_SETUPp 1541
+#undef WM_PHASE_REGION
+#define WM_PHASE_REGION 1542
+#undef WM_PHASE_INSERT
+#define WM_PHASE_INSERT 1543
+#undef WM_PHASE_QUITPLAYTEST
+#define WM_PHASE_QUITPLAYTEST 1544
+#undef WM_PHASE_GAMER
+#define WM_PHASE_GAMER 1545
+#undef WM_PHASE_WINDESIGN
+#define WM_PHASE_WINDESIGN 1546
+#undef WM_PHASE_LOSTDESIGN
+#define WM_PHASE_LOSTDESIGN 1547
+#undef WM_PHASE_WINMOVIEDESIGN
+#define WM_PHASE_WINMOVIEDESIGN 1548
+#undef WM_PHASE_LOSTMULTI
+#define WM_PHASE_LOSTMULTI 1549
+#undef WM_PHASE_WINMULTI
+#define WM_PHASE_WINMULTI 1550
+#undef WM_PHASE_WINMOVIEMULTI
+#define WM_PHASE_WINMOVIEMULTI 1551
+#undef WM_PHASE_TESTCD
+#define WM_PHASE_TESTCD 1552
+#undef WM_PHASE_MANUEL
+#define WM_PHASE_MANUEL 1553
+#undef WM_PHASE_PRIVATE
+#define WM_PHASE_PRIVATE 1554
+#undef WM_PHASE_UNDO
+#define WM_PHASE_UNDO 1555
+#undef WM_PHASE_BYE
+#define WM_PHASE_BYE 1556
+#undef WM_PHASE_DEMO
+#define WM_PHASE_DEMO 1557
+#undef WM_PHASE_NAMEDESIGN
+#define WM_PHASE_NAMEDESIGN 1558
+#undef WM_PHASE_WRITEDESIGN
+#define WM_PHASE_WRITEDESIGN 1559
+#undef WM_PHASE_READDESIGN
+#define WM_PHASE_READDESIGN 1560
+#undef WM_PHASE_CLEARDESIGN
+#define WM_PHASE_CLEARDESIGN 1561
+#undef WM_PHASE_DONAMEGAMER
+#define WM_PHASE_DONAMEGAMER 1562
+#undef WM_PHASE_DOCLEARGAMER
+#define WM_PHASE_DOCLEARGAMER 1563
+#undef WM_PHASE_DONAMEDESIGN
+#define WM_PHASE_DONAMEDESIGN 1564
+#undef WM_PHASE_DOWRITEDESIGN
+#define WM_PHASE_DOWRITEDESIGN 1565
+#undef WM_PHASE_DOREADDESIGN
+#define WM_PHASE_DOREADDESIGN 1566
+#undef WM_PHASE_DOCLEARDESIGN
+#define WM_PHASE_DOCLEARDESIGN 1567
+#undef WM_PHASE_SERVICE
+#define WM_PHASE_SERVICE 1568
+#undef WM_PHASE_DP_DOSERVICE
+#define WM_PHASE_DP_DOSERVICE 1569
+#undef WM_PHASE_DP_CANCELSERVICE
+#define WM_PHASE_DP_CANCELSERVICE 1570
+#undef WM_PHASE_SESSION
+#define WM_PHASE_SESSION 1571
+#undef WM_PHASE_DP_JOIN
+#define WM_PHASE_DP_JOIN 1572
+#undef WM_PHASE_DP_CREATELOBBY
+#define WM_PHASE_DP_CREATELOBBY 1573
+#undef WM_PHASE_DP_REFRESH
+#define WM_PHASE_DP_REFRESH 1574
+#undef WM_PHASE_DP_CANCELSESSION
+#define WM_PHASE_DP_CANCELSESSION 1575
+#undef WM_PHASE_MULTI
+#define WM_PHASE_MULTI 1576
+#undef WM_PHASE_DP_STARTMULTI
+#define WM_PHASE_DP_STARTMULTI 1577
+#undef WM_PHASE_DP_CANCELMULTI
+#define WM_PHASE_DP_CANCELMULTI 1578
+#undef WM_PHASE_CREATE
+#define WM_PHASE_CREATE 1579
+#undef WM_PHASE_DP_DOCREATE
+#define WM_PHASE_DP_DOCREATE 1580
+#undef WM_PHASE_DP_CANCELCREATE
+#define WM_PHASE_DP_CANCELCREATE 1581
+#undef WM_PHASE_STOP
+#define WM_PHASE_STOP 1582
+#undef WM_PHASE_HELP
+#define WM_PHASE_HELP 1583
+#undef WM_PHASE_GAMEWRITE
+#define WM_PHASE_GAMEWRITE 1584
+#undef WM_PHASE_GAMEREADp
+#define WM_PHASE_GAMEREADp 1585
+#undef WM_PHASE_GAMEREAD
+#define WM_PHASE_GAMEREAD 1586
+#undef WM_PHASE_QUITPLAY
+#define WM_PHASE_QUITPLAY 1587
+#undef WM_PHASE_DOQUIT
+#define WM_PHASE_DOQUIT 1588
+#undef WM_PHASE_INTRO1
+#define WM_PHASE_INTRO1 1589
+#undef WM_PHASE_INTRO2
+#define WM_PHASE_INTRO2 1590
+#endif
+
+#endif /* DEF_H */

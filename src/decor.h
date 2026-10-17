@@ -1,163 +1,253 @@
 // Decor.h
+#ifndef DECOR_H
+#define DECOR_H
 
-#pragma once
-
-#include <Windows.h>
-
-#include "def.h"
+#include "DEF.H"
+#include "jauge.h"
 #include "sound.h"
 #include "pixmap.h"
+#include "network.h"
 
 /////////////////////////////////////////////////////////////////////////////
 
+#define MAXQUART		237
+#define SCROLL_SPEED	8
+#define SCROLL_MARGX	80
+#define SCROLL_MARGY	40
 
-#define MAXENERGY		4000
-#define MAXFIRE			400
+#define BLUPIFLOOR		2
+#define BLUPIOFFY		4 + BLUPIFLOOR
+#define BLUPISURF		12
+#define BLUPISUSPEND	12
+#define OVERHEIGHT		80
 
-#define ICON_HILI_STAT	112
-#define ICON_HILI_SEL	113
-#define ICON_HILI_ANY	114
-#define ICON_HILI_OP	115
-#define ICON_HILI_GO	117
-#define ICON_HILI_BUILD	118
-#define ICON_HILI_ERR	119
+#define TEXTDELAY	   10 // tooltip popup delay
+#define NOTIFDELAY		200
 
-// Descripteur d'une cellule du décor.
 typedef struct
 {
-	short	floorChannel;
-	short	floorIcon;
-	short	objectChannel;
-	short	objectIcon;
-	short	fog;			// brouillard
-	short	rankMove;		// rang dans m_move
-	short	workBlupi;		// rang du blupi travaillant ici
-	short	fire;
+	short icon;
 }
 Cellule;
-// Cette structure doit être la plus petite possible, car
-// il en existe un tableau de 100x100 = 10'000 cellules !
-
-// Descripteur d'un blupi animé.
-#define MAXBLUPI	100
-#define MAXUSED		50
-#define MAXLIST		10
 
 typedef struct
 {
-	BOOL	bExist;			// TRUE -> utilisé
-	BOOL	bHili;			// TRUE -> sélectionné
-
-	short	perso;			// personnage, voir (*)
-
-	short	goalAction;		// action (long terme)
-	short	goalPhase;		// phase (long terme)
-	POINT	goalCel;		// cellule visée (long terme)
-	POINT	passCel;		// cellule tranversante
-
-	short	energy;			// énergie restante
-
-	POINT	cel;			// cellule actuelle
-	POINT	destCel;		// cellule destination
-	short	action;			// action en cours
-	short	aDirect;		// direction actuelle
-	short	sDirect;		// direction souhaitée
-
-	POINT	pos;			// position relative à partir de la cellule
-	short	posZ;			// déplacement z
+	short   type;
+	short   stepAdvance;
+	short   stepRecede;
+	short   timeStopStart;
+	short	timeStopEnd;
+	short	unknown1;
+	POINT	posStart;
+	POINT	posEnd;
+	POINT	posCurrent;
+	short	step;
+	short	time;
+	short	phase;
 	short	channel;
-	short	lastIcon;
 	short	icon;
-	short	phase;			// phase dans l'action
-	short	step;			// pas global
-	short	interrupt;		// 0=prioritaire, 1=normal, 2=misc
-	short	clipLeft;
-
-	int		nbUsed;			// nb de points déjà visités
-	char	nextRankUsed;
-	POINT	posUsed[MAXUSED];
-	char	rankUsed[MAXUSED];
-
-	short	takeChannel;	// objet transporté
-	short	takeIcon;
-
-	POINT	fix;			// point fixe (cultive, pont)
-
-	short	jaugePhase;
-	short	jaugeMax;
-	short	stop;			// 1 -> devra stopper
-	short	bArrow;			// TRUE -> flèche en dessus de blupi
-	short	bRepeat;		// TRUE -> répète l'action
-	short	nLoop;			// nb de boucles pour GOAL_OTHERLOOP
-	short	cLoop;			// boucle en cours
-	short	vIcon;			// icône variable
-	POINT	goalHili;		// but visé
-	short	bMalade;		// TRUE -> blupi malade
-	short	bCache;			// TRUE -> caché (pas dessiné)
-	short	vehicule;		// véhicule utilisé par blupi, voir (**)
-	char	busyCount;
-	char	busyDelay;
-	char	clicCount;
-	char	clicDelay;
-	char	reserve2[2];
-	short	listButton[MAXLIST];
-	POINT	listCel[MAXLIST];
-	short	listParam[MAXLIST];
-	short	repeatLevelHope;
-	short	repeatLevel;
-	short	reserve3[88];
+	short	unknown2;
 }
-Blupi;
-
-// (*)	Personnages :
-//		0 -> blupi
-//		1 -> araignée
-//		2 -> virus
-//		3 -> tracks
-//		4 -> robot
-//		5 -> bombe
-//		6 -> détonnateur de mine (invisible)
-//		7 -> électro
-//		8 -> disciple (robot2)
-
-// (**)	Véhicule :
-//		0 -> à pied
-//		1 -> en bateau
-//		2 -> en jeep
-//		3 -> armure
-
-
-// Descripteur d'un décor animé.
-#define MAXMOVE		100
-#define MOVEICONNB	1000
+MoveObject;
 
 typedef struct
 {
-	BOOL	bExist;			// TRUE -> utilisé
-
-	POINT	cel;			// cellule du décor
-	short	rankBlupi;		// blupi travaillant ici
-
-	BOOL	bFloor;			// TRUE -> floor, FALSE -> object
-	short	channel;
-	short	icon;
-	short	maskChannel;
-	short	maskIcon;
-	short	phase;			// phase pour pMoves ou pIcon
-	short	rankMoves;		// *nb,dx,dy,...
-	short	rankIcons;		// *nb,i,i,...
-
-	short	total;			// nb total d'étapes
-	short	delai;			// délai entre deux pas
-	short	stepY;			// pas vertical *100
-
-	short	cTotal;
-	short	cDelai;
+	char type;
+	union {
+		char data1;
+		char moveObjectSpeed;
+	};
+	union {
+		short data2;
+		short posX;
+	};
+	union {
+		short data3;
+		short posY;
+	};
+	union {
+		short data4;
+		short moveObjectType;
+		short soundChannel;
+		short ascenseurRank;
+		short cloudTeam;
+		short decorIcon;
+	};
 }
-Move;
+NetMessage;
 
+typedef struct
+{
+	char size;
+	char type;
+	union {
+		short data1;
+		short bPause;
+		short nbVies;
+		short keyPress;
+	};
+	int time;
+	short blupiPosX;
+	short blupiPosY;
+	short blupiIcon;
+	short blupiSec;
+	char blupiChannel;
+	char blupiTransport;
+	char flag;
+	char nbMessages;
+	NetMessage messages[MAXMESSAGEPERPACKET];
+}
+NetPacket;
 
-#define MAXLASTDRAPEAU	50
+typedef struct
+{
+	short majRev;
+	short minRev;
+	short reserve1[100];
+	POINT posDecor;
+	POINT dimDecor;
+	short world;
+	short music;
+	short region;
+	short reserve2[51];
+	POINT blupiPos[4];
+	int blupiDir[4];
+	char name[100];
+	short reserve3[196];
+}
+DescFile;
+
+typedef struct
+{
+	int lg;
+	int majRev;
+	int minRev;
+
+	int reseve1[50];
+
+	short decor[MAXCELX][MAXCELY];
+	short bigDecor[MAXCELX][MAXCELY];
+	MoveObject moveObject[MAXMOVEOBJECT];
+
+	short reseve2[100];
+
+	POINT posDecor;
+	POINT dimDecor;
+	int phase;
+	int term;
+	int music;
+	int region;
+	int time;
+	char missionTitle[100];
+
+	short reseve3[100];
+
+	int nbRankCaisse;
+	int rankCaisse[MAXMOVEOBJECT];
+	int nbLinkCaisse;
+	int linkCaisse[MAXMOVEOBJECT];
+
+	short reseve4[100];
+
+	POINT blupiPos;
+	POINT blupiValidPos;
+	int blupiAction;
+	int blupiDir;
+	int blupiPhase;
+	POINT blupiVitesse;
+	int blupiIcon;
+	int blupiSec;
+	int blupiChannel;
+	POINT blupiVector;
+	int blupiTransport;
+	BOOL blupiFocus;
+	BOOL blupiAir;
+	BOOL blupiHelico;
+	BOOL blupiOver;
+	BOOL blupiJeep;
+	BOOL blupiTank;
+	BOOL blupiSkate;
+	BOOL blupiNage;
+	BOOL blupiSurf;
+	BOOL blupiVent;
+	BOOL blupiSuspend;
+	BOOL blupiJumpAie;
+	BOOL blupiShield;
+	BOOL blupiPower;
+	BOOL blupiCloud;
+	BOOL blupiHide;
+	BOOL blupiInvert;
+	BOOL blupiBalloon;
+	BOOL blupiEcrase;
+	POINT blupiPosHelico;
+	POINT blupiPosMagic;
+	BOOL blupiRestart;
+	BOOL blupiFront;
+	int blupiBullet;
+	int blupiPerso;
+	int blupiDynamite;
+	int blupiNoBarre;
+	POINT blupiFifoPos[MAXFIFOPOS];
+
+	short reseve5[100];
+
+	POINT blupiStartPos[MAXTEAM];
+	int blupiStartDir[MAXTEAM];
+
+	short reseve6[100];
+
+	BOOL jaugeHide[2];
+	BOOL jaugeType[2];
+	BOOL jaugeLevel[2];
+	int blupiLevel;
+	int energyUnused;
+
+	short reseve7[100];
+
+	BOOL playHelicoHigh;
+	BOOL playHelicoLow;
+	BOOL playJeepHigh;
+	BOOL playJeepLow;
+
+	short reseve8[100];
+
+	BOOL bFoundCle;
+	BOOL bPrivate;
+	BOOL bCheatDoors;
+	BOOL bSuperBlupi;
+	BOOL bDrawSecret;
+	BOOL bJoystick;
+	BOOL bDemoPlay;
+	int mission;
+	short doors[100];
+	int nbVies;
+	int nbTresor;
+	int totalTresor;
+	int goalPhase;
+
+	short reseve9[100];
+
+	BOOL scrollFollow;
+	POINT scrollPoint;
+	POINT scrollAdd;
+
+	short reseve10[100];
+
+	int voyageIcon;
+	int voyageChannel;
+	int voyagePhase;
+	int voyageTotal;
+	POINT voyageStart;
+	POINT voyageEnd;
+
+	short reseve11[100];
+
+	int decorAction;
+	int decorPhase;
+
+	short reseve12[100];
+}
+DescGameFile;
 
 class CDecor
 {
@@ -165,382 +255,427 @@ public:
 	CDecor();
 	~CDecor();
 
-	// Arrange.cpp
-	void	ArrangeFloor(POINT cel);
-	void	ArrangeMur(POINT cel, int &icon, int index);
-	void	ArrangeBuild(POINT cel, int &channel, int &icon);
-	void	ArrangeObject(POINT cel);
+	// Decor.cpp
+	void	Create(HWND hWnd, CSound *pSound, CPixmap *pPixmap,
+		CNetwork *pNetwork);
+	BOOL	LoadImages();
+	void	InitGamer();
+	void	InitDecor();
+	void	SetTime(int time);
+	int	    GetTime();
+	void	PlayPrepare(BOOL bTest);
+	void	BuildPrepare();
+	int		IsTerminated();
+	void	MoveStep();
+	void	MoveStep(BOOL bFirst);
+	int		GetBlupiChannelStandard();
+	int		GetBlupiChannelActual();
+	int		GetIconPerso();
+	void	Build(RECT rect);
+	void	Build(RECT rect, POINT mousePos);
+	void	DrawInfo();
+	POINT	DecorNextAction();
+	void	KeyChange(int keys);
+	void	SetJoystickEnable(BOOL bJoystick);
+	void	SetDemoPlay(BOOL param_1);
+	void	PlaySound(int sound, POINT pos, BOOL bLocal);
+	void	PlaySound(int sound, POINT pos); // hack
+	void	StopSound(int sound);
+	void	AdaptMotorVehicleSound(POINT pos);
+	void	ChangePhase(int phase);
 
-	BOOL	ArrangeFillTestFloor(POINT cel1, POINT cel2);
-	BOOL	ArrangeFillTest(POINT pos);
-	void	ArrangeFillPut(POINT pos, int channel, int icon);
-	void	ArrangeFillSearch(POINT pos);
-	void	ArrangeFill(POINT pos, int channel, int icon, BOOL bFloor);
+	int		GetRegion();
+	void	SetRegion(int region);
+	int		GetMusic();
+	void	SetMusic(int music);
+	POINT	GetDim();
+	void	SetDim(POINT dim);
+	int		GetNbVies();
+	void	SetNbVies(int nbVies);
+	BOOL	GetPause();
+	void	ChangePause(BOOL bPause);
+	void	GetDoors(short *doors);
+	void	SetDoors(short* doors);
+	void	SetAllMissions(BOOL bAllMissions);
+	void	CheatAction(int cheat);
+	BOOL	GetSuperBlupi();
+	void	SetSuperBlupi(BOOL bSuperBlupi);
+	BOOL	GetDrawSecret();
+	void	SetDrawSecret(BOOL bDrawSecret);
+	void	SetBuildOfficialMissions(BOOL bBuildOfficialMissions);
+	BOOL	GetNetPacked();
+	void	SetNetPacked(BOOL bNetPacked);
+	BOOL	GetNetMovePredict();
+	void	SetNetMovePredict(BOOL bNetMovePredict);
+	BOOL	GetNetDebug();
+	void	SetNetDebug(BOOL bNetDebug);
+	void	OutputNetDebug(char* text);
+	void	SetMulti(BOOL bMulti);
+	void	SetTeam(int team);
+	POINT	VoyageGetPosVie(int nbVies);
+	void	VoyageInit(POINT start, POINT end, int icon, int channel);
+	void	VoyageStep();
+	void	VoyageDraw();
+	BOOL	DrawMap(BOOL bPlay, int team);
 
-	void	ArrangeBlupi();
+	// DecBlock.cpp
+	BOOL	BlitzActif(POINT cel);
+	int		SoundEnviron(int sound, int obstacle);
+	int		IsWorld(POINT pos);
+	void	ActiveSwitch(BOOL bState, POINT cel);
+	char	GetTypeBarre(POINT pos);
+	BOOL	IsLave(POINT pos);
+	BOOL	IsPiege(POINT pos);
+	BOOL	IsGoutte(POINT pos, BOOL bAlways);
+	BOOL	IsScie(POINT pos);
+	BOOL	IsSwitch(POINT pos, POINT *outCelSwitch);
+	BOOL	IsEcraseur(POINT pos);
+	BOOL	IsBlitz(POINT pos, BOOL bAlways);
+	BOOL	IsRessort(POINT pos);
+	BOOL	IsTemp(POINT pos);
+	BOOL	IsBridge(POINT pos, POINT *outCelBridge);
+	int		IsDoor(POINT pos, POINT *outCelPorte);
+	int		IsTeleporte(POINT pos);
+	BOOL	SearchTeleporte(POINT pos, POINT *newpos);
+	BOOL	IsSurfWater(POINT pos);
+	BOOL	IsDeepWater(POINT pos);
+	BOOL	IsOutWater(POINT pos);
+	BOOL	IsPassIcon(int icon);
+	BOOL	IsBlocIcon(int icon);
+	BOOL	IsVentillo(POINT pos);
+	void	ModifDecor(POINT pos, int icon, BOOL bMulti=TRUE);
+	BOOL	IsRightBorder(int x, int y, int dx, int dy);
+	BOOL	IsFromage(POINT cel);
+	BOOL	IsGrotte(POINT cel);
+	void	AdaptMidBorder(POINT cel);
+	void	AdaptBorder(POINT cel);
 
-	// Obstacle.cpp
-	void	SearchFloor(int rank, int icon, POINT cel, int *pBits);
-	void	SearchObject(int rank, int icon, POINT cel, int *pBits);
-	void	AjustFloor(int rank, int icon, POINT cel, int *pBits);
-	void	AjustObject(int rank, int icon, POINT cel, int *pBits);
-	BOOL	IsFreeDirect(POINT cel, int direct, int rank);
-	BOOL	IsFreeCelObstacle(POINT cel);
-	BOOL	IsFreeCelFloor(POINT cel, int rank);
-	BOOL	IsFreeCelGo(POINT cel, int rank);
-	BOOL	IsFreeCelHili(POINT cel, int rank);
-	BOOL	IsFreeCel(POINT cel, int rank);
-	BOOL	IsFreeCelDepose(POINT cel, int rank);
-	BOOL	IsFreeCelEmbarque(POINT cel, int rank, int &action, POINT &limit);
-	BOOL	IsFreeCelDebarque(POINT cel, int rank, int &action, POINT &limit);
-	BOOL	IsFreeJump(POINT cel, int direct, int rank, int &action);
-	BOOL	IsFreeGlisse(POINT cel, int direct, int rank, int &action);
-	int		DirectSearch(POINT cel, POINT goal);
-	void	FlushUsed(int rank);
-	void	AddUsedPos(int rank, POINT pos);
-	BOOL	IsUsedPos(int rank, POINT pos);
-	BOOL	SearchBestBase(int rank, int &action, POINT &newCel, int &direct);
-	BOOL	SearchBestPass(int rank, int &action);
-	BOOL	IsWorkableObject(POINT cel, int rank);
-	BOOL	SearchOtherObject(int rank, POINT initCel, int action,
-							  int distMax, int channel,
-							  int firstIcon1, int lastIcon1,
-							  int firstIcon2, int lastIcon2,
-							  POINT &foundCel, int &foundIcon);
-	BOOL	SearchOtherDrapeau(int rank, POINT initCel, int distMax,
-							   POINT &foundCel, int &foundIcon);
-	BOOL	SearchOtherBateau(int rank, POINT initCel, int distMax,
-							  POINT &foundCel, int &foundIcon);
-	BOOL	IsSpiderObject(int icon);
-	BOOL	SearchSpiderObject(int rank, POINT initCel, int distMax,
-							   POINT &foundCel, int &foundIcon);
-	BOOL	IsTracksObject(int icon);
-	BOOL	SearchTracksObject(int rank, POINT initCel, int distMax,
-							   POINT &foundCel, int &foundIcon);
-	BOOL	IsRobotObject(int icon);
-	BOOL	SearchRobotObject(int rank, POINT initCel, int distMax,
-							  POINT &foundCel, int &foundIcon,
-							  int &foundAction);
-	BOOL	IsBombeObject(int icon);
-	BOOL	SearchBombeObject(int rank, POINT initCel, int distMax,
-							  POINT &foundCel, int &foundIcon);
-	BOOL	SearchElectroObject(int rank, POINT initCel, int distMax,
-								POINT &foundCel, int &foundIcon);
-	BOOL	IsUsineBuild(int rank, POINT cel);
-	BOOL	IsUsineFree(int rank, POINT cel);
-	BOOL	IsFireCel(POINT cel);
-	BOOL	IsVirusCel(POINT cel);
-	int		IsBuildPont(POINT &cel, int &iconBuild);
-	BOOL	IsBuildBateau(POINT cel, int &direct);
-	void	InitDrapeau();
-	void	AddDrapeau(POINT cel);
-	void	SubDrapeau(POINT cel);
-	BOOL	TestDrapeau(POINT cel);
+	// DecDesign.cpp
+	POINT	ScreenPosToCelPos(POINT pos);
+	void	SetCelHiliFromScreenPos(POINT pos);
+	void	SetIconLiftAndStuff(int _foo, int _bar);
+	void	DeleteCel(POINT cel);
+	void	PlaceDecor(short *pCel, int *pTable, int *pLastIndex, int fwKeys, BOOL bMix, BOOL bRand);
+	void	PlaceDecor1(POINT cel, int index, int fwKeys, BOOL bMix);
+	void	PlaceDecor2(POINT cel, int index, int fwKeys, BOOL bMix);
+	void	PlaceDecor3(POINT cel, int index, int fwKeys, BOOL bMix);
+	void	PlaceDecor4(POINT cel, int index, int fwKeys, BOOL bMix);
+	void	PlaceDecor5(POINT cel, int index, int fwKeys, BOOL bMix);
+	void	PlaceDecor6(POINT cel, int index, int fwKeys, BOOL bMix);
+	void	PlaceDecor7(POINT cel, int index, int fwKeys, BOOL bMix);
+	void	PlaceDecor8(POINT cel, int index, int fwKeys, BOOL bMix);
+	void	PlaceDecor9(POINT cel, int index, int fwKeys, BOOL bMix);
+	void	PlaceDecor10(POINT cel, int index, int fwKeys, BOOL bMix);
+	char*	GetMissionTitle();
+	void	SetMissionTitle(char *str);
 
 	// DecBlupi.cpp
-	void	BlupiFlush();
-	int		BlupiCreate(POINT cel, int action, int direct,
-						int perso, int energy);
-	BOOL	BlupiDelete(POINT cel, int perso=-1);
-	void	BlupiDelete(int rank);
-	void	BlupiKill(int exRank, POINT cel, int type);
-	BOOL	BlupiIfExist(int rank);
-	void	BlupiCheat(int cheat);
-	void	BlupiActualise(int rank);
-	void	BlupiAdaptIcon(int rank);
-	void	BlupiPushFog(int rank);
-	void	BlupiSound(int rank, int sound, POINT pos, BOOL bStop=FALSE);
-	void	BlupiInitAction(int rank, int action, int direct=-1);
-	void	BlupiChangeAction(int rank, int action, int direct=-1);
-	void	ListFlush(int rank);
-	int		ListGetParam(int rank, int button, POINT cel);
-	BOOL	ListPut(int rank, int button, POINT cel, POINT cMem);
-	void	ListRemove(int rank);
-	int		ListSearch(int rank, int button, POINT cel, int &textForButton);
-	BOOL	RepeatAdjust(int rank, int button, POINT &cel, POINT &cMem,
-						 int param, int list);
-	void	GoalStart(int rank, int action, POINT cel);
-	BOOL	GoalNextPhase(int rank);
-	void	SetTotalTime(int total);
-	int		GetTotalTime();
-	void	GoalInitJauge(int rank);
-	void	GoalInitPassCel(int rank);
-	void	GoalAdjustCel(int rank, int &x, int &y);
-	BOOL	GoalNextOp(int rank, short *pTable);
-	void	GoalUnwork(int rank);
-	void	GoalStop(int rank, BOOL bError=FALSE, BOOL bSound=TRUE);
-	BOOL	BlupiIsGoalUsed(POINT cel);
-	void	BlupiStartStopRayon(int rank, POINT startCel, POINT endCel);
-	BOOL	BlupiRotate(int rank);
-	BOOL	BlupiNextAction(int rank);
-	void	BlupiNextGoal(int rank);
-	void	BlupiStep(BOOL bFirst);
-	void	BlupiGetRect(int rank, RECT &rect);
-	int		GetTargetBlupi(POINT pos);
-	void	BlupiDeselect();
-	void	BlupiDeselect(int rank);
-	void	BlupiSetArrow(int rank, BOOL bArrow);
-	void	InitOutlineRect();
-	void	BlupiHiliDown(POINT pos, BOOL bAdd=FALSE);
-	void	BlupiHiliMove(POINT pos, BOOL bAdd=FALSE);
-	void	BlupiHiliUp(POINT pos, BOOL bAdd=FALSE);
-	void	BlupiDrawHili();
-	int		GetDefButton(POINT cel);
-	BOOL	BlupiGoal(int rank, int button, POINT cel, POINT cMem);
-	void	BlupiGoal(POINT cel, int button);
-	void	BlupiDestCel(int rank);
-	BOOL	IsTracksHere(POINT cel, BOOL bSkipInMove);
-	BOOL	IsBlupiHereEx(POINT cel1, POINT cel2, int exRank, BOOL bSkipInMove);
-	BOOL	IsBlupiHereEx(POINT cel, int exRank, BOOL bSkipInMove);
-	BOOL	IsBlupiHere(POINT cel, BOOL bSkipInMove);
-	BOOL	IsBlupiHere(POINT cel, int direct, BOOL bSkipInMove);
-	void	GetLevelJauge(int *pLevels, int *pTypes);
-	BOOL	IsWorkBlupi(int rank);
-	void	BlupiGetButtons(POINT pos, int &nb, int *pButtons, int *pErrors, int &perso);
-	void	TerminatedInit();
-	int		IsTerminated();
-	Term*	GetTerminated();
+	void	BlupiSearchIcon();
+	BOOL	BlupiIsGround();
+	RECT	BlupiRect(POINT pos);
+	void	BlupiAdjust();
+	BOOL	BlupiBloque(POINT pos, int dir);
+	void	BlupiStep();
+	void	BlupiDead(int action, int action2);
+	POINT	GetPosDecor(POINT pos);
+	void	BlupiAddFifo(POINT pos);
+	BOOL	DecorDetect(RECT rect, BOOL bCaisse=TRUE);
+	void	GetBlupiInfo(BOOL *pbHelico, BOOL *pbJeep, BOOL *pbSkate,
+		BOOL *pbNage);
 
 	// DecMove.cpp
-	void	MoveFlush();
-	int		MoveMaxFire();
-	void	MoveFixInit();
-	BOOL	MoveCreate(POINT cel, int rankBlupi, BOOL bFloor,
-					   int channel, int icon,
-					   int maskChannel, int maskIcon,
-					   int total, int delai, int stepY,
-					   BOOL bMisc=FALSE, BOOL bNotIfExist=FALSE);
-	BOOL	MoveAddMoves(POINT cel, int rankMoves);
-	BOOL	MoveAddIcons(POINT cel, int rankIcons, BOOL bContinue=FALSE);
-	BOOL	MoveStartFire(POINT cel);
-	void	MoveProxiFire(POINT cel);
-	void	MoveFire(int rank);
-	void	MoveStep(BOOL bFirst);
-	void	MoveFinish(POINT cel);
-	void	MoveFinish(int rankBlupi);
-	BOOL	MoveIsUsed(POINT cel);
-	BOOL	MoveGetObject(POINT cel, int &channel, int &icon);
-	BOOL	MovePutObject(POINT cel, int channel, int icon);
+	BOOL	TestPath(RECT rect, POINT start, POINT *end);
+	void	MoveObjectPollution();
+	void	MoveObjectPlouf(POINT pos);
+	void	MoveObjectTiplouf(POINT pos);
+	void	MoveObjectBlup(POINT pos);
+	void	FlushBalleTraj();
+	void	SetBalleTraj(POINT pos);
+	BOOL	IsBalleTraj(POINT pos);
+	void	FlushMoveTraj();
+	void	SetMoveTraj(POINT pos);
+	BOOL	IsMoveTraj(POINT pos);
+	int		SearchDistRight(POINT pos, POINT dir, int type);
+	void	StartSploutchGlu(POINT pos);
+	BOOL	ObjectStart(POINT pos, int type, int speed);
+	BOOL	ObjectStart(POINT pos, int type, int speed, BOOL bMulti);
+	BOOL	ObjectDelete(POINT pos, int type, BOOL bMulti = TRUE);
+	void	MoveObjectStep();
+	void	MoveObjectStepLine(int i);
+	void	MoveObjectStepIcon(int i);
+	void	DynamiteStart(int i, int dx, int dy);
+	int		AscenseurDetect(RECT rect, POINT oldpos, POINT newpos);
+	void	AscenseurVertigo(int i, BOOL *pbVertigoLeft, BOOL *pbVertigoRight);
+	BOOL	AscenseurShift(int i);
+	void	AscenseurSynchro(int i);
+	void	UpdateCaisse();
+	BOOL	TestPushCaisse(int i, POINT pos, BOOL bPop);
+	BOOL	TestPushOneCaisse(int i, POINT move, int b);
+	void	SearchLinkCaisse(int rank, BOOL bPop);
+	BOOL	AddLinkCaisse(int rank);
+	int		CaisseInFront();
+	int		CaisseGetMove(int max);
+	BOOL	MockeryDetect(POINT pos);
+	BOOL	BlupiElectro(POINT pos);
+	void	MoveObjectFollow(POINT pos);
+	int		MoveObjectDetect(POINT pos, BOOL *pbNear);
+	int		MoveAscenseurDetect(POINT pos, int height);
+	int		MoveChargeDetect(POINT pos);
+	int		MovePersoDetect(POINT pos);
+	int		MoveBalleDetect(POINT pos);
+	void		MoveObjectDelete(POINT pos);
+	int		MoveObjectFree();
+	int		SortGetType(int type);
+	void	MoveObjectSort();
+	void	MoveObjectPriority(int i);
+	int		MoveObjectSearch(POINT pos, int type);
+
+	// DecNet.cpp
+	void	NetStopCloud(int rank);
+	void	NetPlaySound(short channel, POINT pos);
+	void	NetStopSound(short channel);
+	void	NetDataFlush();
+	void	NetSendBarePacket(BYTE _foo, short _bar);
+	void	TreatNetData();
+	void	DoNetSmooth(int player);
+	void	NetAdjustToLift();
+	void	NetAscenseurSynchro(int rank, short step);
+	void	NetPlayerCollide(POINT pos, int *out);
+	void	NetMessageIndexFlush();
+	BOOL	NetMessagePush(NetMessage *message);
+	BOOL	NetMessagePop(NetMessage *message);
+	void	NotifFlush();
+	void	NotifPop();
+	void	NotifPush(char *str);
+	void	NotifStep();
 
 	// DecIO.cpp
-	BOOL	Write(int rank, BOOL bUser, int world, int time, int total);
-	BOOL	Read(int rank, BOOL bUser, int &world, int &time, int &total);
-	BOOL	FileExist(int rank, BOOL bUser, int &world, int &time, int &total);
-	void	Flush();
+	void	GetMissionPath(char *out, int gamer, int mission, BOOL bUser);
+	BOOL	Write(int gamer, int mission, BOOL bUser);
+	BOOL	Read(int gamer, int mission, BOOL bUser);
+	BOOL	SomethingMissionPath(int gamer, int mission, BOOL bUser);
+	BOOL	CurrentWrite(int gamer, int mission);
+#ifdef SB1_EVENT_API
+	BOOL	CurrentWrite(int gamer, int mission, BOOL bUser);
+#endif
+	BOOL	CurrentRead(int gamer, int mission, int *pMission, BOOL *pbPrivate);
+	BOOL	FileExist(int gamer, int mission, char* param3);
 
-	// DecMap.cpp
-	void	MapInitColors();
-	POINT	ConvCelToMap(POINT cel);
-	POINT	ConvMapToCel(POINT pos);
-	BOOL	MapMove(POINT pos);
-	void	MapPutCel(POINT pos);
-	BOOL	GenerateMap();
+	BOOL	SearchWorld(int world, POINT *cel, POINT *newBlupiPos);
+	BOOL	SearchDoor(int n, POINT *cel);
+	void	AdaptDoors(BOOL bPrivate, int mission);
+	void	OpenDoorsTresor();
+	void	OpenDoor(POINT cel);
+	void	OpenDoorsWin();
+	void	OpenGoldsWin();
+	void	DoorsLost();
 
-	// DecStat.cpp
-	void	StatisticInit();
-	void	StatisticUpdate();
-	int		StatisticGetBlupi();
-	int		StatisticGetFire();
-	void	StatisticDraw();
-	void	GenerateStatictic();
-	BOOL	StatisticDown(POINT pos, int fwKeys);
-	BOOL	StatisticMove(POINT pos, int fwKeys);
-	BOOL	StatisticUp(POINT pos, int fwKeys);
-	int		StatisticDetect(POINT pos);
+	BOOL DeleteMission(int user, int mission, BOOL bUser);
 
-	// Chemin.cpp
-	void	CheminMemPos(int exRank);
-	BOOL	CheminTestPos(POINT pos, int &rank);
-	int		CheminARebours(int rank);
-	void	CheminFillTerrain(int rank);
-	BOOL	CheminTestDirection(int rank, int pos, int dir,
-								int &next, int &ampli,
-								int &cout, int &action);
-	BOOL	CheminCherche(int rank, int &action);
-	BOOL	IsCheminFree(int rank, POINT dest, int button);
-
-	// Decor.cpp
-	void	SetShiftOffset(POINT offset);
-	POINT	ConvCelToPos(POINT cel);
-	POINT	ConvPosToCel(POINT pos, BOOL bMap=FALSE);
-	POINT	ConvPosToCel2(POINT pos);
-
-	void	Create(HWND hWnd, CSound *pSound, CPixmap *pPixmap);
-	void	Init(int channel, int icon);
-	void	InitAfterBuild();
-	void	ResetHili();
-	BOOL	LoadImages();
-	void	ClearFog();
-	void	ClearFire();
-	void	SetBuild(BOOL bBuild);
-	void	EnableFog(BOOL bEnable);
-	BOOL	GetInvincible();
-	void	SetInvincible(BOOL bInvincible);
-	BOOL	GetSuper();
-	void	SetSuper(BOOL bSuper);
-	void	FlipOutline();
-	BOOL	PutFloor(POINT cel, int channel, int icon);
-	BOOL	PutObject(POINT cel, int channel, int icon);
-	BOOL	GetFloor(POINT cel, int &channel, int &icon);
-	BOOL	GetObject(POINT cel, int &channel, int &icon);
-	BOOL	SetFire(POINT cel, BOOL bFire);
-
-	void	SetCoin(POINT coin, BOOL bCenter=FALSE);
-	POINT	GetCoin();
-	POINT	GetHome();
-	void	MemoPos(int rank, BOOL bRecord);
-
-	void	SetTime(int time);
-	int		GetTime();
-
-	void	SetMusic(int music);
-	int		GetMusic();
-
-	void	SetSkill(int skill);
-	int		GetSkill();
-
-	void	SetRegion(int region);
-	int		GetRegion();
-
-	void	SetInfoMode(BOOL bInfo);
-	BOOL	GetInfoMode();
-	void	SetInfoHeight(int height);
-	int		GetInfoHeight();
-
-	char*	GetButtonExist();
-
-	void	BuildPutBlupi();
-	void	BuildMoveFloor(int x, int y, POINT pos, int rank);
-	void	BuildMoveObject(int x, int y, POINT pos, int rank);
-	void	BuildGround(RECT clip);
-	void	Build(RECT clip, POINT posMouse);
-	void	NextPhase(int mode);
-
-	int		CountFloor(int channel, int icon);
-	int		CelOkForAction(POINT cel, int action, int rank,
-						   int   icons[4][4],
-						   POINT &celOutline1,
-						   POINT &celOutline2);
-	int		CelOkForAction(POINT cel, int action, int rank);
-	int		GetHiliRankBlupi(int nb);
-	void	CelHili(POINT pos, int action);
-	void	CelHiliButton(POINT cel, int button);
-	void	CelHiliRepeat(int list);
-	int		GetResHili(POINT posMouse);
-	void	HideTooltips(BOOL bHide);
-
-	void	UndoOpen();
-	void	UndoClose();
-	void	UndoCopy();
-	void	UndoBack();
-	BOOL	IsUndo();
-
-	
-protected:
-	BOOL	GetSeeBits(POINT cel, char *pBits, int index);
-	int		GetSeeIcon(char *pBits, int index);
+	inline BOOL IsValidCel(POINT cel);
+	inline void MoveObjectCopy(MoveObject *src, MoveObject *dest);
+	inline void StopVehicleSound();
+	inline BOOL IsDeadAction(int action);
+	inline void StopBlupi(BOOL bFocus = FALSE);
+	inline BOOL IsBlupiVehicle();
+	inline BOOL IsBlupiMotorVehicle();
+	inline BOOL IsBlupiStanding();
 
 protected:
 	HWND		m_hWnd;
 	CSound*		m_pSound;
 	CPixmap*	m_pPixmap;
-	Cellule*	m_pUndoDecor;
-	Cellule		m_decor[MAXCELX/2][MAXCELY/2];
-	short		m_rankBlupi[MAXCELX][MAXCELY];
-	Blupi		m_blupi[MAXBLUPI];
-	Move		m_move[MAXMOVE];
-	POINT		m_celCoin;			// cellule sup/gauche
-	POINT		m_celHome;			// pour touche Home
-	POINT		m_celHili;
-	POINT		m_celOutline1;
-	POINT		m_celOutline2;
-	POINT		m_shiftOffset;
-	int			m_iconHili[4][4];
-	int			m_rankHili;			// rang du blupi visé
-	BOOL		m_bHiliRect;
-	POINT		m_p1Hili;			// coins rectangle de sélection
-	POINT		m_p2Hili;
-	int			m_shiftHili;
-	int			m_nbBlupiHili;		// nb de blupi sélectionnés
-	int			m_rankBlupiHili;	// rang blupi sélectionné
-	BOOL		m_bFog;				// TRUE -> brouillard (jeu)
-	BOOL		m_bBuild;			// TRUE -> construction
-	BOOL		m_bInvincible;		// TRUE -> cheat code
-	BOOL		m_bSuper;			// TRUE -> cheat code
-	short		m_colors[100];
-	int			m_time;				// temps relatif global
-	int			m_timeConst;		// temps relatif global constant
-	int			m_timeFlipOutline;	// temps quand basculer mode outline
-	int			m_totalTime;		// temps total passé sur une partie
-	int			m_phase;			// phase pour la carte
-	POINT		m_celArrow;			// cellule avec flèche
-	BOOL		m_bOutline;
-	BOOL		m_bGroundRedraw;
-	char		m_buttonExist[MAXBUTTON];
-	int			m_statNb;			// nb de statistiques
-	int			m_statFirst;		// première statistique visible
-	int			m_bStatUp;			// flèche up statistique
-	int			m_bStatDown;		// flèche down statistique
-	int			m_statHili;			// statistique survolée
-	BOOL		m_bStatRecalc;		// TRUE -> recalcule les statistiques
-	BOOL		m_bStatRedraw;		// TRUE -> redessine les statistiques
-	int			m_nbStatHach;		// nb de hachures
-	int			m_nbStatHachBlupi;	// hachures occupées par blupi
-	int			m_nbStatHachPlanche;// hachures occupées par planches
-	int			m_nbStatHachTomate;	// hachures occupées par tomates
-	int			m_nbStatHachMetal;	// hachures occupées par métal
-	int			m_nbStatHachRobot;	// hachures occupées par robot
-	int			m_nbStatHome;		// nb de maisons
-	int			m_nbStatHomeBlupi;	// maisons occupées par blupi
-	int			m_nbStatRobots;		// nb d'ennemis
-	Term		m_term;				// conditions pour gagner
-	int			m_winCount;			// compteur avant gagné
-	int			m_winLastHachBlupi;	// dernier nombre atteint
-	int			m_winLastHachPlanche;// dernier nombre atteint
-	int			m_winLastHachTomate;// dernier nombre atteint
-	int			m_winLastHachMetal;	// dernier nombre atteint
-	int			m_winLastHachRobot;	// dernier nombre atteint
-	int			m_winLastHome;		// dernier nombre atteint
-	int			m_winLastHomeBlupi;	// dernier nombre atteint
-	int			m_winLastRobots;	// dernier nombre atteint
-	int			m_music;			// numéro musique
-	int			m_region;			// numéro région (*)
-	int			m_lastRegion;		// numéro dernière région
-	int			m_blupiHere;
-	POINT		m_lastDrapeau[MAXLASTDRAPEAU];
-	BOOL		m_bHideTooltips;	// TRUE -> menu présent
-	char		m_text[50];
-	POINT		m_textLastPos;
-	int			m_textCount;
-	int			m_skill;
-	BOOL		m_bInfo;
-	int			m_infoHeight;
-	POINT		m_memoPos[4];
-
-	BYTE		m_cheminWork[MAXCELX*MAXCELY];
-	int			m_cheminNbPos;
-	POINT		m_cheminPos[MAXBLUPI*2];
-	int			m_cheminRank[MAXBLUPI*2];
-
-	BOOL		m_bFillFloor;
-	int			m_fillSearchChannel;
-	int			m_fillSearchIcon;
-	int			m_fillPutChannel;
-	int			m_fillPutIcon;
-	char*		m_pFillMap;
+	CNetwork*	m_pNetwork;
+	Cellule		m_decor[MAXCELX][MAXCELY];
+	Cellule		m_bigDecor[MAXCELX][MAXCELY];
+	MoveObject  m_moveObject[MAXMOVEOBJECT];
+	int         m_keyPress;
+	int         m_lastKeyPress;
+	POINT       m_posDecor;
+	POINT       m_dimDecor;
+	POINT       m_posCelHili;
+	POINT		m_dimCelHili;
+	int			m_liftEnd;
+	int		    m_phase;
+	int         m_term;
+	int			m_music;
+	int			m_region;
+	int			m_lastRegion;
+	int			m_iconLift;
+	int			m_time;
+	char		m_missionTitle[100];
+	BOOL		m_bPause;
+	int			m_nbRankCaisse;
+	int			m_rankCaisse[MAXMOVEOBJECT];
+	int			m_nbLinkCaisse;
+	int			m_linkCaisse[MAXMOVEOBJECT];
+	POINT       m_blupiPos;
+	POINT       m_blupiValidPos;
+	int			m_blupiAction;
+	int         m_blupiDir;
+	int         m_blupiPhase;
+	POINT       m_blupiVitesse;
+	int			m_blupiIcon;
+	int			m_blupiSec;
+	int			m_blupiChannel;
+	POINT		m_blupiVector;
+	int			m_blupiTransport;
+	BOOL		m_blupiFocus;
+	BOOL        m_blupiAir;
+	BOOL        m_blupiHelico;
+	BOOL        m_blupiOver;
+	BOOL        m_blupiJeep;
+	BOOL        m_blupiTank;
+	BOOL        m_blupiSkate;
+	BOOL        m_blupiNage;
+	BOOL        m_blupiSurf;
+	BOOL        m_blupiVent;
+	BOOL        m_blupiSuspend;
+	BOOL        m_blupiJumpAie;
+	BOOL        m_blupiPower;
+	BOOL        m_blupiShield;
+	BOOL        m_blupiCloud;
+	BOOL        m_blupiHide;
+	BOOL        m_blupiInvert;
+	BOOL        m_blupiBalloon;
+	BOOL        m_blupiEcrase;
+	POINT		m_blupiPosHelico;
+	POINT		m_blupiPosMagic;
+	BOOL		m_blupiRestart;
+	BOOL		m_blupiFront;
+	int			m_blupiBullet;
+	int			m_blupiCle;
+	int			m_blupiPerso;
+	int			m_blupiDynamite;
+	union { int m_blupiFifoNb; int m_blupiNoBarre; };
+	POINT		m_blupiFifoPos[10];
+	POINT		m_blupiStartPos[4];
+	int			m_blupiStartDir[4];
+	BOOL		m_bMulti;
+	int			m_team;
+	int			m_netPacketsSent;
+	int			m_netPacketsSent2;
+	int			m_netPacketsReceived;
+	int			m_netPacketsReceived2;
+	POINT		m_netBlupiPos[MAXNETPLAYER];
+	int			m_netBlupiIcon[MAXNETPLAYER];
+	int			m_netBlupiSec[MAXNETPLAYER];
+	int			m_netBlupiTransport[MAXNETPLAYER];
+	int			m_netTransports[MAXNETPLAYER]; // index of lift ridden by each player, or -1
+	int			m_netTimes[MAXNETPLAYER];
+	int			m_netPrevTimes[MAXNETPLAYER];
+	int			m_netTimeSincePacket[MAXNETPLAYER];
+	POINT		m_netVitesses[MAXNETPLAYER];
+	POINT		m_netBlupiPrevPos[MAXNETPLAYER];
+	POINT		m_netPacketPos;
+	int			m_netPacketIcon;
+	NetMessage	m_netMessages[MAXNETMESSAGE];
+	int			m_netMessageIndex1;
+	int			m_netMessageIndex2;
+	int			m_netMessageIndex3;
+	char		m_notifText[MAXNOTIF][100];
+	int			m_notifTime;
+	CJauge		m_jauges[2];
+	int			m_blupiLevel;
+	int			m_blupiEnergyUnused;
+	BOOL		m_bHelicoMarch;
+	BOOL		m_bHelicoStop;
+	BOOL		m_bJeepMarch;
+	BOOL		m_bJeepStop;
+	BOOL		m_bFoundCle;
+	BOOL		m_bPrivate;
+	BOOL		m_bCheatDoors;		// opendoors
+	BOOL		m_bSuperBlupi;		// megablupi
+	BOOL        m_bDrawSecret;  	// showsecret
+	BOOL        m_bBuildOfficialMissions; 	// xmission/xnjttjpo
+	BOOL        m_bNetPacked;		// netpacked
+	BOOL        m_bNetMovePredict;  // ynosmooth
+	BOOL		m_bJoystick;
+	int			m_bDemoPlay;
+	int         m_mission;
+	short       m_doors[100];
+	int         m_nbVies;
+	int         m_nbTresor;
+	int         m_totalTresor;
+	int			m_goalPhase;
+	BOOL			m_scrollFollow;
+	POINT       m_scrollPoint;
+	POINT       m_scrollAdd;
+	int         m_voyageIcon;
+	int         m_voyageChannel;
+	int         m_voyagePhase;
+	int         m_voyageTotal;
+	POINT       m_voyageStart;
+	POINT       m_voyageEnd;
+	int 		m_decorAction;
+	int 		m_decorPhase;
+	int		m_lastDecorIndexes[200];
+	int		m_blupiTimeShield;
+	int		m_blupiTimeFire;
+	int		m_blupiTimeNoAsc;
+	int		m_blupiTimeMockery;
+	int		m_blupiTimeOuf;
+	int		m_blupiActionOuf;
+	BYTE		m_balleTraj[MAXCELX * MAXCELY / 8 + 1];
+	BYTE		m_moveTraj[MAXCELX * MAXCELY / 8 + 1];
+	int		m_detectIcon;
 };
 
-// (*)	Régions :
-//		0 -> normal
-//		1 -> palmier
-//		2 -> hiver
-//		3 -> sapin
+POINT GetCel(int x, int y);
+POINT GetCel(POINT cel, int x, int y);
+POINT GetVector(int direct);
 
-/////////////////////////////////////////////////////////////////////////////
+inline BOOL CDecor::IsValidCel(POINT cel)
+{
+	return cel.x >= 0 && cel.x < MAXCELX && cel.y >= 0 && cel.y < MAXCELY;
+}
 
-POINT GetCel (int x, int y);
-POINT GetCel (POINT cel, int x, int y);
-BOOL IsValid (POINT cel);
-POINT GetVector (int direct);
-extern int table_multi_goal[];
-extern short table_actions[];
+inline void CDecor::MoveObjectCopy(MoveObject *dest, MoveObject *src)
+{
+	memcpy(dest, src, sizeof(*dest));
+}
+
+inline void CDecor::StopVehicleSound()
+{
+	StopSound(SOUND_HELICOHIGH);
+	StopSound(SOUND_HELICOLOW);
+	StopSound(SOUND_JEEPHIGH);
+	StopSound(SOUND_JEEPLOW);
+}
+
+inline BOOL CDecor::IsDeadAction(int action)
+{
+	return action == ACTION_CLEAR1 || (action >= ACTION_CLEAR2 && action <= ACTION_CLEAR8);
+}
+
+inline void CDecor::StopBlupi(BOOL bSetFocus)
+{
+	m_blupiAction = ACTION_STOP;
+	m_blupiPhase = 0;
+	if (bSetFocus) m_blupiFocus = TRUE;
+}
+
+inline BOOL CDecor::IsBlupiVehicle()
+{
+	return IsBlupiMotorVehicle() || m_blupiSkate;
+}
+
+inline BOOL CDecor::IsBlupiMotorVehicle()
+{
+	return m_blupiHelico || m_blupiOver || m_blupiJeep || m_blupiTank;
+}
+
+inline BOOL CDecor::IsBlupiStanding()
+{
+	return !(m_blupiAction == ACTION_TURN ||
+		m_blupiAction == ACTION_JUMP ||
+		m_blupiAction == ACTION_AIR ||
+		m_blupiAction == ACTION_VERTIGO ||
+		m_blupiAction == ACTION_ADVANCE ||
+		m_blupiAction == ACTION_RECEDE) &&
+		!IsBlupiVehicle() &&
+		!(m_blupiAir || m_blupiBalloon || m_blupiEcrase ||
+		m_blupiNage || m_blupiSurf || m_blupiSuspend);		
+}
+
+#endif

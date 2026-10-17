@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -32,7 +33,7 @@ def load_manifest() -> dict[str, Any]:
 def safe_clean_build() -> None:
     build_root = (ROOT / "build").resolve()
     target = BUILD.resolve()
-    if target != build_root / "verify" or build_root not in target.parents:
+    if target.parent != build_root or not target.name.startswith("verify"):
         raise RuntimeError(f"refusing to clean unexpected path: {target}")
     if target.exists():
         shutil.rmtree(target)
@@ -106,6 +107,8 @@ def compile_units(manifest: dict[str, Any], substitutions: dict[str, Path]) -> l
             command.extend(["--include", str(include)])
         for define in tool.get("defines", []):
             command.extend(["--define", define])
+        for define in unit.get("defines", []):
+            command.extend(["--define", define])
         for flag in tool.get("flags", []):
             command.extend(["--flag", flag])
         print(f"compile {canonical} <- {source}")
@@ -126,6 +129,8 @@ def run_comparator(objects: list[Path], manifest: dict[str, Any]) -> list[dict[s
         command.extend(["--at", f"{accepted['symbol']}={parse_number(accepted['rva']):#x}"])
     for mapping in manifest.get("symbol_mappings", []):
         command.extend(["--symbol-va", f"{mapping['symbol']}={parse_number(mapping['va']):#x}"])
+    for location in manifest.get("forced_locations", []):
+        command.extend(["--at", f"{location['symbol']}={parse_number(location['rva']):#x}"])
     run = subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          text=True, encoding="utf-8", errors="replace")
     if run.returncode:
@@ -246,8 +251,13 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
     known = {(item["symbol"], parse_number(item["rva"]), item["tu"])
              for item in manifest.get("accepted_functions", [])}
     additions = []
+    excluded = {item["symbol"] for item in manifest.get("promotion_exclusions", [])}
+    skipped = []
     for tu, functions in by_unit.items():
         for func in functions:
+            if func["name"] in excluded and func["status"] in ("STRICT", "FOLDED"):
+                skipped.append(func["name"])
+                continue
             if func["status"] not in ("STRICT", "FOLDED") or len(func["matches"]) != 1:
                 continue
             rva = int(func["matches"][0]["rva"], 16)
@@ -269,6 +279,8 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
     strict_count = sum(item.get("status") != "folded" for item in additions)
     folded_count = len(additions) - strict_count
     print(f"accepted {strict_count} newly STRICT and {folded_count} newly FOLDED function(s)")
+    if skipped:
+        print("kept unpromoted excluded candidates: " + ", ".join(sorted(set(skipped))))
     return len(additions)
 
 
@@ -277,9 +289,18 @@ def main() -> int:
     parser.add_argument("--tu", action="append", default=[], metavar="src/x.cpp=path",
                         help="substitute one source file for this clean-build run")
     parser.add_argument("--accept", action="store_true", help="promote newly STRICT functions into recon.json")
+    parser.add_argument("--build-dir", metavar="NAME",
+                        help="private build/verify-NAME directory, so parallel candidate runs do not collide")
     args = parser.parse_args()
     manifest = load_manifest()
     try:
+        if args.build_dir:
+            if not re.fullmatch(r"[A-Za-z0-9_-]+", args.build_dir):
+                raise ValueError("--build-dir must be a plain name")
+            if args.accept:
+                raise ValueError("--accept uses the canonical build/verify directory")
+            global BUILD
+            BUILD = ROOT / "build" / f"verify-{args.build_dir}"
         substitutions = parse_substitutions(args.tu, manifest)
         if args.accept and substitutions:
             raise ValueError("--accept cannot promote substituted candidate sources")

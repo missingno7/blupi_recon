@@ -46,9 +46,118 @@
     },
     {
       "source": "src/text.cpp"
+    },
+    {
+      "source": "src/blupi.cpp",
+      "defines": [
+        "SB1_GAME_API"
+      ]
+    },
+    {
+      "source": "src/decnet.cpp",
+      "defines": [
+        "SB1_GAME_API"
+      ]
+    },
+    {
+      "source": "src/decor.cpp",
+      "defines": [
+        "SB1_GAME_API"
+      ]
+    },
+    {
+      "source": "src/event.cpp",
+      "defines": [
+        "SB1_GAME_API",
+        "SB1_EVENT_API"
+      ]
+    },
+    {
+      "source": "src/decblock.cpp",
+      "defines": [
+        "SB1_GAME_API"
+      ]
+    },
+    {
+      "source": "src/decdesign.cpp",
+      "defines": [
+        "SB1_GAME_API"
+      ]
+    },
+    {
+      "source": "src/decmove.cpp",
+      "defines": [
+        "SB1_GAME_API"
+      ]
+    },
+    {
+      "source": "src/decblupi.cpp",
+      "defines": [
+        "SB1_GAME_API"
+      ]
     }
   ],
   "accepted_functions": [
+    {
+      "symbol": "?GetNum@@YAHPAD@Z",
+      "rva": "0x00001000",
+      "size": 48,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "?SetDecor@@YAXXZ",
+      "rva": "0x000014f0",
+      "size": 208,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "?RestoreGame@@YAHXZ",
+      "rva": "0x000015c0",
+      "size": 48,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "?FlushGame@@YAHXZ",
+      "rva": "0x000015f0",
+      "size": 32,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "?WindowProc@@YGJPAXIIJ@Z",
+      "rva": "0x00001610",
+      "size": 1360,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "?FinishObjects@@YAXXZ",
+      "rva": "0x00001b60",
+      "size": 240,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "?TimerStep@@YGXIIKKK@Z",
+      "rva": "0x00001c50",
+      "size": 64,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "?InitFail@@YAHPBDH@Z",
+      "rva": "0x00001c90",
+      "size": 208,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "?Benchmark@@YAHXZ",
+      "rva": "0x00001d60",
+      "size": 208,
+      "tu": "src/blupi.cpp"
+    },
+    {
+      "symbol": "_WinMain@16",
+      "rva": "0x00001e30",
+      "size": 192,
+      "tu": "src/blupi.cpp"
+    },
     {
       "symbol": "??0CButton@@QAE@XZ",
       "rva": "0x000029f0",
@@ -182,6 +291,462 @@
       "tu": "src/ddutil.cpp"
     },
     {
+      "symbol": "?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00005ab0",
+      "size": 48,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?DeleteCel@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00005b40",
+      "size": 96,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetMissionTitle@CDecor@@QAEPADXZ",
+      "rva": "0x00008520",
+      "size": 16,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?SetMissionTitle@CDecor@@QAEXPAD@Z",
+      "rva": "0x00008530",
+      "size": 48,
+      "tu": "src/decdesign.cpp"
+    },
+    {
+      "symbol": "?GetPosDecor@CDecor@@QAE?AUtagPOINT@@U2@@Z",
+      "rva": "0x0000f540",
+      "size": 112,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?BlupiAddFifo@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x0000f5b0",
+      "size": 144,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?TestPath@CDecor@@QAEHUtagRECT@@UtagPOINT@@PAU3@@Z",
+      "rva": "0x0000f8c0",
+      "size": 848,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z",
+      "rva": "0x00010290",
+      "size": 80,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?NetStopCloud@CDecor@@QAEXH@Z",
+      "rva": "0x00010670",
+      "size": 64,
+      "tu": "src/decnet.cpp"
+    },
+    {
+      "symbol": "?ObjectDelete@CDecor@@QAEHUtagPOINT@@HH@Z",
+      "rva": "0x000108a0",
+      "size": 112,
+      "tu": "src/decnet.cpp"
+    },
+    {
+      "symbol": "?ModifDecor@CDecor@@QAEXUtagPOINT@@HH@Z",
+      "rva": "0x00010910",
+      "size": 112,
+      "tu": "src/decnet.cpp"
+    },
+    {
+      "symbol": "?NetPlaySound@CDecor@@QAEXFUtagPOINT@@@Z",
+      "rva": "0x00010980",
+      "size": 64,
+      "tu": "src/decnet.cpp"
+    },
+    {
+      "symbol": "?NetStopSound@CDecor@@QAEXF@Z",
+      "rva": "0x000109c0",
+      "size": 64,
+      "tu": "src/decnet.cpp"
+    },
+    {
+      "symbol": "?AscenseurSynchro@CDecor@@QAEXH@Z",
+      "rva": "0x00012dd0",
+      "size": 64,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?UpdateCaisse@CDecor@@QAEXXZ",
+      "rva": "0x00012e10",
+      "size": 64,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?TestPushCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+      "rva": "0x00012e50",
+      "size": 224,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?TestPushOneCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+      "rva": "0x00012f30",
+      "size": 240,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?AddLinkCaisse@CDecor@@QAEHH@Z",
+      "rva": "0x000131f0",
+      "size": 80,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?CaisseInFront@CDecor@@QAEHXZ",
+      "rva": "0x00013240",
+      "size": 128,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?CaisseGetMove@CDecor@@QAEHH@Z",
+      "rva": "0x000132c0",
+      "size": 96,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectDelete@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00013a30",
+      "size": 128,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectFree@CDecor@@QAEHXZ",
+      "rva": "0x00013ab0",
+      "size": 64,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?SortGetType@@YAHH@Z",
+      "rva": "0x00013af0",
+      "size": 48,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectSearch@CDecor@@QAEHUtagPOINT@@H@Z",
+      "rva": "0x00013cb0",
+      "size": 160,
+      "tu": "src/decmove.cpp"
+    },
+    {
+      "symbol": "?VoyageGetPosVie@CDecor@@QAE?AUtagPOINT@@H@Z",
+      "rva": "0x00013d50",
+      "size": 32,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?VoyageDraw@CDecor@@QAEXXZ",
+      "rva": "0x00014050",
+      "size": 112,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?GetMissionPath@CDecor@@QAEXPADHHH@Z",
+      "rva": "0x00014880",
+      "size": 96,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?DeleteMission@CDecor@@QAEHHHH@Z",
+      "rva": "0x00014d60",
+      "size": 64,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z",
+      "rva": "0x00015c10",
+      "size": 464,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?SearchDoor@CDecor@@QAEHHPAUtagPOINT@@@Z",
+      "rva": "0x00015de0",
+      "size": 80,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?OpenGoldsWin@CDecor@@QAEXXZ",
+      "rva": "0x000161a0",
+      "size": 48,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?DoorsLost@CDecor@@QAEXXZ",
+      "rva": "0x000161d0",
+      "size": 80,
+      "tu": "src/decor.cpp"
+    },
+    {
+      "symbol": "?OutputNetDebug@CEvent@@QAEXPBD@Z",
+      "rva": "0x000163e0",
+      "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?GetMousePos@CEvent@@QAE?AUtagPOINT@@XZ",
+      "rva": "0x00016440",
+      "size": 64,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetFullScreen@CEvent@@QAEXH@Z",
+      "rva": "0x00016480",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetMouseType@CEvent@@QAEXH@Z",
+      "rva": "0x00016490",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?GetButtonIndex@CEvent@@QAEHH@Z",
+      "rva": "0x00016500",
+      "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?GetState@CEvent@@QAEHH@Z",
+      "rva": "0x00016550",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetState@CEvent@@QAEXHH@Z",
+      "rva": "0x00016580",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetEnable@CEvent@@QAEXHH@Z",
+      "rva": "0x000165b0",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetHide@CEvent@@QAEXHH@Z",
+      "rva": "0x000165e0",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?GetMenu@CEvent@@QAEHH@Z",
+      "rva": "0x00016610",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetMenu@CEvent@@QAEXHH@Z",
+      "rva": "0x00016640",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetIconMenu@CEvent@@QAEXHPAHH@Z",
+      "rva": "0x00016670",
+      "size": 64,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?FlushInput@CEvent@@QAEXXZ",
+      "rva": "0x000166f0",
+      "size": 32,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?NetCreate@CEvent@@IAEHH@Z",
+      "rva": "0x000168f0",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?NetEnumSessions@CEvent@@IAEHXZ",
+      "rva": "0x00016920",
+      "size": 48,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?CreateButtons@CEvent@@IAEHXZ",
+      "rva": "0x00016950",
+      "size": 288,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?AddCheatCode@@YAXPAD0@Z",
+      "rva": "0x00016eb0",
+      "size": 112,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?DrawTextCenter@CEvent@@IAEXHHHH@Z",
+      "rva": "0x00016f20",
+      "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?MouseSprite@CEvent@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00018cf0",
+      "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?DisableMouse@CEvent@@QAEXH@Z",
+      "rva": "0x00018e30",
+      "size": 112,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?MouseOnButton@CEvent@@IAEHUtagPOINT@@@Z",
+      "rva": "0x000190d0",
+      "size": 160,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SearchPhase@CEvent@@IAEHI@Z",
+      "rva": "0x00019170",
+      "size": 64,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?IsPrivate@CEvent@@QAEHXZ",
+      "rva": "0x000191e0",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?IsMulti@CEvent@@QAEHXZ",
+      "rva": "0x000191f0",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetMission@CEvent@@QAEXH@Z",
+      "rva": "0x00019250",
+      "size": 64,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?GetPhase@CEvent@@QAEIXZ",
+      "rva": "0x0001ae20",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?CurrentWrite@CEvent@@IAEHH@Z",
+      "rva": "0x0001afc0",
+      "size": 112,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?BuildUp@CEvent@@IAEHUtagPOINT@@H@Z",
+      "rva": "0x0001b030",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?MouseRelease@CEvent@@IAEXXZ",
+      "rva": "0x0001b040",
+      "size": 32,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?MouseCapture@CEvent@@IAEXXZ",
+      "rva": "0x0001b060",
+      "size": 32,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?IsMouseRelease@CEvent@@QAEHXZ",
+      "rva": "0x0001b080",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?BuildMove@CEvent@@IAEHUtagPOINT@@H@Z",
+      "rva": "0x0001c070",
+      "size": 64,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?StopMovie@CEvent@@QAEXXZ",
+      "rva": "0x0001c210",
+      "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?IsMovie@CEvent@@QAEHXZ",
+      "rva": "0x0001c270",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?ClearGamer@CEvent@@QAEHH@Z",
+      "rva": "0x0001c600",
+      "size": 80,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetNbVies@CEvent@@QAEXH@Z",
+      "rva": "0x0001c650",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?GetSpeed@CEvent@@QAEHXZ",
+      "rva": "0x0001c660",
+      "size": 16,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?SetSpeed@CEvent@@QAEXH@Z",
+      "rva": "0x0001c670",
+      "size": 32,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?DemoRecStart@CEvent@@IAEXXZ",
+      "rva": "0x0001c690",
+      "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?DemoPlayStop@CEvent@@IAEXXZ",
+      "rva": "0x0001c9a0",
+      "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?DemoRecEvent@CEvent@@IAEXXZ",
+      "rva": "0x0001cac0",
+      "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?ChatFlush@CEvent@@IAEXXZ",
+      "rva": "0x0001cb20",
+      "size": 32,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?GetLastMousePos@CEvent@@QAE?AUtagPOINT@@XZ",
+      "rva": "0x0001d1b0",
+      "size": 32,
+      "tu": "src/event.cpp"
+    },
+    {
+      "symbol": "?TreatEvent@CEvent@@QAEHIIJ@Z",
+      "rva": "0x0001d1d0",
+      "size": 96,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "??0CJauge@@QAE@XZ",
       "rva": "0x0001edd0",
       "size": 32,
@@ -311,6 +876,12 @@
       "symbol": "?InitRandom@@YAXXZ",
       "rva": "0x0001f350",
       "size": 16,
+      "tu": "src/misc.cpp"
+    },
+    {
+      "symbol": "?AddUserPath@@YAXPAD@Z",
+      "rva": "0x0001f560",
+      "size": 304,
       "tu": "src/misc.cpp"
     },
     {
@@ -745,6 +1316,188 @@
       "symbol": "?GetCharWidthA@@YAHDH@Z",
       "va": "0x00423610",
       "evidence": "Windows GetCharWidth macro expands the candidate function name to GetCharWidthA; static oracle target in docs/UI_CLUSTER.md"
+    },
+    {
+      "symbol": "$L34875",
+      "va": "0x00402dd0",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34705",
+      "va": "0x00402daa",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34703",
+      "va": "0x00402d94",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34707",
+      "va": "0x00402dc0",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34697",
+      "va": "0x00402dc9",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34955",
+      "va": "0x0041f0b8",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34833",
+      "va": "0x0041f083",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34831",
+      "va": "0x0041f06d",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34835",
+      "va": "0x0041f099",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L34836",
+      "va": "0x0041f0af",
+      "evidence": "UI switch case target, independently confirmed at the same oracle RVA as its earlier VC5 local-label mapping"
+    },
+    {
+      "symbol": "$L33233",
+      "va": "0x00401a40",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x21c; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L33234",
+      "va": "0x00401a64",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x2f2; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L33235",
+      "va": "0x00401a50",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x2f9; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L32727",
+      "va": "0x00401830",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x430; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L32728",
+      "va": "0x0040184b",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x434; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L32729",
+      "va": "0x00401866",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x438; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L32730",
+      "va": "0x00401881",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x43c; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L32702",
+      "va": "0x00401979",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x440; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L32704",
+      "va": "0x00401983",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x444; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L32708",
+      "va": "0x0040198d",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x448; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L32676",
+      "va": "0x0040190d",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x44c; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    },
+    {
+      "symbol": "$L32715",
+      "va": "0x00401a29",
+      "evidence": "[EVIDENCE] WindowProc local branch destination at relocation offset 0x450; same offset and oracle VA were explicitly verified in the worker strict comparison (docs/BLUPI_TU.md)."
+    }
+  ],
+  "forced_locations": [
+    {
+      "symbol": "?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00005ab0",
+      "tu": "src/decdesign.cpp",
+      "evidence": "[EVIDENCE] forced comparison is code- and relocation-strict; worker candidate and oracle map place this method in decdesign.cpp"
+    },
+    {
+      "symbol": "?DeleteCel@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x00005b40",
+      "tu": "src/decdesign.cpp",
+      "evidence": "[EVIDENCE] forced comparison is code- and relocation-strict; worker candidate and oracle map place this method in decdesign.cpp"
+    },
+    {
+      "symbol": "?GetState@CEvent@@QAEHH@Z",
+      "rva": "0x00016550",
+      "tu": "src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical accessor body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?SetState@CEvent@@QAEXHH@Z",
+      "rva": "0x00016580",
+      "tu": "src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical setter body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?SetEnable@CEvent@@QAEXHH@Z",
+      "rva": "0x000165b0",
+      "tu": "src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical setter body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?SetHide@CEvent@@QAEXHH@Z",
+      "rva": "0x000165e0",
+      "tu": "src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical setter body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?GetMenu@CEvent@@QAEHH@Z",
+      "rva": "0x00016610",
+      "tu": "src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical accessor body; event candidate table and forced comparison prove target"
+    },
+    {
+      "symbol": "?SetMenu@CEvent@@QAEXHH@Z",
+      "rva": "0x00016640",
+      "tu": "src/event.cpp",
+      "evidence": "[EVIDENCE] repeated identical setter body; event candidate table and forced comparison prove target"
+    }
+  ],
+  "promotion_exclusions": [
+    {
+      "symbol": "?SetDemo@CEvent@@QAEXHH@Z",
+      "reason": "[OPEN] candidate identity is ambiguous across four identical UI accessor/setter bodies; keep out until call-site evidence resolves it"
+    },
+    {
+      "symbol": "?PlayDown@CEvent@@IAEHUtagPOINT@@H@Z",
+      "reason": "[OPEN] identical short body aliases BuildUp at 0x1b030; count the target body once under BuildUp"
+    },
+    {
+      "symbol": "?PlayMove@CEvent@@IAEHUtagPOINT@@H@Z",
+      "reason": "[OPEN] identical short body aliases BuildUp at 0x1b030; count the target body once under BuildUp"
+    },
+    {
+      "symbol": "?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z",
+      "reason": "[OPEN] identical short body aliases BuildUp at 0x1b030; count the target body once under BuildUp"
+    },
+    {
+      "symbol": "?ObjectDelete@CDecor@@QAEHUtagPOINT@@HH@Z",
+      "reason": "[EVIDENCE] RVA 0x108a0 is owned and accepted under decnet.cpp; the identical decmove.cpp candidate is a duplicate source copy, not a second target function."
     }
   ]
 }

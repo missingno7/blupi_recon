@@ -1,3 +1,5 @@
+#ifndef RESOURCE_H
+#define RESOURCE_H
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
 // Used by Blupi.rc
@@ -280,3 +282,40 @@
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
+
+
+#ifdef SB1_EVENT_API
+/* SB1 event resource IDs follow the candidate resource header. */
+#define TX_CHOOSEGAMER 148
+#define TX_COLORDEP 164
+#define TX_CONTENT 194
+#define TX_DELETEMISSION 184
+#define TX_DESIGNMISSION 147
+#define TX_DISCARDGAME 145
+#define TX_GAMEPAUSE 197
+#define TX_GAMESAVED 288
+#undef TX_HELP
+#define TX_HELP 268
+#define TX_INPUT 165
+#define TX_LOAD_CGAME 269
+#define TX_MISSION2D 191
+#define TX_MISSIONFREE 272
+#define TX_MISSNUM 189
+#define TX_MULTI_CREATE 250
+#define TX_MULTI_GNAME 251
+#define TX_MUSICVOL 163
+#define TX_NAMEOFMISSION 186
+#define TX_NONAME 187
+#define TX_NOTINDEMO 289
+#define TX_NUMDOOROPEN 169
+#define TX_NUMDOORSOPEN 170
+#define TX_OPENMISS 166
+#define TX_PLAYERFREE 168
+#define TX_READINFO 167
+#define TX_SAVE_CGAME 270
+#define TX_SETTING 160
+#define TX_SOUNDVOL 162
+#define TX_WRITENAME 172
+#endif
+
+#endif /* RESOURCE_H */

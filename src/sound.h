@@ -34,7 +34,13 @@ public:
 
 	BOOL	Play(int channel, int volume=0, int pan=0);
 	BOOL	PlayImage(int channel, POINT pos, int rank=-1);
+#ifdef SB1_GAME_API
+	BOOL	PlayImage(int channel, POINT pos, int rank, int playFlag);
+#endif
 	BOOL	PlayMusic(HWND hWnd, LPSTR lpszMIDIFilename);
+#ifdef SB1_EVENT_API
+	BOOL	PlayMusic(HWND hWnd, int music);
+#endif
 	BOOL	RestartMusic();
 	void	SuspendMusic();
 	void	StopMusic();

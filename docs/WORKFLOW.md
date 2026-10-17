@@ -102,3 +102,9 @@ initialized data must match byte-for-byte.
 VC5 `.bss` globals are checked against the oracle's writable `.data` zero-fill
 tail. The final file-alignment unit is accepted only when its bytes are all
 zero, since PE file padding can precede that zero-fill range.
+
+## Integrated engine and event TUs
+
+The manifest compiles the SB2-derived game candidates with per-TU `SB1_GAME_API`; `event.cpp` also uses `SB1_EVENT_API` for its measured event declarations, phase/resource values, and overloads. These defines keep the event/game declarations out of unrelated accepted TUs. The event header uses `Phase::backName[32]`, removes the three SB2-only `CEvent` fields before `m_oldMousePos`, and forward-declares `CNetwork` so the original header order can be retained. Evidence and per-file deltas are recorded in [src/PROVENANCE.md](../src/PROVENANCE.md).
+
+`forced_locations` supplies evidence-backed `--at` comparisons for identical bodies whose TU placement is established; all code bytes and relocations still pass the comparator. `symbol_mappings` names compiler-generated local switch destinations only where their target addresses are statically established. `promotion_exclusions` keeps ambiguous event aliases and duplicate `ObjectDelete` output from becoming extra accepted functions. The latter body is owned by `decnet.cpp` at `0x108a0`; it is counted once even though `decmove.cpp` also emits an identical candidate.

@@ -1,3 +1,10 @@
+#ifndef MISC_H
+#define MISC_H
+
+#ifdef SB1_GAME_API
+#include <windows.h>
+#endif
+
 // misc.h
 //
 
@@ -18,3 +25,5 @@ extern void AddUserPath(char *pFilename);
 extern void TraceErrorDD(HRESULT hErr, char *sFile, int nLine);
 extern void TraceErrorDS(HRESULT hErr, char *sFile, int nLine);
 
+
+#endif /* MISC_H */
