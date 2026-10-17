@@ -2056,6 +2056,47 @@
         "doc_ref": "docs/EVENT_TU.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-NEG-02",
+      "section": "negative",
+      "title": "Commuted SIB residues are not explained by the VC5 compiler build",
+      "tier": "PROVEN",
+      "scope": "negative",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "symptoms": {
+        "any": [
+          "sib_order"
+        ]
+      },
+      "symptom": "Same effective address with SIB base/index commuted; spellings and context probes did not flip it.",
+      "construct": "(none - negative result)",
+      "explanation": "Compiling the same event.cpp candidate with all seven local VC5 trees (SP3, SP2, RTM, NT5 1592, NT5 1691, SP3 DEU, SP3 JPN) produced identical bytes at both SIB sites (ChangeButtons +0x5fb 8a 54 0e 25 vs target 8a 54 31 25; TreatEventBase old/new forms) and changed none of 50 accepted event functions.",
+      "experiment": "Do not spend compiles on compiler-tree sweeps for SIB order; look for source/control-flow shape (BLUPI-REG-01) instead.",
+      "not_when": "Other residue classes (e.g. the two sound helpers where RTM differs, BLUPI-FLG-01) can be build-sensitive.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/EVENT_TU.md#compiler-findings",
+          "tier": "PROVEN",
+          "counts": "7 compiler trees x 3 function forms; 0/50 accepted functions changed"
+        }
+      ],
+      "keywords": "sib commuted compiler build sp2 sp3 rtm nt5 sweep negative",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::ChangeButtons; CEvent::TreatEventBase",
+        "rva": "0x1b220; 0x1d230",
+        "tu": "event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 21,
+        "outcome": "negative: no tree flips the SIB",
+        "doc_ref": "docs/EVENT_TU.md"
+      },
+      "legacy_ids": []
     }
   ]
 }
