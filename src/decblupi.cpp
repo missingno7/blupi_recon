@@ -66,7 +66,7 @@ void CDecor::BlupiSearchIcon()
 	{
 		if (action == ACTION_STOP) action = ACTION_STOPOVER;
 		if (action == ACTION_MARCH) action = ACTION_MARCHOVER;
-		if (action == ACTION_TURN) action = ACTION_TURNOVER;	
+		if (action == ACTION_TURN) action = ACTION_TURNOVER;
 		if (action == ACTION_ADVANCE) action = ACTION_STOPOVER;
 		if (action == ACTION_RECEDE) action = ACTION_STOPOVER;
 	}
@@ -399,8 +399,8 @@ void CDecor::BlupiStep()
 	int lastBlupiAction = m_blupiAction;
 	BOOL bLastBlupiAir = m_blupiAir;
 	BOOL bAirStart = FALSE;
-	BOOL bIsOpen = FALSE; 
-	BOOL bIsOpen2 = FALSE; 
+	BOOL bIsOpen = FALSE;
+	BOOL bIsOpen2 = FALSE;
 	int num;
 	end.x += m_blupiVector.x;
 	end.y += m_blupiVector.y;
@@ -556,7 +556,7 @@ void CDecor::BlupiStep()
 				m_blupiVitesse.y = (m_blupiPower ? -22 : -16);
 			}
 			else
-			{	
+			{
 				if (m_keyPress & KEY_UP)
 				{
 					PlaySound(SOUND_JUMP2, end);
@@ -831,7 +831,7 @@ void CDecor::BlupiStep()
 		m_blupiPhase = 0;
 	}
 
-	if (m_keyPress & KEY_DOWN && 
+	if (m_keyPress & KEY_DOWN &&
 		!(m_keyPress & (KEY_JUMP | KEY_LEFT | KEY_RIGHT)) &&
 		IsBlupiStanding() &&
 		m_blupiAction != ACTION_DOWN &&
@@ -878,7 +878,7 @@ void CDecor::BlupiStep()
 			m_scrollAdd.y = 0;
 			PlaySound(SOUND_POP, end);
 		}
-		if (m_keyPress & (KEY_DOWN | KEY_RIGHT) && 
+		if (m_keyPress & (KEY_DOWN | KEY_RIGHT) &&
 			!(m_keyPress & KEY_JUMP) &&
 			m_blupiAction != ACTION_POP &&
 			m_blupiDir == DIR_LEFT &&
@@ -901,7 +901,7 @@ void CDecor::BlupiStep()
 			m_scrollAdd.y = 0;
 			PlaySound(SOUND_POP, end);
 		}
-		if (m_keyPress & (KEY_DOWN | KEY_LEFT) && 
+		if (m_keyPress & (KEY_DOWN | KEY_LEFT) &&
 			!(m_keyPress & KEY_JUMP) &&
 			m_blupiAction != ACTION_POP &&
 			m_blupiDir == DIR_RIGHT &&
@@ -1296,7 +1296,7 @@ void CDecor::BlupiStep()
 				m_blupiVitesse.y = 0;
 			}
 		}
-		
+
 		if (m_keyPress & (KEY_UP | KEY_JUMP))
 		{
 			if (m_blupiVitesse.y > -10) m_blupiVitesse.y -= 2;
@@ -1353,7 +1353,7 @@ void CDecor::BlupiStep()
 
 		if ( m_keyPress & KEY_DOWN && !bAirStart && m_blupiTransport == -1)
 		{
-			
+
 			rect.left = m_blupiPos.x + 20;
 			rect.right = m_blupiPos.x + 22;
 			rect.top = m_blupiPos.y + 60 - 2;
@@ -1471,7 +1471,7 @@ void CDecor::BlupiStep()
 
 		if ( !bAirStart && m_blupiTransport == -1)
 		{
-			
+
 			rect.left = m_blupiPos.x + 20;
 			rect.right = m_blupiPos.x + 22;
 			rect.top = m_blupiPos.y + 60 - 2;
@@ -1867,7 +1867,7 @@ void CDecor::BlupiStep()
 		MoveObjectPollution();
 		if ( m_keyPress & KEY_DOWN && !bAirStart && m_blupiTransport == -1)
 		{
-			
+
 			tinyPoint.x = m_blupiPos.x;
 			tinyPoint.y = m_blupiPos.y;
 			ObjectStart(tinyPoint, TYPE_TANK, 0);
@@ -1925,7 +1925,7 @@ void CDecor::BlupiStep()
 		end.x += (int)m_blupiVitesse.x;
 		if ( m_keyPress & KEY_DOWN && !bAirStart && !m_blupiAir && m_blupiTransport == -1 && m_blupiVitesse.x < 8)
 		{
-			
+
 			m_blupiSkate = FALSE;
 			m_blupiAction = 43;
 			m_blupiPhase = 0;
@@ -2224,7 +2224,7 @@ void CDecor::BlupiStep()
 	{
 		if (m_blupiDynamite > 0)
 		{
-			
+
 			rect.left = end.x + 18;
 			rect.right = end.x + 20;
 			rect.top = end.y + 60 - 2;
@@ -2866,7 +2866,7 @@ void CDecor::BlupiStep()
 	}
 	if ((m_blupiHelico || m_blupiOver || m_blupiJeep || m_blupiTank || m_blupiSkate) && m_blupiFocus && (IsSurfWater(m_blupiPos) || IsDeepWater(m_blupiPos)))
 	{
-		
+
 		StopBlupi();
 		m_blupiHelico = FALSE;
 		m_blupiOver = FALSE;
@@ -2969,7 +2969,7 @@ void CDecor::BlupiStep()
 		}
 		if ( (num27 == -1 || !bNear) && IsSwitch(m_blupiPos, &tinyPoint) && !m_blupiOver && !m_blupiBalloon && !m_blupiJeep && !m_blupiTank && !m_blupiSkate && !m_blupiShield && !m_blupiHide && !m_bSuperBlupi && m_blupiFocus)
 		{
-			
+
 			ActiveSwitch(m_decor[tinyPoint.x][tinyPoint.y].icon == 385, tinyPoint);
 			m_blupiAction = ACTION_SWITCH;
 			m_blupiPhase = 0;
@@ -3149,7 +3149,7 @@ void CDecor::BlupiStep()
 			!m_blupiSuspend &&
 			m_blupiFocus)
 		{
-			
+
 			ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
 			m_scrollAdd.x = 0;
 			m_scrollAdd.y = 0;
@@ -3319,7 +3319,7 @@ void CDecor::BlupiStep()
 			!m_blupiShield &&
 			!m_bSuperBlupi)
 		{
-			
+
 			tinyPoint.x = m_blupiPos.x;
 			tinyPoint.y = (m_blupiPos.y + DIMOBJY - 10) / DIMOBJY * DIMOBJY + 4;
 			ObjectStart(tinyPoint, TYPE_TENTACULE, 0);
@@ -3371,7 +3371,7 @@ void CDecor::BlupiStep()
 			m_blupiAction != ACTION_ELECTRO &&
 			m_blupiAction != ACTION_HIDE)
 		{
-			
+
 			tinyPoint = m_moveObject[num].posCurrent;
 			ObjectDelete(tinyPoint, m_moveObject[num].type);
 			m_blupiAction = ACTION_GLU;
@@ -3566,7 +3566,7 @@ void CDecor::BlupiStep()
 			{
 				if (m_blupiPerso < 5 )
 				{
-					
+
 					ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
 					tinyPoint.x = m_moveObject[num].posCurrent.x - m_posDecor.x;
 					tinyPoint.y = m_moveObject[num].posCurrent.y - m_posDecor.y;
@@ -3593,7 +3593,7 @@ void CDecor::BlupiStep()
 			m_blupiDynamite == 0 &&
 			(m_voyageIcon != 252 || m_voyageChannel != CHELEMENT) )
 		{
-			
+
 			ObjectDelete(m_moveObject[num].posCurrent, m_moveObject[num].type);
 			tinyPoint.x = m_moveObject[num].posCurrent.x - m_posDecor.x;
 			tinyPoint.y = m_moveObject[num].posCurrent.y - m_posDecor.y;
@@ -4659,4 +4659,74 @@ BOOL CDecor::IsVentillo(POINT pos)
 		ModifDecor(pos, -1);
 	} while (pos.x >= 0 && pos.x < 6400 && pos.y >= 0 && pos.y < 6400);
 	return TRUE;
+}
+
+void CDecor::MoveObjectPlouf(POINT pos)
+{
+	for (int i = 0; i < MAXMOVEOBJECT; i++)
+	{
+		if (m_moveObject[i].type == TYPE_PLOUF) return;
+	}
+	pos.y -= 45;
+	PlaySound(SOUND_PLOUF, pos, FALSE);
+	ObjectStart(pos, TYPE_PLOUF, 0, TRUE);
+}
+
+void CDecor::MoveObjectTiplouf(POINT pos)
+{
+	for (int i = 0; i < MAXMOVEOBJECT; i++)
+	{
+		if (m_moveObject[i].type == TYPE_TIPLOUF) return;
+	}
+	if (m_blupiDir == DIR_RIGHT)
+	{
+		pos.x += 5;
+	}
+	else
+	{
+		pos.x -= 5;
+	}
+	pos.y -= 45;
+	PlaySound(SOUND_TIPLOUF, pos, FALSE);
+	ObjectStart(pos, TYPE_TIPLOUF, 0, TRUE);
+}
+
+void CDecor::MoveObjectBlup(POINT pos)
+{
+	PlaySound(SOUND_BLUP, pos, FALSE);
+	pos.y -= 20;
+	int num = 0;
+	POINT tinyPoint = pos;
+	while (tinyPoint.y > 0)
+	{
+		int icon = m_decor[(tinyPoint.x + 16) / DIMOBJX][tinyPoint.y / DIMOBJY].icon;
+		if (icon != 91 && icon != 92)
+		{
+			break;
+		}
+		num++;
+		tinyPoint.y -= DIMOBJY;
+	}
+	num--;
+	if (num <= 0)
+	{
+		return;
+	}
+	int num2 = MoveObjectFree();
+	if (num2 == -1)
+	{
+		return;
+	}
+	m_moveObject[num2].type = TYPE_BLUP;
+	m_moveObject[num2].phase = 0;
+	m_moveObject[num2].posCurrent.x = pos.x;
+	m_moveObject[num2].posCurrent.y = pos.y;
+	m_moveObject[num2].posStart = m_moveObject[num2].posCurrent;
+	m_moveObject[num2].posEnd.x = pos.x;
+	m_moveObject[num2].posEnd.y = pos.y - num * DIMOBJY;
+	m_moveObject[num2].timeStopStart = 0;
+	m_moveObject[num2].stepAdvance = num * 10;
+	m_moveObject[num2].step = STEP_ADVANCE;
+	m_moveObject[num2].time = 0;
+	MoveObjectStepIcon(num2);
 }

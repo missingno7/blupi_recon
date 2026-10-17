@@ -19,10 +19,7 @@ public:
 
 	void	SetDebug(BOOL bDebug);
 	
-	BOOL	Create(HWND hwnd, POINT dim, BOOL bFullScreen, int mouseType);
-#ifdef SB1_GAME_API
 	BOOL	Create(HWND hwnd, POINT dim, BOOL bFullScreen, BOOL bTrueColor, int mouseType);
-#endif
 #ifdef SB1_EVENT_API
 	BOOL	Create(HWND hwnd, POINT dim, BOOL bFullScreen, int mouseType, BOOL bTrueColor, BOOL bTrueColorDecor);
 #endif
@@ -90,14 +87,13 @@ protected:
 	BOOL	MouseQuickDraw(RECT rect);
 	void	MouseBackSave();
 	void	MouseBackRestore();
-	void	MouseBackDebug();
-	RECT	MouseRectSprite();
+	void	MouseRectSprite(RECT *rcRect, POINT *pos);
 	void	MouseHotSpot();
 
 protected:
 	BOOL					m_bFullScreen;
-	int						m_mouseType;
 	BOOL						m_bTrueColorBack;
+	int						m_mouseType;
 	BOOL					m_bDebug;
 	BOOL					m_bPalette;
 	HWND					m_hWnd;

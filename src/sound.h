@@ -33,10 +33,9 @@ public:
 	void	Flush(int channel);
 
 	BOOL	Play(int channel, int volume=0, int pan=0);
+	BOOL	StopSound(int channel);
 	BOOL	PlayImage(int channel, POINT pos, int rank=-1);
-#ifdef SB1_GAME_API
 	BOOL	PlayImage(int channel, POINT pos, int rank, int playFlag);
-#endif
 	BOOL	PlayMusic(HWND hWnd, LPSTR lpszMIDIFilename);
 #ifdef SB1_EVENT_API
 	BOOL	PlayMusic(HWND hWnd, int music);
@@ -52,8 +51,9 @@ protected:
 	BOOL	CreateSoundBuffer(int dwBuf, DWORD dwBufSize, DWORD dwFreq, DWORD dwBitsPerSample, DWORD dwBlkAlign, BOOL bStereo);
 	BOOL	ReadData(LPDIRECTSOUNDBUFFER lpDSB, FILE* pFile, DWORD dwSize, DWORD dwPos);
 	BOOL	CreateBufferFromWaveFile(int dwBuf, char *pFileName);
-	BOOL	StopAllSounds();
 	BOOL	PlaySoundDS(DWORD dwSound, DWORD dwFlags);
+	BOOL	PlaySoundDS(int channel, int volume, int pan, int playFlag);
+	BOOL	PlaySoundDS(int channel, int volume, int pan);
 
 protected:
 	HWND				m_hWnd;

@@ -301,6 +301,78 @@
       "tu": "src/ddutil.cpp"
     },
     {
+      "symbol": "?InitGamer@CDecor@@QAEXXZ",
+      "rva": "0x00003b60",
+      "size": 32,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?SetTime@CDecor@@QAEXH@Z",
+      "rva": "0x00003e70",
+      "size": 16,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?GetTime@CDecor@@QAEHXZ",
+      "rva": "0x00003e80",
+      "size": 16,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?BuildPrepare@CDecor@@QAEXXZ",
+      "rva": "0x00004150",
+      "size": 112,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?IsTerminated@CDecor@@QAEHXZ",
+      "rva": "0x000041c0",
+      "size": 16,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?GetBlupiChannelActual@CDecor@@QAEHXZ",
+      "rva": "0x000042e0",
+      "size": 48,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?GetBlupiChannelStandard@CDecor@@QAEHXZ",
+      "rva": "0x00004310",
+      "size": 32,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?GetIconPerso@CDecor@@QAEHXZ",
+      "rva": "0x00004330",
+      "size": 32,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?KeyChange@CDecor@@QAEXH@Z",
+      "rva": "0x00005780",
+      "size": 16,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?SetJoystickEnable@CDecor@@QAEXH@Z",
+      "rva": "0x00005790",
+      "size": 16,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?SetDemoPlay@CDecor@@QAEXH@Z",
+      "rva": "0x000057a0",
+      "size": 16,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?PlaySoundA@CDecor@@QAEXHUtagPOINT@@H@Z",
+      "rva": "0x00005800",
+      "size": 128,
+      "tu": "src/decblock.cpp"
+    },
+    {
       "symbol": "?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z",
       "rva": "0x00005ab0",
       "size": 48,
@@ -340,6 +412,24 @@
       "symbol": "?TestPath@CDecor@@QAEHUtagRECT@@UtagPOINT@@PAU3@@Z",
       "rva": "0x0000f8c0",
       "size": 848,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?MoveObjectPlouf@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x0000fdd0",
+      "size": 80,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?MoveObjectTiplouf@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x0000fe20",
+      "size": 96,
+      "tu": "src/decblupi.cpp"
+    },
+    {
+      "symbol": "?MoveObjectBlup@CDecor@@QAEXUtagPOINT@@@Z",
+      "rva": "0x0000fe80",
+      "size": 272,
       "tu": "src/decblupi.cpp"
     },
     {
@@ -1153,6 +1243,12 @@
       "tu": "src/network.cpp"
     },
     {
+      "symbol": "??0CPixmap@@QAE@XZ",
+      "rva": "0x00021040",
+      "size": 144,
+      "tu": "src/pixmap.cpp"
+    },
+    {
       "symbol": "??1CPixmap@@QAE@XZ",
       "rva": "0x000210d0",
       "size": 160,
@@ -1279,6 +1375,12 @@
       "tu": "src/pixmap.cpp"
     },
     {
+      "symbol": "?MouseUpdate@CPixmap@@IAEXXZ",
+      "rva": "0x00022370",
+      "size": 336,
+      "tu": "src/pixmap.cpp"
+    },
+    {
       "symbol": "?MouseQuickDraw@CPixmap@@IAEHUtagRECT@@@Z",
       "rva": "0x000224c0",
       "size": 192,
@@ -1288,6 +1390,30 @@
       "symbol": "?MouseInvalidate@CPixmap@@QAEXXZ",
       "rva": "0x00022580",
       "size": 16,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseBackClear@CPixmap@@QAEXXZ",
+      "rva": "0x00022590",
+      "size": 32,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseBackSave@CPixmap@@IAEXXZ",
+      "rva": "0x000226c0",
+      "size": 256,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseBackRestore@CPixmap@@IAEXXZ",
+      "rva": "0x000227c0",
+      "size": 208,
+      "tu": "src/pixmap.cpp"
+    },
+    {
+      "symbol": "?MouseHotSpot@CPixmap@@IAEXXZ",
+      "rva": "0x00022910",
+      "size": 48,
       "tu": "src/pixmap.cpp"
     },
     {
@@ -1372,6 +1498,36 @@
       "symbol": "?Flush@CSound@@QAEXH@Z",
       "rva": "0x00022ec0",
       "size": 64,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?PlaySoundDS@CSound@@IAEHHHHH@Z",
+      "rva": "0x00022f00",
+      "size": 192,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?PlaySoundDS@CSound@@IAEHHHH@Z",
+      "rva": "0x00022fc0",
+      "size": 144,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?StopSound@CSound@@QAEHH@Z",
+      "rva": "0x00023050",
+      "size": 112,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?PlayImage@CSound@@QAEHHUtagPOINT@@HH@Z",
+      "rva": "0x000230c0",
+      "size": 352,
+      "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?Play@CSound@@QAEHHHH@Z",
+      "rva": "0x00023220",
+      "size": 288,
       "tu": "src/sound.cpp"
     },
     {

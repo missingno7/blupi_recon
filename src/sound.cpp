@@ -166,50 +166,50 @@ BOOL CSound::CreateBufferFromWaveFile(int dwBuf, char *pFileName)
     return TRUE;
 }
 
-// Stops all sounds.
 
-BOOL CSound::StopAllSounds()
-{
-    // Make sure we have a valid sound buffer
-    for (int i = 0; i < MAXSOUND; i ++)
-    {
-        if ( m_lpDSB[i] )
-        {
-            DWORD dwStatus;
-            TRY_DS(m_lpDSB[i]->GetStatus(&dwStatus));
 
-            if ( (dwStatus & DSBSTATUS_PLAYING) == DSBSTATUS_PLAYING )
-            {
-                TRY_DS(m_lpDSB[i]->Stop())
-            }
-        }
-    }
 
-    return TRUE;
-}
 
-// Plays a sound using direct sound.
 
-BOOL CSound::PlaySoundDS(DWORD dwSound, DWORD dwFlags)
-{
-    // Make sure the sound is valid
-    if ( dwSound >= MAXSOUND )  return FALSE;    
 
-    // Make sure we have a valid sound buffer
-    if ( m_lpDSB[dwSound] )
-    {
-        DWORD dwStatus;
-        TRY_DS(m_lpDSB[dwSound]->GetStatus(&dwStatus));
 
-        if ( (dwStatus & DSBSTATUS_PLAYING) != DSBSTATUS_PLAYING )
-        {
-            // Play the sound
-           TRY_DS(m_lpDSB[dwSound]->Play(0, 0, dwFlags));
-        }
-    }
 
-    return TRUE;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -436,36 +436,58 @@ void CSound::Flush(int channel)
 	}
 }
 
-// Fait entendre un son.
-// Le volume est compris entre 0 (max) et -10000 (silence).
-// Le panoramique est compris entre -10000 (gauche), 0 (centre)
-// et +10000 (droite).
 
-BOOL CSound::Play(int channel, int volume, int pan)
+BOOL CSound::PlaySoundDS(int channel, int volume, int pan, int playFlag)
 {
-	if ( !m_bEnable )  return TRUE;
-	if ( !m_bState || m_audioVolume == 0 )  return TRUE;
+	if ( !m_bEnable || !m_bState || m_audioVolume == 0 )  return TRUE;
 
 	volume -= (MAXVOLUME-m_audioVolume)*((10000/4)/MAXVOLUME);
-
-//?	if ( volume == -10000 )  return TRUE;
 	if ( volume <= -10000/4 )  return TRUE;
 
 	if ( channel < 0 || channel >= MAXSOUND )  return FALSE;
-	if ( m_lpDSB[channel] == NULL )            return FALSE;
+	if ( m_lpDSB[channel] == NULL )  return FALSE;
 
 	m_lpDSB[channel]->SetVolume(volume);
 	m_lpDSB[channel]->SetPan(pan);
-	m_lpDSB[channel]->Play(0, 0, 0);
+	if ( playFlag )
+	{
+		m_lpDSB[channel]->Play(0, 0, 1);
+	}
+	else
+	{
+		m_lpDSB[channel]->Play(0, 0, 0);
+	}
 
 	return TRUE;
 }
 
-// Fait entendre un son dans une image.
-// Si rank != -1, il indique le rang du blupi dont il faudra
-// éventuellement stopper le dernier son en cours !
+BOOL CSound::PlaySoundDS(int channel, int volume, int pan)
+{
+	if ( !m_bEnable || !m_bState || m_audioVolume == 0 )  return TRUE;
 
-BOOL CSound::PlayImage(int channel, POINT pos, int rank)
+	volume -= (MAXVOLUME-m_audioVolume)*((10000/4)/MAXVOLUME);
+	if ( volume <= -10000/4 )  return TRUE;
+
+	if ( channel < 0 || channel >= MAXSOUND )  return FALSE;
+	if ( m_lpDSB[channel] == NULL )  return FALSE;
+
+	m_lpDSB[channel]->SetVolume(volume);
+	m_lpDSB[channel]->SetPan(pan);
+	return TRUE;
+}
+
+BOOL CSound::StopSound(int channel)
+{
+	if ( !m_bEnable || !m_bState || m_audioVolume == 0 )  return TRUE;
+	if ( channel < 0 || channel >= MAXSOUND )  return FALSE;
+	if ( m_lpDSB[channel] == NULL )  return FALSE;
+
+	m_lpDSB[channel]->Stop();
+	m_lpDSB[channel]->SetCurrentPosition(0);
+	return TRUE;
+}
+
+BOOL CSound::PlayImage(int channel, POINT pos, int rank, int playFlag)
 {
 	int		stopCh, volumex, volumey, volume, pan;
 
@@ -474,46 +496,127 @@ BOOL CSound::PlayImage(int channel, POINT pos, int rank)
 		stopCh = m_channelBlupi[rank];
 		if ( stopCh >= 0 && m_lpDSB[stopCh] != NULL )
 		{
-			m_lpDSB[stopCh]->Stop();  // stoppe le son précédent
+			m_lpDSB[stopCh]->Stop();
 			m_lpDSB[stopCh]->SetCurrentPosition(0);
 		}
-
 		m_channelBlupi[rank] = channel;
 	}
 
-//?	pan = (int)(((long)pos.x*20000L)/LXIMAGE)-10000L;
-//?	pan = (int)(((long)pos.x*10000L)/LXIMAGE)-5000L;
 	pan = (int)(((long)pos.x*5000L)/LXIMAGE)-2500L;
-
-	volumex = 0;  // volume maximum
-	if ( pos.x < 0 )
-	{
-		volumex = (pos.x*2500)/LXIMAGE;
-	}
-	if ( pos.x > LXIMAGE )
-	{
-		pos.x -= LXIMAGE;
-		volumex = (-pos.x*2500)/LXIMAGE;
-	}
+	volumex = 0;
+	if ( pos.x < 0 )  volumex = (pos.x*2500)/LXIMAGE;
+	if ( pos.x > LXIMAGE )  volumex = ((LXIMAGE-pos.x)*2500)/LXIMAGE;
 	if ( volumex < -10000 )  volumex = -10000;
 
-	volumey = 0;  // volume maximum
-	if ( pos.y < 0 )
-	{
-		volumey = (pos.y*2500)/LYIMAGE;
-	}
-	if ( pos.y > LYIMAGE )
-	{
-		pos.y -= LYIMAGE;
-		volumey = (-pos.y*2500)/LYIMAGE;
-	}
+	volumey = 0;
+	if ( pos.y < 0 )  volumey = (pos.y*2500)/LYIMAGE;
+	if ( pos.y > LYIMAGE )  volumey = ((LYIMAGE-pos.y)*2500)/LYIMAGE;
 	if ( volumey < -10000 )  volumey = -10000;
 
 	if ( volumex < volumey )  volume = volumex;
 	else                      volume = volumey;
-
-	return Play(channel, volume, pan);
+	return PlaySoundDS(channel, volume, pan, playFlag);
 }
+
+BOOL CSound::Play(int channel, int x, int y)
+{
+	int	volumex, volumey, volume, pan;
+
+	pan = (int)(((long)x*5000L)/LXIMAGE)-2500L;
+	volumex = 0;
+	if ( x < 0 )  volumex = (x*2500)/LXIMAGE;
+	if ( x > LXIMAGE )  volumex = ((LXIMAGE-x)*2500)/LXIMAGE;
+	if ( volumex < -10000 )  volumex = -10000;
+
+	volumey = 0;
+	if ( y < 0 )  volumey = (y*2500)/LYIMAGE;
+	if ( y > LYIMAGE )  volumey = ((LYIMAGE-y)*2500)/LYIMAGE;
+	if ( volumey < -10000 )  volumey = -10000;
+
+	if ( volumex < volumey )  volume = volumex;
+	else                      volume = volumey;
+	return PlaySoundDS(channel, volume, pan);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Uses MCI to play a MIDI file. The window procedure

@@ -1,11 +1,240 @@
-// DecBlock.cpp
-//
-
 #include <def.h>
 #include <decor.h>
 #include <misc.h>
 #include <obstacle.h>
 #include <dectables.h>
+void CDecor::InitGamer()
+{
+	m_nbVies = 3;
+	for (int i = 0; i < 100; i++) m_doors[i] = 1;
+}
+
+void CDecor::SetTime(int time)
+{
+	m_time = time;
+}
+
+int CDecor::GetTime()
+{
+	return m_time;
+}
+
+void CDecor::PlayPrepare(BOOL bTest)
+{
+	if (bTest) m_nbVies = 3;
+
+	if (m_bMulti)
+	{
+		m_nbVies = 10;
+		m_blupiPos = m_blupiStartPos[m_team];
+		m_blupiDir = m_blupiStartDir[m_team];
+	}
+	else
+	{
+		m_blupiPos = m_blupiStartPos[0];
+		m_blupiDir = m_blupiStartDir[0];
+	}
+
+	if (m_blupiDir == DIR_LEFT)
+	{
+		m_blupiIcon = 4;
+	}
+	else
+	{
+		m_blupiIcon = 0;
+	}
+
+	m_blupiAction = ACTION_STOP;
+	m_blupiPhase = 0;
+	m_blupiFocus = TRUE;
+	m_blupiAir = FALSE;
+	m_blupiHelico = FALSE;
+	m_blupiOver = FALSE;
+	m_blupiJeep = FALSE;
+	m_blupiTank = FALSE;
+	m_blupiSkate = FALSE;
+	m_blupiNage = FALSE;
+	m_blupiSurf = FALSE;
+	m_blupiSuspend = FALSE;
+	m_blupiJumpAie = FALSE;
+	m_blupiShield = FALSE;
+	m_blupiPower = FALSE;
+	m_blupiCloud = FALSE;
+	m_blupiHide = FALSE;
+	m_blupiInvert = FALSE;
+	m_blupiBalloon = FALSE;
+	m_blupiEcrase = FALSE;
+	m_blupiActionOuf = 0;
+	m_blupiTimeNoAsc = 0;
+	m_blupiTimeMockery = 0;
+	m_blupiValidPos = m_blupiPos;
+	m_blupiEnergyUnused = 100;
+	m_blupiBullet = 0;
+	m_blupiCle = 0;
+	m_blupiPerso = 0;
+	m_blupiDynamite = 0;
+	m_nbTresor = 0;
+	m_totalTresor = 0;
+	for (int i = MAXMOVEOBJECT; i != 0; i--)
+	{
+		if (m_moveObject[i].type == TYPE_TRESOR)
+		{
+			m_totalTresor++;
+		}
+		m_moveObject[i].posCurrent = m_moveObject[i].posStart;
+		m_moveObject[i].step = STEP_STOPSTART;
+		m_moveObject[i].phase = 0;
+		m_moveObject[i].time = 0;
+
+		if (m_moveObject[i].type == TYPE_TRESOR ||
+			m_moveObject[i].type == TYPE_EGG ||
+			m_moveObject[i].type == TYPE_SHIELD ||
+			m_moveObject[i].type == TYPE_POWER ||
+			m_moveObject[i].type == TYPE_INVERT ||
+			m_moveObject[i].type == TYPE_BOMBEDOWN ||
+			m_moveObject[i].type == TYPE_BOMBEUP ||
+			m_moveObject[i].type == TYPE_BOMBEFOLLOW1 ||
+			m_moveObject[i].type == TYPE_BOMBEFOLLOW2)
+		{
+			m_moveObject[i].phase = rand() % 23;
+		}
+
+		if (m_moveObject[i].type == TYPE_BALLE)
+		{
+			m_moveObject[i].type = 0;
+		}
+
+		if (m_bMulti &&
+			(m_moveObject[i].type == TYPE_CAISSE ||
+			m_moveObject[i].type == TYPE_GOAL ||
+			m_moveObject[i].type == TYPE_CLE ||
+			m_moveObject[i].type == TYPE_BLUPIHELICO ||
+			m_moveObject[i].type == TYPE_BLUPITANK))
+		{
+			m_moveObject[i].type = 0;
+		}
+	}
+	m_goalPhase = 0;
+	MoveObjectSort();
+	UpdateCaisse();
+	m_scrollPoint = m_blupiPos;
+	m_scrollAdd = POINT( 0, 0 );
+	m_blupiPosHelico.x = -1;
+	m_nbLinkCaisse = 0;
+	m_bHelicoMarch = FALSE;
+	m_bHelicoStop = FALSE;
+	m_bJeepMarch = FALSE;
+	m_bJeepStop = FALSE;
+	m_blupiFront = FALSE;
+	m_blupiNoBarre = 0;
+	m_blupiValidPos = m_blupiPos;
+	m_blupiFifoNb = 0;
+	m_blupiTimeFire = 0;
+	NetDataFlush();
+	NotifFlush();
+	m_voyageIcon = -1;
+	m_jauges[JAUGE_AIR].SetHide(TRUE);
+	m_jauges[JAUGE_POWER].SetHide(TRUE);
+	m_bFoundCle = FALSE;
+	m_term = 0;
+	m_time = 0;
+	m_bPause = FALSE;
+}
+
+void CDecor::BuildPrepare()
+{
+	for (int i = 0; i < MAXMOVEOBJECT; i++)
+	{
+		m_moveObject[i].posCurrent = m_moveObject[i].posStart;
+		m_moveObject[i].step = STEP_STOPSTART;
+		m_moveObject[i].time = 0;
+		m_moveObject[i].phase = 0;
+		if (m_moveObject[i].type == TYPE_BALLE)
+		{
+			m_moveObject[i].type = 0;
+		}
+	}
+	m_voyageIcon = -1;
+	m_posCelHili.x = -1;
+	m_liftEnd = -1;
+	m_time = 0;
+	m_bPause = FALSE;
+	NetDataFlush();
+}
+
+int CDecor::IsTerminated()
+{
+	return m_term;
+}
+
+int CDecor::GetBlupiChannelActual()
+{
+	if (m_bMulti && m_blupiChannel == 2 && m_team > 0) {
+		return m_team + CHBLUPI1 - 1;
+	}
+	else return m_blupiChannel;
+}
+
+int CDecor::GetBlupiChannelStandard()
+{
+	if (m_bMulti && m_team > 0) {
+		return m_team + CHBLUPI1 - 1;
+	}
+	else return 2;
+}
+
+int CDecor::GetIconPerso()
+{
+	if (m_bMulti) return m_team + 0x6c;
+	return 0x6c;
+}
+
+void CDecor::KeyChange(int keyPress)
+{
+	m_keyPress = keyPress;
+}
+
+void CDecor::SetJoystickEnable(BOOL bJoystick)
+{
+	m_bJoystick = bJoystick;
+}
+
+void CDecor::SetDemoPlay(BOOL param)
+{
+	m_bDemoPlay = param;
+}
+
+void CDecor::GetBlupiInfo(BOOL* bHelico, BOOL* bJeep, BOOL* bSkate, BOOL* bNage)
+{
+	*bHelico = m_blupiHelico;
+	*bJeep = m_blupiJeep | m_blupiTank;
+	*bSkate = m_blupiSkate;
+	*bNage = m_blupiNage | m_blupiSurf;
+}
+
+void CDecor::PlaySound(int sound, POINT pos, BOOL bLocal)
+{
+	if (!bLocal) NetPlaySound(sound, pos);
+
+	pos.x -= m_posDecor.x;
+	pos.y -= m_posDecor.y;
+	m_pSound->PlayImage(sound, pos, -1, bLocal);
+
+	if (sound == SOUND_HELICOHIGH) m_bHelicoMarch = TRUE;
+	if (sound == SOUND_HELICOLOW) m_bHelicoStop = TRUE;
+	if (sound == SOUND_JEEPHIGH) m_bJeepMarch = TRUE;
+	if (sound == SOUND_JEEPLOW) m_bJeepStop = TRUE;
+}
+
+void CDecor::AdaptMotorVehicleSound(POINT pos)
+{
+	POINT blupiPos = POINT(pos.x - m_posDecor.x, pos.y - m_posDecor.y);
+
+	if (m_bHelicoMarch) m_pSound->PlayImage(SOUND_HELICOHIGH, blupiPos);
+	if (m_bHelicoStop) m_pSound->PlayImage(SOUND_HELICOLOW, blupiPos);
+	if (m_bJeepMarch)  m_pSound->PlayImage(SOUND_JEEPHIGH, blupiPos);
+	if (m_bJeepStop) m_pSound->PlayImage(SOUND_JEEPLOW, blupiPos);
+}
 
 BOOL CDecor::BlitzActif(POINT cel)
 {

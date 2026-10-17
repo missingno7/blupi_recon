@@ -79,6 +79,7 @@
 #define CHOBJECT		2
 #define CHOBJECTo		3
 #define CHBLUPI			4
+#define CHPIXMAP_CURSOR	10
 #define CHHILI			5
 #define CHFOG			6
 #define CHMASK1			7
