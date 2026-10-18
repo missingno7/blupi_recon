@@ -43,6 +43,14 @@ Classification: NEW = not considered before; UNDERUSED = known but not exploited
    push 0x26320.] The 2013 Windows Phone port (openeggbert/mobile-eggbert-legacy, Decor.cs) ends at `m_lastDecorIcon`
    with no large array. The tail holds no members it uses.
 
+### Follow-up: eGames builds examined ([EVIDENCE], docs/ORACLE.md)
+
+Downloaded (approved) and compared statically. Linker 5.00, no Rich header. 405/408 accepted functions are byte-identical,
+so the compiler is the same. DoInit uses the same 0x258d4 CDecor size, so the tail is stable across builds. DrawButtons,
+Build, TreatEventBase and DoInit are instruction-identical to the oracle, so they add no constraint. ChangePhase has a
+second variant (BYE vs DOQUIT test; a CD-insert block moved). It is useful as a two-body check for ChangePhase source
+models. Our `_EGAMES` guards do not reproduce eGames' WindowProc/ReadConfig/CheckWorld1.
+
 ## B. Sources worth investigating
 
 | Source | What it gives |

@@ -57,6 +57,26 @@ No RTTI name markers (`.?AV`, `.?AU`, `.?AT`, `.?AW`) were found, and no distinc
 
 The PE resource tree has 31 `RT_STRING` blocks with 329 nonempty neutral-language strings. Block IDs are `7–19`, `26`, `32–33`, `38–39`, `63–67`, `126–128`, `130`, `188`, `194–195`, and `201`; their data spans RVA `0x826e8`–`0x85b82`. Each string's ID, RVA, and text is in `build/oracle/resource_strings.csv`. Printable string extraction found 146 strings in `.rdata` (RVA `0x2c349`–`0x2d366`) and 313 in `.data` (RVA `0x2e040`–`0x7b510`), including game asset paths and CRT/import text; see `build/oracle/strings.csv`.
 
+## [EVIDENCE] eGames "Speedy Eggbert" builds (second oracle family, 2026-10-18)
+
+Downloaded with the owner's approval, analysed statically only, stored outside the repo in `C:\tools\download\eggbert\`
+(archive.org `speedy-eggbert-egames`: zip md5 eea7da256778be7a9e62885f8eb6017f, ISO md5 972f6d09b6bf9fb045f6644df74176e7,
+both matching the published hashes). Scripts: scratch/research/egfind.py, egcmp.py.
+
+- `egames.exe` (EN, 534,528 B, SHA-256 c759447edb409846..., link timestamp 1999-06-24 15:13:35): **linker 5.00**, no Rich
+  header, separate `.idata` (IAT at 0x7f2bc), `.text` 0x2ac93, `.data` at 0x2d000. A different link setup from the
+  oracle's linker 5.10. The ISO's Deu/Esp/Fra (537,088 B) and Ita/Por (536,576 B) `EGAMES.EXE` give the same results.
+- **Same compiler and source for almost everything:** 405 of the 408 accepted functions occur byte-identically
+  (relocations masked) in every eGames executable. Changed: WindowProc, ReadConfig, CheckWorld1 (eGames edits; our
+  `_EGAMES` guards, inherited from SB2/Planet Blupi, do not reproduce them).
+- **Open functions:** DrawButtons, Build, DoInit and TreatEventBase are instruction-identical to the oracle (normalized
+  for absolute addresses), so they add no constraint. DoInit allocates `new CDecor` with the **same 0x258d4**: the
+  97,532-byte tail is stable across builds eight months apart. ChangePhase differs: it compares WM_PHASE_BYE (0x614) where
+  the oracle compares WM_PHASE_DOQUIT (0x634), and one `m_tryInsertCount = 40; m_tryPhase = m_phase;` CD-insert block
+  sits earlier. 1948/2029 oracle instructions align; the early zero/WM_PHASE_PLAY register roles are the same as in the
+  oracle. It is a second compiled body of ChangePhase with a known small source delta.
+- No debug files (pdb/map/dbg) on the disc.
+
 ## [OPEN] Limits
 
 The vtable scan only reports consecutive aligned pointers to distinct Ghidra function entries. No such arrays were found, but this does not exclude dynamically initialized or indirect tables outside that pattern. The function kinds beyond the explicitly recognized thunks and CRT names use the inferred linker-order split above.
