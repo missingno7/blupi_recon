@@ -2284,6 +2284,54 @@
       "legacy_ids": []
     },
     {
+      "id": "BLUPI-CTX-05",
+      "section": "context",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Force one expression-key comparison to classify a residue as key-order or not",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "reorder_regalloc",
+          "sib_order"
+        ]
+      },
+      "symptom": "A residue whose cause is unknown: declaration-count effect, allocator decision or source form.",
+      "construct": "Any open function; the diagnostic forces each 0x408d58 comparison near the residue and compares the forced object with the oracle.",
+      "explanation": "tools/c2trace/keyforce.py (ported from blood2_recon's keys/force method) lists every comparator 0x408d58 call while a function is compiled, with keys, symbol IDs and domains, and can override one result inside the c2 child. If a single reversal removes the residue, the residue is a key-order decision and the required symbol-ID or temp-number relation follows from the hash (BLUPI-CTX-03); if all residue-local reversals are byte-inert, look at allocation or lifetimes (BLUPI-ALLOC-*) instead. SB1 results: TreatEventBase 53 reversals keep all 8 bytes; ChangePhase 64 residue-local reversals inert; Build gains only collateral and would need impossible shifts (about 31,600 IDs); DrawButtons comparison #1310 needs F(line2) < F(text) and moving the genuine line2 declaration reproduces it but worsens the function (63 -> 755 bytes).",
+      "experiment": "keyforce.py capture NAME src/X.cpp; keyforce.py list/trace NAME FUNC; keyforce.py force NAME FUNC EVENT RESULT. Judge by aligned instructions as well as raw bytes: a lower raw count can hide a worse aligned result.",
+      "not_when": "Forced objects are diagnostics, never source. Combinations of forced comparisons were sampled only sparingly.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/SYMBOL_ORDER.md#force-diagnostic-evidence",
+          "tier": "PROVEN",
+          "counts": "283 sequential forces over 4 functions; 1 genuine source test"
+        }
+      ],
+      "keywords": "force comparator key order diagnostic classify residue declaration temp allocator",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "TreatEventBase; ChangePhase; DrawButtons; CDecor::Build",
+        "rva": "0x1d230; 0x19310; 0x16f70; 0x4350",
+        "tu": "src/event.cpp; src/decblock.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 290,
+        "outcome": "residues classified; no STRICT",
+        "doc_ref": "docs/SYMBOL_ORDER.md"
+      },
+      "legacy_ids": [
+        "BLUPI-KEYFORCE-01",
+        "BLUPI-KEYFORCE-02",
+        "BLUPI-KEYFORCE-03",
+        "BLUPI-KEYFORCE-04"
+      ]
+    },
+    {
       "id": "BLUPI-REG-03",
       "section": "registers",
       "title": "Struct temporaries vs scalar call arguments change VC5 scratch-register choice",

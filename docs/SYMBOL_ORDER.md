@@ -62,3 +62,16 @@ enumerators 4; empty or two-field struct 7; opening an empty guarded header 1; u
   ID into the good window (the MoveObjectSort include move was 137 numbers, inside 109-236). Never add probes or dummy
   declarations.
 - Portable to other VC5 SP3 projects (same c1xx/c2 build); VC6 needs re-verification of the addresses.
+
+## Force diagnostic ([EVIDENCE])
+
+`tools/c2trace/keyforce.py` (worker sol-keyforce; method from blood2_recon's keys/force) overrides one 0x408d58 comparison
+inside the c2 child and compares the forced object with the oracle (diagnostic only, never source). It classifies residues
+(KB BLUPI-CTX-05). On the open SB1 functions, 283 forces:
+- TreatEventBase: all 53 comparisons keep the 8 bytes, so the residue is not a key-order decision.
+- ChangePhase: 64 residue-local comparisons are byte-inert.
+- Build: only collateral gains, requiring ID shifts of about 31,600, so no genuine source.
+- DrawButtons: comparison #1310 needs F(line2) < F(text); moving the real `line2` declaration before `text` reproduces
+  that order, but the function gets worse (63 -> 755 bytes, frame 0xe4 -> 0xe0), so it is rejected.
+blood2_recon reached the same hash mechanism independently (its VC5-RA-06, VC5-CTX-10) and adds VC5-RA-08: inline
+expansion renumbers the callee's symbols through the 1024-bucket table (id & 1023), so inline history before a site matters.
