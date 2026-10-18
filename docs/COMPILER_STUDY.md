@@ -391,6 +391,10 @@ player/mask register roles (1172/1237 aligned, previously 1162). The `goto blupi
 duplicated form gives the same CFG but swaps register roles and regresses accepted GetBlupiInfo (context). Remaining:
 allocation regions (58), e.g. a floor-register exchange traced to a 1400-point EDI penalty from two cache ranges
 (scratch/sol-build4/round2/FINDINGS.md).
+Round 3: the background loop reuses `rect.bottom` as the height (`rect.bottom -= rect.top; tinyPoint.y += rect.bottom;`
+then resets it to DIMDECORY): that is the oracle's eax hold of 0x1e0 that the earlier placement sweeps could not
+reproduce. The background code now matches; 2,328 differing bytes, 1177/1237 aligned, first difference +0x4b1;
+remaining body excess 38 bytes (lift block 26, cloud 8, moving objects 4).
 
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 

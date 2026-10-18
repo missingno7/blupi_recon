@@ -1187,12 +1187,14 @@ void CDecor::Build(RECT rect, POINT mousePos)
 		tinyPoint.y = 0;
 		rect.top = y;
 		rect.right = DIMDECORX;
+		rect.bottom = DIMDECORY;
 		for (j = 0; j < 2; j++)
 		{
-			rect.bottom = DIMDECORY;
 			m_pPixmap->DrawPart(-1, CHDECOR, tinyPoint, rect, 1, FALSE);
-			tinyPoint.y += DIMDECORY - rect.top;
+			rect.bottom -= rect.top;
+			tinyPoint.y += rect.bottom;
 			rect.top = 0;
+			rect.bottom = DIMDECORY;
 		}
 		tinyPoint.x += DIMDECORX - rect.left;
 		rect.left = 0;
