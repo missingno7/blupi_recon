@@ -74,12 +74,12 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 | Item | State |
 |---|---|
 | Game code | 116,160 / 141,488 unique bytes STRICT (82.1 %); 4 functions open: DrawButtons, ChangePhase, TreatEventBase, Build (24.8 KB) |
-| Link | canonical objects link with no unresolved externals (LINK 5.10, DX5 libraries, no dxguid) |
-| `.text` | 32 bytes short (open functions); CRT order: `_fsopen` -0x30, entry 0x24c20 vs 0x24d40 |
-| `.rdata` | virtual size exact |
-| `.data` | 48,964 bytes short (under investigation) |
-| `.rsrc` | identical apart from its base RVA (docs/RESOURCES.md) |
-| PE header | Rich block identical; 21 header bytes differ (timestamp, `.data`-dependent sizes, entry, resource RVA) |
+| Link | no unresolved externals; Rich header identical (270 objects + CVTRES 5.00.1668) |
+| `.text` | 32 bytes short (open functions); CRT order matches up to the ICF survivor choice (`ArrayUnwindFilter`); entry 0x24cf0 vs 0x24d40 |
+| `.rdata` | size exact; 2,470 / 4,978 bytes equal at identical offsets |
+| `.data` | 329,711 / 329,728 raw bytes equal (17 = pointers into shifted code); BSS 128 bytes short |
+| `.rsrc` | byte-exact (docs/RESOURCES.md) |
+| PE header | Rich block identical; remaining fields follow from `.text`/BSS sizes, entry, timestamp |
 | Whole file | not yet identical |
 
 ## Where to continue
