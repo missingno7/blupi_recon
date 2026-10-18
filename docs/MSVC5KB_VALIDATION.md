@@ -208,3 +208,32 @@ regressions and the expected sound.cpp INCOMPLETE historical-path gate.
 Relocation-masked fnprobe/COFF screens are diagnostic, never claimed STRICT.
 Artifacts and bounded-search limits: scratch/sol-proto/FINDINGS.md, INVENTORY.md,
 ledger.jsonl, variants.json, combination-plan.json, gate.log. No game-source patch.
+
+## Cross-project PCH and flag controls (sol-xfer, 2026-10-18)
+
+[EVIDENCE; VC5-CTX-06] A serial 19-TU rebuild in recon.json order with one
+private /YX /Fp PCH and /FD /Fd recreates the PCH for every TU. No TU reuses
+an earlier TU's PCH. Versus the no-PCH control, all 460 function payloads and
+relocation signatures and all emitted $S suffixes are identical; event remains
+cheat_code$S33910. Both exact object sets were compared by verify.py's existing
+run_comparator: 408 STRICT, 4 FOLDED, 41 MISMATCH, 7 RELOC-UNVERIFIED; zero
+accepted regressions, 115,952 game bytes. The sound historical-path gate is
+INCOMPLETE (ordinary path used, no drive mapping attempted). No new match.
+
+[EVIDENCE] Identical-header micro TUs demonstrate the missing positive case:
+create in A gives $S178; use in B gives $S179; B without PCH and same-TU A
+reuse give $S178. This holds under Blupi, Blood II Object, and CShell flags.
+Thus /YX is context-specific, not universally neutral or universally a shift.
+Declaration and statement costs also agree across those three flag sets.
+The RTM c1xx/SP3 c2 header micro has N=0, not evidence for a universal hybrid
+equivalence. Saved-register/stack/key-call sample payloads agree under both
+/O2 profiles but differ under CShell's /Ot /Oi /Oy /Ob1 profile.
+
+[EVIDENCE] Provenance: blood2_recon@4e3f16bcc523bf981e9a521b4b2f3efa75b4acf1,
+docs/object_residue.md, docs/compiler_knowledge.md, and canonical
+recon/knowledge/compiler/vc5.json (VC5-CTX-06/10/11, VC5-RA-08).
+Its pinned c1xx/c2 hashes equal ours. Complete transfer table, limits,
+commands, per-TU PCH lifecycle and suffixes: scratch/sol-xfer/FINDINGS.md,
+provenance.json, part-a/analysis.json and micros/results.json.
+[OPEN] The rebuild tests current headers and the specified manifest order;
+it does not recover the original .dsp, original header prefixes or LINK build.

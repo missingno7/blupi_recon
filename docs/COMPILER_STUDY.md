@@ -486,7 +486,8 @@ code (6,976 or 7,024 bytes vs 6,919). C1 folds constant-only expressions, so som
 - 44 c2 replays under heap/environment perturbation change no function bytes or relocations.
 - c2 resets the temp rotor (0x42a90b), live-range IDs/free list (0x414aa7), value-number and constant-web buckets per
   function; 20 fixed-IL function-order tests change nothing. TreatEventBase's rotor step is not inherited.
-- C1 IDs are the only cross-function channel: reversing event.cpp's function order changes DrawButtons by 13 bytes
+- C1 IDs cross functions (c2's generated-symbol counter 0x491050 also persists but was byte-inert here; inline
+  renumbering, blood2 VC5-RA-08, can make it matter): reversing event.cpp's function order changes DrawButtons by 13 bytes
   (+0x1a3d..+0x1a4c). No tested composition (32 controls, SB2/PB orders) fixes a target.
 - No documented post-SP3 VC5 c2/c1xx hotfix found.
 - [HYPOTHESIS, under test by sol-idwin] DrawButtons (needs F(line2) < F(text)) and Build (keyforce gains at ID shifts
@@ -503,6 +504,15 @@ code (6,976 or 7,024 bytes vs 6,919). C1 folds constant-only expressions, so som
 
 /YX does not shift event.cpp's counter: /YX create, /YX use and no PCH all give `_cheat_code$S33910` and 32 bytes in
 ChangePhase (blood2_recon found TU-specific /YX shifts in its ObjectDLL; not transferred to this TU).
+
+### Shared-PCH Rebuild All and cross-project transfer ([EVIDENCE], worker sol-xfer, 2026-10-18)
+
+- Serial 19-TU rebuild in object order with one shared /YX /Fp PCH: every TU recreates the PCH (no earlier-TU reuse);
+  all 460 function payloads and every emitted $S suffix equal the no-PCH build (408 STRICT both). The PCH-context
+  explanation fails for current headers/order. Positive micro: a TU that USES another TU's PCH gains one ID (creator
+  file identity), so a different original include order could still matter [OPEN].
+- Declaration/statement ID costs reproduce identically under Blupi, Blood II Object and CShell flags (same c1xx/c2
+  hashes). Transfer table, contradictions and next tests: scratch/sol-xfer/FINDINGS.md; KB VC5-CTX-06/-11 updated.
 
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 

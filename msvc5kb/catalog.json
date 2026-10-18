@@ -1029,18 +1029,23 @@
           "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-CTX-06",
           "tier": "PROVEN",
           "counts": "recorded examples=1"
+        },
+        {
+          "ref": "blood2_recon@4e3f16bcc523bf981e9a521b4b2f3efa75b4acf1:docs/object_residue.md#2-how-vc5-code-generation-depends-on-tu-context-measured",
+          "tier": "PROVEN",
+          "counts": "Blood II /YX shifts are TU-specific; not assumed for SB1"
         }
       ],
       "keywords": "YX PCH translation unit",
-      "blupi_status": "transferred-unverified",
+      "blupi_status": "inert-here",
       "blupi_evidence": {
-        "function": "not yet validated on SB1",
+        "function": "all 19 TUs; cross-TU identical-header PCH micros",
         "rva": null,
-        "tu": null,
-        "flags": "SB1 default /O2 /GX /ML",
-        "compiles": 0,
-        "outcome": "open hypothesis",
-        "doc_ref": "docs/MSVC5KB_VALIDATION.md"
+        "tu": "all manifest TUs",
+        "flags": "/W3 /GX /O2 /ML /Gd /Gy; /YX /Fp /FD /Fd; serial manifest order",
+        "compiles": 61,
+        "outcome": "19 creates/recreates, no cross-TU use; 460/460 function payloads and all $S suffixes unchanged; zero accepted regressions, sound path INCOMPLETE. Positive micro: use of A PCH in B adds one ID under Blupi/Object/CShell flags; same-TU use does not.",
+        "doc_ref": "docs/MSVC5KB_VALIDATION.md#cross-project-pch-and-flag-controls-sol-xfer-2026-10-18"
       },
       "legacy_ids": [
         "CTX-04",
@@ -2399,6 +2404,11 @@
           "ref": "blupi_recon:docs/SYMBOL_ORDER.md#statement-costs-evidence",
           "tier": "PROVEN",
           "counts": "15 micro TUs, VC5 SP3"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-xfer/micros/results.json; FINDINGS.md",
+          "tier": "MICRO",
+          "counts": "39 fresh statement micros: identical costs under Blupi, Blood II Object and CShell flags, identical pinned SP3 c1xx/c2"
         }
       ],
       "keywords": "statement cost symbol id counter if else switch case label cast loop earlier function spelling",
