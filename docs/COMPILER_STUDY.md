@@ -434,6 +434,18 @@ target signature or any tracked partial signature (TreatEventBase flag copy stil
 DrawButtons split-title x definitions still eax/eax with 11-tuple gaps). Unlike ChangePhase, these two residues are not
 driven by allocator priority. Ledger: scratch/sol-irsearch/round2/.
 
+### Open functions: toolchain, flag, line-layout and edition negatives ([EVIDENCE], supervisor + sol-build5, sol-cp2)
+
+- Compiler trees: TreatEventBase/DrawButtons/ChangePhase/Build give 8/63/32/2328 differing bytes with SP3, SP2, NT5-1592,
+  NT5-1691, SP3-deu and SP3-jpn c1xx/c2 (all distinct binaries); RTM is worse (TreatEventBase 11). Not a compiler build issue.
+- Extra flags /FD, /Zi, /Z7, /YX, /G5, /Gf: identical residues; /Ob2 breaks all four. Project flags are not the cause.
+- Source line layout (rank-0 block on one line, 7 blank lines inserted, whole file shifted 3 lines): identical residues.
+- Editions (sol-build5): Build, TreatEventBase and DrawButtons have identical normalized instructions and registers in the
+  retail, demo and eGames images, so edition differences cannot localize them.
+- ChangePhase (sol-cp2, 27 captures): with the oracle's guard order, a conditional SetMission argument adds the one
+  missing PLAY priority point (tie -66/-66, both edition allocation gates pass) but emits different code (5,576 bytes).
+  Switch/else-if/recursion/snapshot/chained-reset forms are inert. Ledger: scratch/sol-cp2/.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
