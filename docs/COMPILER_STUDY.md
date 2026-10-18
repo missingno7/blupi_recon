@@ -416,6 +416,16 @@ decompiled and diffed for the four open functions. TreatEventBase and ChangePhas
 differences: the decompiler normalizes away the register-lifetime differences that remain. The few DrawButtons/Build
 pseudocode differences gave four candidates, all failed or inert (scratch/sol-diffdec/FINDINGS.md).
 
+### ChangePhase: PLAY-first priority from condition order ([EVIDENCE], worker sol-alloc ir1-ir4)
+
+An in-memory zero-only cut at the first late zero consumer gives 0 masked bytes (2029/2029). The source lever is allocator
+priority: when WM_PHASE_PLAY's range is selected before zero's, the index's pressure cuts zero and excludes the committed
+PLAY range. Reordering condition terms does this: `(m_phase == WM_PHASE_PLAY || phase != WM_PHASE_PLAY) && ... &&
+!m_bDemoPlay` and `phase == WM_PHASE_PLAY || phase == WM_PHASE_GAMER` (canonical since this round): 4,668 -> 32 bytes,
+2021/2029 aligned, 7 regions; zero in EDI, PLAY in EBX through WriteInfo, oldPhase late, in both release and eGames.
+Remaining: the oracle tests m_bDemoPlay first in that guard ([ebp+0x9918] at +0xc5) and orders one 0x609 compare
+differently. [OPEN] keep PLAY-first recosting with the oracle's guard order.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`

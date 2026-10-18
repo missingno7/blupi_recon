@@ -2052,14 +2052,14 @@ BOOL CEvent::ChangePhase(UINT phase)
 		phase = WM_PHASE_BUILD;
 	}
 
-	if (!m_bDemoPlay &&
-		(phase != WM_PHASE_PLAY || m_phase == WM_PHASE_PLAY) &&
+	if ((m_phase == WM_PHASE_PLAY || phase != WM_PHASE_PLAY) &&
 		phase != WM_PHASE_STOP &&
 		phase != WM_PHASE_SETUPp &&
 		phase != WM_PHASE_HELP &&
 		phase != WM_PHASE_GAMEREAD &&
 		phase != WM_PHASE_GAMEREADp &&
-		phase != WM_PHASE_GAMEWRITE)
+		phase != WM_PHASE_GAMEWRITE &&
+		!m_bDemoPlay)
 	{
 		m_pSound->StopMusic();
 	}
@@ -2216,7 +2216,7 @@ BOOL CEvent::ChangePhase(UINT phase)
 	HideMouse(FALSE);
 	WaitMouse(TRUE);
 
-	if (phase == WM_PHASE_GAMER || phase == WM_PHASE_PLAY)
+	if (phase == WM_PHASE_PLAY || phase == WM_PHASE_GAMER)
 	{
 		OutputNetDebug("CEvent::ChangePhase [WriteInfo]\r\n");
 		WriteInfo(m_gamer);
