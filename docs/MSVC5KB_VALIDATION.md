@@ -237,3 +237,36 @@ commands, per-TU PCH lifecycle and suffixes: scratch/sol-xfer/FINDINGS.md,
 provenance.json, part-a/analysis.json and micros/results.json.
 [OPEN] The rebuild tests current headers and the specified manifest order;
 it does not recover the original .dsp, original header prefixes or LINK build.
+
+## Private proposal provenance merge (2026-10-19)
+
+[EVIDENCE] Reviewed all six private KB-CANDIDATES.json files against their
+FINDINGS.md [EVIDENCE] passages, including sol-posbuild/r2/FINDINGS.md.
+Catalog refs cite each worker directory and FINDINGS section:
+
+- `scratch/sol-posbuild`: Controls A/B/C narrow SRC-03 and extend ALLOC-04;
+  round 2 sections 1-4 supply COPY-01, ALLOC-13 and aggregate/tail negatives.
+- `scratch/sol-poscpdb`: E1/D1 supply ALLOC-14 connected-range guard costs
+  and REG-03 outgoing-copy direction/real-call versus intrinsic limits.
+- `scratch/sol-posteb`: toggle controls, KB-gap review and Trace integrity
+  qualify REG-10, SCHED-01 and ALLOC-01. Reprioritization evidence is limited
+  to zero returns/unchanged priorities; its success formula stays unvalidated.
+- `scratch/sol-ccp`: sections 1-3/5-6 supply ALLOC-01 cost/component limits
+  and REG-09 integer-interner identity/one-byte-memset negatives.
+- `scratch/sol-cdb`: sections 1-4 extend SCHED-02/REG-03 and supply C2-01
+  early-forwarding bounds. Proposed C1-02 is absent from this catalog;
+  its evidence is incorporated into C2-01 instead.
+- `scratch/sol-cbuild`: Minimality, Earliest measured stages and Discriminating
+  micros supply C2-01 reconstruction/LICM bounds and ALLOC-02 interference.
+
+[EVIDENCE] Added BLUPI-ALLOC-13/14, BLUPI-COPY-01 and BLUPI-C2-01; extended
+existing rules otherwise. New-rule compile counts cover named control pairs
+or micro TUs, not worker totals. JSON loading, unique IDs, existing field
+shapes/types, known tags and retrieval of all added/changed rules pass.
+kb.py has no validate/lint command. Only the catalog and this document changed;
+this review used no compiles or game execution.
+
+[OPEN] Historical source, a missing Build header cut, unique oracle allocation
+history, the exact LICM descendant and reprioritization success remain
+unpromoted. Masked/aligned diagnostics and interventions are never STRICT;
+all source negatives retain their measured scope.

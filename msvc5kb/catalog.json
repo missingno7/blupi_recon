@@ -569,6 +569,11 @@
           "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5_corpus.json#if_else_swap",
           "tier": "CORPUS",
           "counts": "O1 131/146 changed; O2 164/188 changed"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-posbuild/r2/FINDINGS.md, 4. Shared drawing tails: source sharing versus automatic recovery",
+          "tier": "PROVEN",
+          "counts": "STRICT DrawPart/DrawIcon already have one explicit shared BltFast. Equivalent masked/unmasked duplication in DrawPart retains two sites before pooling through native code: span 192 -> 256, 134 masked differences, 65/74 aligned. Only result handling joins; not evidence that branch-specific drawing calls automatically merge or a justification for a Build rewrite."
         }
       ],
       "keywords": "branch layout condition polarity",
@@ -2442,9 +2447,9 @@
       },
       "symptom": "Identical instruction shapes; the oracle rotates scratch registers (eax, ecx, edx, eax...) where the candidate reuses eax for every temporary, including in code unrelated to the calls.",
       "construct": "A callee taking POINT (built per call by a helper/temporary) versus the same callee taking two ints (x, y).",
-      "explanation": "VC5 SP3 /O2: AdaptBorder calls AdaptMidBorder five times. With MAKE_POINT(...) struct temporaries every argument temporary is eax; with AdaptMidBorder(int x, int y) the same pushes rotate eax/ecx/edx/eax and the later m_decor index calculation follows (eax, ecx, edx). Bytes pushed are identical, and the callee body is byte-identical under either signature; only its mangled name differs, which a relocation hides. Passing an existing POINT variable is neutral; the inline helper's form (initializer, member stores, derived-class constructor) does not matter. Reproduced in a 30-line micro TU.",
+      "explanation": "VC5 SP3 /O2: AdaptBorder calls AdaptMidBorder five times. With MAKE_POINT(...) struct temporaries every argument temporary is eax; with AdaptMidBorder(int x, int y) the same pushes rotate eax/ecx/edx/eax and the later m_decor index calculation follows (eax, ecx, edx). Bytes pushed are identical, and the callee body is byte-identical under either signature; only its mangled name differs, which a relocation hides. Passing an existing POINT variable is neutral; the inline helper's form (initializer, member stores, derived-class constructor) does not matter. Reproduced in a 30-line micro TU. Outgoing-copy deletion is distinct from deleting the earlier source-field definition. In authentic STRICT CEvent::DrawTextCenter, 443889 deletes outgoing POINT copies d129/d130 and retains source x/y definitions. Moving those definitions across real LoadString changes EAX/ECX to EDI/EBX, rather than moving materialization to argument use.",
       "experiment": "When a register-only residue rotates in the oracle but not the candidate, look for calls whose struct-by-value arguments are built per call (POINT(...)/RECT(...)); try a scalar-parameter signature for the callee (check the callee body stays strict, then rename its accepted record).",
-      "not_when": "If the callee's own code reads the struct as a unit (e.g. copies it), the scalar signature changes code. TreatEventBase's residues did not respond (its POINT arguments are existing variables).",
+      "not_when": "If the callee's own code reads the struct as a unit (e.g. copies it), the scalar signature changes code. TreatEventBase's residues did not respond (its POINT arguments are existing variables). LoadString remains opaque in the measured control; DrawButtons strcpy is intrinsic under these flags. Its early x can remain EDX across the inline string copy. The rejected early-x transfer does not establish a saved-register requirement or late rematerialization. A union long-array/POINT view canonicalizes to the same scalar subranges in the measured micro.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/COMPILER_STUDY.md#struct-temporaries",
@@ -2455,9 +2460,19 @@
           "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#experiment-8-authentic-aggregate-headers",
           "tier": "PROVEN",
           "counts": "SB1 negative: DrawMap local RECT aggregates, shared block, member assignments and clip reuse retain a 0x38 frame and 159 differing non-relocation bytes; all-four-before-Build restores frame 0x28 but still differs by 146 bytes. Build existing-pos reuse changes 8 bytes; separate zero aggregates retain its body. These diagnostics are not strict matches."
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-poscpdb/FINDINGS.md, D1: authentic POINT source preserves the same early definitions",
+          "tier": "PROVEN",
+          "counts": "STRICT PB-verbatim CEvent::DrawTextCenter 0x16f20 baseline; early-call-crossing mutation has 58 masked differences, 16/25 aligned. DrawButtons early-x transfer: 63 -> 651 masked differences, 2288 -> 2272/2304 aligned; EDX before inline strcpy, second x stays EAX. Both are rejected transfers, not STRICT gains."
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-cdb/FINDINGS.md, 2. Exact observable order, and required IR; 3. Source mechanisms tested, with preregistered predictions",
+          "tier": "PROVEN",
+          "counts": "Fresh DrawButtons capture confirms y-copy/push then x-copy/push expansion and 443552/443889 deletion of outgoing copies, retaining early EAX source definitions. Direct and union-view micros have identical 112-byte payloads. Reference/buffer wrappers also retain early x; conditional-call arms retain conditional font pushes, not the oracle branchless font sequence."
         }
       ],
-      "keywords": "point struct temporary by value scalar arguments signature register rotation make_point",
+      "keywords": "point struct temporary by value scalar arguments signature register rotation make_point outgoing POINT copy deletion lowering 443889",
       "blupi_status": "validated",
       "blupi_evidence": {
         "function": "CDecor::AdaptBorder; CDecor::AdaptMidBorder",
@@ -2863,7 +2878,7 @@
       },
       "symptom": "Ours hoists `xor reg,reg` and uses it for `mov [m],reg` stores and `cmp [m],reg` tests across several blocks; the oracle stores immediate 0 and tests with `mov reg,[m]; test reg,reg`.",
       "construct": "Several `m_x = 0` / `= FALSE` member stores and `if (m_y)` member tests in one region of a function.",
-      "explanation": "VC5 SP3 c2 interns eligible memory zero operands as a class-13 virtual constant before colouring (pool scan 0x414a64, eligibility 0x4156b6, intern 0x417fb7). The cost pass 0x40ee1d scores the surviving range: each zero store +1, each materialisation -1, zero compares 0. Positive ranges keep a register (binding 0x41b90e); score 0 or less spills back to immediates. CDecor::Build's range has 9 references and score +1 (two network-loop zero initialisations, m_blupiSec = 0, two materialisations, six compares). Refinement (docs/ALLOCATOR.md, BLUPI-ALLOC-05): a positive fragment score suffices for global allocation, but a callee-saved register survives only if the physical register's aggregate constant profitability is at least 3 (0x42ac33/0x42bf00); the volatile EAX choice in Build is not subject to that threshold.",
+      "explanation": "VC5 SP3 c2 interns eligible memory zero operands as a class-13 virtual constant before colouring (pool scan 0x414a64, eligibility 0x4156b6, intern 0x417fb7). The cost pass 0x40ee1d scores the surviving range: each zero store +1, each materialisation -1, zero compares 0. Positive ranges keep a register (binding 0x41b90e); score 0 or less spills back to immediates. CDecor::Build's range has 9 references and score +1 (two network-loop zero initialisations, m_blupiSec = 0, two materialisations, six compares). Refinement (docs/ALLOCATOR.md, BLUPI-ALLOC-05): a positive fragment score suffices for global allocation, but a callee-saved register survives only if the physical register's aggregate constant profitability is at least 3 (0x42ac33/0x42bf00); the volatile EAX choice in Build is not subject to that threshold. For eligible native-kind-7 integer operands, 417fb7 hashes low32(value)&63 and compares kind plus low32, ignoring operand type. ChangePhase operand types 1001/1004/2004 share one zero descriptor; PLAY and QUITPLAY each likewise share their own descriptor. Type-only spelling cannot split otherwise eligible identical integers; eligibility and later component splitting are separate.",
       "experiment": "Count the zero stores in the range: one store fewer (or one more materialisation) flips the shape. Read the oracle at each zero site before removing anything.",
       "not_when": "The oracle keeps every zero store (Build): then the score difference must come from range splitting or another block's code, not from a missing statement.",
       "evidence": [
@@ -2871,9 +2886,19 @@
           "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-6-codex-workers-evidence",
           "tier": "PROVEN",
           "counts": "3 micro controls (1/2/3 stores: score -1/0/+1); Build traced; no STRICT"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-ccp/FINDINGS.md, 6. What prevents type-only splitting; what remains open",
+          "tier": "PROVEN",
+          "counts": "Static interner and fresh native replay agree on type-independent kind+low32 identity. No 64-bit or other-compiler claim; no new type-spelling compile."
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-ccp/FINDINGS.md, 3. Cuts, interference and rematerialization; 5. Minimal IR difference and bounded experiments",
+          "tier": "PROVEN",
+          "counts": "One-byte memset negative in both editions: anonymous reset entity is QUITPLAY1587, not tooltip zero. Tooltip zero is already rematerialized outside zero21; N4, accumulator3 and -65/-78 priorities persist. Intrinsic expansion retains a machine LEA; no gain or STRICT result."
         }
       ],
-      "keywords": "zero constant pool cse xor test cmp immediate store profitability colouring score",
+      "keywords": "zero constant pool cse xor test cmp immediate store profitability colouring score integer interner type low32 417fb7 memset",
       "blupi_status": "validated",
       "blupi_evidence": {
         "function": "CDecor::Build",
@@ -2896,7 +2921,7 @@
           "O2"
         ]
       },
-      "title": "A byte load becomes a rotor temp only when it survives a destructive update; single-use compares are scratch picks",
+      "title": "A surviving byte load across a destructive update is a validated rotor-temp trigger",
       "symptoms": {
         "any": [
           "regalloc_only"
@@ -2906,15 +2931,25 @@
       "construct": "`if (T[r][p] == 0)` after `p++` (scratch pick) versus `T[r][p++ + 1]`-style forms that keep the old value across the update.",
       "explanation": "VC5 SP3 c2 keeps an 8-bit memory value that must survive a destructive index update in the same expression as an independent copy tuple (op 1, width 1, source kind 6) that takes a rotor register. Compare-only uses, a named local, and assignment inside the condition fold to the code-generation scratch picker (BLUPI-REG-07), which does not advance the rotor. Keeping the old index in a local (`i = p++`) consumes a rotor step as a 32-bit address tuple (op 0x12, source kind 5) instead. In TreatEventBase this gives 8 -> 5 bytes, with the load before the store and a table+1 addend.",
       "experiment": "Trace with tools/c2trace assigns and read tuple width and source kind, not only the register: an edx assignment can be the wrong tuple.",
-      "not_when": "Store-first sequences (`lea ecx,[p+1]; mov [m],ecx; mov dl,[ecx+row+T]`) remained scratch loads in all 50 tested shapes.",
+      "not_when": "Store-first sequences (`lea ecx,[p+1]; mov [m],ecx; mov dl,[ecx+row+T]`) remained scratch loads in all 50 tested shapes. The destructive-update control is a sufficient measured trigger, not a universal necessary-and-sufficient C++ predicate. STRICT playMovie and ChangeButtons toggles define comparison flags and Boolean results while the old member remains kind-6 memory with a scratch load. mov/test/sete/store alone does not prove an old-input rotor temp.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-6-codex-workers-evidence",
           "tier": "PROVEN",
           "counts": "5 micro reproductions; TreatEventBase 8 -> 5 bytes, not STRICT"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-posteb/FINDINGS.md, What the STRICT toggles actually demonstrate; Registered source changes and minimal reproduction",
+          "tier": "PROVEN",
+          "counts": "PB-authentic playMovie x=!x -> if/else and reconstructed ChangeButtons char-reference controls remain STRICT with all TU payloads unchanged. Five toggle micros supply no old-input rotor positive. TreatEventBase rank-1 matches only as a region; parent MISMATCH. Rank-0 reference transfer worsens 8 -> 4653 positional bytes and still has no old-input definition."
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-posteb/FINDINGS.md, Trace integrity and limits",
+          "tier": "PROVEN",
+          "counts": "Bind traces by observed function name/EX cursor, not reader ordinal: ChangeButtons reader 65 maps to allocator 68 (EX 87343), TreatEventBase reader 92 to allocator 95 (EX 120922). Initial wrongly indexed colour trace is excluded. The +3 offset is capture-specific, not a general rule."
         }
       ],
-      "keywords": "byte temp rotor scratch pick copy tuple post increment terminator cheat",
+      "keywords": "byte temp rotor scratch pick copy tuple post increment terminator cheat Boolean toggle old input result definition trace identity",
       "blupi_status": "validated",
       "blupi_evidence": {
         "function": "CEvent::TreatEventBase",
@@ -2948,12 +2983,22 @@
       "construct": "Equal-ref constant webs, an additional real store, or call-crossing locals.",
       "explanation": "Descriptor +0c is signed pressure/carrying priority; +3c is weighted keep/spill profitability. Insertion compares +0c descending, unsigned definition rank +40 descending, then puts a new exact tie before older nodes. Later deferral can overwrite +0c; refs are not the key.",
       "experiment": "Run tools/c2trace/alloc_micros.py constants_equal constants_plus_one call_live; inspect each sort entry's predecision key and checked insertion position. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
-      "not_when": "This comparator does not predict which fragments the preceding splitter creates or which deferred node is reconsidered next.",
+      "not_when": "This comparator does not predict which fragments the preceding splitter creates or which deferred node is reconsidered next. Compare the same connected range at the same recost stage: the oracle-ordered literal ChangePhase seed has zero21 +20-85=-65 versus PLAY9 +4-82=-78; the inherited flag control has -66/-67 and independently unwanted Boolean code. Later PLAY8/-63 is not an input to the earlier selection. See BLUPI-ALLOC-14 for guard-order component limits.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/ALLOCATOR.md",
           "tier": "PROVEN",
           "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-ccp/FINDINGS.md, 1. First unexplained compiler-stage divergence; 2. Every reference, block cost and the final gap; 3. Cuts, interference and rematerialization",
+          "tier": "PROVEN",
+          "counts": "Fresh release/eGames literal ledgers distinguish the 13-point gap from the inherited flag one-point gap; later split component cannot be substituted for early PLAY9. Native oracle allocation history is not uniquely established."
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-posteb/FINDINGS.md, KB-gap review: measured coverage, not passing-check totals alone",
+          "tier": "PROVEN",
+          "counts": "Coverage limit only: ChangeButtons/TreatNetData reprioritize calls both return 0, leaving priorities 30/200 unchanged; 58 retained allocator micros have no event. Successful min(input.priority)-1 reprioritization is unvalidated in this sample, not falsified or proved unreachable."
         }
       ],
       "keywords": "global register allocation priority score cost sort tie definition rank pressure",
@@ -2997,6 +3042,11 @@
           "ref": "blupi_recon:docs/ALLOCATOR.md",
           "tier": "PROVEN",
           "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-cbuild/FINDINGS.md, Earliest measured stages and source constraints",
+          "tier": "PROVEN",
+          "counts": "Diagnostic b -> bc: normal-Y refs stay 15, benefit 32 -> 30 and priority 164 -> 152. Protected camera ranges contribute EDI penalties 9600+8400 in b; both neighbours disappear in bc, eligible penalties tie at zero and Y selects EDI rather than EBP. Costs/topology change together; c alone is native-inert, not deletion of a unique machine MOV or proof of a hard alias/call-clobber constraint."
         }
       ],
       "keywords": "saved callee register preference interference penalty singleton rotor",
@@ -3077,17 +3127,22 @@
       },
       "symptom": "Changing a real last-use location changes the saved-register requirement.",
       "construct": "Move a scalar's real final use from after Tick to before Tick, retaining the pointer across the call.",
-      "explanation": "A non-rematerializable scalar spanning a call needs a preserved colour or memory. A scalar dead before that call can disappear from the global set. Fragment splitting depends on graph availability and use flags, not on calls alone.",
+      "explanation": "A non-rematerializable scalar spanning a call needs a preserved colour or memory. A scalar dead before that call can disappear from the global set. Fragment splitting depends on graph availability and use flags, not on calls alone. A profitable pooled literal can also retain its reference count and score while changing register class: moving CPixmap constructor show=TRUE before MouseHotSpot preserves refs 4, benefit 3 and priority 24, but expands availability from EBX/EBP to EAX/ECX/EDX/EBX/EBP; selection changes EBX to EAX and removes EBX save/restore.",
       "experiment": "Run tools/c2trace/alloc_micros.py call_live call_dead; compare range counts, exact use chains and emitted objects. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
-      "not_when": "Do not infer that a constant must get the same treatment: constant last uses can be rematerialized by 438b41.",
+      "not_when": "Do not infer that a constant must get the same treatment: constant last uses can be rematerialized by 438b41. The four-store constructor micro selects a saved register but later demotes it at benefit 2; the five-store control at benefit 3 reproduces final EDI-to-EAX binding. No safe Build motion or missing reverse-header cut is established.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/ALLOCATOR.md",
           "tier": "PROVEN",
           "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-posbuild/FINDINGS.md, Control C: call-spanning pooled one, from near-verbatim PB",
+          "tier": "PROVEN",
+          "counts": "STRICT CPixmap::CPixmap 0x21040 baseline (PB near-verbatim plus SB1 back-color reset); four one uses preserved, only constructor C1 changes. Mutation: 120 masked differences, 44/53 aligned; five-store micro spans 48 -> 32. Build transfer remains unproved."
         }
       ],
-      "keywords": "call split last use rematerialize preserved live range",
+      "keywords": "call split last use rematerialize preserved live range pooled literal one register class constructor",
       "blupi_status": "validated",
       "blupi_evidence": {
         "function": "ChangePhase; CDecor::Build; micros",
@@ -3471,12 +3526,17 @@
       "construct": "DrawButtons split-title calls; direct stack store versus pointer/reference store micros; independent argument loads.",
       "explanation": "DrawButtons builds scheduling windows only in phase 0, after temp assignment. Allocated operand descriptors already supply physical registers. Ready order is descending unsigned priority, ascending original tuple ordinal. The measured P5 GP priority is height<<13 plus outdegree>>5 plus memory-read<<16. U/V pairing and edge latencies select the first eligible node. Register WAR/WAW edges can dominate source statement order.",
       "experiment": "Capture with the private stub, trace the input DAG and assigned registers, then run model.py before attributing an order difference to aliasing or source order. Tool: tools/c2trace/sched/tracer.py; micros msvc5kb/micros/sched.",
-      "not_when": "Complete simulation excludes other CPUs, phase 1, address-rewrite/nonblocking dependencies, nonzero priority boost and unvalidated x87 behavior. The model consumes the completed DAG; it does not derive lowering or allocation from C++.",
+      "not_when": "Complete simulation excludes other CPUs, phase 1, address-rewrite/nonblocking dependencies, nonzero priority boost and unvalidated x87 behavior. The model consumes the completed DAG; it does not derive lowering or allocation from C++. In the reviewed STRICT game sample, 101 windows yield 9520 individual checks, 97 fully predicted schedules and four excluded soft/address-edge windows. ChangeButtons, CurrentWrite and TreatNetData exercise numeric kinds 5/6/16 absent from ten retained micros; their exact individual edge semantics remain open. Passing individual checks is not full schedule validation.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/SCHEDULER.md",
           "tier": "PROVEN",
           "counts": "25 windows, 599 scheduling decisions, zero discrepancies"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-posteb/FINDINGS.md, KB-gap review: measured coverage, not passing-check totals alone",
+          "tier": "PROVEN",
+          "counts": "Game kinds 5 x4, 6 x4, 16 x1; four excluded windows, no failures. STRICT reconstructed QuickIcon has three op-c1 variable signed products in pairing class 0x304 at relative lines 51/52/53; absent from ten micros, but all 25 QuickIcon schedules predict. Coverage gap only; no standalone reduction or Boolean-toggle transfer."
         }
       ],
       "keywords": "scheduler Pentium P5 U V ready list priority ordinal dependence anti-dependence register binding",
@@ -3520,6 +3580,11 @@
           "ref": "blupi_recon:docs/SCHEDULER.md",
           "tier": "PROVEN",
           "counts": "25 windows, 599 scheduling decisions, zero discrepancies"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-cdb/FINDINGS.md, 1. First divergence and earliest causal decision; 2. Exact observable order, and required IR",
+          "tier": "PROVEN",
+          "counts": "Frozen event.cpp fresh trace: assignment 310 requests EAX without preference/busy temps; forbidden EAX/EBX/EBP forces ECX, then pixmap gets EDX. First native divergence +1a5c is pixmap before SETne. Oracle first pixmap uses ECX after font push, first 330 uses EAX after text push; second 330 can precede SETne once comparison frees EAX. Oracle IR is inferred; inherited late-definition diagnostic was not rerun or counted as source."
         }
       ],
       "keywords": "alias byte store pixmap line2 font register lifetime anti-dependence",
@@ -3638,14 +3703,19 @@
       },
       "symptom": "Constant RECT/POINT arguments passed by value: either an extra 16-byte frame slot with one dead `mov [esp+N], reg` of a shared zero, or the preloaded constants of the other argument sit in the right instructions but in rotated scratch registers.",
       "construct": "`RECT src, dst; src.top = 0; src.bottom = 400; src.left = 0; src.right = 522; dst.top = 0; ...; f(src, dst);` versus `f(MAKE_RECT(...), MAKE_RECT(...))`, `RECT r = {...}` or field assignments in left/top/right/bottom order.",
-      "explanation": "VC5 SP3 /O2 promotes the fields of a local struct whose only use is a by-value argument. (1) Initialising the later-pushed argument's struct first (src before dst for f(src, dst)) is what makes c2 preload its constants into registers before the earlier-pushed argument's stores; inline-helper temporaries and initialisation in push order store each constant directly. (2) When two fields hold the same constant 0 and `left` (offset 0) is assigned before `top` (offset 4), one field store survives as a dead store into a frame slot for the whole struct (+0x10 frame); assigning `top` before `left` (or `left = top = 0`, which assigns top first) avoids it. Aggregate initialisers and MAKE_RECT-style helpers behave like left-first. (3) The scratch registers of the preloaded constants follow the field statement order through the temp rotor (BLUPI-REG-06): in CDecor::DrawMap only top, bottom, left, right gives edx/eax/edi/ecx.",
+      "explanation": "VC5 SP3 /O2 promotes the fields of a local struct whose only use is a by-value argument. (1) Initialising the later-pushed argument's struct first (src before dst for f(src, dst)) is what makes c2 preload its constants into registers before the earlier-pushed argument's stores; inline-helper temporaries and initialisation in push order store each constant directly. (2) In the measured DrawMap aggregate-call context, when two fields hold the same constant 0 and `left` (offset 0) is assigned before `top` (offset 4), one field store survives as a dead store into a frame slot for the whole struct (+0x10 frame); assigning `top` before `left` (or `left = top = 0`, which assigns top first) avoids it. Aggregate initialisers and MAKE_RECT-style helpers behave like left-first. (3) The scratch registers of the preloaded constants follow the field statement order through the temp rotor (BLUPI-REG-06): in CDecor::DrawMap only top, bottom, left, right gives edx/eax/edi/ecx. The controlled top/left swap changes only C1 offsets 4/0, not literal count: the late zero keeps four references while benefit changes -1 to +1 and rematerialization becomes EBX. The frame grows 40 to 56 bytes. Exchanging src.top/src.bottom instead associates EAX/ECX with different fields through the same 30 temp-pick events; it does not shift the rotor.",
       "experiment": "Write the argument structs as named locals with field assignments, initialise the later-pushed argument first, and try the field orders, top before left first.",
-      "not_when": "Arguments with distinct field constants or non-constant fields (no shared zero) do not show the dead store; inline-helper temporaries are the candidate when the oracle stores each constant directly at its push site.",
+      "not_when": "Arguments with distinct field constants or non-constant fields (no shared zero) do not show the dead store; inline-helper temporaries are the candidate when the oracle stores each constant directly at its push site. A single-call micro does not reproduce the dead aggregate home; adding the preceding genuine Build(clip,pos) call restores the 0-to-16-byte home difference. This is not a universal repeated-zero aggregate rule. Build mask Y/X and cloud X/Y transfers worsen diagnostics and leave cloud Y outside the loop, initial-Y RMW absent and two backup copies.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/COMPILER_STUDY.md#cdecordrawmap-field-assignment-order-evidence",
           "tier": "PROVEN",
           "counts": "1 function STRICT (CDecor::DrawMap 0x14550); 72 order variants"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-posbuild/FINDINGS.md, Control A; Control B; Concrete Build transfers and rejection reasons",
+          "tier": "PROVEN",
+          "counts": "STRICT DrawMap baseline; two-call home control; late zero refs 4 unchanged, benefit -1 -> +1. Build mask/cloud transfers: 2328 -> 2329/2333 masked positional differences, not STRICT."
         }
       ],
       "keywords": "struct field assignment order RECT by value argument dead store frame slot zero cse rotor preload",
@@ -4019,6 +4089,172 @@
         "compiles": 42,
         "outcome": "Negative input-population families; no canonical source or project change proposed.",
         "doc_ref": "scratch/sol-linkjoint/FINDINGS.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-ALLOC-13",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "Measured CButton::Draw and button/mode micros",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Call pressure can force singleton cuts of pooled literals at definitions and loop edges",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "immediate_differs"
+        ]
+      },
+      "symptom": "One pooled literal changes from an early saved-register fragment to later immediate arguments.",
+      "construct": "Four nonconstant ranges span two drawing calls; a real counter initializer and later literal arguments share a pooled web.",
+      "explanation": "In STRICT CButton::Draw, this/X/index/Y take ESI/EDI/EBX/EBP. At 7/7 call pressure, 41b2fa adds cuts; 437e67/438544 splitting adds forced singleton-zero cuts through 43970b/4399cc, including counter initialization and loop edges. The early zero fragment has 19 refs/benefit +1 and binds EBX; later two-use fragments have benefit -4 and rematerialize. A one-based micro with a genuine later mode=1 argument also creates native singleton-one cuts at its definition and argument.",
+      "experiment": "Resolve returned cut tuple +0x14 to actual member kind/value and source boundary; compare with native payloads before inferring cuts from EBX reuse.",
+      "not_when": "Initializer zero operand benefit is 0, not an assumed copy bonus. One-based full-button syntax alone does not create a singleton one; preincrement/for-update controls normalize and remain STRICT. Build one-based unused counter normalizes to constant 200 before pooling, preserves all 26 payloads/relocations and supplies no missing reverse-header cut.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-posbuild/r2/FINDINGS.md, 2. CButton::Draw: the zero split and its actual singleton cuts; 3. Build transfers: fresh bytes, full gates and direct singleton identity",
+          "tier": "PROVEN",
+          "counts": "Four full-button baseline/control captures; early zero 19/+1, late pairs -4; actual zero/one micro cuts. Two pressure ablations still reach 7/7. Build remains 2328 masked differences, 1177/1237 aligned."
+        }
+      ],
+      "keywords": "pooled literal singleton forced cut call pressure split counter zero one 43970b 4399cc Build",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CButton::Draw 0x2b40; CDecor::Build 0x4350; button micros",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 4,
+        "outcome": "Four full-button baseline/control captures support this scope; Build transfer is native-inert, not a STRICT gain.",
+        "doc_ref": "scratch/sol-posbuild/r2/FINDINGS.md, 2. CButton::Draw: the zero split and its actual singleton cuts; 3. Build transfers: fresh bytes, full gates and direct singleton identity"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-COPY-01",
+      "section": "source-forms",
+      "tier": "PROVEN",
+      "scope": "DrawTextCenter scalar field copies and measured micros",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Stable scalar copy deletion is blocked by an intervening source definition",
+      "symptoms": {
+        "any": [
+          "native_more_loads",
+          "regalloc_only"
+        ]
+      },
+      "symptom": "A plain working-field copy disappears, but a source update before its consumer requires separate old state.",
+      "construct": "start.y=pos.y before DrawText; contrast a real next-line pos.y update before consuming start.",
+      "explanation": "In STRICT PB-verbatim free DrawTextCenter, 41c72e deletes the stable scalar working copy through 41c9d1; 443552/443889 later delete outgoing argument copies. Moving the real line advance before DrawText keeps the captured old Y separately. This is scalar copy propagation, not fusion of an arithmetic producer into an RMW destination.",
+      "experiment": "Track source and destination identities across 41c72e/41c9d1 and later outgoing-copy deletion; distinguish actual RMW tuples from equal physical registers.",
+      "not_when": "Whole-POINT spelling changes definition/alias chains and misses early propagation. A micro can still delete an equal-register copy at 42d9e8 after binding; early nondeletion does not imply final retention. Build local/overlay POINT transfers do not achieve initial-Y RMW, in-loop cloud Y or removal of two backup copies.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-posbuild/r2/FINDINGS.md, 1. DrawTextCenter: complete scalar-copy propagation is not initial-Y RMW fusion; 3. Build transfers: fresh bytes, full gates and direct singleton identity",
+          "tier": "PROVEN",
+          "counts": "Five full-text baseline/control captures: early-copy and explicit-update controls remain STRICT at 92/92; intervening-update 171 masked differences/49 aligned; aggregate 202/61. Build local/overlay transfers worsen to 2329/2366 masked differences."
+        }
+      ],
+      "keywords": "stable scalar field copy propagation intervening definition RMW 41c72e 41c9d1 DrawTextCenter",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "DrawTextCenter 0x237a0; CDecor::Build 0x4350",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 5,
+        "outcome": "Stable scalar propagation is measured; no Build reconstruction or new STRICT gain.",
+        "doc_ref": "scratch/sol-posbuild/r2/FINDINGS.md, 1. DrawTextCenter: complete scalar-copy propagation is not initial-Y RMW fusion; 3. Build transfers: fresh bytes, full gates and direct singleton identity"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-C2-01",
+      "section": "source-forms",
+      "tier": "PROVEN",
+      "scope": "Measured DrawButtons wrapper micros and CDecor::Build",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Early C2 value reconstruction and per-loop LICM can erase source lifetime distinctions",
+      "symptoms": {
+        "any": [
+          "load_reorder",
+          "store_reorder",
+          "reorder_regalloc"
+        ]
+      },
+      "symptom": "Source field writes or inline-argument sequencing survive C1 but change before lowering and constant pooling.",
+      "construct": "POINT-reference inline draw wrapper; tinyPoint.y=worldY followed by -=cameraY; invariant cloud offset fields inside a drawing loop.",
+      "explanation": "Entry/return probes place wrapper scalar-parameter forwarding inside early pass 42127d, not initial inlining: the initially earlier font expression is reconstructed at the inner call after x=330. Parameter-copy deletion returns to 40ba93 and expression deletion to 403fd1; surrounding 409c5c entries lie outside the pass. Build split field-load/subtraction spelling likewise reconstructs an expression temporary plus final field copy inside 42127d. Its cloud X/Y arithmetic and field copies start with the call in the loop; per-loop worker 43e4fc moves them before machine lowering and 414a64 pooling, while the argument is still whole 13e.",
+      "experiment": "Compare named C1 identities, 42127d entry/return and per-loop 43e4fc snapshots before inferring effects of aggregate expansion, global colouring or scheduling.",
+      "not_when": "The exact tuple-moving descendant within 43e4fc remains open; do not name 4427be or the preceding 418ed2 as the mover. Wrapper/union controls are mechanism micros, not authenticated SB1 source. Cloud restore/feedback retains an inverse operation; world reload retains load/subtraction. None yields a code-neutral source solution or proves all C++ forms impossible.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-cdb/FINDINGS.md, 3. Source mechanisms tested, with preregistered predictions; 4. Earliest blocker found in the wrapper family",
+          "tier": "PROVEN",
+          "counts": "Four micro TUs: reference wrapper ends as the same 112-byte direct payload; local-buffer wrapper retains forwarding and early x, 176 bytes. Direct 42127d entry/return probe excludes initial inlining as the first failure."
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-cbuild/FINDINGS.md, Minimality and dependency; Earliest measured stages and source constraints; Discriminating micros",
+          "tier": "PROVEN",
+          "counts": "Seven compiled micros plus passive inherited split/RMW capture: reconstruction restores result-copy topology; cloud separation first bounded to 43e4fc between fine events 58/59. Diagnostic ac equals a in all payloads/relocations; bc has zero requests at the missing header among 521. Subset minimality is only for this intervention family, not recovered oracle IR or matching source. Reverse-index micro changes induction anchor/displacements but not literal-one costs or the missing cut."
+        }
+      ],
+      "keywords": "early C2 value reconstruction forwarding LICM loop invariant 42127d 43e4fc POINT DrawButtons Build",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::DrawButtons 0x16f70; CDecor::Build 0x4350; wrapper/cloud/index micros",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 11,
+        "outcome": "Eleven micro TU captures across the two studies; observational replay supplies stage bounds, not a source match. No qualifying full-target variant.",
+        "doc_ref": "scratch/sol-cdb/FINDINGS.md, 3. Source mechanisms tested, with preregistered predictions; 4. Earliest blocker found in the wrapper family"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-ALLOC-14",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "Measured EventButtons guard pair and ChangePhase transfer",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Guard order changes constant costs only within the connected range it reaches",
+      "symptoms": {
+        "any": [
+          "immediate_differs",
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Reordering pure phase comparisons swaps weighted constant priorities without selecting either constant.",
+      "construct": "Two side-effect-free PLAY/PLAYTEST comparisons in an initial AND guard and a final OR guard.",
+      "explanation": "Guard enumeration changes which pooled literal is live but unused across short-circuit blocks. In STRICT EventButtons, reversing both pairs exchanges PLAY/PLAYTEST priorities -155/-156 to -156/-155 at 40ee1d, with benefit -1 and two references each. The literal comparisons remain immediate. This is connected-range cost accounting, not a queue tie-break.",
+      "experiment": "Inspect native per-block costs in the same connected component and recost stage before comparing priorities or predicting pooling; see BLUPI-ALLOC-01.",
+      "not_when": "Reversing only ChangePhase final guard does not reach its early PLAY9/zero21 component: priorities stay -69/-71 on that canonical seed. Do not conflate this seed with oracle-ordered -78/-65 or claim guard order alone provides a profitable near-tie.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-poscpdb/FINDINGS.md, E1: guard order changes costs, but does not imply pooling",
+          "tier": "PROVEN",
+          "counts": "Two EventButtons baseline/control captures: four literal-byte differences, 161/165 aligned, 606 checks each. Micro priorities swap -5/-7 to -7/-5. ChangePhase transfer worsens 32 -> 34 masked differences, 2021 -> 2019/2029 aligned; rejected."
+        }
+      ],
+      "keywords": "guard order short circuit connected component range constant cost PLAY PLAYTEST ChangePhase",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::EventButtons 0x18ea0; CEvent::ChangePhase 0x19310",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 2,
+        "outcome": "Two full EventButtons baseline/control captures validate the cost swap; failed ChangePhase transfer supplies the component limit, not a STRICT gain.",
+        "doc_ref": "scratch/sol-poscpdb/FINDINGS.md, E1: guard order changes costs, but does not imply pooling"
       },
       "legacy_ids": []
     }
