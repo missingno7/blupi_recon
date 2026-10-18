@@ -116,3 +116,10 @@ The driver versions come from file metadata; front-end versions are listed for t
 - These are static fingerprints and controlled links, not a full source rebuild or strict whole-image match.
 
 Scripts and generated probes are under `scratch/toolchain/` and `build/toolchain/` respectively.
+
+## DirectX SDK ([EVIDENCE], 2026-10-18)
+
+The original was compiled against the **DirectX 5.0 SDK** headers: the oracle's `.rdata` holds the exact ten GUIDs of
+DX5 dplay.h (no IDirectPlay4), defined in network.cpp via INITGUID, and dxguid.lib was not linked. The SDK is installed
+at `C:	ools\dx5sdk\{INCLUDE,LIB}` (archive.org `ms-dx5-sdk`, ISO MD5 40a5aceb9683e56e6e6451d39daa3686). The manifest
+still uses dx6sdk because switching costs nine context regressions (docs/LINK_CONTEXT.md).
