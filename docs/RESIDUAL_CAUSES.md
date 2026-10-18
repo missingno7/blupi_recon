@@ -101,3 +101,6 @@ produced singleton-1 cuts natively, but homed Y to the stack) or an empty compat
 real cursor/lifetime relations. Block count is a whole-function property (205), not a lever.
 Next: the lift cursor LR128 and reverse cursor LR127 share source variable 449; test whether separate traversal
 variables change the late-one web's EBX exclusion or its group, keeping both native cursor LEAs and all loads.
+- [EVIDENCE, sol-cbuild r5] Eliminated: shared versus separate traversal variables for the lift and reverse-moving
+  loops. 0x41615d partitions definitions into the same two cursor webs either way (identical 592-byte payloads,
+  G stays 11/4). ChangePhase's shaping cursor is compiler-generated, so the same normalization applies.
