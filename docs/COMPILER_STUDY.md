@@ -370,6 +370,17 @@ tool tools/c2trace/sched/tracer.py). DrawButtons: the oracle's late m_pPixmap lo
 register anti-dependences that the scheduler cannot break; an alias edge alone is insufficient. The residue therefore
 goes back to temp-register assignment in the split-title block, not to scheduling.
 
+### DrawButtons: the residue is two early pos.x definitions ([EVIDENCE], worker sol-sched rounds 2-3)
+
+First divergent temp assignment: 310 (the first text address). The rotor already points at eax, but eax is globally
+forbidden: the two scalarized pos.x ranges (LR142/LR150) bind eax and run from the early `pos.x = 330` statements to
+their argument pushes. A diagnostic that only moves those two IR definitions to just before their x-argument pushes
+(compiler memory, before temp assignment; never a source or output change) removes the whole 63-byte residue. Lowering
+model: c2 assembles assignments early, deletes late copies at 0x443889, and rematerializes the 330 constant while keeping
+the early definitions (docs/LOWERING.md). Inert or worse source forms: x inside the POINT argument, const/fresh POINT
+aggregates, inline POINT-returning helpers, font/line2+1 precomputed into locals before `pos.x = 330`, and the 18
+micro controls in round 3. [OPEN] the C++ construct whose IR defines x after the text/font arguments.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
