@@ -496,3 +496,11 @@ Their decor.h declarations stay. Removing the declarations (and BlupiRect/BlupiD
 GetBlupiInfo, IsDeepWater and MoveObjectSort (measured). **The canonical objects now link with no unresolved externals**
 (LINK 5.10, DX5 libraries, no dxguid): `.rdata` virtual size equals the oracle's, `.text` is 32 bytes short (the open
 functions' size differences), `.data` is 48,964 bytes short, `.rsrc` is not built yet.
+
+[EVIDENCE] 2026-10-18 whole-image state (`tools/relink.py --diagnostic`, resources included):
+- Rich header values equal the oracle's: (0, 270) stamp-less objects and (0x60684, 1) CVTRES 5.00.1668. The empty
+  `src/obstacle.cpp` (only `#include "obstacle.h"`, its object held nothing but `.drectve`) was the 271st object and is
+  removed from the build; `obstacle.h` stays. The Rich block (header bytes 0x80-0xb7) is byte-identical.
+- Remaining header differences (21 bytes in 0x000-0x3ff): timestamp, SizeOfInitializedData/SizeOfImage and section
+  sizes (the `.data` deficit), entry point (0x23880 vs 0x24d40: CRT object placement), resource directory RVA.
+- `.rsrc` is identical apart from its base RVA (docs/RESOURCES.md); `.rdata` size is exact; `.text` is 32 bytes short.

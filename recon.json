@@ -83,9 +83,6 @@
     },
     {
       "source": "src/dectables.cpp"
-    },
-    {
-      "source": "src/obstacle.cpp"
     }
   ],
   "accepted_functions": [
