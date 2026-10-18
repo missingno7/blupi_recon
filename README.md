@@ -6,10 +6,10 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
-**393 functions STRICT + 3 FOLDED, 107,440 / 141,488 unique game `.text` bytes (75.9 %)**, built with one shared
+**401 functions STRICT + 4 FOLDED, 111,920 / 141,488 unique game `.text` bytes (79.1 %)**, built with one shared
 header set for every TU (no per-TU preprocessor views; no active withdrawals; withdrawal history in
 [docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). `decmove.cpp`, `decdesign.cpp` and
-`decblupi.cpp` are fully strict; 16 mapped game functions (about 33 KB) remain open.
+`decblupi.cpp` are fully strict; 8 mapped game functions (about 29 KB) remain open (docs/LINK_CONTEXT.md, docs/COMPILER_STUDY.md).
 STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
 data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
 unverified, masked or behavioural similarity is never counted.
