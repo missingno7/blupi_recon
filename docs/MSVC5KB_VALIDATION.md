@@ -172,3 +172,21 @@ PB b0270ab's decmove.h has only two one-argument prototypes (cost four),
 and its movement/icon tables are not SB1's moving-object animation tables.
 Supervisor gate outside the sandbox: `tools/verify.py --accept` 113,344 / 141,488, zero regressions; integrated
 (docs/LINK_CONTEXT.md "DX5 state integrated").
+
+## LINK 5.10 ICF survivor order (sol-icf, 2026-10-18)
+
+[EVIDENCE; BLUPI-LNK-01/02] The ICF pass sorts a contribution vector with
+the imported CRT qsort, comparing only effective raw size and relocation count;
+the first equivalent contribution survives. Eight complete vector permutations
+match predictions, including two genuine dead-SB2-stub removal controls.
+The host Windows CRT and historical VC5 CRT have different unstable tie orders.
+Using the original VC5 qsort in a debugger session keeps ehvecdtr's unwind filter
+and moves entry 0x24cf0 -> 0x24d10; oracle entry is 0x24d40. No tool files were patched.
+
+[EVIDENCE, negative] Removing PlaceDecor8..10 passes every accepted-function
+check, but fails to reproduce all oracle survivors with either CRT algorithm.
+GetNbProviders is genuine: oracle call 0x1a378 targets the shared getter at
+0x22dc0, which physically lies in sound.cpp's block. No game-source patch is proposed.
+[OPEN] Recover the original eligible contribution population/order and a plain
+historical-runtime launch environment. Details, diagnostic limitations, exact
+addresses, commands and unmasked linked-byte metrics: scratch/sol-icf/FINDINGS.md.

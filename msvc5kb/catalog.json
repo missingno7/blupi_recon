@@ -1498,7 +1498,7 @@
     {
       "id": "BLUPI-LNK-01",
       "section": "linker",
-      "title": "OutputDebug calls fold to the empty menu destructor",
+      "title": "OutputDebug and empty UI destructors share a folded ret",
       "tier": "PROVEN",
       "scope": "blupi-specific",
       "applies": {
@@ -1508,8 +1508,8 @@
       },
       "symptoms": {},
       "symptom": "Many calls resolve to a one-byte ret at RVA 0x1f010.",
-      "construct": "The empty CMenu destructor is emitted in menu.cpp with /Gy COMDAT packaging.",
-      "explanation": "The SB1 linker folds identical eligible COMDAT bodies; call targets can name the destructor-owned ret. The verifier reports FOLDED separately from STRICT.",
+      "construct": "Empty /Gy bodies in button.cpp, jauge.cpp, menu.cpp and misc.cpp are ICF candidates.",
+      "explanation": "The SB1 linker folds identical eligible code contributions. RVA 0x1f010 lies in the misc.cpp block; the former menu-destructor ownership claim was incorrect. The verifier reports FOLDED separately from STRICT.",
       "experiment": "Compare object sections and call relocations, then verify the folded owner and RVA in the linked image.",
       "not_when": "This is linker placement evidence, not a compiler-function match.",
       "evidence": [
@@ -1522,19 +1522,54 @@
       "keywords": "COMDAT folding FOLDED OutputDebug ret destructor linker",
       "blupi_status": "validated",
       "blupi_evidence": {
-        "function": "OutputDebug call targets; CMenu::~CMenu",
+        "function": "OutputDebug; CButton::~CButton; CJauge::~CJauge",
         "rva": "0x1f010",
-        "tu": "menu.cpp and sound.cpp/misc.cpp callers",
+        "tu": "misc.cpp owner; button.cpp/jauge.cpp aliases",
         "flags": "VC5 SP3 /O2 /Gy /GX /ML; linker 5.10 family",
         "compiles": 5,
-        "outcome": "56 calls resolve to the destructor-owned bare ret; comparator models FOLDED",
-        "doc_ref": "docs/CORE_CLUSTER.md; tools/cmpfunc.py -- FOLDED"
+        "outcome": "56 calls resolve to the shared bare ret; physical oracle slot is misc.cpp, not menu.cpp",
+        "doc_ref": "docs/CORE_CLUSTER.md; scratch/sol-icf/FINDINGS.md"
       },
       "legacy_ids": [
         "LNK-01",
         "LNK-02",
         "TMP-02"
       ]
+    },
+    {
+      "id": "BLUPI-LNK-02",
+      "section": "linker",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "LINK 5.10 ICF keeps the first equal contribution after unstable CRT qsort",
+      "symptoms": {},
+      "symptom": "Identical bodies fold to a different object despite matching code and link order.",
+      "construct": "LINK 5.10.7303 /OPT:ICF with Windows MSVCRT qsort versus the VC5 runtime qsort.",
+      "explanation": "LINK appends eligible code-contribution records to the vector at 0x494398 (count 0x49439c), sorts them at 0x431fed by effective raw size and relocation count only (comparator 0x432130), then redirects later equivalent contributions onto the first at 0x432970. Equal-key order is CRT qsort-dependent; names and hashes are not sort tie-breakers. Dead candidates can affect the permutation before reference elimination.",
+      "experiment": "Trace the vector before/after qsort; predict its complete permutation with the actual CRT algorithm. Restore the historical runtime in a diagnostic tool session before changing source or object order.",
+      "not_when": "Historical qsort alone does not reproduce the current getter survivor. The oracle input vector remains unknown; arbitrary fillers, count tuning and unproved deletions are not fixes.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/LINK_ICF.md; model-checks.json",
+          "tier": "PROVEN",
+          "counts": "8 full-permutation checks: six 793-entry controls and two 790-entry dead-stub controls"
+        }
+      ],
+      "keywords": "LINK ICF COMDAT qsort MSVCRT survivor contribution order dead code ArrayUnwindFilter FrameUnwindFilter",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "OutputDebug; four folded getters; ArrayUnwindFilter/FrameUnwindFilter",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy; LINK 5.10.7303 /OPT:REF /OPT:ICF",
+        "compiles": 76,
+        "outcome": "Historical ICF qsort keeps ehvecdtr at 0x243c0 and entry 0x24d10 (oracle 0x243f0/0x24d40); host keeps frame at 0x27360 and entry 0x24cf0. Removing documented SB2 PlaceDecor8..10 has zero accepted regressions but does not solve survivor choices.",
+        "doc_ref": "scratch/sol-icf/FINDINGS.md"
+      },
+      "legacy_ids": []
     },
     {
       "id": "BLUPI-FLG-01",

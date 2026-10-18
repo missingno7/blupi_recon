@@ -539,3 +539,17 @@ are 16 pointer fields into the still-shifted `.text`/CRT). All nine ordinary gam
 - text.cpp: data header before the functions; unreferenced `table_width[128]` and three SB2 big-number routines removed.
 - `.rsrc` is now byte-exact including its RVA. Remaining: 128 bytes of BSS without evidence-backed definitions (first
   drift `g_hWnd` oracle 0x7e618 vs 0x7e610), and the `.text`-dependent pointer fields.
+
+## ICF survivor rule ([EVIDENCE], worker sol-icf; details docs/LINK_ICF.md, KB BLUPI-LNK-02)
+
+LINK 5.10's ICF pass (entry 0x431fb0) sorts eligible COMDAT contributions with the imported MSVCRT `qsort`
+(size, relocation count) and keeps the first equivalent contribution in the resulting order. `qsort` is unstable, so tie
+order depends on the CRT implementation. On Windows 11 LINK loads the modern SysWOW64 msvcrt.dll (KnownDLL), which keeps
+frame.obj's unwind filter. With the VC5 redistributable MSVCRT.DLL's `qsort` (debugger dispatch, unchanged DLL), LINK keeps
+ehvecdtr's copy like the oracle and the CRT entry moves to 0x24d10, exactly the -0x30 game-code offset.
+- [OPEN] Getter fold: the oracle keeps the sound-block copy (0x22dc0); the historical permutation of our 793 eligible
+  contributions keeps network's. Survivors depend on the whole contribution population, which still differs (open
+  functions, dead SB2 bodies).
+- [OPEN] Production: running LINK against the historical MSVCRT `qsort` (the 1998 build host's runtime) is part of
+  reproducing the build environment; a plain launch cannot load it because msvcrt.dll is a KnownDLL. A legitimate
+  launcher (historical OS/VM or a documented runtime shim that changes no output byte) is to be chosen at the final link.
