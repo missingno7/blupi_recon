@@ -55,3 +55,19 @@ The same question, asked of ChangePhase's index/mouse boundary, targets cause C.
 
 Sources: docs/COMPILER_STUDY.md (latest sections), scratch/sol-build4/round5, scratch/sol-cbuild (r1-r2),
 scratch/sol-ccp, scratch/sol-cdb, scratch/sol-cteb, scratch/sol-teb/round3, scratch/sol-sched/round2.
+
+## Update 2026-10-19 (sol-cutcp, sol-cbuild r3, sol-cteb r2)
+
+- C and B-a share the allocator route: both go through the large-group batch region adoption at 0x438f79/0x43918b.
+  Build's header adopts with four free compatible registers; ChangePhase's earlier zero groups adopt a common region
+  (3/2/1 free saved colours) so zero is already protected at the mouse calls. In both functions the shaping group
+  traces to an induction cursor from an earlier loop (Build: source id 2058 cursor; ChangePhase: the m_bNamesExist
+  loop cursor). [HYPOTHESIS] one source property class (how those earlier loops are written) may control both.
+  Best ChangePhase partial: release 2025/2029 with an early load and PLAY cut to 8 reads (rejected; eGames 1914/2034).
+- B-b: whole-expression LEA recreation exists in the stock compiler (STRICT BlupiAddFifo, induction RMW); both cloud
+  LEAs qualify, but argument copies reject substitution before costing.
+- T: blockers named (old+1 folded into the address early; 0x41dd18 keeps the original operand; 0x435d65 preference
+  and 0x42dcb5 LEA->INC; the definition-less byte is globally eligible). TextInputDelete is a STRICT anonymous-byte
+  rotor assignment but with a different address/order shape.
+- Now: C2 decision reverse engineering of 0x438f79 adoption (sol-cbuild r4) and of the TreatEventBase predicates
+  (sol-cteb r3).
