@@ -75,7 +75,7 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 |---|---|
 | Game code | 116,160 / 141,488 unique bytes STRICT (82.1 %); 4 functions open: DrawButtons, ChangePhase, TreatEventBase, Build (24.8 KB) |
 | Whole file | same size (535,552 B); with `relink.py --historical-host` 66,966 bytes differ, 66,622 in `.text` (shifts after the open functions) |
-| Link | no unresolved externals; Rich header identical (270 objects + CVTRES 5.00.1668) |
+| Link | no unresolved externals; Rich header: CVTRES 5.00.1668 entry exact, stamp-less count 268 vs oracle 270 (two modules unidentified) |
 | `.text` | 16 bytes short; ICF survivors depend on LINK's MSVCRT `qsort` (historical runtime keeps the oracle's choice) |
 | `.rdata` | size exact; 4,546 / 4,978 equal (import names, hints, descriptors exact; IAT/thunk values follow `.text`) |
 | `.data` | size exact; 329,713 / 329,728 raw bytes equal (rest: pointers into shifted code); all 366 STRICT BSS references exact |

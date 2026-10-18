@@ -426,6 +426,14 @@ PLAY range. Reordering condition terms does this: `(m_phase == WM_PHASE_PLAY || 
 Remaining: the oracle tests m_bDemoPlay first in that guard ([ebp+0x9918] at +0xc5) and orders one 0x609 compare
 differently. [OPEN] keep PLAY-first recosting with the oracle's guard order.
 
+### TreatEventBase / DrawButtons: condition order is inert ([EVIDENCE], worker sol-irsearch round 2)
+
+Function-wide search of real condition-order rewrites (adjacent pure operand swaps, rotations, comparison flips, negated
+if/else arm swaps; 349 singles + 250 disjoint pairs, 599 full-TU captures) gated at 0x42a8aa. No candidate moved either
+target signature or any tracked partial signature (TreatEventBase flag copy still absent, rank/position bindings eax/edi;
+DrawButtons split-title x definitions still eax/eax with 11-tuple gaps). Unlike ChangePhase, these two residues are not
+driven by allocator priority. Ledger: scratch/sol-irsearch/round2/.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
