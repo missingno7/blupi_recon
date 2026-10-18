@@ -160,4 +160,13 @@ stdlib, string, math, time, direct, ddraw, dsound, Planet-Blupi sets), include r
 struct assignment instead of MoveObjectCopy are inert or worse; `<io.h>` fixes it but breaks MockeryDetect (no use of
 io.h in decmove; rejected as count fitting). [OPEN] the genuine SB1 form.
 
+[EVIDENCE] Joint windows (DX5 state at 1e985cc, tools/ctxsweep_tu.py / ctxsweep_all.py): `extern` probes at the top of
+decmove.cpp make every decmove function pass for 109-141 and 464-480 probes (108 and 496: MoveObjectSort; 142-192:
+MockeryDetect). The same shift at the top of all decor TUs (109-141) breaks ModifDecor, GetBlupiInfo and six
+decblupi helpers, so the missing count is decmove-local, not a shared decor.h difference. No single standard or
+project header (stdio, stdlib, string, math, time, io, direct, ddraw, dsound, mmsystem, text, obstacle, event,
+button, menu, movie, resource, jauge, pixmap, sound, network; before def.h or after the includes) lands in a window:
+io.h at the top fixes MoveObjectSort but breaks MockeryDetect, math.h breaks both, the rest leave MoveObjectSort. [OPEN] which decmove-only declarations (about 109-141 counter numbers before
+decor.h) the original had.
+
 [OPEN] Not integrated: the gate requires zero accepted regressions. This state is the reference for further work.

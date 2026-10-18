@@ -311,6 +311,17 @@ BLUPI-SRC-04, build/tmp/rx/s_acd.py). Predicted from the layout before the trial
 - `TRUE && (...)` gives the same bytes, so any constant term works; the bDaniel form is the one with ancestry.
 - Inert before: arm swap with De Morgan, `!(...)`, common or duplicated tails, a relative-path BOOL, early returns.
 
+### Negatives after SRC-03/SRC-04 ([EVIDENCE])
+
+- Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
+  loop and rematerialises it after the call): all 31 placements of `tinyPoint.y = 0`, `rect.top`, `rect.bottom`,
+  `rect.right` in the outer loop are byte-identical (c2 normalises loop-invariant fields); `rect.bottom` inside the
+  inner loop moves `rect.right` to ecx as in the oracle (3,273 bytes) but not the eax hold; `rect.bottom - rect.top`
+  and `rect.right - rect.left` spellings are inert (build/tmp/rx/s_bbg.py).
+- DrawButtons split title: font spellings (`i == m_fileIndex`, the NULL branch's `((m_fileIndex != i) - 1) & 2` in
+  all three draws) and pos.x/pos.y statement orders are inert; placements of the `pos.x = 330` assignments either
+  keep the m_pPixmap schedule difference or hold 330 in esi (build/tmp/rx/s_dbx.py).
+
 ### CPixmap::Create +0x12d ([EVIDENCE], negative)
 
 The 4-byte residue is a Pentium scheduling swap (`sbb edi,edi` vs the vtable load). Inert: `!= 0`, reversed and
