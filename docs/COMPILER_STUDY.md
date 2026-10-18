@@ -298,3 +298,11 @@ The 4-byte residue is a Pentium scheduling swap (`sbb edi,edi` vs the vtable loa
   the residue needs a different temp structure, not only a different rotor state.
 - Aggregate POINT locals, POINT copies, literal/`pos.x` POINT arguments, pointer and control-flow variants of the
   split draw: identical to HEAD or worse.
+
+### CNetwork::Send: if/else normalisation of a parameter ([EVIDENCE])
+
+`if (dwFlags) dwFlags = DPSEND_GUARANTEED; else dwFlags = 0;` before the call makes the parameter a register variable
+(esi) and c2 turns the if/else into `xor edx,edx; test esi,esi; setne dl` - the oracle's code (STRICT). Branchless
+`dwFlags = dwFlags != 0`, `!!dwFlags`, ternary arguments and a local flag fold away (old ebx/esi allocation); the
+if-only form keeps a branch. Lesson: a setcc whose source stays in a callee-saved register points to an if/else
+assignment of a variable, not to an expression.

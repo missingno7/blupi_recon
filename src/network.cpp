@@ -300,7 +300,10 @@ BOOL CNetwork::Send(LPVOID lpData, DWORD dwDataSize, DWORD dwFlags)
 
 	if (!m_pDP) return FALSE;
 
-	if (hr = m_pDP->Send(m_dpid, 0, dwFlags != 0, lpData, dwDataSize), hr != DP_OK)
+	if (dwFlags) dwFlags = DPSEND_GUARANTEED;
+	else dwFlags = 0;
+	hr = m_pDP->Send(m_dpid, 0, dwFlags, lpData, dwDataSize);
+	if (hr != DP_OK)
 	{
 		TraceErrorDP(hr);
 		return FALSE;

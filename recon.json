@@ -2097,6 +2097,12 @@
       "tu": "src/network.cpp"
     },
     {
+      "symbol": "?Send@CNetwork@@QAEHPAXKK@Z",
+      "rva": "0x00020ec0",
+      "size": 80,
+      "tu": "src/network.cpp"
+    },
+    {
       "symbol": "?Receive@CNetwork@@QAEHPAXKPAK@Z",
       "rva": "0x00020f10",
       "size": 208,
