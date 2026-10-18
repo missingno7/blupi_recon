@@ -3435,6 +3435,134 @@
       ]
     },
     {
+      "id": "BLUPI-SCHED-01",
+      "section": "scheduling",
+      "tier": "PROVEN",
+      "scope": "VC5 SP3 P5 integer hard-edge scheduling windows",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Post-allocation P5 scheduler uses dependency eligibility, then priority and original ordinal",
+      "symptoms": {
+        "any": [
+          "load_reorder",
+          "push_reorder",
+          "reorder_regalloc"
+        ]
+      },
+      "symptom": "An independent-looking member load moves before a byte store or SETcc, and a pointer load appears after a push.",
+      "construct": "DrawButtons split-title calls; direct stack store versus pointer/reference store micros; independent argument loads.",
+      "explanation": "DrawButtons builds scheduling windows only in phase 0, after temp assignment. Allocated operand descriptors already supply physical registers. Ready order is descending unsigned priority, ascending original tuple ordinal. The measured P5 GP priority is height<<13 plus outdegree>>5 plus memory-read<<16. U/V pairing and edge latencies select the first eligible node. Register WAR/WAW edges can dominate source statement order.",
+      "experiment": "Capture with the private stub, trace the input DAG and assigned registers, then run model.py before attributing an order difference to aliasing or source order. Tool: tools/c2trace/sched/tracer.py; micros msvc5kb/micros/sched.",
+      "not_when": "Complete simulation excludes other CPUs, phase 1, address-rewrite/nonblocking dependencies, nonzero priority boost and unvalidated x87 behavior. The model consumes the completed DAG; it does not derive lowering or allocation from C++.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/SCHEDULER.md",
+          "tier": "PROVEN",
+          "counts": "25 windows, 599 scheduling decisions, zero discrepancies"
+        }
+      ],
+      "keywords": "scheduler Pentium P5 U V ready list priority ordinal dependence anti-dependence register binding",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::DrawButtons; micros",
+        "rva": "0x16f70",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 30,
+        "outcome": "model validated; DrawButtons MISMATCH",
+        "doc_ref": "docs/SCHEDULER.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SCHED-02",
+      "section": "scheduling",
+      "tier": "PROVEN",
+      "scope": "DrawButtons split-title region and measured integer micros",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "An alias edge alone cannot repair DrawButtons' late-pixmap and early-line2 schedule",
+      "symptoms": {
+        "any": [
+          "load_reorder",
+          "reorder_regalloc",
+          "store_reorder"
+        ]
+      },
+      "symptom": "Baseline pixmap is loaded before SETcc/store while line2 is loaded after the font push.",
+      "construct": "text[line2 - m_filenameBuffer[i]]=0 followed by two DrawTextLeft calls.",
+      "explanation": "Baseline first pixmap load is bound to edx; compare->pixmap has register WAR 02, and no byte-store->pixmap edge exists. At cycle 48 it is the only eligible second-slot tuple. The first text LEA and second line2 load are bound to ecx and have font-push WAR edges. A store-alias-only graph counterfactual moves pixmap to cycle 51, still before the font push at 52. A font-push edge alone leaves the text LEA late. Both address and font lifetimes must change before scheduling.",
+      "experiment": "Inspect assigned registers and incoming dependence flags, and use diagnose.py for offline DAG counterfactuals. Do not insert source-only alias barriers or assume a priority change can overcome an anti-dependence. Tool: tools/c2trace/sched/tracer.py; micros msvc5kb/micros/sched.",
+      "not_when": "Counterfactual graphs are explanatory calculations, not compiler source or strict matching evidence. Unknown-pointer and member-array stores really do create memory RAW edges in the micros.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/SCHEDULER.md",
+          "tier": "PROVEN",
+          "counts": "25 windows, 599 scheduling decisions, zero discrepancies"
+        }
+      ],
+      "keywords": "alias byte store pixmap line2 font register lifetime anti-dependence",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::DrawButtons; micros",
+        "rva": "0x16f70",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 30,
+        "outcome": "model validated; DrawButtons MISMATCH",
+        "doc_ref": "docs/SCHEDULER.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SCHED-NEG-01",
+      "section": "scheduling",
+      "tier": "PROVEN",
+      "scope": "DrawButtons with the retained two pos.x assignments",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Advancing line2 after the first draw folds back to the existing argument form",
+      "symptoms": {
+        "any": [
+          "load_reorder",
+          "reorder_regalloc"
+        ]
+      },
+      "symptom": "Second-line pointer must load before the font but baseline loads it after the font push.",
+      "construct": "Move ++line2 immediately after the first DrawTextLeft, before pos.y/pos.x updates, then pass line2 instead of line2+1.",
+      "explanation": "The ordinary cursor operation is folded back to the existing form. The reduced split micro and full event TU remain byte-identical to their controls.",
+      "experiment": "Retain both original x assignments and compare full function payloads, not only normalized instruction alignment. Tool: tools/c2trace/sched/tracer.py; micros msvc5kb/micros/sched.",
+      "not_when": "This does not generalize to other pointer lifetimes or removals of coordinate assignments.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/SCHEDULER.md",
+          "tier": "PROVEN",
+          "counts": "25 windows, 599 scheduling decisions, zero discrepancies"
+        }
+      ],
+      "keywords": "negative inert pointer cursor increment line2 argument folding",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::DrawButtons; micros",
+        "rva": "0x16f70",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 30,
+        "outcome": "model validated; DrawButtons MISMATCH",
+        "doc_ref": "docs/SCHEDULER.md"
+      },
+      "legacy_ids": []
+    },
+    {
       "id": "BLUPI-SRC-02",
       "section": "source-forms",
       "tier": "PROVEN",

@@ -359,6 +359,15 @@ chained assignments, the toggle via bEnable or a local, ternaries, == FALSE, != 
 captured forms; supervisor: 18). [OPEN] the spelling that loads the flag as a rotating temp and still emits
 `xor ecx,ecx; test edx,edx; sete cl`.
 
+### Instruction scheduler ([EVIDENCE], worker sol-sched; docs/SCHEDULER.md)
+
+c2's P5 list scheduler (driver 0x40d9be, graph 0x431ec0, select 0x43179a, U/V pairing 0x431c72) runs after register
+assignment on dependence windows and orders ready nodes by eligibility, priority (reverse heights, critical path) and
+the original tuple ordinal. Model validated on 25 windows / 599 decisions with zero discrepancies (KB BLUPI-SCHED-01;
+tool tools/c2trace/sched/tracer.py). DrawButtons: the oracle's late m_pPixmap load and early line2 load follow from
+register anti-dependences that the scheduler cannot break; an alias edge alone is insufficient. The residue therefore
+goes back to temp-register assignment in the split-title block, not to scheduling.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
