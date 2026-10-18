@@ -248,3 +248,9 @@ oracle; this is rejected. Original additional-module identities remain OPEN.
   hidden-entry configurations (k<=4 extra entries, null/dead placement) give no inverse; all fail USER32's 35 names.
 - Demo/eGames/oracle share one IAT name order (demo: GDI32 GetDeviceCaps swap, explained by pixmap Create's earlier call).
   RTM LINK 5.00 with the same CRT gives the same 15/128. [OPEN] Rich +2 and the original sort input/implementation.
+- Round 3: six MSVCRT copies (VC5 RTM/SP2/SP3, hxdos 6.00.8797, hercules trees) and VC6's static qsort share one
+  algorithm; each relink equals the baseline (15/128, frame keeps the filter, Rich 268).
+- Round 4: the comparator (0x40f8d0) compares the contribution's archive member name/path case-sensitively
+  (CON+0x18 -> MOD+4); keys dumped in scratch/sol-rich/r4/keys.csv. 61 local import-library files (21 COFF variants)
+  give unchanged keys; 84,753 modelled key splits fail (best 65/128); VC6 short imports add non-oracle Rich stamps.
+  [OPEN] the original sort input remains unexplained.

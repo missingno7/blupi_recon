@@ -1558,6 +1558,11 @@
           "ref": "blupi_recon:docs/LINK_ICF.md; model-checks.json",
           "tier": "PROVEN",
           "counts": "8 full-permutation checks: six 793-entry controls and two 790-entry dead-stub controls"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-rich/FINDINGS.md Round 3; r3/inventory.json; r3/comparison.json; r3/qsort_variants.py",
+          "tier": "PROVEN",
+          "counts": "Local CRT census: 12 DLL paths / six file hashes (MSVCRT20 2.11.000 product 2.10.000; MSVCRT40 4.10.6038; MSVCRT 5.00.7022, 5.00.7128, 5.00.7303, 6.00.8797.0), three byte-identical VC5 QSORT.C sources, and VC6 RTM LIBC qsort.obj. All use one middle-pivot/cutoff-8 algorithm with <=/>= scans and strict > shortsort. Six new serial LINK controls plus the pinned SP3 trace validate both complete 137-entry import permutations and the complete 793-entry ICF permutation; input keys/names/module order agree. Five DLLs bind all 111 CRT imports; MSVCRT20 lacks four exports and is a qsort-only control. Every output is byte-identical to baseline: IAT 15/128 oracle slots, USER32 2/35, frame filter before ehvecdtr. VC6 static qsort/shortsort/swap code corresponds to 6.00.8797.0 except five resolved call-relocation fields (not a strict object match). This excludes the inventoried CRT substitutions on these inputs; unobserved 4.20.x/6.00.8168 DLLs remain untested."
         }
       ],
       "keywords": "LINK ICF COMDAT qsort MSVCRT survivor contribution order dead code ArrayUnwindFilter FrameUnwindFilter",
@@ -3804,6 +3809,11 @@
           "ref": "blupi_recon:scratch/sol-rich/FINDINGS.md Round 2; r2/report.json; r2/inverse-keys.json; r2/inverse-two-passes-4.json; r2/inverse-three-passes-4.json",
           "tier": "PROVEN",
           "counts": "Exact qsort model matches both fresh 137-element LINK traces and all 128 current IAT slots. FindClose and SetConsoleCtrlHandler participate before REF removes their slots. Physical hint/name order independently matches 126/126 retained named imports. No source-consistent inverse in the tested bounded extraction families (1,485 base-block, 295,200 two-pass, 60,467 three-pass, 80,640 reordered-block configurations after size-vector deduplication where applicable; zero pass USER32). These are bounded negative models, not a proof over all key sequences. Conditional 137..141-entry inverses fit live output only by changing 103..117 load-name positions and contradict physical hints. The installed RTM LINK under the same CRT produces the same 137 DLL keys, exact model permutation, and 15/128 oracle slots. RTM repeat images differ in 71 resource-directory timestamp bytes only; no deterministic RTM-image claim. Rich +2 remains unidentified."
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-rich/FINDINGS.md Round 3; r3/comparison.json",
+          "tier": "PROVEN",
+          "counts": "Six configuration-only CRT relinks preserve every baseline byte and Rich (0,268)+(0x60684,1), entry 0x24d10, .text virtual size 0x2af83; oracle inequality remains 66,966 file / 66,622 .text bytes. All accepted-function gates PASS, 116,160 / 141,488; 12 CRT-evidence compiles through repo tools at default limits, no game source changes or new function acceptance. The two original stamp-less module identities remain OPEN."
         }
       ],
       "keywords": "Rich object count module comp.id OLDNAMES LIBC import REF ICF CVTRES ftime mkdir",
@@ -3849,6 +3859,46 @@
         "compiles": 20,
         "outcome": "Blupi-specific complete extraction replay and bounded compiler controls. The oracle has an earlier Create GetDeviceCaps call absent from the demo; with that earlier reference, GetDeviceCaps is introduced before GetSystemPaletteEntries. No matching-source change or new accepted body.",
         "doc_ref": "scratch/sol-rich/FINDINGS.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LNK-06",
+      "section": "linker",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "LINK 5.10 import sort keys are case-sensitive archive member names",
+      "symptoms": {},
+      "symptom": "Physical hint/name load order agrees, but import tie permutations differ despite using the same CRT qsort.",
+      "construct": "LINK 5.10.7303 comparator 0x40f8d0 over import contributions; CON+0x18 points to MOD, MOD+4 to the original object-name string.",
+      "explanation": "The comparator follows qsort slot -> CON* -> MOD* -> char* and performs an inlined unsigned-byte, case-sensitive, NUL-terminated lexical compare. It calls no CRT string/locale comparator and has no symbol-name tie-breaker. Archive-name helper 0x45d770/0x45d790 decodes the ar member/long-name table; 0x45e13a retains that name, common full/short-import loading passes it to module constructor 0x40ea00, and 0x40eac6 stores its copied string at MOD+4. Paths/case in archive names remain part of the key. DLL strings inside import payloads and the outer .lib path are not dereferenced by this comparator.",
+      "experiment": "Dump actual key pointers/raw strings and selected archive members; compare full and short import formats. Re-archive byte-identical full-COFF members using ordinary LIB, then statically inspect the tiny output and both qsort vectors.",
+      "not_when": "Arbitrary per-import key assignments are not demonstrated valid import libraries: renaming unchanged members to distinct paths breaks the tiny import directory. No tested real library combination changes the key vector at fixed load order. This does not prove all unobserved original populations/keys impossible or identify Rich +2.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-rich/FINDINGS.md Round 4; r4/keys.csv; r4/keys.json; r4/audit.json; r4/libraries.json; r4/constructor-trace.json; r4/comparator-and-constructor.asm",
+          "tier": "PROVEN",
+          "counts": "137 actual keys in each sort: KERNEL32.dll 69, USER32.dll 36, GDI32.dll 12, WINMM.dll 13, DSOUND.dll 2, DDRAW.dll 2, DPLAYX.dll 3. Complete C:/tools walk: 61 target-library files, 29 hashes, 21 COFF archives plus eight non-COFF Borland variants; all 21 have identical per-DLL member keys and cover required baseline symbols, including VC6 short imports. Selected full-COFF alternatives also preserve every external definition set and ordered undefined-symbol list, transferring the extraction replay at the current library order. One tiny tools/msvc.py compile; original/rearchived/VC6 controls and constructor traces; fresh full baseline key trace is whole-file identical. No game source change."
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-rich/r4/key-inverse.json; r4/format-icf.json; r4/member-probe.json",
+          "tier": "PROVEN",
+          "counts": "84,753 fixed-137-input key cases; zero exact oracle IAT outputs. All 7! one-key-per-DLL relative orders and 8! distinct early/late-KERNEL32 orders peak at 65/128; bounded function/null/dead case and path families also fail. Long-format renamed tiny objects retain identical 3-entry ICF inputs; VC6 short imports reduce 3 to 1 and emit Rich (0x10000,2),(0x131f62,3),(0,1), incompatible with the oracle stamp groups. The 128 full-game short-format deletion projections are explicitly conditional; 68 select ehvecdtr, none changes the 15/128 key model into a joint solution."
+        }
+      ],
+      "keywords": "LINK import qsort comparator archive member name case path DLL idata short import full COFF ICF Rich",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "whole import order; ArrayUnwindFilter/FrameUnwindFilter",
+        "flags": "Pinned SP3 LINK/CRT; original fixed game objects; tiny /O2 /Gy /ML probe through tools/msvc.py at default limits",
+        "compiles": 1,
+        "outcome": "Actual comparator and key origin closed; local-library key-family hypothesis negative. Baseline remains Rich 268, entry 0x24d10, .text 0x2af83, 66,966 unequal file bytes. No accepted-source change or output-image execution.",
+        "doc_ref": "scratch/sol-rich/FINDINGS.md Round 4"
       },
       "legacy_ids": []
     }
