@@ -471,6 +471,14 @@ Build's 4,916 records round-trip byte-exactly through the ported replay harness 
 mutations, 430 compositions, 62 real-source controls: no stream reaches the IR targets or improves the function
 (2,328 bytes, 1177/1237 aligned remain).
 
+### ChangePhase: C1-record-level search ([EVIDENCE], worker sol-ilsearch round 2)
+
+3,242 record mutations from the oracle-ordered source (both editions, cost model 17,506/17,524 checks exact): 1,510
+comparison/result/literal/store variants and 620 Boolean-result casts all keep zero -65 / PLAY -78; 26 reach PLAY priority
+in both editions and 5 also pass the full zero18/EDI + PLAY9/EBX + late-oldPhase signature, but every one changes emitted
+code (6,976 or 7,024 bytes vs 6,919). C1 folds constant-only expressions, so some record constructions are unproducible.
+[OPEN] a code-neutral change that promotes PLAY by one point with the oracle order. Ledger: scratch/sol-ilsearch/cp/.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
