@@ -28,8 +28,14 @@ reproduces the effect.
 | D | The two split-title x = 330 definitions are placed early (C1 emits font/text first; 0x42127d moves x first); eax unavailable at the first text address | early C2 0x42127d | the one 16-instruction block (order + registers) | both definitions moved before their pushes: 0 masked bytes | No (PB DrawTextCenter shows definitions are never moved later) |
 | T | One missing temp-rotor assignment at the terminator-byte test (compare-embedded scratch DL, no assign call) or, equivalently, an old-flag split in the rank-0 toggle | temp assignment 0x42a8aa | the rank-0 toggle registers and the PostMessage HWND regions (3 regions) | split terminator load: 0 masked bytes (scratch/sol-teb/round3) | No |
 
-So 92 differing instructions reduce to **six independent causes** (B-a, B-b, B-c, C, D, T), plus Build's 8-byte residue
-(B-r), which may be a seventh. All six have a demonstrated compiler diagnostic. None is yet produced by ordinary C++.
+So 92 differing instructions are removed by **six sufficient compiler-state interventions** (B-a, B-b, B-c, C, D, T),
+which is not the same as six independent historical source causes: one upstream source difference may produce several
+of them (the B-a/B-b/B-c subset tests show the interventions are independent of each other, not that their source
+preconditions are). Build's 8-byte residue
+(B-r) is not classified until natural source solutions for B-a..B-c have been tested. None of the six is yet produced
+by ordinary C++. Goal: the natural precondition of each decision (region topology, live-range boundaries, def/use
+relationships, alias information, expression structure) that the unmodified compiler would follow, e.g. for B-a what
+changes BB85's region adoption, rather than the cut itself.
 
 ## Shared mechanisms
 
