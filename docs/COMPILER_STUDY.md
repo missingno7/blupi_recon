@@ -348,6 +348,17 @@ integration: 404 STRICT + 4 FOLDED, 113,344 / 141,488, zero regressions.
   MoveObjectSort and MockeryDetect windows and the declaration cost model above.
 
 
+### TreatEventBase localized by the 1998 demo ([EVIDENCE], worker sol-teb + supervisor)
+
+The June 1998 demo build (same compiler) has no rank-0 (build-official-missions) cheat block. Deleting only that block
+from our TreatEventBase reproduces the demo's code exactly over +0x35f..+0x6b2 (238/238 normalized instructions, PostMessage
+hwnd edx included). So all our cheat-matcher source outside the rank-0 block is right, and the original rank-0 block
+consumes one more temp-rotor step than ours. `m_bBuildOfficialMissions ^= TRUE;` (load as a rotating temp) makes every
+later instruction align (1890/1894, one region: only xor vs sete differs), which confirms the mechanism. Inert or worse:
+chained assignments, the toggle via bEnable or a local, ternaries, == FALSE, != FALSE, casts, 1 - x, !!x (sol-teb: 87
+captured forms; supervisor: 18). [OPEN] the spelling that loads the flag as a rotating temp and still emits
+`xor ecx,ecx; test edx,edx; sete cl`.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
