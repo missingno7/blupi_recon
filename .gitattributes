@@ -1,1 +1,2 @@
 src/** -text
+patches/*.patch -text
