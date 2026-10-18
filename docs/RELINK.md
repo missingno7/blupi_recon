@@ -481,3 +481,8 @@ IID_IDirectPlay. That is the DX6 dplay.h list **without IID_IDirectPlay4/4A** (V
 only IID_IDirectPlay). So network.cpp defined `INITGUID` before including a **DirectX 5 SDK** dplay.h, and dxguid.lib
 was not linked. The manifest therefore uses `C:\tools\dx5sdk\INCLUDE` since the DX5 integration (zero regressions,
 docs/LINK_CONTEXT.md); link with the DX5 libraries and without dxguid.lib.
+[EVIDENCE] src/network.cpp now starts with `#define INITGUID` (2026-10-18): it emits the ten dplay.h GUIDs and
+APP_GUID in the oracle's order and bytes (IID_IDirectPlay2 first, APP_GUID at +0xa0), all 19 accepted network.cpp
+functions stay STRICT, and tools/relink.py links C:	ools\dx5sdk\LIB without dxguid.lib. Remaining unresolved link
+methods: BlupiRect and BlupiDead. [HYPOTHESIS] The define's position (top of file vs `#include <initguid.h>`) is not
+distinguishable; both give identical objects.

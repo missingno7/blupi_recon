@@ -2332,6 +2332,49 @@
       ]
     },
     {
+      "id": "BLUPI-CTX-06",
+      "section": "context",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Statements consume front-end symbol IDs too: an earlier function's spelling shifts every later function's IDs",
+      "symptoms": {
+        "any": [
+          "reorder_regalloc",
+          "sib_order",
+          "load_reorder"
+        ]
+      },
+      "symptom": "A key-order residue (BLUPI-CTX-03) in a later function changes when an earlier function in the same TU is respelled, even though the earlier function's bytes stay identical.",
+      "construct": "Control-flow and expression constructs in any function compiled earlier in the TU.",
+      "explanation": "Measured on VC5 SP3 /O2 /GX with a function-local static's $S suffix (the front-end ID, BLUPI-CTX-04) after one function body: if 1, if/else 2, && 1, || 2, while 3, for 3, switch 4 plus 1 per case, goto+label 2, cast 1, local 1, ternary 0. So the counter is not only declarations: equivalent spellings of earlier code (if/else vs ternary, || chains, casts, labels) are authentic levers that shift the IDs deciding later operand orders. The phenomenon was first documented for VC4 by homm1-decomp (see scratch/research/techniques.md for the source); this rule records the VC5 SP3 measurement.",
+      "experiment": "Measure the counter before and after with a local static's $S suffix or tools/c2trace/ctxpredict.py; compare against the window the predictor reports.",
+      "not_when": "Residues that are not key-order decisions (BLUPI-CTX-05 force diagnostic inert) do not respond to ID shifts.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/SYMBOL_ORDER.md#statement-costs-evidence",
+          "tier": "PROVEN",
+          "counts": "15 micro TUs, VC5 SP3"
+        }
+      ],
+      "keywords": "statement cost symbol id counter if else switch case label cast loop earlier function spelling",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "micros",
+        "rva": "",
+        "tu": "build/tmp/stmtid",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 15,
+        "outcome": "costs measured",
+        "doc_ref": "docs/SYMBOL_ORDER.md"
+      },
+      "legacy_ids": []
+    },
+    {
       "id": "BLUPI-REG-03",
       "section": "registers",
       "title": "Struct temporaries vs scalar call arguments change VC5 scratch-register choice",

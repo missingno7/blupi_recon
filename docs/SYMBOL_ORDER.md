@@ -75,3 +75,13 @@ inside the c2 child and compares the forced object with the oracle (diagnostic o
   that order, but the function gets worse (63 -> 755 bytes, frame 0xe4 -> 0xe0), so it is rejected.
 blood2_recon reached the same hash mechanism independently (its VC5-RA-06, VC5-CTX-10) and adds VC5-RA-08: inline
 expansion renumbers the callee's symbols through the 1024-bucket table (id & 1023), so inline history before a site matters.
+
+## Statement costs ([EVIDENCE], VC5 SP3; KB BLUPI-CTX-06)
+
+Front-end IDs consumed by one statement in an earlier function, read from a later local static's `$S` suffix (15 micro TUs,
+/O2 /GX): `if` 1, `if/else` 2, `&&` 1, `||` 2, `while` 3, `for` 3, `switch` 4 + 1 per case, `goto`+label 2, cast 1, local 1,
+ternary 0. Equivalent spellings of earlier code therefore shift later functions' windows. First documented for VC4 by
+homm1-decomp (scratch/research/techniques.md); measured here independently on VC5 SP3.
+Negatives from the same research round: `/YX` (automatic PCH, create and use) leaves button.cpp's functions and its `$S`
+counter identical; source-path length moves IDs only under `/Gi` (byte-tactics claim, checked); `/Gi` worsens DrawButtons
+and leaves TreatEventBase/ChangePhase unchanged; data members cost no IDs (a 97,532-byte member array leaves `$S` unchanged).

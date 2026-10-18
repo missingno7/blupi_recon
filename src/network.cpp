@@ -1,6 +1,7 @@
 // Network.cpp
 //
 
+#define INITGUID
 #include <stdio.h>
 #include <windows.h>
 #include "dplay.h"

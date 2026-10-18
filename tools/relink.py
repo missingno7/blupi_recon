@@ -26,12 +26,12 @@ LINKERS = {
     "1197": Path(r"C:\tools\msvc5_link_psdk1197\bin\LINK.EXE"),
 }
 VC = Path(r"C:\tools\msvc5_sp3\VC")
-DX = Path(r"C:\tools\dx6sdk\lib")
+DX = Path(r"C:\tools\dx5sdk\LIB")  # DX5 SDK: oracle GUIDs (docs/TOOLCHAIN.md)
 LIBRARIES = [VC / "LIB/LIBC.LIB", VC / "LIB/OLDNAMES.LIB"] + [VC / "LIB" / (s + ".lib") for s in
              ("kernel32", "user32", "gdi32", "winmm")]
 # Oracle import descriptors are in this order; the 5.10 linker's IAT order is
 # independently sorted by DLL. Actual full-image order still needs a clean link.
-LIBRARIES += [DX / (s + ".lib") for s in ("dsound", "ddraw", "dplayx", "dxguid")]
+LIBRARIES += [DX / (s + ".lib") for s in ("dsound", "ddraw", "dplayx")]  # dxguid.lib was not linked (network.cpp INITGUID)
 
 
 def digest(path):
