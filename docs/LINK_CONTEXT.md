@@ -108,3 +108,27 @@ externs would satisfy both, but the 44 have identical evidence status, so choosi
 network.cpp (docs/RELINK.md, "DirectX SDK version"). Our manifest uses DX6 headers, which declare more (DirectPlay4,
 DirectDraw4/7-era, DirectSound additions) in every TU that includes ddraw.h, dsound.h or dplay.h. All windows above
 were measured with DX6 headers; they must be re-measured with DX5 headers before any context conclusion is final.
+
+## DirectX 5.0 SDK installed and verified (2026-10-18)
+
+[EVIDENCE] `C:	ools\dx5sdk\{INCLUDE,LIB}` holds `sdk\inc` and `sdk\lib` from archive.org item `ms-dx5-sdk`
+("Microsoft DirectX Foundation 5.0 SDK", 1997), file `DirectX5SDK.iso`, 277,858,304 bytes, MD5
+`40a5aceb9683e56e6e6451d39daa3686` (verified); extracted with 7-Zip, nothing executed. Its dplay.h defines exactly ten
+GUIDs whose 160 bytes equal the oracle's `.rdata` at 0x2c220 (IID_IDirectPlay2 .. IID_IDirectPlay). The original SDK is
+therefore identified.
+
+[EVIDENCE] Switching only the manifest include directory from dx6sdk to dx5sdk (no source change) keeps every TU
+compiling but regresses nine accepted functions, all context-type: CButton::MouseMove; decblupi's IsWorld,
+GetTypeBarre, IsLave, IsRessort, IsOutWater, IsVentillo (x/y evaluation order, the IsDeepWater family); decnet's
+ModifDecor; decmove's MoveObjectSort. DX5 plus the evidence-backed set above: eleven (adds GetBlupiInfo, IsDeepWater).
+
+[EVIDENCE] Windows on DX5 + evidence set (tools/ctxsweep_tu.py, fixed version): button 1-8 + 16k; decblock 10-13,
+18-21, 26-29, 34-37; decmove >= 15; decnet >= ~180 (none below 174); decblupi none in 0-216. button, decblock and
+decmove share 18-21 and 34-37; decblupi and decnet need other, possibly negative, shifts.
+
+[OPEN] The canonical manifest stays on DX6 headers until a source/header state passes the gate under DX5; the DX5
+header set is the correct baseline for any future context reconstruction.
+
+[EVIDENCE] Tool fix: earlier ctxsweep runs after the sol-macros worker were contaminated by private headers left in
+the probe folder (quoted includes resolve next to the probe file first). Both ctxsweep tools now empty their folder,
+delete the stale object before each compile and report failed compiles; measurements before the worker are unaffected.
