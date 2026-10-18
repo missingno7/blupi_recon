@@ -3,7 +3,7 @@
 A bounded, executable model of how c2 (VC5 SP3, SHA-256 e75aecaf...0515fae) assigns callee-saved registers and stack
 homes. Worker sol-alloc, 2026-10-18; full model (615 lines), 14 micros with registered predictions, application
 captures and audits: scratch/sol-alloc/ (ignored). Tools: `tools/c2trace/colour_trace.py`, `tools/c2trace/alloc_micros.py` (micro sources and registered predictions in
-msvc5kb/micros/alloc). KB rules BLUPI-ALLOC-01..09.
+msvc5kb/micros/alloc). KB rules BLUPI-ALLOC-01..12.
 Late temp assignment (rotor, scratch picker, preference pass) is a separate, later stage: BLUPI-REG-06..08.
 
 ## Pipeline ([EVIDENCE])
@@ -89,3 +89,18 @@ Workers sol-alloc (ChangePhase) and sol-build3 (Build) applied the model; neithe
   43 regions but regresses accepted GetBlupiInfo; the zero stays profitable in EAX (9 refs, +1). [OPEN] splitting the
   camera lifetimes before background Y is allocated. Details: scratch/sol-alloc/changephase/FINDINGS.md,
   scratch/sol-build3/FINDINGS.md "Round 4".
+
+## byte-tactics mechanisms confirmed ([EVIDENCE])
+
+HectorBailey/byte-tactics (Total Annihilation decomp) uses the identical c2.exe. Workers sol-alloc, sol-evanc and sol-build3
+re-checked its claims on our /O2 /GX builds:
+- **Confirmed (BLUPI-ALLOC-10):** range descriptors reuse the last-freed ID (0x40ecd2 pushes onto 0x493230; 0x40ebb6 pops
+  before allocating fresh IDs), and the first queue fill walks buckets id&1023 in order. Exact ties therefore depend on
+  allocation history.
+- **Confirmed (BLUPI-ALLOC-11):** the density sort (0x459eb7) runs only when packed ordinary bytes exceed 128; it is unstable.
+  Reusing a fixed caller home can restart packing.
+- **Confirmed (BLUPI-ALLOC-12):** a source increment of a stack local counts its read and write as two stack-home references.
+- **Refuted or unvalidated on our flags:** a no-code IL node shifting the rotor (TreatEventBase, six forms); source-path
+  length moving IDs without /Gi; a general "split local +1" reference bonus.
+- Applied without a strict gain: DrawButtons (63 bytes; stack homes already match), ChangePhase (zero/PLAY keys unequal),
+  Build (slot swap traced to `lastClip` scalarization, recycled IDs and reload order).

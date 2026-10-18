@@ -3268,6 +3268,138 @@
       "legacy_ids": []
     },
     {
+      "id": "BLUPI-ALLOC-10",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Range descriptors reuse the last-freed ID and seed exact ties through bucket traversal",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "structural"
+        ]
+      },
+      "symptom": "Declaration/lifetime changes alter split identities or equal-key queue order without an LR-ID comparator.",
+      "construct": "equal_pool, reuse_pressure negative reduction, reuse_background positive reuse, working_base/working_copy.",
+      "explanation": "40ecd2 removes a descriptor from active bucket id&1023, clears 0x44 bytes, preserves +1c ID, and pushes it on 493230 through +2c. 40ebb6 pops that head or allocates a fresh ID from494238; reused IDs do not advance the fresh counter. 41bdd7 visits buckets0..1023 then each +2c chain; 41b6fa sorts signed priority/unsigned rank descending, exact ties newest first. 437e67/438544 process the parent set in ascending IDs. This is an indirect history input, not a numeric-ID secondary comparator. First described by HectorBailey/byte-tactics (docs/c2-regalloc.md, same c2.exe); verified on blupi_recon's /O2 /GX builds with registered micro predictions.",
+      "experiment": ".pyenv\\python.exe scratch/sol-alloc/bt/run.py micro reuse_background; then micro equal_pool and working_copy, sequentially. CLI: colour_trace.py CAP --function 0 --cuts --ids --out scratch/sol-alloc/bt/owned.json. (scratch scripts; tracer: tools/c2trace/colour_trace.py)",
+      "not_when": "A numeric ID is reused for multiple descriptor lifetimes; identify births by allocation event and parent, not ID alone. Decisive ChangePhase zero21/-65 and PLAY9/-78 are not tied. No native reload-order rule follows from ID alone. Dynamic initial-queue samples do not cross1024; the mask/collision-chain case is supported statically, not boundary-tested.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md#byte-tactics-mechanisms-confirmed-evidence",
+          "tier": "PROVEN",
+          "counts": "11/12 registered micros; 13776/13776 allocator checks (ChangePhase round)"
+        }
+      ],
+      "keywords": "range ID descriptor LIFO free list bucket exact tie component split generation",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "micros; ChangePhase; DrawButtons",
+        "rva": "0x19310; 0x16f70",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 40,
+        "outcome": "mechanism confirmed; functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-ALLOC-15"
+      ]
+    },
+    {
+      "id": "BLUPI-ALLOC-11",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Large-frame density sorting is unstable and a reusable caller home can restart packing",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "structural"
+        ]
+      },
+      "symptom": "An ordinary working copy changes the frame and equal-weight slot offsets although a small micro is native-identical.",
+      "construct": "density_small/big/128/132; caller_home_base/copy; phase_copy_canonical/oldphase.",
+      "explanation": "43f93b calls459eb7 only when packed ordinary bytes>128, not merely total prologue frame size. Density is signed refs*1000/size with truncation; midpoint pivot and strict greater-than swaps make equal-density order unstable. In mode1, reuse of a fixed caller home with ordinary bytes>111 triggers a restart without fixed seeds before density sorting. The caller-home micro goes160->164 bytes; ChangePhase working copies go1116->1120 and swap the tied i/num positions relative to frame size. First described by HectorBailey/byte-tactics (docs/c2-regalloc.md, same c2.exe); verified on blupi_recon's /O2 /GX builds with registered micro predictions.",
+      "experiment": ".pyenv\\python.exe scratch/sol-alloc/bt/run.py micro density_128; then density_132, caller_home_base, caller_home_copy, sequentially. Compare stack-packed prediction.restarted/ordinary_bytes and density-sort before/actual. (scratch scripts; tracer: tools/c2trace/colour_trace.py)",
+      "not_when": "Do not model frames by source declarations or stable density sorting. EH/name-hash ordering is a different unvalidated path here. A small native-identical copy micro does not establish full-TU equality: the full candidates retained zero/PLAY colours but worsened28->105 and8->85 regions.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md#byte-tactics-mechanisms-confirmed-evidence",
+          "tier": "PROVEN",
+          "counts": "11/12 registered micros; 13776/13776 allocator checks (ChangePhase round)"
+        }
+      ],
+      "keywords": "stack frame home density quicksort unstable tie fixed parameter caller restart threshold",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "micros; ChangePhase; DrawButtons",
+        "rva": "0x19310; 0x16f70",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 40,
+        "outcome": "mechanism confirmed; functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-ALLOC-16"
+      ]
+    },
+    {
+      "id": "BLUPI-ALLOC-12",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "A source increment contributes read and write stack-home references",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "structural"
+        ]
+      },
+      "symptom": "A stack-home weight exceeds a count of source statements or source variable mentions.",
+      "construct": "memory_inc: Fill(&x); ++x; Read(&x).",
+      "explanation": "The read and write sides are counted separately in42ba3f via4367f0, each weight1, with no loop-frequency weight. The tested x receives4 total: two address arguments plus the increment read and write. The native increment is load/inc-register/store, not a single INC[memory] instruction; the direct single-instruction form and the general split-local +1 claim remain unvalidated. First described by HectorBailey/byte-tactics (docs/c2-regalloc.md, same c2.exe); verified on blupi_recon's /O2 /GX builds with registered micro predictions.",
+      "experiment": ".pyenv\\python.exe scratch/sol-alloc/bt/run.py micro memory_inc; inspect stack-reference caller42ba8e/42bae0 and native.obj disassembly. (scratch scripts; tracer: tools/c2trace/colour_trace.py)",
+      "not_when": "Do not count an escaped-pointer indirect access as a direct home reference without its actual IL operand. No evidence here for an unconditional extra reference on every split source local.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md#byte-tactics-mechanisms-confirmed-evidence",
+          "tier": "PROVEN",
+          "counts": "11/12 registered micros; 13776/13776 allocator checks (ChangePhase round)"
+        }
+      ],
+      "keywords": "stack reference count increment read write memory access flow graph",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "micros; ChangePhase; DrawButtons",
+        "rva": "0x19310; 0x16f70",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 40,
+        "outcome": "mechanism confirmed; functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-ALLOC-17"
+      ]
+    },
+    {
       "id": "BLUPI-SRC-02",
       "section": "source-forms",
       "tier": "PROVEN",
