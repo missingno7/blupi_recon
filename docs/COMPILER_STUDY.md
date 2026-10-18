@@ -479,6 +479,19 @@ in both editions and 5 also pass the full zero18/EDI + PLAY9/EBX + late-oldPhase
 code (6,976 or 7,024 bytes vs 6,919). C1 folds constant-only expressions, so some record constructions are unproducible.
 [OPEN] a code-neutral change that promotes PLAY by one point with the oracle order. Ledger: scratch/sol-ilsearch/cp/.
 
+### Assumption checks: flags, environment, cross-function state ([EVIDENCE], supervisor + worker sol-env)
+
+- Per-file optimization flags /Oa /Ow /Op /Ox /O1 /Oi- /Oy- /Ob0 /Ob1 /G3 /G4 /G6 /GB /Gs /Og-: none helps; /Op /Ox /Ob0
+  /Ob1 /G3 /G4 /GB /Gs are inert, the rest worsen the four functions.
+- 44 c2 replays under heap/environment perturbation change no function bytes or relocations.
+- c2 resets the temp rotor (0x42a90b), live-range IDs/free list (0x414aa7), value-number and constant-web buckets per
+  function; 20 fixed-IL function-order tests change nothing. TreatEventBase's rotor step is not inherited.
+- C1 IDs are the only cross-function channel: reversing event.cpp's function order changes DrawButtons by 13 bytes
+  (+0x1a3d..+0x1a4c). No tested composition (32 controls, SB2/PB orders) fixes a target.
+- No documented post-SP3 VC5 c2/c1xx hotfix found.
+- [HYPOTHESIS, under test by sol-idwin] DrawButtons (needs F(line2) < F(text)) and Build (keyforce gains at ID shifts
+  ~31,600) both point at IDs crossing 65536, where F wraps; a shared header-set difference of ~31k IDs would do that.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
