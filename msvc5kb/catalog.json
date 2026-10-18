@@ -2199,6 +2199,91 @@
       "legacy_ids": []
     },
     {
+      "id": "BLUPI-CTX-03",
+      "section": "context",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Declaration-count sensitivity: c2 orders operands by keys that hash front-end symbol IDs",
+      "symptoms": {
+        "any": [
+          "reorder_regalloc",
+          "load_reorder",
+          "sib_order",
+          "push_reorder"
+        ]
+      },
+      "symptom": "A function's operand order, SIB base/index order or evaluation order flips when unrelated declarations are added or removed before it, in contiguous windows of probe counts with sharp edges.",
+      "construct": "Any commutative or paired-operand expression of equal cost whose operands contain symbols (locals, this, globals, functions) declared after a varying number of front-end entities.",
+      "explanation": "VC5 SP3 C1XX assigns each front-end entity the next value of the counter at C1XX VA 0x104ccb58; the IDs travel in the IL and c2 stores them at symbol +0x28. c2 keys every expression as (cost << 16) | H, where H (0x4053bf) XORs opcode constants, F(constant) and F(symbol ID) with F(s) = (s & 0xffff) ^ (s >> 16), and orders paired operands by unsigned descending key (0x408d58, merge sort 0x40922a/0x409306, swap path 0x4058dc). For two equal-cost operands only bit b = highest_set_bit(C_A ^ C_B) of the shared symbol contribution decides, giving windows of width 2^b and period 2^(b+1). A later pass may re-sort with different keys, so the emitted order can follow a later comparison than the first.",
+      "experiment": "Run tools/c2trace/ctxpredict.py on the function: it reports each context-sensitive comparison and the window around the current count. Then look for genuine declarations or include orders that move the decisive symbol ID into the good window.",
+      "not_when": "Residues insensitive to 0-300 probes (TreatEventBase, DrawButtons) are not key-order decisions; a change of expression topology or cost needs a new capture.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/SYMBOL_ORDER.md",
+          "tier": "PROVEN",
+          "counts": "60/60 held-out predictions (MoveObjectSort 109-236/365-492, MockeryDetect 142-397 bad, IsDeepWater bit 0x40, IsVentillo bit 0x100, 2 micro TUs, 4 CButton suffixes)"
+        }
+      ],
+      "keywords": "declaration count symbol id hash expression key operand order window include order context probes c1xx counter",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "MoveObjectSort; MockeryDetect; IsDeepWater; IsVentillo; CButton::Create",
+        "rva": "0x13b20; 0x13320",
+        "tu": "src/decmove.cpp; src/decblupi.cpp; src/button.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 400,
+        "outcome": "mechanism traced and predictive",
+        "doc_ref": "docs/SYMBOL_ORDER.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-CTX-04",
+      "section": "context",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Front-end ID costs of declarations (SP3 /GX /O2), and local-static suffixes as a direct ID readout",
+      "symptoms": {
+        "any": [
+          "structural"
+        ]
+      },
+      "symptom": "Estimating how many symbol IDs a header or declaration block contributes before a function.",
+      "construct": "extern/global/typedef, prototypes, enums, structs, guarded headers, unused locals, unused inline functions.",
+      "explanation": "Measured on fresh micros: extern/global/typedef 1; prototype without parameters 1, with two parameters (named or unnamed) 3; enum with three enumerators 4; empty or two-field struct 7; opening an empty guarded header 1; unused local 1; unused inline int f(){return 0;} 2, with one parameter 3. The Blood II approximation (named parameters only, inline shell 4-5) is not general. A function-local static's COFF suffix (e.g. CButton::Create ttypes$S34693) is its front-end ID, so it reads the counter directly in any object.",
+      "experiment": "Read a local static's $S suffix in the candidate object to measure the counter before and after a header change, instead of counting declarations by hand.",
+      "not_when": "Costs of complex templates, classes with members and C++ special members were not measured.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/SYMBOL_ORDER.md",
+          "tier": "PROVEN",
+          "counts": "15 registered cost predictions (12 hit before calibration); suffix arithmetic 443/62/12 predicted 4/4"
+        }
+      ],
+      "keywords": "declaration cost counter prototype parameter enum struct inline local static suffix front-end id",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CButton::Create; micros",
+        "rva": "",
+        "tu": "src/button.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 40,
+        "outcome": "costs measured",
+        "doc_ref": "docs/SYMBOL_ORDER.md"
+      },
+      "legacy_ids": []
+    },
+    {
       "id": "BLUPI-REG-03",
       "section": "registers",
       "title": "Struct temporaries vs scalar call arguments change VC5 scratch-register choice",
@@ -2637,7 +2722,7 @@
       },
       "symptom": "Ours hoists `xor reg,reg` and uses it for `mov [m],reg` stores and `cmp [m],reg` tests across several blocks; the oracle stores immediate 0 and tests with `mov reg,[m]; test reg,reg`.",
       "construct": "Several `m_x = 0` / `= FALSE` member stores and `if (m_y)` member tests in one region of a function.",
-      "explanation": "VC5 SP3 c2 interns eligible memory zero operands as a class-13 virtual constant before colouring (pool scan 0x414a64, eligibility 0x4156b6, intern 0x417fb7). The cost pass 0x40ee1d scores the surviving range: each zero store +1, each materialisation -1, zero compares 0. Positive ranges keep a register (binding 0x41b90e); score 0 or less spills back to immediates. CDecor::Build's range has 9 references and score +1 (two network-loop zero initialisations, m_blupiSec = 0, two materialisations, six compares).",
+      "explanation": "VC5 SP3 c2 interns eligible memory zero operands as a class-13 virtual constant before colouring (pool scan 0x414a64, eligibility 0x4156b6, intern 0x417fb7). The cost pass 0x40ee1d scores the surviving range: each zero store +1, each materialisation -1, zero compares 0. Positive ranges keep a register (binding 0x41b90e); score 0 or less spills back to immediates. CDecor::Build's range has 9 references and score +1 (two network-loop zero initialisations, m_blupiSec = 0, two materialisations, six compares). Refinement (docs/ALLOCATOR.md, BLUPI-ALLOC-05): a positive fragment score suffices for global allocation, but a callee-saved register survives only if the physical register's aggregate constant profitability is at least 3 (0x42ac33/0x42bf00); the volatile EAX choice in Build is not subject to that threshold.",
       "experiment": "Count the zero stores in the range: one store fewer (or one more materialisation) flips the shape. Read the oracle at each zero site before removing anything.",
       "not_when": "The oracle keeps every zero store (Build): then the score difference must come from range splitting or another block's code, not from a missing statement.",
       "evidence": [
@@ -2700,6 +2785,314 @@
         "doc_ref": "docs/COMPILER_STUDY.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-ALLOC-01",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Global range priority differs from profitability and raw reference count",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "reorder_regalloc"
+        ]
+      },
+      "symptom": "A lower-reference or negative-priority range gets a saved register first.",
+      "construct": "Equal-ref constant webs, an additional real store, or call-crossing locals.",
+      "explanation": "Descriptor +0c is signed pressure/carrying priority; +3c is weighted keep/spill profitability. Insertion compares +0c descending, unsigned definition rank +40 descending, then puts a new exact tie before older nodes. Later deferral can overwrite +0c; refs are not the key.",
+      "experiment": "Run tools/c2trace/alloc_micros.py constants_equal constants_plus_one call_live; inspect each sort entry's predecision key and checked insertion position. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
+      "not_when": "This comparator does not predict which fragments the preceding splitter creates or which deferred node is reconsidered next.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md",
+          "tier": "PROVEN",
+          "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        }
+      ],
+      "keywords": "global register allocation priority score cost sort tie definition rank pressure",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangePhase; CDecor::Build; micros",
+        "rva": "0x19310; 0x4350",
+        "tu": "src/event.cpp; src/decblock.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 24,
+        "outcome": "mechanism modelled, functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-C2-ALLOC-01"
+      ]
+    },
+    {
+      "id": "BLUPI-ALLOC-02",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Global colouring minimizes interference penalties in a fixed register order",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Saved-register choices do not follow the late temporary rotor.",
+      "construct": "Call-crossing values under saved-register pressure.",
+      "explanation": "For profitable neighbours add available copy preferences, plus 100 times benefit for a singleton availability set. Subtract the selected range's own preferences. Choose the first eligible register at the strictly smallest signed penalty in the class list at 4931d0. Restrictions and already-bound neighbours modify the available set before selection.",
+      "experiment": "Run tools/c2trace/alloc_micros.py call_live pressure_call; colour_trace independently predicts penalties at 41b785 and checks them at 41b90e. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
+      "not_when": "The available-set construction, splitting and subsequent lowering are separate stages; a transient binding need not appear in final assembly.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md",
+          "tier": "PROVEN",
+          "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        }
+      ],
+      "keywords": "saved callee register preference interference penalty singleton rotor",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangePhase; CDecor::Build; micros",
+        "rva": "0x19310; 0x4350",
+        "tu": "src/event.cpp; src/decblock.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 24,
+        "outcome": "mechanism modelled, functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-C2-ALLOC-02"
+      ]
+    },
+    {
+      "id": "BLUPI-ALLOC-03",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Equal-weight stack homes retain the history of strict overtakes",
+      "symptoms": {
+        "any": [
+          "displacement_differs",
+          "frame_differs"
+        ]
+      },
+      "symptom": "Two equal-size locals have exchanged stack offsets despite equal final reference counts.",
+      "construct": "Two address-taken int locals, declarations reversed, then one extra real reference.",
+      "explanation": "4367f0 groups nodes by increasing size. Each reference increments weight and moves a node backward only past strictly lighter same-size predecessors. Exact ties retain current list order, which records earlier transient overtakes. 43f93b packs that list afterward, with backward ordinary-slot search.",
+      "experiment": "Run tools/c2trace/alloc_micros.py slots_ab slots_decl_ba slots_b_extra; compare stack-reference streams, ordered list and assigned offsets. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
+      "not_when": "Declaration reordering is not a substitute for changing real operand traversal. Large-frame slot reordering, fixed homes, interference and frame mode can modify offsets later.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md",
+          "tier": "PROVEN",
+          "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        }
+      ],
+      "keywords": "stack spill slot order history tie declaration reference weight frame",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangePhase; CDecor::Build; micros",
+        "rva": "0x19310; 0x4350",
+        "tu": "src/event.cpp; src/decblock.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 24,
+        "outcome": "mechanism modelled, functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-C2-ALLOC-03"
+      ]
+    },
+    {
+      "id": "BLUPI-ALLOC-04",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "A call restricts live-through colours without necessarily splitting every value",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "native_more_stack"
+        ]
+      },
+      "symptom": "Changing a real last-use location changes the saved-register requirement.",
+      "construct": "Move a scalar's real final use from after Tick to before Tick, retaining the pointer across the call.",
+      "explanation": "A non-rematerializable scalar spanning a call needs a preserved colour or memory. A scalar dead before that call can disappear from the global set. Fragment splitting depends on graph availability and use flags, not on calls alone.",
+      "experiment": "Run tools/c2trace/alloc_micros.py call_live call_dead; compare range counts, exact use chains and emitted objects. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
+      "not_when": "Do not infer that a constant must get the same treatment: constant last uses can be rematerialized by 438b41.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md",
+          "tier": "PROVEN",
+          "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        }
+      ],
+      "keywords": "call split last use rematerialize preserved live range",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangePhase; CDecor::Build; micros",
+        "rva": "0x19310; 0x4350",
+        "tu": "src/event.cpp; src/decblock.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 24,
+        "outcome": "mechanism modelled, functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-C2-ALLOC-04"
+      ]
+    },
+    {
+      "id": "BLUPI-ALLOC-05",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "A positive constant range can still lose its callee-saved register below aggregate score three",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "immediate_differs",
+          "size_differs"
+        ]
+      },
+      "symptom": "Global colouring selects EBX but final assembly contains immediate stores and no EBX save.",
+      "construct": "constants_equal versus constants_plus_one: one additional real displaced store of a repeated constant.",
+      "explanation": "42ac33 recomputes profitability in physical register descriptor +34. Ordinary nonconstant uses protect it with 0x1000000. 42bf00 demotes physical registers below score 3 through 443d3f, deleting definitions and restoring immediates. A per-fragment benefit merely greater than zero is sufficient for global allocation but insufficient for preserving a saved register at this final stage.",
+      "experiment": "Run tools/c2trace/alloc_micros.py constants_equal constants_plus_one. The first constant is transiently EBX in both; at score 2 it is demoted, at score 3 its EBX save and all register stores survive. Observe saved-register-threshold in the new traces. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
+      "not_when": "Use aggregate physical-register profitability, not one LR's score, when disjoint webs share a register. Volatile colours and registers used by ordinary nonconstant values are protected.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md",
+          "tier": "PROVEN",
+          "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        }
+      ],
+      "keywords": "constant pooled saved callee register threshold profitability demote immediate late cleanup",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangePhase; CDecor::Build; micros",
+        "rva": "0x19310; 0x4350",
+        "tu": "src/event.cpp; src/decblock.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 24,
+        "outcome": "mechanism modelled, functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-C2-ALLOC-05"
+      ]
+    },
+    {
+      "id": "BLUPI-ALLOC-06",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Exhausting a constant field's sole colour can clone its definition at a use",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "load_reorder",
+          "store_reorder"
+        ]
+      },
+      "symptom": "An outer rectangle field definition becomes an immediate materialization beside its inner-loop argument store.",
+      "construct": "Two by-value rectangle/point loops calling DrawPart, with rect.bottom=480 before the inner loop.",
+      "explanation": "After an interfering singleton binding consumes EBP, bottom's available set is empty. The exhausted-neighbour path in 41ba2b calls 44ca36 in mode 1, then 451ac3. The latter clones the ordinary constant definition before a use; group splitting and one-reference pruning can eliminate the old cold definition. This is distinct from pooling the literal as class 13.",
+      "experiment": "Run tools/c2trace/alloc_micros.py background_clone. At event 108 bottom (source 20, LR 17, refs 2, benefit 18) enters cloning with an empty available set after LR 19 binds EBP; mode-1 eligibility at event 107 returns 1. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
+      "not_when": "The nonexhausted mode-0 path has a different availability guard. Definition eligibility, input liveness and alias hazards can prevent cloning. Changing rect.right's EAX choice is insufficient when bottom already has only EBP before that binding.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md",
+          "tier": "PROVEN",
+          "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        }
+      ],
+      "keywords": "rectangle bottom definition clone rematerialization interference sole register exhausted split",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangePhase; CDecor::Build; micros",
+        "rva": "0x19310; 0x4350",
+        "tu": "src/event.cpp; src/decblock.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 24,
+        "outcome": "mechanism modelled, functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-C2-ALLOC-06"
+      ]
+    },
+    {
+      "id": "BLUPI-ALLOC-07",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Pressure cuts protect already committed global ranges",
+      "symptoms": {
+        "any": [
+          "immediate_differs"
+        ]
+      },
+      "symptom": "A still-unbound constant is fragmented while an earlier chosen constant survives across calls, despite the new fragment having a higher queue priority.",
+      "construct": "Seven independent values live across a call; or the by-value background rectangle loop micro.",
+      "explanation": "The driver adds the chosen LR to a persistent committed set before 41a985. At class pressure equal to capacity, an unmarked tuple can acquire an op-17c cut. 437d7c computes ((live minus the tuple's class-2 operands) minus exclude) union force. The pressure caller supplies committed LRs as exclude, protecting the chosen LR while splitting unbound neighbours. A subsequently created higher-priority child cannot retroactively change an earlier colour choice.",
+      "experiment": "Run tools/c2trace/alloc_micros.py pressure_call background_clone, then check_cuts.py pressure clone. The helper sets are independently predicted before entry; expect 5/5 and 29/29 calls respectively, including one at-capacity insertion in each. Source predictions remain in the original ledgers; these additional checks reuse captured IL without a new native compile. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
+      "not_when": "This rule does not predict optimized IL from C++, the full pressure counters, special three-saved-register cuts, or alias/edge connectivity. Over-capacity class-3 temporary eviction is separately modeled statically and was not dynamically exercised here.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md",
+          "tier": "PROVEN",
+          "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
+        }
+      ],
+      "keywords": "pressure capacity committed exclude cut split constant queue rematerialize",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangePhase; CDecor::Build; micros",
+        "rva": "0x19310; 0x4350",
+        "tu": "src/event.cpp; src/decblock.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 24,
+        "outcome": "mechanism modelled, functions MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": [
+        "BLUPI-C2-ALLOC-07"
+      ]
     },
     {
       "id": "BLUPI-SRC-02",

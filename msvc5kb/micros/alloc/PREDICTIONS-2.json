@@ -1,0 +1,14 @@
+{
+  "pressure_call": {
+    "source": "extern void Tick();\nextern int Mix(int,int,int,int,int,int);\nint Test(int *p) { int a=p[0],b=p[1],c=p[2],d=p[3],e=p[4],f=p[5]; Tick(); return Mix(a,b,c,d,e,f)+p[6]; }\n",
+    "prediction": "Seven independent call-crossing values exceed four callee-saved colours; at least one real spill/split is required. Selector penalties must protect a profitable singleton's sole register, and predict every choice from the available set."
+  },
+  "constants_equal_displaced": {
+    "source": "void Test(volatile int *p) {\n    p[1]=0x12345678; p[2]=0x23456789;\n    p[3]=0x12345678; p[4]=0x23456789;\n    p[5]=0x12345678; p[6]=0x23456789;\n    p[7]=0x12345678; p[8]=0x23456789;\n}\n",
+    "prediction": "Every store now has a nonzero displacement. Predict both constants: four refs, benefit 4-1=3, priority 12, rank zero. Exact key tie inserts constant 2 ahead of constant 1. Addresses, not Tick, caused the earlier unequal benefits; no nocall-only trial was compiled."
+  },
+  "dependent_web": {
+    "source": "extern void Tick();\nextern int Mix(int,int,int,int);\nint Test(int *p) { int x=p[0]; int y=x+3; Tick(); return Mix(y,y,y,x); }\n",
+    "prediction": "Hypothesis: the multiply-used y definition with a still-live x input enters dependency requeue or substitution in 45aaf9. Any surviving requeued y must receive min(input.priority)-1. If no such entry succeeds, mark the proposed C++ trigger as a failed prediction; do not claim formula validation from a vacuous condition."
+  }
+}

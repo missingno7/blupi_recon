@@ -1,0 +1,38 @@
+{
+  "constants_equal": {
+    "source": "extern void Tick();\nvoid Test(volatile int *p) {\n    p[0]=0x12345678; p[1]=0x23456789;\n    Tick();\n    p[2]=0x12345678; p[3]=0x23456789;\n    p[4]=0x12345678; p[5]=0x23456789;\n    p[6]=0x12345678; p[7]=0x23456789;\n}\n",
+    "prediction": "Both constant webs have four stores, equal benefit; exact queue-key ties put the later insertion first. At every colour decision choose first eligible minimum-penalty register."
+  },
+  "constants_plus_one": {
+    "source": "extern void Tick();\nvoid Test(volatile int *p) {\n    p[0]=0x12345678; p[1]=0x23456789;\n    Tick();\n    p[2]=0x12345678; p[3]=0x23456789;\n    p[4]=0x12345678; p[5]=0x23456789;\n    p[6]=0x12345678; p[7]=0x23456789;\n    p[8]=0x12345678;\n}\n",
+    "prediction": "Adding one memory store raises the first constant web's benefit by one if boundaries remain equal; its refs rise by one. No claim that raw refs alone determine order."
+  },
+  "loop_flat": {
+    "source": "void Test(volatile int *p) { p[0]=0x12345678; p[1]=0x12345678; p[2]=0x12345678; }\n",
+    "prediction": "Three eligible stores pool one constant; ordinary nonzero constant has benefit 3 minus materialization costs. It survives only with positive final benefit."
+  },
+  "loop_depth": {
+    "source": "void Test(volatile int *p, int n) { for (int i=0; i<n; ++i) { p[3*i]=0x12345678; p[3*i+1]=0x12345678; p[3*i+2]=0x12345678; } }\n",
+    "prediction": "The loop-body per-use weight is 2^(loop_depth+1), not a constant times raw refs; benefit exceeds loop_flat's benefit with the same three stores."
+  },
+  "call_live": {
+    "source": "extern void Tick();\nint Test(int *p) { int x=p[0]; Tick(); return x+p[1]; }\n",
+    "prediction": "The non-rematerializable x survives the call in a callee-saved register (4,6,7,8) or a stack home; no eax/ecx/edx binding may span Tick."
+  },
+  "call_dead": {
+    "source": "extern void Tick();\nint Test(int *p) { int x=p[0]; p[1]=x+3; Tick(); return p[1]; }\n",
+    "prediction": "Moving x's last use before Tick removes its call-crossing requirement. x needs no callee-saved binding across Tick; pointer p still crosses the call."
+  },
+  "slots_ab": {
+    "source": "extern void Fill(int*,int*);\nextern void Use(int);\nvoid Test() { int a; int b; Fill(&a,&b); Use(a); Use(b); Use(a); Use(b); }\n",
+    "prediction": "Escaping a,b have stack homes. Equal size/weight insertion uses first reference, not lexical declaration; exact weight ties do not cross on updates."
+  },
+  "slots_decl_ba": {
+    "source": "extern void Fill(int*,int*);\nextern void Use(int);\nvoid Test() { int b; int a; Fill(&a,&b); Use(a); Use(b); Use(a); Use(b); }\n",
+    "prediction": "Reversing only declarations leaves use order, reference-history stack order and a/b offsets identical to slots_ab."
+  },
+  "slots_b_extra": {
+    "source": "extern void Fill(int*,int*);\nextern void Use(int);\nvoid Test() { int a; int b; Fill(&a,&b); Use(a); Use(b); Use(a); Use(b); Use(b); }\n",
+    "prediction": "One extra late reference moves b ahead of a within equal-size stack group only if its accumulated weight becomes strictly greater; stack size remains two int homes."
+  }
+}

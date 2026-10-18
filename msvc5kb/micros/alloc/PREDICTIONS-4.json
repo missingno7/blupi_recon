@@ -1,0 +1,6 @@
+{
+  "background_clone": {
+    "source": "struct Point { int x,y; };\nstruct Rect { int left,top,right,bottom; };\nclass Pix { public: int DrawPart(int,int,Point,Rect,int,int); };\nclass Scene { public: Pix *pix; Point Next(); void Test(Rect,Point); };\nvoid Scene::Test(Rect rect, Point mouse)\n{\n    int i,j;\n    Point tiny,pos,decor;\n    decor=Next();\n    pos.x=decor.x*2/3;\n    pos.y=decor.y*2/3;\n    int x=pos.x%640;\n    rect.left=x;\n    int y=pos.y%480;\n    tiny.x=0;\n    for(i=0;i<2;i++) {\n        tiny.y=0;\n        rect.top=y;\n        rect.bottom=480;\n        for(j=0;j<2;j++) {\n            rect.right=640;\n            pix->DrawPart(-1,4,tiny,rect,1,0);\n            tiny.y+=480-rect.top;\n            rect.top=0;\n        }\n        tiny.x+=640-rect.left;\n        rect.left=0;\n    }\n}\n",
+    "prediction": "Hypothesis: the background-only reduction still reproduces 451ac3 cloning of the bottom=480 field definition after a competing saved-register binding exhausts availability. If the clone does not occur, record a failed reduction: later Build context is necessary, rather than adding dummy locals/uses to force it."
+  }
+}

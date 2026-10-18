@@ -205,3 +205,12 @@ rotor pointer by one or two slots at each assignment and reports the differing b
 the original source had one rotor step more or less just before K; `map NAME SYMBOL K` shows the instruction. The
 debugger only reads and pokes c2.exe's memory in its own run, never files; rotor shifts are diagnostics, never
 source. Model and addresses: docs/COMPILER_STUDY.md, round 4.
+
+Callee-saved registers, constant webs and stack slots come from the global allocator, an earlier stage:
+`tools/c2trace/colour_trace.py NAME --function N --out build/c2trace/colour/NAME.json` prints every queue insertion,
+selection with its penalty vector, rematerialization, late demotion and stack-home step, each checked against the model
+(docs/ALLOCATOR.md; micro controls `tools/c2trace/alloc_micros.py`).
+
+Residues that move when unrelated declarations change are operand-order decisions keyed on symbol IDs:
+`tools/c2trace/ctxpredict.py src/X.cpp Function` makes one capture and reports each context-sensitive comparison
+with its window around the current declaration count (docs/SYMBOL_ORDER.md). Use it instead of probe sweeps.

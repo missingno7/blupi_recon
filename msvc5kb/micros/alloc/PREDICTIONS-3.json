@@ -1,0 +1,6 @@
+{
+  "slots_tail_ba": {
+    "source": "extern void Fill(int*,int*);\nextern void Use(int);\nvoid Test() { int a; int b; Fill(&a,&b); Use(a); Use(b); Use(b); Use(a); }\n",
+    "prediction": "Same declarations, first references, sizes and final counts 3/3 as slots_ab. Only final reads reverse. Predict b reaches three first, retains the tie, and gets the first home: b=-8, a=-4. This tests history independently of final weight."
+  }
+}

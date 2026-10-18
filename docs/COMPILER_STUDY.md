@@ -339,6 +339,15 @@ integration: 404 STRICT + 4 FOLDED, 113,344 / 141,488, zero regressions.
   `rect.bottom` hold is bottom-definition cloning; the spill-slot order is a history-dependent tie. Remaining: the
   shared player-drawing tail (call count and register roles). 230+ trials, 10 micro labs.
 
+## Round 7: compiler models ([EVIDENCE])
+
+- Global register allocator (splitting, cost, queue, colouring, late demotion, stack packing): docs/ALLOCATOR.md, KB
+  BLUPI-ALLOC-01..07, tool tools/c2trace/colour_trace.py. 2124/2124 queue and colour decisions predicted from IL.
+- Declaration-count sensitivity (c1xx symbol IDs hashed into c2's operand-order keys): docs/SYMBOL_ORDER.md, KB
+  BLUPI-CTX-03/04, tool tools/c2trace/ctxpredict.py. 60/60 held-out predictions; it corrects the measured
+  MoveObjectSort and MockeryDetect windows and the declaration cost model above.
+
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
