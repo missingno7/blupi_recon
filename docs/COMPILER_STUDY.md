@@ -465,6 +465,12 @@ the exact first-call run but 897 bytes elsewhere. Local front-end changes in the
   and feedback spellings: all 94 payloads unchanged (8 bytes). [OPEN] a source predicate for the oracle's form.
 - Size limits: no allocator cap near the four open functions' counts; the 64/1,024-entry tables are hash buckets.
 
+### Build: C1-record-level search ([EVIDENCE], worker sol-ilbuild)
+
+Build's 4,916 records round-trip byte-exactly through the ported replay harness (scratch/sol-ilbuild/tools). 463 single
+mutations, 430 compositions, 62 real-source controls: no stream reaches the IR targets or improves the function
+(2,328 bytes, 1177/1237 aligned remain).
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
