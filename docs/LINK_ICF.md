@@ -254,3 +254,6 @@ oracle; this is rejected. Original additional-module identities remain OPEN.
   (CON+0x18 -> MOD+4); keys dumped in scratch/sol-rich/r4/keys.csv. 61 local import-library files (21 COFF variants)
   give unchanged keys; 84,753 modelled key splits fail (best 65/128); VC6 short imports add non-oracle Rich stamps.
   [OPEN] the original sort input remains unexplained.
+- Round 5: the other LINK 5.10 builds (7255 CE beta, 7168 NT5-1592/1691, PSDK-1197) under a generalized historical
+  host write no Rich header at all, so the oracle's Rich header identifies LINK 5.10.7303 (VC5 SP3) among local builds;
+  all four also give IAT 15/128 and keep frame's filter.

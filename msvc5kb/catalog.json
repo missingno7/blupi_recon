@@ -3901,6 +3901,41 @@
         "doc_ref": "scratch/sol-rich/FINDINGS.md Round 4"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LNK-07",
+      "section": "linker",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "The four local pre-SP3 LINK 5.10 alternatives preserve SP3 sort vectors and omit Rich",
+      "symptoms": {},
+      "symptom": "Oracle import ties and the ehvecdtr unwind-filter survivor disagree with SP3 despite historical CRT binding.",
+      "construct": "Controlled LINK 5.010.7255 and 5.00.7168 NT5 1592/1691/PSDK1197 links of the same 19 game objects, libraries and flags.",
+      "explanation": "All four import MSVCRT qsort. Import comparators follow slot -> CON+0x18 -> MOD+4 and perform case-sensitive unsigned string comparison without a tie-breaker. ICF compares effective contribution size then relocation count, treating linker-generated modules as zero-relocation. The NT builds use vector helper calls where SP3/7255 inline append logic, but preserve encounter order. With every LINK CRT import bound before entry to the unchanged SP3 redistributable and the oracle clock, both 137-entry import inputs/outputs and the 793-entry ICF input/output equal SP3 exactly. Every alternative keeps frame, scores 15/128 oracle IAT positions, and writes PE 5.10 without a Rich header (e_lfanew 0x80 versus oracle/SP3 0xb0).",
+      "experiment": "Inventory original executables/dependencies and disassemble sort/collection sites; parameterize a private copy of the canonical bounded host without modifying tool files. Perform four diagnostic relinks through the canonical relinker adapter, then compare full trace permutations, maps, raw headers and every section. Isolate NT5 1592 resource conversion with unchanged private LINK/DLL copies and SP3 CVTRES search.",
+      "not_when": "This excludes only these four exact linker hashes on the pinned baseline inputs. It does not prove every unobserved LINK 5.10 build or original contribution population equivalent. The frozen clock applies to LINK; the bounded CVTRES child clock is not emulated.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-rich/FINDINGS.md Round 5; r5/inventory.json; r5/construction.json; r5/construction-details.asm; r5/report.json; build/sol-rich/r5-{7255,1592,1691,1197}/{historical-host.json,gate.json,BLUPI.map}",
+          "tier": "PROVEN",
+          "counts": "Four accepted-function gates PASS (116160/141488, no regressions). All entries 0x24d10, .text virtual size 0x2af83, 66622 text bytes unequal to oracle. 7255/1691/1197 whole files identical: 67163 unequal oracle bytes, 200 unequal baseline header bytes, all section payloads baseline-identical. 1592: 67447 unequal oracle bytes, with 284 additional bytes entirely in 71 resource-directory TimeDateStamp fields. SP3-converter search removes those 284 bytes and leaves every section baseline-identical. All complete relevant permutations match the historical qsort model. Original tools/dependencies unchanged; all tool jobs drained to zero processes."
+        }
+      ],
+      "keywords": "LINK 7255 7168 1592 1691 1197 qsort ICF import Rich CVTRES timestamp historical host",
+      "blupi_status": "inert-here",
+      "blupi_evidence": {
+        "function": "whole-image IAT order and ArrayUnwindFilter/FrameUnwindFilter",
+        "flags": "Fixed baseline objects; /OPT:REF /OPT:ICF; original linker-specific DLLs; SP3 MSVCRT and 1998 UTC LINK clock",
+        "compiles": 8,
+        "outcome": "Negative linker-build hypothesis; eight existing CRT-evidence compiles through tools/msvc.py, no game source changes. No qualifying alternative or canonical relinker change.",
+        "doc_ref": "scratch/sol-rich/FINDINGS.md Round 5"
+      },
+      "legacy_ids": []
     }
   ]
 }
