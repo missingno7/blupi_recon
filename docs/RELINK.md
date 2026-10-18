@@ -486,3 +486,6 @@ APP_GUID in the oracle's order and bytes (IID_IDirectPlay2 first, APP_GUID at +0
 functions stay STRICT, and tools/relink.py links C:	ools\dx5sdk\LIB without dxguid.lib. Remaining unresolved link
 methods: BlupiRect and BlupiDead. [HYPOTHESIS] The define's position (top of file vs `#include <initguid.h>`) is not
 distinguishable; both give identical objects.
+
+[EVIDENCE] 2026-10-18: MoveObjectFollow (dead SB2 helper, the BlupiRect caller) is removed with the CDecor tail
+representation (docs/LAYOUT_DEBT.md). Remaining unresolved link method: BlupiDead (called from decmove.cpp).

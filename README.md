@@ -6,10 +6,10 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
-**404 functions STRICT + 4 FOLDED, 113,344 / 141,488 unique game `.text` bytes (80.1 %)**, built with one shared
+**405 functions STRICT + 4 FOLDED, 116,160 / 141,488 unique game `.text` bytes (82.1 %)**, built with one shared
 header set for every TU (no per-TU preprocessor views; no active withdrawals; withdrawal history in
 [docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). `decmove.cpp`, `decdesign.cpp` and
-`decblupi.cpp` are fully strict; 5 mapped game functions (about 27.6 KB) remain open (docs/LINK_CONTEXT.md, docs/COMPILER_STUDY.md).
+`decblupi.cpp` are fully strict; 4 mapped game functions (about 24.8 KB) remain open (docs/LINK_CONTEXT.md, docs/COMPILER_STUDY.md).
 STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
 data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
 unverified, masked or behavioural similarity is never counted.
@@ -71,10 +71,9 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 ## Where to continue
 
-All 5 open functions have had several worker passes; the disproven families are recorded per target
+All 4 open functions have had several worker passes; the disproven families are recorded per target
 (docs/COMPILER_STUDY.md, msvc5kb), so new work needs a genuinely new source or context hypothesis.
 1. `event.cpp` register/scheduling residues: `TreatEventBase` (H1, terminator byte load), `DrawButtons` (330
    rematerialisation, pixmap scheduling), `ChangePhase` (constant webs) (docs/COMPILER_STUDY.md rounds 4-5).
 2. `decblock.cpp` `Build` (zero-constant pool, shared drawing tail, swapped spill slots; docs/COMPILER_STUDY.md round 6).
-3. Open questions: the `CDecor` tail (allocated 0x258d4 bytes, no access beyond +0xdbec known; blocks `DoInit`,
-   docs/LAYOUT_DEBT.md); exact linker build (Rich header has no linker entry); data-section matching and a full relink.
+3. Open questions: the internal layout of CDecor's proven 100,044-byte tail (docs/LAYOUT_DEBT.md); exact linker build (Rich header has no linker entry); data-section matching and a full relink.

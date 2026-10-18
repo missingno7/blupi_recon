@@ -365,12 +365,6 @@ public:
 	void	MoveObjectPlouf(POINT pos);
 	void	MoveObjectTiplouf(POINT pos);
 	void	MoveObjectBlup(POINT pos);
-	void	FlushBalleTraj();
-	void	SetBalleTraj(POINT pos);
-	BOOL	IsBalleTraj(POINT pos);
-	void	FlushMoveTraj();
-	void	SetMoveTraj(POINT pos);
-	BOOL	IsMoveTraj(POINT pos);
 	int		SearchDistRight(POINT pos, POINT dir, int type);
 	void	StartSploutchGlu(POINT pos);
 	BOOL	ObjectStart(POINT pos, int type, int speed);
@@ -393,9 +387,7 @@ public:
 	int		CaisseGetMove(int max);
 	BOOL	MockeryDetect(POINT pos);
 	BOOL	BlupiElectro(POINT pos);
-	void	MoveObjectFollow(POINT pos);
 	int		MoveObjectDetect(POINT pos, BOOL *pbNear);
-	int		MoveAscenseurDetect(POINT pos, int height);
 	int		MoveChargeDetect(POINT pos);
 	int		MovePersoDetect(POINT pos);
 	int		MoveBalleDetect(POINT pos);
@@ -580,10 +572,11 @@ protected:
 	int 		m_decorAction;
 	int 		m_decorPhase;
 	int		m_lastDecorIndexes[200];
-	int		m_blupiTimeNoAsc;
-	BYTE		m_balleTraj[MAXCELX * MAXCELY / 8 + 1];
-	BYTE		m_moveTraj[MAXCELX * MAXCELY / 8 + 1];
-	int		m_detectIcon;
+	// [EVIDENCE] Original storage of unknown layout: `new CDecor` allocates 0x258d4 bytes in the SB1 demo,
+	// release and eGames builds, and SB2 has the same 100,044-byte block after this array
+	// (docs/LAYOUT_DEBT.md, follow-up 3). No build accesses it. One array represents the size only,
+	// not the original member list.
+	BYTE		m_unknownTail[100044];
 };
 
 POINT GetCel(int x, int y);

@@ -408,3 +408,15 @@ front-end symbol IDs (measured; docs/SYMBOL_ORDER.md), so declaring it would not
 [OPEN] Its member names and types. The only evidence is its size (100,044 = 4 x 25,011). Whether an opaque
 declaration of a proven-size original block is acceptable source is a policy decision for the owner. No such
 declaration is in canonical source.
+
+## Resolution: opaque representation, DoInit STRICT ([EVIDENCE], 2026-10-18, owner-approved)
+
+The SB2-derived compatibility members inside the region (`m_blupiTimeNoAsc`, `m_balleTraj`, `m_moveTraj`,
+`m_detectIcon`) had no SB1 target evidence and were used only by eight dead SB2 helpers with no callers
+(FlushBalleTraj, SetBalleTraj, IsBalleTraj, FlushMoveTraj, SetMoveTraj, IsMoveTraj, MoveObjectFollow,
+MoveAscenseurDetect). Members, declarations and bodies are removed. The proven region after `m_lastDecorIndexes[200]`
+(0xd208) is declared as `BYTE m_unknownTail[100044]`, commented as size-only evidence. The single array represents the
+total size, not the original member list; refine it if any build reveals accesses. Every evidence-backed offset is
+unchanged (the region starts after the last evidenced member). DoInit's remaining two relocation failures were its
+`OutputDebug("SavePalette\n")` / `("InitSysPalette\n")` strings (oracle data at 0x42e410/0x42e420 ends in a newline).
+Full `verify.py --accept`: DoInit newly STRICT with all 235 relocations verified, zero regressions, 116,160 / 141,488.

@@ -162,6 +162,12 @@
       "tu": "src/blupi.cpp"
     },
     {
+      "symbol": "?DoInit@@YAHPAXPADH@Z",
+      "rva": "0x00001ef0",
+      "size": 2816,
+      "tu": "src/blupi.cpp"
+    },
+    {
       "symbol": "??0CButton@@QAE@XZ",
       "rva": "0x000029f0",
       "size": 64,

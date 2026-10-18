@@ -421,66 +421,6 @@ void CDecor::NotifStep()
 
 
 
-void CDecor::FlushBalleTraj()
-{
-	ZeroMemory(m_balleTraj, sizeof(m_balleTraj));
-}
-
-void CDecor::SetBalleTraj(POINT cel)
-{
-	if (!IsValidCel(cel)) return;
-	int num = cel.y * TRAJBYTEX;
-	num += cel.x / 8;
-	int num2 = cel.x & 7;
-	m_balleTraj[num] |= 1 << num2;
-}
-
-BOOL CDecor::IsBalleTraj(POINT pos)
-{
-	POINT cel;
-	pos.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
-	pos.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
-	cel.x = pos.x / DIMOBJX;
-	cel.y = pos.y / DIMOBJY;
-	if (!IsValidCel(cel)) return FALSE;
-	int num = cel.y * TRAJBYTEX;
-	num += cel.x / 8;
-	int num2 = cel.x & 7;
-	return (m_balleTraj[num] & 1 << num2) != 0;
-}
-
-void CDecor::FlushMoveTraj()
-{
-	memset(m_moveTraj, 0, sizeof(m_moveTraj));
-}
-
-void CDecor::SetMoveTraj(POINT cel)
-{
-
-	if (!IsValidCel(cel)) return;
-	int num = cel.y * TRAJBYTEX;
-	num += cel.x / 8;
-	int num2 = cel.x & 7;
-	m_moveTraj[num] |= 1 << num2;
-}
-
-BOOL CDecor::IsMoveTraj(POINT pos)
-{
-	POINT cel;
-	pos.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
-	pos.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
-	cel.x = pos.x / DIMOBJX;
-	cel.y = pos.y / DIMOBJY;
-	if (!IsValidCel(cel)) return FALSE;
-	int num = cel.y * TRAJBYTEX;
-	num += cel.x / 8;
-	int num2 = cel.x & 7;
-	return (m_moveTraj[num] & 1 << num2) != 0;
-}
-
-
-
-
 void CDecor::StartSploutchGlu(POINT pos)
 {
 	POINT pos2;
@@ -1687,32 +1627,6 @@ BOOL CDecor::BlupiElectro(POINT pos)
 	return IntersectRect(&tinyRect, &src, &src2) != 0;
 }
 
-void CDecor::MoveObjectFollow(POINT pos)
-{
-	if (m_blupiPosHelico.x) return;
-
-	RECT src = BlupiRect(pos);
-	src.left = pos.x + 16;
-	src.right = pos.x + DIMBLUPIX - 16;
-	for (int i = 0; i < MAXMOVEOBJECT; i++)
-	{
-		if (m_moveObject[i].type == TYPE_BOMBEFOLLOW1)
-		{
-			RECT src2;
-			src2.left = m_moveObject[i].posCurrent.x - 100;
-			src2.right = m_moveObject[i].posCurrent.x + DIMBLUPIX + 100;
-			src2.top = m_moveObject[i].posCurrent.y - 100;
-			src2.bottom = m_moveObject[i].posCurrent.y + DIMBLUPIY + 100;
-			RECT tinyRect = { 0, 0, 0, 0 };
-			if (IntersectRect(&tinyRect, &src2, &src))
-			{
-				m_moveObject[i].type = TYPE_BOMBEFOLLOW2;
-				PlaySound(SOUND_FOLLOW, m_moveObject[i].posCurrent, FALSE);
-			}
-		}
-	}
-}
-
 int CDecor::MoveObjectDetect(POINT pos, BOOL* pbNear)
 {
 	RECT src3;
@@ -1795,36 +1709,6 @@ int CDecor::MoveObjectDetect(POINT pos, BOOL* pbNear)
 			if (m_moveObject[i].type == TYPE_BOMBEDOWN && IntersectRect(&rect, &src3, &src2))
 			{
 				*pbNear = FALSE;
-				return i;
-			}
-		}
-	}
-	return -1;
-}
-
-int CDecor::MoveAscenseurDetect(POINT pos, int height)
-{
-	if (m_blupiTimeNoAsc != 0)
-	{
-		return -1;
-	}
-	RECT src;
-	src.left = pos.x + 12;
-	src.right = pos.x + DIMBLUPIX - 12;
-	src.top = pos.y + DIMBLUPIY - 2;
-	src.bottom = pos.y + DIMBLUPIY + height - 1;
-	for (int i = 0; i < MAXMOVEOBJECT; i++)
-	{
-		if (m_moveObject[i].type == TYPE_ASCENSEUR || m_moveObject[i].type == TYPE_ASCENSEURs || m_moveObject[i].type == TYPE_ASCENSEURsi)
-		{
-			RECT src2;
-			src2.left = m_moveObject[i].posCurrent.x;
-			src2.right = m_moveObject[i].posCurrent.x + DIMOBJX;
-			src2.top = m_moveObject[i].posCurrent.y;
-			src2.bottom = m_moveObject[i].posCurrent.y + 16;
-			RECT tinyRect = { 0, 0, 0, 0 };
-			if (IntersectRect(&tinyRect, &src2, &src))
-			{
 				return i;
 			}
 		}

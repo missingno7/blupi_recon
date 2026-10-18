@@ -736,9 +736,9 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	iconDim.x = 0;
 	iconDim.y = 0;
 	if (!g_pPixmap->Cache(0, "image08\\init.blp", totalDim, iconDim, TRUE)) return FALSE;
-	OutputDebug("SavePalette");
+	OutputDebug("SavePalette\n");
 	g_pPixmap->SavePalette();
-	OutputDebug("InitSysPalette");
+	OutputDebug("InitSysPalette\n");
 	g_pPixmap->InitSysPalette();
 	g_pPixmap->SetDebug(FALSE);
 	{

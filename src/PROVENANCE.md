@@ -237,3 +237,7 @@ previous strict `VoyageStep`/`CurrentWrite` source forms.
 [EVIDENCE] `CNetwork::Send` (0x20ec0) is STRICT with `if (dwFlags) dwFlags = DPSEND_GUARANTEED; else dwFlags = 0;` followed by a plain `hr = m_pDP->Send(m_dpid, 0, dwFlags, lpData, dwDataSize); if (hr != DP_OK)`. This replaces the SB2 reconstruction's comma expression `if (hr = m_pDP->Send(..., dwFlags != 0, ...), hr != DP_OK)`. The if/else assignment makes `dwFlags` a register variable (esi, with dwDataSize in edi) that c2 turns into `xor edx,edx; test esi,esi; setne dl`; a branchless `dwFlags = dwFlags != 0`, a ternary argument, or a local flag all fold back to the old allocation, and a lone `if (dwFlags) dwFlags = ...` keeps a branch.
 
 [EVIDENCE] `CPixmap::Create` (0x21190) is STRICT with a local `int depth;` and `if ( bTrueColor )  depth = 16; else depth = 8;` before `SetDisplayMode(dim.x, dim.y, depth)`, instead of the inline `bTrueColor ? 16 : 8`. Same instructions; the if/else assignment gives the oracle's schedule (`sbb edi,edi` before the vtable load). A local declared at the block, a reassigned `bTrueColor` and the top-of-function local all match; `int depth = 8; if (bTrueColor) depth = 16;` and every ternary spelling do not.
+
+- `CDecor` tail (decor.h): `m_unknownTail[100044]` after `m_lastDecorIndexes[200]` represents original storage whose
+  size four builds prove (SB1 demo, SB1 release, eGames, SB2 with the same block) and whose layout is unknown; the
+  SB2-derived trajectory members and eight dead SB2 helpers that used them are removed (docs/LAYOUT_DEBT.md).
