@@ -84,3 +84,20 @@ STRICT TextInputDelete's rotor byte has a real defining tuple from lowering (non
 [HYPOTHESIS] The oracle's extra rotor step need not be a terminator byte; the old-flag alternative stays open. No source
 form is predicted by the recovered predicates; next is a C1-reader/CFG slice of a real compare-result across a state
 store (before 0x412d5c). Pseudocode: scratch/sol-cteb/r3/PSEUDOCODE.md.
+
+## Update: B-a decision predicates (sol-cbuild r4, 2026-10-19)
+
+Pseudocode: scratch/sol-cbuild/r4/PSEUDOCODE.md (dispatch 0x438f79, caller 0x41ba2b, adoption 0x43905c/0x439060,
+scalar 0x439385/0x439619, cut constructor 0x437d7c, component rebuild 0x437e67/0x438544). Exact predicates [EVIDENCE]:
+- 0x438f98: exhausted group G < 3 -> scalar scanning, which can emit singleton cuts;
+  CButton::Draw (G = 3) instead reaches the scalar route through the block-count test below.
+- 0x438fa1: per-function CFG block count >= 100 -> batch route (counter 0x4910e8, reset 0x416eab; Button 8, Build 205).
+- 0x439060: in the batch route the header adopts the predecessor region unless (A - O) - U is empty; Build keeps
+  {EAX,ECX,EBX,EDI}, so it adopts and mixed edges get full-group cuts, not the singleton.
+- Build's G has 12 members because the cursor RMW unions its backward live set (0x41ac8e); costs leave 1 with {EBP,EDI},
+  moving X takes EDI, the cursor takes EBP, exhausting all 12 together.
+Natural preconditions for the singleton: a smaller exhausted group (G < 3, source-controllable: icon-strip witness
+produced singleton-1 cuts natively, but homed Y to the stack) or an empty compatible header set; both need different
+real cursor/lifetime relations. Block count is a whole-function property (205), not a lever.
+Next: the lift cursor LR128 and reverse cursor LR127 share source variable 449; test whether separate traversal
+variables change the late-one web's EBX exclusion or its group, keeping both native cursor LEAs and all loads.
