@@ -6,10 +6,10 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
-**401 functions STRICT + 4 FOLDED, 111,920 / 141,488 unique game `.text` bytes (79.1 %)**, built with one shared
+**402 functions STRICT + 4 FOLDED, 112,736 / 141,488 unique game `.text` bytes (79.7 %)**, built with one shared
 header set for every TU (no per-TU preprocessor views; no active withdrawals; withdrawal history in
 [docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). `decmove.cpp`, `decdesign.cpp` and
-`decblupi.cpp` are fully strict; 8 mapped game functions (about 29 KB) remain open (docs/LINK_CONTEXT.md, docs/COMPILER_STUDY.md).
+`decblupi.cpp` are fully strict; 7 mapped game functions (about 28 KB) remain open (docs/LINK_CONTEXT.md, docs/COMPILER_STUDY.md).
 STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
 data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
 unverified, masked or behavioural similarity is never counted.
@@ -71,14 +71,12 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 ## Where to continue
 
-All 16 open functions have had several worker passes; the disproven families are recorded per target, so new work
-needs a genuinely new source or context hypothesis.
-1. `event.cpp` register/scheduling residues: `TreatEventBase`, `DrawButtons`, `ChangePhase`
-   (docs/SENIOR_SOL_TREAT.md, SENIOR_SOL_EVENT.md, LAYOUT_ORDER.md). Restoring the original definition order already
-   moved `DrawButtons` 78 -> 65 bytes; a reduced compiler example of the remaining choices is the suggested next step.
-2. `decblock.cpp`: `Build` (20-byte missing region), `DecorNextAction` (strict alone, regresses `GetBlupiInfo`);
-   `decor.cpp` `AdaptBorder`, `DrawMap`, `CurrentRead`, `FileExist` (docs/SENIOR_SOL_BUILD.md, SENIOR_SOL_DECOR3.md).
-3. Small residues: `pixmap.cpp` `Create`/`QuickIcon` (frame 0x10 vs 0x14), `misc.cpp` `AddCDPath` and 0x1f410,
-   `button.cpp` 0x2a30, `network.cpp` 0x20ec0 (docs/SENIOR_SOL_SMALL.md, SENIOR_SOL_LEFTOVERS.md).
+All 7 open functions have had several worker passes; the disproven families are recorded per target
+(docs/COMPILER_STUDY.md, msvc5kb), so new work needs a genuinely new source or context hypothesis.
+1. `event.cpp` register/scheduling residues: `TreatEventBase` (H1, terminator byte load), `DrawButtons` (330
+   rematerialisation, pixmap scheduling), `ChangePhase` (constant webs) (docs/COMPILER_STUDY.md rounds 4-5).
+2. `decblock.cpp` `Build` (tail sharing, swapped spill slots); `DecorNextAction` is STRICT only in the DX5 header state
+   (patches/dx5-authentic.patch), which still regresses `MoveObjectSort` (docs/LINK_CONTEXT.md).
+3. `misc.cpp` `AddCDPath` (block layout normalised by c2).
 4. Open questions: the `CDecor` tail (allocated 0x258d4 bytes, no access beyond +0xdbec known; blocks `DoInit`,
    docs/LAYOUT_DEBT.md); exact linker build (Rich header has no linker entry); data-section matching and a full relink.

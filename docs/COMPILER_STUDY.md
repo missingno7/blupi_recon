@@ -57,7 +57,7 @@ leave bytes identical but change temporaries) is the best remaining direction.
 
 ## Other map entries ([OPEN])
 
-- `DrawMap` 0x14550: tail register phase differs around the `Build(RECT, POINT)` / `DrawMap(8, RECT, RECT)` struct
+- `DrawMap` 0x14550 (STRICT, see "CDecor::DrawMap: field-assignment order"): tail register phase differed around the `Build(RECT, POINT)` / `DrawMap(8, RECT, RECT)` struct
   temporaries; local RECT variables enlarge the frame (rejected); temporary forms were neutral in the micro TU.
 - `CNetwork::Send` 0x20ec0: oracle holds dwFlags/dwDataSize in esi/edi and evaluates `dwFlags != 0` first; natural
   assignment/ternary forms are inert. The comma expression is an SB2-reconstruction artifact kept until a form matches.
@@ -282,7 +282,23 @@ keeps 330 in esi instead of rematerialising it; the title region is the source w
 - For `m_pPixmap->DrawMap(8, src, dst)`: a local `src` (522x400) is promoted like the oracle but c2 also reserves a
   dead 16-byte frame slot (0x38); a local `dst` alone, or all four aggregates in one block, folds the constants into
   the copies instead (frame 0x28). Tested: separate/one block, declaration order, function scope, field assignment,
-  reuse of `clip`, copy-then-modify, a RECT array (0x48). [OPEN] the form that promotes `src` without a slot.
+  reuse of `clip`, copy-then-modify, a RECT array (0x48). Resolved below.
+
+### CDecor::DrawMap: field-assignment order ([EVIDENCE])
+
+STRICT with `RECT src, dst;` assigned field by field, `src` first, both in top, bottom, left, right order (KB
+BLUPI-SRC-03). Measured with 72 order variants (build/tmp/rx/s_dmr.py, `vary.py`):
+- Initialising `src` (pushed second) before `dst` makes c2 preload src's four constants into registers before dst's
+  stores, as in the oracle. Initialising in push order (dst first), `MAKE_RECT` temporaries and a local `dst` alone
+  store each constant directly at its push site.
+- The dead slot comes from a zero shared by two fields: whenever `dst.left = 0` is assigned before `dst.top = 0`,
+  one store survives into a 16-byte frame slot (frame 0x38). All 12 dst orders with `top` before `left` avoid it, and
+  so does `dst.left = dst.top = 0` (top assigned first). With distinct values (`{0, 1, ...}`, `{3, 4, ...}`) there is
+  no dead store in any order. `= { 0, 0, ... }` and MAKE_RECT behave like left first.
+- With the slot gone, src's preload registers follow its field statement order (temp rotor, BLUPI-REG-06). Of the 24
+  src orders only top, bottom, left, right gives the oracle's edx/eax/edi/ecx; the others differ by 4-15 bytes.
+- [HYPOTHESIS] The field order is a fitted choice. The author usually writes left, right, top, bottom (Planet Blupi,
+  most SB1 functions), but this is the only order that matches, and using it for both rects keeps them consistent.
 
 ### CPixmap::Create +0x12d ([EVIDENCE], negative)
 

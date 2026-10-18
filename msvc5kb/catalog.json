@@ -2654,6 +2654,48 @@
         "doc_ref": "docs/COMPILER_STUDY.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SRC-03",
+      "section": "source-forms",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Field-assignment order of by-value struct arguments: zero-field dead store and constant preload registers",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "native_fewer_stack"
+        ]
+      },
+      "symptom": "Constant RECT/POINT arguments passed by value: either an extra 16-byte frame slot with one dead `mov [esp+N], reg` of a shared zero, or the preloaded constants of the other argument sit in the right instructions but in rotated scratch registers.",
+      "construct": "`RECT src, dst; src.top = 0; src.bottom = 400; src.left = 0; src.right = 522; dst.top = 0; ...; f(src, dst);` versus `f(MAKE_RECT(...), MAKE_RECT(...))`, `RECT r = {...}` or field assignments in left/top/right/bottom order.",
+      "explanation": "VC5 SP3 /O2 promotes the fields of a local struct whose only use is a by-value argument. (1) Initialising the later-pushed argument's struct first (src before dst for f(src, dst)) is what makes c2 preload its constants into registers before the earlier-pushed argument's stores; inline-helper temporaries and initialisation in push order store each constant directly. (2) When two fields hold the same constant 0 and `left` (offset 0) is assigned before `top` (offset 4), one field store survives as a dead store into a frame slot for the whole struct (+0x10 frame); assigning `top` before `left` (or `left = top = 0`, which assigns top first) avoids it. Aggregate initialisers and MAKE_RECT-style helpers behave like left-first. (3) The scratch registers of the preloaded constants follow the field statement order through the temp rotor (BLUPI-REG-06): in CDecor::DrawMap only top, bottom, left, right gives edx/eax/edi/ecx.",
+      "experiment": "Write the argument structs as named locals with field assignments, initialise the later-pushed argument first, and try the field orders, top before left first.",
+      "not_when": "Arguments with distinct field constants or non-constant fields (no shared zero) do not show the dead store; inline-helper temporaries are the candidate when the oracle stores each constant directly at its push site.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#cdecordrawmap-field-assignment-order-evidence",
+          "tier": "PROVEN",
+          "counts": "1 function STRICT (CDecor::DrawMap 0x14550); 72 order variants"
+        }
+      ],
+      "keywords": "struct field assignment order RECT by value argument dead store frame slot zero cse rotor preload",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::DrawMap",
+        "rva": "0x14550",
+        "tu": "src/decor.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 100,
+        "outcome": "STRICT",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

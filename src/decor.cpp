@@ -261,7 +261,18 @@ BOOL CDecor::DrawMap(BOOL bPlay, int team)
 		POINT pos = { 320, 240 };
 		Build(clip, pos);
 	}
-	m_pPixmap->DrawMap(8, RECT(0, 0, 522, 400), RECT(0, 0, 206, 158));
+	{
+		RECT src, dst;
+		src.top = 0;
+		src.bottom = 400;
+		src.left = 0;
+		src.right = 522;
+		dst.top = 0;
+		dst.bottom = 158;
+		dst.left = 0;
+		dst.right = 206;
+		m_pPixmap->DrawMap(8, src, dst);
+	}
 	m_posDecor = oldPosDecor;
 	m_scrollPoint = oldScrollPoint;
 	m_phase = oldPhase;

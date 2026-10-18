@@ -1167,6 +1167,12 @@
       "tu": "src/decor.cpp"
     },
     {
+      "symbol": "?DrawMap@CDecor@@QAEHHH@Z",
+      "rva": "0x00014550",
+      "size": 816,
+      "tu": "src/decor.cpp"
+    },
+    {
       "symbol": "?GetMissionPath@CDecor@@QAEXPADHHH@Z",
       "rva": "0x00014880",
       "size": 96,
