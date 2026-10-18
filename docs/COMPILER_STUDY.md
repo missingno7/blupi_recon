@@ -381,6 +381,17 @@ the early definitions (docs/LOWERING.md). Inert or worse source forms: x inside 
 aggregates, inline POINT-returning helpers, font/line2+1 precomputed into locals before `pos.x = 330`, and the 18
 micro controls in round 3. [OPEN] the C++ construct whose IR defines x after the text/font arguments.
 
+### Build: exact CFG recovered ([EVIDENCE], worker sol-build4)
+
+A static CFG comparison (scratch/sol-build4/cfg.py) showed that the original draws the blupi with a QuickIcon call in
+each shield/power/cloud/hide branch, plus QuickIcon(CHTEMP, 0, tinyPoint) on the hide path with one mask origin, and
+jumps from the final else into the normal-draw call. The reconstruction's shared `num`/`channel` assignments followed by
+one QuickIcon came from the decompiler-derived SB2 code. The canonical source now has the oracle's exact ordered CFG and
+player/mask register roles (1172/1237 aligned, previously 1162). The `goto blupi_normal` is kept: the goto-free
+duplicated form gives the same CFG but swaps register roles and regresses accepted GetBlupiInfo (context). Remaining:
+allocation regions (58), e.g. a floor-register exchange traced to a 1400-point EDI penalty from two cache ranges
+(scratch/sol-build4/round2/FINDINGS.md).
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`

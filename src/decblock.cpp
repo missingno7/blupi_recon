@@ -1186,10 +1186,10 @@ void CDecor::Build(RECT rect, POINT mousePos)
 	{
 		tinyPoint.y = 0;
 		rect.top = y;
-		rect.bottom = DIMDECORY;
+		rect.right = DIMDECORX;
 		for (j = 0; j < 2; j++)
 		{
-			rect.right = DIMDECORX;
+			rect.bottom = DIMDECORY;
 			m_pPixmap->DrawPart(-1, CHDECOR, tinyPoint, rect, 1, FALSE);
 			tinyPoint.y += DIMDECORY - rect.top;
 			rect.top = 0;
@@ -1271,9 +1271,9 @@ void CDecor::Build(RECT rect, POINT mousePos)
 				int team = m_pNetwork->m_players[i].team;
 				if (blupiChannel == 2 && team > 0) blupiChannel = CHBLUPI1 - 1 + team;
 				m_pPixmap->QuickIcon(blupiChannel, m_netBlupiIcon[i], tinyPoint);
-				tinyPoint.x += 10;
-				tinyPoint.y -= 20;
-				m_pPixmap->QuickIcon(CHBUTTON, team + 120, tinyPoint);
+				pos.x = tinyPoint.x + 10;
+				pos.y = tinyPoint.y - 20;
+				m_pPixmap->QuickIcon(CHBUTTON, team + 120, pos);
 			}
 		}
 	}
@@ -1295,8 +1295,8 @@ void CDecor::Build(RECT rect, POINT mousePos)
 					m_pPixmap->QuickIcon(CHELEMENT, num, tinyPoint);
 					tinyPoint.y -= 2;
 				}
-				num = m_blupiIcon;
-				channel = GetBlupiChannelActual();
+				blupi_normal:
+				m_pPixmap->QuickIcon(GetBlupiChannelActual(), m_blupiIcon, tinyPoint);
 			}
 			else if (m_blupiPower)
 			{
@@ -1306,8 +1306,7 @@ void CDecor::Build(RECT rect, POINT mousePos)
 					num = table_magicloop[m_time / 2 % 5];
 					m_pPixmap->QuickIcon(CHELEMENT, num, tinyPoint);
 				}
-				num = m_blupiIcon;
-				channel = GetBlupiChannelActual();
+				m_pPixmap->QuickIcon(GetBlupiChannelActual(), m_blupiIcon, tinyPoint);
 			}
 			else if (m_blupiCloud)
 			{
@@ -1321,41 +1320,28 @@ void CDecor::Build(RECT rect, POINT mousePos)
 						m_pPixmap->QuickIcon(CHEXPLO, (j + m_time) % 6 + 48, pos);
 					}
 				}
-				num = m_blupiIcon;
-				channel = GetBlupiChannelActual();
+				m_pPixmap->QuickIcon(GetBlupiChannelActual(), m_blupiIcon, tinyPoint);
 			}
 			else if (m_blupiHide)
 			{
 				m_blupiSec = SEC_HIDE;
 				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
 				{
-					{
-						POINT pos = { 0, 0 };
-						m_pPixmap->DrawIcon(CHTEMP, 1, 0xF5, pos, 0, TRUE);
-					}
-					{
-						POINT pos = { 0, 0 };
-						m_pPixmap->DrawIcon(CHTEMP, GetBlupiChannelActual(), m_blupiIcon, pos, 1, FALSE);
-					}
-					{
-						POINT pos = { 0, 0 };
-						m_pPixmap->DrawIcon(CHTEMP, 1, 0xED, pos, 0, TRUE);
-					}
-					num = 0;
-					channel = CHTEMP;
+					POINT maskOrigin = { 0, 0 };
+					m_pPixmap->DrawIcon(CHTEMP, 1, 0xF5, maskOrigin, 0, TRUE);
+					m_pPixmap->DrawIcon(CHTEMP, GetBlupiChannelActual(), m_blupiIcon, maskOrigin, 1, FALSE);
+					m_pPixmap->DrawIcon(CHTEMP, 1, 0xED, maskOrigin, 0, TRUE);
+					m_pPixmap->QuickIcon(CHTEMP, 0, tinyPoint);
 				}
 				else
 				{
-					num = m_blupiIcon;
-					channel = GetBlupiChannelActual();
+					m_pPixmap->QuickIcon(GetBlupiChannelActual(), m_blupiIcon, tinyPoint);
 				}
 			}
 			else
 			{
-				num = m_blupiIcon;
-				channel = GetBlupiChannelActual();
+				goto blupi_normal;
 			}
-			m_pPixmap->QuickIcon(channel, num, tinyPoint);
 		}
 	}
 
