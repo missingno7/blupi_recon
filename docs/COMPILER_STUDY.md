@@ -514,6 +514,35 @@ ChangePhase (blood2_recon found TU-specific /YX shifts in its ObjectDLL; not tra
 - Declaration/statement ID costs reproduce identically under Blupi, Blood II Object and CShell flags (same c1xx/c2
   hashes). Transfer table, contradictions and next tests: scratch/sol-xfer/FINDINGS.md; KB VC5-CTX-06/-11 updated.
 
+### Positive controls and causal round (2026-10-19; workers sol-posbuild, sol-poscpdb, sol-posteb, sol-cbuild, sol-ccp, sol-cdb)
+
+Mechanisms demonstrated on STRICT functions (positive controls, each with a predicted one-change variant and a micro):
+- Call-spanning liveness sets a pooled constant's register class: CPixmap::CPixmap (near-verbatim PB) keeps 1 in EBX only
+  because its last use follows MouseHotSpot; moving that store before the call keeps refs/benefit/priority and selects EAX.
+- RECT repeated-zero field order decides a dead aggregate home and a late zero's benefit (DrawMap; extends SRC-03).
+- Guard enumeration order swaps two constants' weighted cost within one connected range (EventButtons, PLAY/PLAYTEST
+  -155/-156 -> -156/-155); a later guard cannot credit an earlier split component.
+- Authentic PB DrawTextCenter keeps early POINT field definitions; 0x443889 deletes the late argument copies. Late
+  definitions are not created by lowering. A stable scalar copy is deleted by 0x41c72e/0x41c9d1 only when no source
+  definition intervenes before its consumer.
+- CButton::Draw: at call pressure 7/7 the stock compiler splits a pooled literal and emits forced singleton cuts
+  (0x437e67/0x438544 -> 0x43970b/0x4399cc); a micro with a later literal-1 argument produces singleton {1} cuts.
+- No STRICT function has TreatEventBase's rotor old-input shape: matched toggles (PB playMovie, ChangeButtons, rank-1)
+  keep the old value as a memory operand.
+Causal results per open function:
+- Build: the round-5 edits (a) singleton-1 cut, (b) cloud-Y in loop, (c) initial-Y copy contraction are mutually
+  independent (all subsets measured: ab 31 B, abc 8 B). (b) Source already places Y in the loop; C2 per-loop LICM
+  (0x42127d, worker 0x43e4fc) extracts it, while the oracle extracts X only. (c) The copy exists at the C2 reader
+  (142 temp = load - camera; 131 field = temp); removing it drops an 18,000-point camera-range interference penalty
+  (normal Y EBP -> EDI). Split/RMW spellings are reconstructed back by early value reconstruction (0x409c5c).
+  Seven micros (restore idiom, feedback, pointer reload, reverse cursor) eliminated: extra add/lea/reload or shifted
+  displacements.
+- ChangePhase: first divergence +0x84 (zero takes EBX; EDI is held by the index range). With the literal oracle order
+  the gap is 13 points (zero -65, PLAY -78); the earlier one-point gap belonged to a flag variant with extra code.
+  The oracle bytes leave room only for an instruction-free zero split at the index/mouse boundary.
+- DrawButtons: C1 emits font/text arguments before the late x store, but 0x42127d moves the x=330 definitions early;
+  union view, by-reference wrapper, branch arms and buffer wrapper all get normalized the same way.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
