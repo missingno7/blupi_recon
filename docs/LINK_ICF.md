@@ -255,5 +255,8 @@ oracle; this is rejected. Original additional-module identities remain OPEN.
   give unchanged keys; 84,753 modelled key splits fail (best 65/128); VC6 short imports add non-oracle Rich stamps.
   [OPEN] the original sort input remains unexplained.
 - Round 5: the other LINK 5.10 builds (7255 CE beta, 7168 NT5-1592/1691, PSDK-1197) under a generalized historical
-  host write no Rich header at all, so the oracle's Rich header identifies LINK 5.10.7303 (VC5 SP3) among local builds;
+  host write no Rich header at all, so among LOCAL builds only 5.10.7303 fits. Correction (2026-10-18, from blood2_recon
+  docs/toolchain.md 'Rich-header semantics'): the unavailable 5.10.7287 also writes Rich headers, and the Linker510 entry
+  is the linker-generated export object, so an EXE without exports (BLUPI.EXE) records no linker build. 7287 (Blood II's
+  linker, Oct 1997 SP3 pre-release hypothesis) remains possible for Blupi [OPEN];
   all four also give IAT 15/128 and keep frame's filter.

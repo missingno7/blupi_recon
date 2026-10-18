@@ -492,6 +492,18 @@ code (6,976 or 7,024 bytes vs 6,919). C1 folds constant-only expressions, so som
 - [HYPOTHESIS, under test by sol-idwin] DrawButtons (needs F(line2) < F(text)) and Build (keyforce gains at ID shifts
   ~31,600) both point at IDs crossing 65536, where F wraps; a shared header-set difference of ~31k IDs would do that.
 
+### Residual classification of the four open functions ([EVIDENCE], tools/residues.py on canonical objects, 2026-10-18)
+
+| Function | ours / oracle code bytes | aligned | regions |
+|---|---|---|---|
+| TreatEventBase | same size | 1886/1894 | register 3: register-only |
+| DrawButtons | 7424 / 7419 (padding) | 2288/2304 | one block: moved instructions + registers (scheduling/register) |
+| ChangePhase | 6928 / 6919 (padding) | 2021/2029 | insert 3, mixed 2, constant 1, delete 1: canonical deliberately uses a non-oracle test order |
+| Build | 3904 / 3866 | 1177/1237 | register 18, insert 13, mixed 12, delete 6, constant 3: genuinely larger, not register-only |
+
+/YX does not shift event.cpp's counter: /YX create, /YX use and no PCH all give `_cheat_code$S33910` and 32 bytes in
+ChangePhase (blood2_recon found TU-specific /YX shifts in its ObjectDLL; not transferred to this TU).
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
