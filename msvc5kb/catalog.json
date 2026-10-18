@@ -3794,6 +3794,16 @@
           "ref": "blupi_recon:scratch/sol-icf/FINDINGS-round3.md; round3-report.json; round3-members.csv",
           "tier": "PROVEN",
           "counts": "269 observed modules = 268 stamp-less + 1 CVTRES; two weak aliases add exactly two"
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-rich/FINDINGS.md; release-census.json; dead-probe.json; link-summary.json; trace-summary.json",
+          "tier": "PROVEN",
+          "counts": "Static-only follow-up: all eight distinct additional release images have LINK 5.0 and no Rich header; the ninth release copy is oracle-identical. REF/NOREF controls count 1/5/16 modules while REF removes every import in the latter two. Baseline/default libraries remain 268 and byte-identical. Ancestral wave.cpp adds one TU and three discarded imports: 272, not 270; it worsens raw .text inequality from 66,622 to 153,251. DX6/6.1 replace ten zero stamps with 0x131f62 and worsen .rdata; LIBC-first remains 268 and worsens layout. Every successful trace leaves the complete image unchanged and drains its tool job. No source/link fix or identification of the oracle's net two modules is established."
+        },
+        {
+          "ref": "blupi_recon:scratch/sol-rich/FINDINGS.md Round 2; r2/report.json; r2/inverse-keys.json; r2/inverse-two-passes-4.json; r2/inverse-three-passes-4.json",
+          "tier": "PROVEN",
+          "counts": "Exact qsort model matches both fresh 137-element LINK traces and all 128 current IAT slots. FindClose and SetConsoleCtrlHandler participate before REF removes their slots. Physical hint/name order independently matches 126/126 retained named imports. No source-consistent inverse in the tested bounded extraction families (1,485 base-block, 295,200 two-pass, 60,467 three-pass, 80,640 reordered-block configurations after size-vector deduplication where applicable; zero pass USER32). These are bounded negative models, not a proof over all key sequences. Conditional 137..141-entry inverses fit live output only by changing 103..117 load-name positions and contradict physical hints. The installed RTM LINK under the same CRT produces the same 137 DLL keys, exact model permutation, and 15/128 oracle slots. RTM repeat images differ in 71 resource-directory timestamp bytes only; no deterministic RTM-image claim. Rich +2 remains unidentified."
         }
       ],
       "keywords": "Rich object count module comp.id OLDNAMES LIBC import REF ICF CVTRES ftime mkdir",
@@ -3804,6 +3814,41 @@
         "compiles": 21,
         "outcome": "19 game + 104 LIBC + 145 import members; optional observation leaves the full image unchanged. One full candidate verification (19 game + 2 CRT evidence compiles) has zero accepted regressions, expected sound-path INCOMPLETE; alias placement contradicts the oracle.",
         "doc_ref": "scratch/sol-icf/FINDINGS-round3.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LNK-05",
+      "section": "linker",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Library extraction follows COFF undefined-symbol order, not final machine-call order",
+      "symptoms": {},
+      "symptom": "Retained imports agree but their extraction/IAT order differs; machine-code first references predict the wrong pull order.",
+      "construct": "VC5 SP3 /O2 /Gy game COFF objects; LINK 5.10.7303 explicit imports then LIBC/OLDNAMES.",
+      "explanation": "Replay first-reference insertion of unresolved COFF external symbols, process game objects in link order, scan each archive over the growing unresolved queue, then repeat libraries for dependencies introduced by later archives. This reproduces all 249 library-member identities and load positions in the pinned SB1 census. The compiler's COFF external ordering can differ from final call/relocation order: eight of 19 game TUs differ for imports, and sequenced call controls emit Second before First in the symbol table despite calling First then Second. Function definition order changes grouping; prototype changes are not a universal external-order selector.",
+      "experiment": "Compare archive-data offsets against histlink --trace-rich, not just loaded member names. Inspect COFF symbol indices directly; use source controls before replacing that order with final call order.",
+      "not_when": "The replay is validated on one complete 249-member snapshot, without weak aliases. Intra-function compiler symbol-list construction is not fully reverse engineered. Equal sorted live orders do not uniquely identify the original input key sequence or hidden entries; do not add count-only objects/imports.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-rich/FINDINGS.md Round 2; r2/replay-resolution.json; r2/symbol-order.json; r2/report.json",
+          "tier": "PROVEN",
+          "counts": "249/249 selected archive members in exact order; nine retained micro controls (20 compiler invocations including earlier four/seven-control runs); palette controls reproduce the demo/oracle reversal"
+        }
+      ],
+      "keywords": "LINK COFF undefined external symbol order library extraction imports IAT qsort first reference demo GDI32 GetDeviceCaps GetSystemPaletteEntries",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "whole library census; CPixmap Create/InitSysPalette import-order twin",
+        "flags": "SP3 /W3 /GX /O2 /ML /Gd /Gy; no PCH; canonical game headers for pinned objects; minimal/default VC headers for controls",
+        "compiles": 20,
+        "outcome": "Blupi-specific complete extraction replay and bounded compiler controls. The oracle has an earlier Create GetDeviceCaps call absent from the demo; with that earlier reference, GetDeviceCaps is introduced before GetSystemPaletteEntries. No matching-source change or new accepted body.",
+        "doc_ref": "scratch/sol-rich/FINDINGS.md"
       },
       "legacy_ids": []
     }

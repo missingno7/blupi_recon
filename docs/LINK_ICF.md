@@ -235,3 +235,16 @@ by -0x10, whereas entry differs by -0x30: the remaining -0x20 before startup
 is the unwind filter kept later in frame.obj. Reinstating ftime/mkdir aliases
 restores Rich 270 but moves their CRT bodies past startup, contrary to the
 oracle; this is rejected. Original additional-module identities remain OPEN.
+
+## Import order: forward model and inverse search ([EVIDENCE], worker sol-rich rounds 1-2)
+
+- LINK 5.10 /OPT:REF drops IAT slots of imports referenced only by discarded code but still counts their modules in Rich
+  (controlled test). Our 137 qsort inputs include two such dead KERNEL32 imports (FindClose, SetConsoleCtrlHandler) and
+  seven null thunks; they participate in the sort.
+- Library extraction rule recovered: game objects in command-line order, undefined externals queued in COFF symbol-table
+  order on first encounter, libraries scanned over the growing queue, repeated sweeps. All 249 members replay exactly.
+- The ported VC5 SP3 MSVCRT qsort reproduces both live 137-entry permutations and our 128 IAT slots exactly.
+- The oracle's physical hint/name order agrees with our load order for all 126 named imports, yet ~440,000 bounded
+  hidden-entry configurations (k<=4 extra entries, null/dead placement) give no inverse; all fail USER32's 35 names.
+- Demo/eGames/oracle share one IAT name order (demo: GDI32 GetDeviceCaps swap, explained by pixmap Create's earlier call).
+  RTM LINK 5.00 with the same CRT gives the same 15/128. [OPEN] Rich +2 and the original sort input/implementation.
