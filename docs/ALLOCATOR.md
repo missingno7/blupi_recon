@@ -3,7 +3,7 @@
 A bounded, executable model of how c2 (VC5 SP3, SHA-256 e75aecaf...0515fae) assigns callee-saved registers and stack
 homes. Worker sol-alloc, 2026-10-18; full model (615 lines), 14 micros with registered predictions, application
 captures and audits: scratch/sol-alloc/ (ignored). Tools: `tools/c2trace/colour_trace.py`, `tools/c2trace/alloc_micros.py` (micro sources and registered predictions in
-msvc5kb/micros/alloc). KB rules BLUPI-ALLOC-01..07.
+msvc5kb/micros/alloc). KB rules BLUPI-ALLOC-01..09.
 Late temp assignment (rotor, scratch picker, preference pass) is a separate, later stage: BLUPI-REG-06..08.
 
 ## Pipeline ([EVIDENCE])
@@ -71,3 +71,21 @@ capture of CDecor::Build passes all 658 model checks.
   overlap decided it. Then look for the source condition (a value's lifetime, a join, a use before or after a call)
   that changes that input. Use counts and declaration order are rarely the lever.
 - Portable to other VC5 SP3 projects; other c2 builds need the addresses re-verified (the tracer refuses other images).
+
+## Pressure cuts and saved colours, round 2 ([EVIDENCE])
+
+Workers sol-alloc (ChangePhase) and sol-build3 (Build) applied the model; neither function became STRICT.
+- Cut pressure (0x41a985, BLUPI-ALLOC-08): after the definition list, `P = physical/chosen + local temporaries +
+  max(definition additions, read additions)`; other unbound globals are not counted one each. `P > capacity` evicts
+  temporaries; `P == capacity` requests a cut unless tuple+12 flag 01 is set; the chosen LR is excluded from its own cuts;
+  a call contributes three definitions. 945/945 tested IL steps; 6/9 registered source micros.
+- Saved colours (BLUPI-ALLOC-09): literal pooling is function-wide, so a later real zero read keeps the constant alive
+  after an earlier store's scope ends; a lexical scope boundary does not free a saved colour, a real last use does.
+- ChangePhase: the index reaches only 5-6/7 pressure, while zero reaches 7/7 after it is committed, so the cuts protect zero
+  and split PLAY. The oracle needs zero's three late uses separated while the index keeps its long EDI lifetime. An
+  early-store control produced the oracle's register roles but contradicted the oracle's instruction order (58 regions);
+  discarded. [OPEN] the edge cuts at 0x439619 that would separate zero before the index's late-use region.
+- Build: a height form removes the rect.bottom cloning but changes the Y/left register roles; a slot-order form reaches
+  43 regions but regresses accepted GetBlupiInfo; the zero stays profitable in EAX (9 refs, +1). [OPEN] splitting the
+  camera lifetimes before background Y is allocated. Details: scratch/sol-alloc/changephase/FINDINGS.md,
+  scratch/sol-build3/FINDINGS.md "Round 4".

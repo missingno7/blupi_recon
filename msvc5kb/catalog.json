@@ -3095,6 +3095,88 @@
       ]
     },
     {
+      "id": "BLUPI-ALLOC-08",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Global cuts use physical/chosen pressure plus max(definitions, reads)",
+      "symptoms": {
+        "any": [
+          "immediate_differs"
+        ]
+      },
+      "symptom": "A large unbound live set does not cause a cut until one additional range is physically committed.",
+      "construct": "Reduced App::Test with zero stores, repeated PLAY tests, a Search result and 472-byte table lookup; extend a real old-phase value across the calls with consumer calls.",
+      "explanation": "After processing the definition list, P=physical/chosen+local temporaries+max(definition additions, read additions). Other unbound globals are not counted one each. P>capacity evicts temporaries until equality; equality requests a cut unless tuple+12 flag01 is set. The selected LR is committed/excluded from its own cuts. Call clobbers contribute three definitions. The parallel restricted counter tracks BYTE-capable registers {eax,ecx,edx,ebx}, not callee-saved registers; flag80 and the three-register follow-up concern byte capacity.",
+      "experiment": "Compile micros/clique_table.cpp and four_nonconstant_live.cpp with micros.py, then replay with pressure_trace.py. Check actual incoming counters/IL against the independent operand-list transition, cut request and computed forced/excluded set. No micro program is executed. Tool: tools/c2trace/colour_trace.py --cuts.",
+      "not_when": "This is a per-instruction model from actual incoming state, not full C++-to-IL prediction. Arbitrary local-temp evictions, every alias/edge mutation and full 439619 propagation are not dynamically covered. Reading flags as saved-register pressure is incorrect: 4931c0 is byte-capable, 4931c8 non-byte-capable.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md#pressure-cuts-and-saved-colours-round-2-evidence",
+          "tier": "PROVEN",
+          "counts": "945/945 tested pressure/cut IL steps; 6/9 registered source micros; ChangePhase not STRICT"
+        }
+      ],
+      "keywords": "global pressure cut call clobber max definition read committed byte register capacity",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangePhase; micros",
+        "rva": "0x19310",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 20,
+        "outcome": "mechanism modelled, function MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-ALLOC-09",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "A real last-use boundary can free a saved colour; a lexical scope boundary need not",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Adding braces or moving a declaration does not shorten a pooled literal, while moving the last real index use changes allocation throughout the function.",
+      "construct": "Compare clique_live with zero_scope and capture_condition; then compare clique_table with table_index_dies.",
+      "explanation": "Literal pooling is function-wide. A later real zero read can keep the same virtual constant component alive after the scope of an earlier source store ends. A local index crossing calls occupies a saved colour; moving its last actual store/lookup before those calls removes that occupancy. Given EBX penalty+100 and EDI penalty0, exposing EDI to early zero changes its colour and preserves EBX for PLAY without requiring a queue-key inversion.",
+      "experiment": "Run micros.py clique_live zero_scope capture_condition clique_table table_index_dies; compare raw function payloads and selected index/zero intervals. Game positive control index_store_early.cpp tests the same lifetime condition with fnprobe and colour_trace. Tool: tools/c2trace/colour_trace.py --cuts.",
+      "not_when": "Do not move observable state writes merely to improve bytes. ChangePhase's oracle stores m_index late and retains the EDI index; its early-store control is excluded as original source. Declaration/source identity changes can still affect upstream web or queue history; no universal declaration-order independence is asserted.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/ALLOCATOR.md#pressure-cuts-and-saved-colours-round-2-evidence",
+          "tier": "PROVEN",
+          "counts": "945/945 tested pressure/cut IL steps; 6/9 registered source micros; ChangePhase not STRICT"
+        }
+      ],
+      "keywords": "lifetime scope pooled zero index last use saved register rematerialize",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "ChangePhase; micros",
+        "rva": "0x19310",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 20,
+        "outcome": "mechanism modelled, function MISMATCH",
+        "doc_ref": "docs/ALLOCATOR.md"
+      },
+      "legacy_ids": []
+    },
+    {
       "id": "BLUPI-SRC-02",
       "section": "source-forms",
       "tier": "PROVEN",
