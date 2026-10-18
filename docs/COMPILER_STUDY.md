@@ -455,6 +455,16 @@ shapes, comma/assignment chaining, a written/read local, result reuse, statement
 TreatEventBase best 8 (if/else seed) / 14 (expression seed), DrawButtons 63. Deleting both inner x=330 definitions gives
 the exact first-call run but 897 bytes elsewhere. Local front-end changes in these blocks do not reach the targets.
 
+### c2 reversing: definition backlinks and size limits ([EVIDENCE], worker sol-c2rev)
+
+- Kind-3 descriptor +0x14 is the value's defining C2 tuple. Non-null bypasses the global-web path (0x414e4f) and allows an
+  expression (rotor) temp; zero enters global eligibility (0x414e9f). TreatEventBase's old-value copy (value-number origin,
+  constructor 0x40ae04 via 0x40ad6a) is never given a definition before seeding. Unary/binary/compare builders
+  (0x4029cd, 0x41a3b2, 0x421237) set it; 58 writer sites traced (scratch/sol-c2rev/WRITERS.md). Complement/negation
+  materialize the old read as an expression temp but keep a NOT/compare the oracle lacks. Volatile, named-old, pointer
+  and feedback spellings: all 94 payloads unchanged (8 bytes). [OPEN] a source predicate for the oracle's form.
+- Size limits: no allocator cap near the four open functions' counts; the 64/1,024-entry tables are hash buckets.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
