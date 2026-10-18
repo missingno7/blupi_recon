@@ -145,15 +145,20 @@ def main():
     parser.add_argument("--objects-dir", type=Path, help="reuse objects named as verify.py names them")
     parser.add_argument("--link-only", action="store_true", help="reuse this output directory's objects")
     parser.add_argument("--linker", choices=LINKERS, default="sp3")
+    parser.add_argument("--historical-host", action="store_true",
+                        help="run unmodified SP3 LINK with the VC5 CRT and oracle UTC clock via histlink.py")
     parser.add_argument("--order", choices=("oracle", "manifest"), default="oracle")
     parser.add_argument("--opt", choices=("ref,icf", "ref,noicf", "noref,noicf"), default="ref,icf")
     parser.add_argument("--library", action="append", default=[], type=Path, help="additional genuine library")
     parser.add_argument("--oracle", type=Path, default=DEFAULT_ORACLE)
     parser.add_argument("--no-res", action="store_true", help="omit src/res/blupi.rc (resources)")
+    parser.add_argument("--default-libs", action="store_true", help="IDE-style: LIBC/OLDNAMES via the objects' /defaultlib directives, no /nodefaultlib")
     parser.add_argument("--entry", default=None, help="explicit /entry symbol (default: LINK chooses for /subsystem:windows)")
     parser.add_argument("--diagnostic", action="store_true",
                         help="link even when accepted functions regress (layout diagnostics only; the gate stays FAIL)")
     args = parser.parse_args()
+    if args.historical_host and args.linker != "sp3":
+        parser.error("--historical-host requires --linker sp3 (the pinned LINK.EXE)")
     out = args.out_dir.resolve()
     # Generated artifacts belong in build/ or scratch/, never beside original inputs.
     if not any(out.is_relative_to(ROOT / d) for d in ("build", "scratch")):
@@ -234,10 +239,10 @@ def main():
     oracle = pefile.PE(str(args.oracle))
     header = oracle.OPTIONAL_HEADER
     linker = LINKERS[args.linker]
-    libraries = LIBRARIES + args.library
+    libraries = ([l for l in LIBRARIES if l.name.upper() not in ("LIBC.LIB", "OLDNAMES.LIB")] if args.default_libs else LIBRARIES) + args.library
     options = ["/nologo", "/machine:i386", "/subsystem:windows,4.0", *([f"/entry:{args.entry}"] if args.entry else []),
                f"/base:0x{header.ImageBase:x}", f"/align:{header.SectionAlignment}",
-               "/fixed", "/incremental:no", "/nodefaultlib",
+               "/fixed", "/incremental:no", *([] if args.default_libs else ["/nodefaultlib"]),
                *["/opt:" + s for s in args.opt.split(",")],
                f"/out:{out / 'BLUPI.EXE'}", f"/map:{out / 'BLUPI.map'}"]
     res_files = [] if args.no_res else [build_resources(out)]
@@ -245,16 +250,22 @@ def main():
     response = out / "link.rsp"
     response.write_text("\n".join(subprocess.list2cmdline([arg]) for arg in arguments) + "\n", encoding="cp1252")
     command = [str(linker), "@" + str(response)]
+    host_report = out / "historical-host.json" if args.historical_host else None
+    if host_report:
+        command = [sys.executable, str(ROOT / "tools/histlink.py"), "--report", str(host_report),
+                   "--", "@" + str(response)]
     temp = ROOT / "build/tmp"
     temp.mkdir(parents=True, exist_ok=True)
     system = os.environ.get("SystemRoot", r"C:\Windows")
-    env = dict(SystemRoot=system, TMP=str(temp), TEMP=str(temp),
+    env = dict(SystemRoot=system, TMP=str(temp), TEMP=str(temp), LIB=str(VC / "LIB"),
                PATH=os.pathsep.join(map(str, [linker.parent, VC / "BIN", VC.parent / "SHAREDIDE/BIN",
                                              Path(system) / "System32", Path(system)])))
     # Never leave a stale successful image/map after a failed link.
     for path in (out / "BLUPI.EXE", out / "BLUPI.map", out / "layout.json"):
         if path.exists():
             path.unlink()
+    if host_report and host_report.exists():
+        host_report.unlink()
     run = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True,
                          encoding="mbcs", errors="replace")
     (out / "link.log").write_text(run.stdout + run.stderr, encoding="utf-8")
@@ -266,6 +277,10 @@ def main():
                   args.objects_dir else "canonical", toolchain=manifest["toolchain"],
                   linker_sha256=digest(linker), libraries={str(p): digest(p) for p in libraries},
                   degraded=degraded, exit_code=run.returncode, resource_status="omitted" if args.no_res else "src/res/blupi.rc via VC5 RC + CVTRES")
+    if host_report:
+        record["historical_host"] = dict(report=str(host_report),
+            launcher_sha256=digest(ROOT / "tools/histlink.py"),
+            **(json.loads(host_report.read_text(encoding="utf-8")) if host_report.is_file() else {}))
     (out / "build.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     transcript = run.stdout + run.stderr
     if run.returncode:

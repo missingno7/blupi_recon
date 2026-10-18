@@ -553,3 +553,15 @@ ehvecdtr's copy like the oracle and the CRT entry moves to 0x24d10, exactly the 
 - [OPEN] Production: running LINK against the historical MSVCRT `qsort` (the 1998 build host's runtime) is part of
   reproducing the build environment; a plain launch cannot load it because msvcrt.dll is a KnownDLL. A legitimate
   launcher (historical OS/VM or a documented runtime shim that changes no output byte) is to be chosen at the final link.
+
+## Historical build host (tools/histlink.py, `relink.py --historical-host`) ([EVIDENCE], 2026-10-18)
+
+The unmodified LINK 5.10 (C:	ools\msvc5_sp3\VC\BIN\LINK.EXE) runs under a launcher that recreates the 1998 build host:
+all 111 of LINK's MSVCRT imports are bound in process memory to the VC5 redistributable MSVCRT.DLL (loaded under a private
+name because the modern msvcrt.dll is a KnownDLL), and the clock APIs LINK uses report the oracle link time 1998-10-14
+07:17:39 UTC. Neither tool nor runtime file is modified and no output byte is edited; repeated links are byte-identical.
+Details: docs/HISTLINK.md (worker sol-icf).
+Result with the current objects: TimeDateStamp 0x36245013 (equal); `.text` same-offset equal bytes 23,062 -> 109,395
+(the historical qsort orders contributions as the original LINK did); `.rdata` 4,652 / 4,978; `.rsrc` exact; `.data` size
+exact. Whole file: same size, 66,966 bytes differ, 66,622 of them in `.text` (open functions shift code); header
+differences: Rich count (268 vs 270, also in the modern link, [OPEN]), entry point (0x24d10 vs 0x24d40), `.text` size (-16).
