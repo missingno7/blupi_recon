@@ -74,13 +74,13 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 | Item | State |
 |---|---|
 | Game code | 116,160 / 141,488 unique bytes STRICT (82.1 %); 4 functions open: DrawButtons, ChangePhase, TreatEventBase, Build (24.8 KB) |
+| Whole file | same size (535,552 B); 153,409 bytes differ, almost all from `.text` shifts after the open functions |
 | Link | no unresolved externals; Rich header identical (270 objects + CVTRES 5.00.1668) |
-| `.text` | 32 bytes short (open functions); CRT order matches up to the ICF survivor choice (`ArrayUnwindFilter`); entry 0x24cf0 vs 0x24d40 |
-| `.rdata` | size exact; 2,470 / 4,978 bytes equal at identical offsets |
-| `.data` | 329,711 / 329,728 raw bytes equal (17 = pointers into shifted code); BSS 128 bytes short |
+| `.text` | 16 bytes short; ICF survivors depend on LINK's MSVCRT `qsort` (historical runtime keeps the oracle's choice) |
+| `.rdata` | size exact; 4,546 / 4,978 equal (import names, hints, descriptors exact; IAT/thunk values follow `.text`) |
+| `.data` | size exact; 329,713 / 329,728 raw bytes equal (rest: pointers into shifted code); all 366 STRICT BSS references exact |
 | `.rsrc` | byte-exact (docs/RESOURCES.md) |
-| PE header | Rich block identical; remaining fields follow from `.text`/BSS sizes, entry, timestamp |
-| Whole file | not yet identical |
+| PE header | Rich block identical; timestamp and `.text`-dependent fields remain |
 
 ## Where to continue
 

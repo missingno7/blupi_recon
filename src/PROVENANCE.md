@@ -241,3 +241,22 @@ previous strict `VoyageStep`/`CurrentWrite` source forms.
 - `CDecor` tail (decor.h): `m_unknownTail[100044]` after `m_lastDecorIndexes[200]` represents original storage whose
   size four builds prove (SB1 demo, SB1 release, eGames, SB2 with the same block) and whose layout is unknown; the
   SB2-derived trajectory members and eight dead SB2 helpers that used them are removed (docs/LAYOUT_DEBT.md).
+
+## Full relink: opaque BSS storage (sol-relink round 2)
+
+[EVIDENCE] blupi.cpp represents proven unreferenced intervals 0x47e610..617,
+0x47e620..627 and 0x47e730..733 as ordinary uninitialized 8/8/4-byte objects.
+The original bytes are zero; STRICT neighbours pin every bound. Names and
+types are opaque reconstruction choices, not recovered original identities.
+Definitions follow the functions to preserve front-end local-static IDs;
+the measured VC5 uninitialized-name order predicts their physical positions.
+[EVIDENCE] dectables.cpp represents the later 100-byte zero interval
+0x47e778..7db, after natural four-byte alignment following misc and before
+CRT errno=0x47e7dc. It is the reconstruction owner in the proven later-TU
+band. [OPEN] The original filename/name/type is unknown; do not treat this
+as an established atlas-related global. The owner permits evidence-backed
+opaque storage (CDecor's m_unknownTail precedent). Total added payload is
+120 bytes; two natural four-byte alignment gaps close the 128-byte deficit.
+No explicit padding, raw bytes or arbitrary size adjustment is introduced.
+All 366 STRICT BSS references now land exactly. See docs/DATA_LAYOUT.md,
+Round 2, and scratch/sol-relink/r2/FINDINGS.md for bounds, probes and tests.

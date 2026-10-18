@@ -3711,14 +3711,19 @@
       },
       "symptom": "Uninitialized-global offsets do not follow source definition order, while explicit =0 variables occupy a later group.",
       "construct": "int zeta; int explicit_zero=0; int alpha; int mid; and the reversed mid/alpha/zeta declaration order.",
-      "explanation": "VC5 SP3 emits zeta/alpha/mid at .bss+0/+4/+8 and explicit_zero at +12 in both probes. The declaration-order hypothesis is contradicted for these uninitialized names; the exact VC5 sorting key remains unproved.",
+      "explanation": "VC5 SP3 emits zeta/alpha/mid at .bss+0/+4/+8 and explicit_zero at +12 in both probes. The declaration-order hypothesis is contradicted for these uninitialized names; the exact VC5 sorting key remains unproved. Round 2 measured opaque address-based names in a copied blupi TU, then predicted all three retained names relative to the known globals before compilation. A 100-byte byte array gets natural 8-byte alignment. Payload 120 plus two natural four-byte gaps closes the proven 128-byte deficit.",
       "experiment": "Inspect COFF symbol values with the pinned compiler; do not transfer a VC4/VC6 hash formula or invent globals to fill a gap.",
-      "not_when": "This two-probe result does not identify names or types of unreferenced oracle storage.",
+      "not_when": "This two-probe result does not identify names or types of unreferenced oracle storage. The owner may authorize opaque storage for independently proven intervals; hash placement does not establish original names, types or an unanchored original TU. Do not generalize a VC4/VC6 hash formula.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/DATA_LAYOUT.md",
           "tier": "PROVEN",
           "counts": "2 serial compiler probes; manifest SP3 flags; identical order under reversal"
+        },
+        {
+          "ref": "blupi_recon:docs/DATA_LAYOUT.md, Round 2; scratch/sol-relink/r2/PREDICTIONS.md",
+          "tier": "PROVEN",
+          "counts": "Two bounded blupi-name probes and one aggregate-alignment probe; pre-compile placements all observed; 366 STRICT BSS operands exact"
         }
       ],
       "keywords": "data layout bss uninitialized initialized zero hash order declaration order",
@@ -3727,8 +3732,43 @@
         "tu": "scratch/sol-relink/bss_probe.cpp and bss_probe_reversed.cpp",
         "flags": "/W3 /GX /O2 /ML /Gd /Gy",
         "compiles": 2,
-        "outcome": "declaration-order negative; stable uninitialized group and explicit-zero group",
+        "outcome": "declaration-order negative; stable uninitialized group and explicit-zero group Round 2: exact predicted BSS placement, .data virtual delta zero, no accepted regressions; original opaque identities remain unknown.",
         "doc_ref": "scratch/sol-relink/FINDINGS.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LNK-03",
+      "section": "linker",
+      "tier": "PROVEN",
+      "scope": "blupi",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Explicit import libraries before LIBC recover the oracle hint/name bands",
+      "symptoms": {},
+      "symptom": "Exact .rdata size but import names/hints occupy different offsets; DLL groups and contents are otherwise the same.",
+      "construct": "Win32/DirectX import libraries before LIBC.LIB and OLDNAMES.LIB under LINK 5.10.",
+      "explanation": "The oracle has ten game KERNEL32 names, other DLL contributions, then later CRT KERNEL32 imports. Import libraries before LIBC reproduce that rescan layout: all 2198 hint/name bytes and 160 descriptor bytes become exact; .rdata same-offset equality rises 2470 to 4546 of 4978.",
+      "experiment": "Predict name-band layout from live source references, link with genuine library order, inspect complete ILT/IAT/name/descriptor regions separately.",
+      "not_when": "This does not recover the oracle import tie permutation or missing original inputs. A model of 137 genuine loaded import contributions reproduces all 128 current slots with host MSVCRT qsort, but historical qsort on that population does not match the oracle. Five LINK 5.x variants leave .rdata unchanged. No count-tuning inputs or raw import permutation is justified.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/DATA_LAYOUT.md, Round 2; scratch/sol-relink/r2/FINDINGS.md",
+          "tier": "PROVEN",
+          "counts": "Before/after staged links; full import/hint/name audit; 128/128 host-model slot control; five genuine linker controls"
+        }
+      ],
+      "keywords": "link library order LIBC import idata hint name IAT ILT qsort MSVCRT data layout",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "full relink non-text layout",
+        "flags": "manifest SP3 flags; LINK /OPT:REF /OPT:ICF; DX5 import libraries",
+        "compiles": 0,
+        "outcome": "2198 name/hint and 160 descriptor bytes exact; ILT/IAT 200+200 bytes remain different; source function body bytes unchanged",
+        "doc_ref": "scratch/sol-relink/r2/FINDINGS.md"
       },
       "legacy_ids": []
     }

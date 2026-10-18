@@ -27,11 +27,14 @@ LINKERS = {
 }
 VC = Path(r"C:\tools\msvc5_sp3\VC")
 DX = Path(r"C:\tools\dx5sdk\LIB")  # DX5 SDK: oracle GUIDs (docs/TOOLCHAIN.md)
-LIBRARIES = [VC / "LIB/LIBC.LIB", VC / "LIB/OLDNAMES.LIB"] + [VC / "LIB" / (s + ".lib") for s in
+LIBRARIES = [VC / "LIB" / (s + ".lib") for s in
              ("kernel32", "user32", "gdi32", "winmm")]
 # Oracle import descriptors are in this order; the 5.10 linker's IAT order is
 # independently sorted by DLL. Actual full-image order still needs a clean link.
 LIBRARIES += [DX / (s + ".lib") for s in ("dsound", "ddraw", "dplayx")]  # dxguid.lib was not linked (network.cpp INITGUID)
+# Oracle hint/name records put game imports before the later LIBC imports.
+# Keep explicit import libraries first; LINK rescans them after loading LIBC.
+LIBRARIES += [VC / "LIB/LIBC.LIB", VC / "LIB/OLDNAMES.LIB"]
 
 
 def build_resources(out):

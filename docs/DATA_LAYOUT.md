@@ -251,3 +251,58 @@ path MISMATCH and 317,790 covered bytes. Ambiguous duplicate wind arrays are
 not silently counted; the independent complete decblock-band comparison is
 reported separately. The 17 raw pointer differences are never masked or
 counted as strict matching bytes.
+
+## Round 2: BSS closure and non-text audit (2026-10-18)
+
+[EVIDENCE] This update supersedes Round 1's policy-dependent "no admissible
+source fix" conclusion. The owner explicitly permits opaque representations
+of independently proven unreferenced storage. Three blupi-band intervals are
+represented by 8/8/4 bytes; the later 104-byte interval is represented by a
+100-byte array plus four bytes of natural alignment. A further four bytes of
+natural CRT alignment give **120 storage + 8 alignment = 128 bytes**.
+No explicit padding, align directive, raw blob or renamed known global is used.
+
+[EVIDENCE] The blupi intervals are 0x47e610..617, 0x47e620..627 and
+0x47e730..733. Neighbours are g_hWnd=0x47e618, g_CDPath=0x47e628,
+g_updateTimer=0x47e72c and WindowProc's hInstance=0x47e734. The later band
+is after misc's last word (0x47e770) and before CRT errno (0x47e7dc):
+natural alignment at 0x47e774..777, opaque bytes 0x47e778..7db. The existing
+data-only dectables TU owns that representation within the proven link band.
+[OPEN] Original names/types are unknown; the original TU of the later band is
+not distinguishable among movie/network/dectables/pixmap/sound/text. This is
+reconstruction ownership, not a claim that the original file was dectables.cpp.
+
+[EVIDENCE] Name-order probes preserved hInstance's S31272 suffix. The recorded
+VC5-DATA-01 ordering predicted all placements before the candidate compile;
+every prediction was observed. **All 366 BSS operands from STRICT bodies
+(187 game, 179 pinned LIBC) at 85 distinct effective addresses now equal the
+oracle targets.** Historical-path .data virtual size is exactly 0x51e1c,
+including the oracle 0x161c uninitialized file tail. First BSS drift: none.
+
+[EVIDENCE] Explicit Win32/DX import libraries must precede LIBC/OLDNAMES to
+recover the oracle hint/name layout: game KERNEL32 imports first, then the
+other DLLs, then CRT KERNEL32 imports on rescan. This changes .rdata raw
+same-offset equality **2470 -> 4546 / 4978**, with every name/hint and all
+160 descriptor bytes exact. GUIDs (176 bytes) and non-pointer constants/strings
+are exact. Remaining .rdata bytes: ILT 200, IAT 200, code pointers 32.
+
+[EVIDENCE] Final .data equality is **329713 / 329728**: all 15 differing bytes
+are in 14 pointers into shifted .text. All 44 non-import differing words
+(30 .rdata, 14 .data) have identified code targets. Resources and every file
+alignment tail are exact. Seven remaining header bytes are timestamp (4),
+entry point (1), .text virtual size (1), and Rich object count (1: 268 vs 270).
+[OPEN] The two original stamp-less inputs and exact oracle import-sort input
+population/order remain unidentified. A model of 137 genuine imported
+contributions reproduces all 128 current slots with the host CRT; historical
+qsort on those same inputs does not reproduce the oracle. Five pinned LINK
+5.x variants give the same .rdata. No import permutation or header is patched.
+
+[EVIDENCE] Zero accepted regressions with the two candidate TUs. Sandbox
+sound.cpp remains INCOMPLETE as required; the separately labelled historical
+diagnostic reuses the existing build/verify/objects/08_sound.obj unchanged.
+All 460 COFF function body byte strings and three anonymous EH code sections
+are unchanged (not a claim of linked-image equality). The library-order
+change alters ICF survivors and linked .text equality drops 30185 -> 23062;
+its virtual deficit changes -32 -> -16. Full evidence, addresses, negatives
+and reproduction: scratch/sol-relink/r2/FINDINGS.md, STRICT_BSS_MAP.md,
+IMPORT_SLOT_DIFFS.md, data2.patch. No canonical files were edited by the worker.

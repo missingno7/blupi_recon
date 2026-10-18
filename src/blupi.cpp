@@ -870,3 +870,12 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	g_bTermInit = TRUE;
 	return TRUE;
 }
+
+
+// [EVIDENCE] Oracle unreferenced BSS intervals 0x47e610..617,
+// 0x47e620..627 and 0x47e730..733, bounded by STRICT global references.
+// Opaque storage: original names/types are unknown. VC5's measured name
+// order places these declarations; their source position preserves code IDs.
+unsigned char blupi_unknown_47e610[8];
+unsigned char bss47e620Unknown[8];
+unsigned int unknownBss47e730;
