@@ -406,6 +406,13 @@ cannot produce either target; the missing source property must change what c2 se
 bounded negatives: bitfields, enums, constructors, copy constructors, conversion/assignment operators, inline draw
 wrappers, varargs aggregates.
 
+### Differential decompilation ([EVIDENCE], negative; worker sol-diffdec)
+
+Ghidra 12.1 projects of the oracle and of our historical-host relink (579/579 seeded roots, identical signatures) were
+decompiled and diffed for the four open functions. TreatEventBase and ChangePhase decompile identically despite their byte
+differences: the decompiler normalizes away the register-lifetime differences that remain. The few DrawButtons/Build
+pseudocode differences gave four candidates, all failed or inert (scratch/sol-diffdec/FINDINGS.md).
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
