@@ -104,3 +104,10 @@ variables change the late-one web's EBX exclusion or its group, keeping both nat
 - [EVIDENCE, sol-cbuild r5] Eliminated: shared versus separate traversal variables for the lift and reverse-moving
   loops. 0x41615d partitions definitions into the same two cursor webs either way (identical 592-byte payloads,
   G stays 11/4). ChangePhase's shaping cursor is compiler-generated, so the same normalization applies.
+- [EVIDENCE, sol-cbuild r6] Oracle member audit at the reverse-moving header: the exhausted group's membership is
+  oracle-consistent (literals immediate, counter homed at [esp+58], posDecor.x/.y homed). Lifetimes that differ (reverse
+  X held in EDI once, lift camera X held in EBP across the lift loop, lift Y read from its home) are consequences of a
+  different connected partition and its definition/reload costs (0x40ee1d, 0x40fada, 0x40ed6c), not of an extra or
+  missing source value. A pre-lift cache micro normalizes away (identical 592 bytes). B-a is an exhaustion-order /
+  partition-cost question; the oracle cannot reveal its internal priorities. Next possible step: slice the first
+  differing component rebuild (reverse X two-bound child, lift X 8-read child) baseline vs sufficient control.
