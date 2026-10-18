@@ -214,3 +214,8 @@ selection with its penalty vector, rematerialization, late demotion and stack-ho
 Residues that move when unrelated declarations change are operand-order decisions keyed on symbol IDs:
 `tools/c2trace/ctxpredict.py src/X.cpp Function` makes one capture and reports each context-sensitive comparison
 with its window around the current declaration count (docs/SYMBOL_ORDER.md). Use it instead of probe sweeps.
+
+**Check structure before registers.** `tools/cfgdiff.py OBJECT SYMBOL RVA CODE_SIZE --out build/cfgdiff` compares the
+ordered control-flow graph (blocks, edges, branch conditions, calls) of a candidate with the oracle. Build's
+decompiler-inherited shared tail was found this way; DrawButtons, ChangePhase and TreatEventBase already have equal CFGs,
+so their residues are register allocation.
