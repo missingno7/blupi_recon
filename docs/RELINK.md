@@ -510,3 +510,20 @@ at 0x23880. Without it (LINK's default entry for /subsystem:windows), CRT member
 entry is 0x24c20 (oracle 0x24d40). relink.py now omits /entry by default (`--entry` to force one). Remaining CRT
 offsets: `_fsopen` 0x23ac0 vs 0x23af0 (-0x30, the game-code deficit of the open functions), and between `sprintf` and the
 entry ours is 0xF0 shorter (CRT member order or selection still differs). [OPEN]
+
+## CRT member order ([EVIDENCE], 2026-10-18)
+
+- LINK 5.10 pulls LIBC members in **first-reference order across objects in link order** (each object's external
+  symbols in symbol-table order). Simulating that from our objects reproduces our map exactly
+  (scratch/research/crtorder2.py locates each member in the oracle with relocations masked).
+- **Old CRT names resolve late.** `ftime` and `mkdir` resolve only through OLDNAMES.LIB after LIBC's first pass, so
+  their members were placed near the end. The oracle has `ftime.obj` right after `fwrite`/`new` and `mkdir.obj` right
+  after `findfile`, so the original called `_ftime` (with `struct _timeb`, blupi.cpp Benchmark) and `_mkdir`
+  (event.cpp AddUserExportPath). Both are fixed; no game reference resolves through OLDNAMES any more. Code bytes are
+  unchanged and the gate is clean.
+- **ICF survivor.** The oracle and our link both fold `ehvecdtr.obj`'s static `ArrayUnwindFilter` with `frame.obj`'s
+  identical `FrameUnwindFilter`, but the oracle keeps the ehvecdtr copy (0x243f0, its only copy of that body), while
+  LINK 5.10.7303 keeps frame.obj's (0x27360). The game folds keep misc.cpp's copy at 0x1f010 (`OutputDebug`, with
+  `~CButton`/`~CJauge` folded onto it). All five LINK 5.x builds in C:	ools behave the same; `/OPT:NOICF` makes `.text`
+  240 bytes too large. [OPEN] the survivor rule, and the linker build or input order that reproduces the oracle's choice.
+- After the fixes, CRT members up to `ehvecdtr` sit at the constant game-code offset (-0x30). Entry 0x24cf0 vs 0x24d40.

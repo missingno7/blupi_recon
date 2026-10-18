@@ -594,10 +594,10 @@ BOOL InitFail(const char *msg, BOOL bDirectX)
 
 int Benchmark()
 {
-	struct timeb tstruct;
+	struct _timeb tstruct;
 	int        j, t1, t2, time;
 
-	ftime(&tstruct);
+	_ftime(&tstruct);
 	t1 = tstruct.millitm;
 
 	j = 10;
@@ -609,7 +609,7 @@ int Benchmark()
 	}
 	while (--j != 0);
 
-	ftime(&tstruct);
+	_ftime(&tstruct);
 	t2 = tstruct.millitm;
 
 	if (t1 > t2)  t2 += 1000;
