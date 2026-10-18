@@ -260,3 +260,15 @@ oracle; this is rejected. Original additional-module identities remain OPEN.
   is the linker-generated export object, so an EXE without exports (BLUPI.EXE) records no linker build. 7287 (Blood II's
   linker, Oct 1997 SP3 pre-release hypothesis) remains possible for Blupi [OPEN];
   all four also give IAT 15/128 and keep frame's filter.
+
+## Joint input search ([EVIDENCE], worker sol-linkjoint, 2026-10-18)
+
+A joint forward model (loaded members, Rich, 137+k import qsort, ICF list) matches the baseline and five real relinks.
+6,527 input cases scored (ancestry TUs PB fifo/action and arrange/obstacle subsets, removed decmove/text bodies, SB2 wave.cpp,
+IDE default library list, library-order and data-placement variants). 1,900 cases give Rich 270 and the ehvecdtr filter
+survivor, but every case that preserves the oracle's physical hint/name order keeps IAT 15/128. Real relink of FIFO +
+exact arrange subset (REF-dead): Rich 270, ehvecdtr, 61,038 unequal bytes, entry 0x24d30, IAT 15/128.
+Conclusions: (1) the ICF survivor flips with many dead COMDAT populations (even restoring the text big-number bodies), so
+it does not identify the missing modules; (2) no tested population explains the IAT order, which leaves either an
+unknown import-member population/keys or a different linker build (5.10.7287, see the round-5 correction) [OPEN].
+Not integrated: ancestry fragments added to fit counts are not accepted inputs.

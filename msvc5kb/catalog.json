@@ -3976,6 +3976,41 @@
         "doc_ref": "scratch/sol-proto/FINDINGS.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LNK-08",
+      "section": "linker",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Real dead ancestry inputs can repair Rich and ICF while leaving IAT wrong",
+      "symptoms": {},
+      "symptom": "Rich 268 versus 270, frame rather than ehvecdtr, and IAT 15/128 coexist.",
+      "construct": "Joint COFF/archive extraction, REF graph and historical qsort model; real ancestry inputs and genuine IDE libraries.",
+      "explanation": "The model matches all 249 baseline library extractions, both complete 137-entry import sorts, all 793 ICF entries, Rich and final IAT. Five real historical-host relinks also match member order, full import/ICF vectors, Rich, REF-projected IAT and filter owner. Complete FIFO plus exact standalone arrange functions yields Rich 270 and ehvecdtr but IAT 15/128 and entry 0x24d30, not oracle 0x24d40. Full FIFO/action adds incompatible static data. A FIFO/obstacle subset pair keeps misc/sound/ehvecdtr but still fails IAT/layout. Counts and selected ICF owners cannot justify restoring unsupported original inputs.",
+      "experiment": "Serial provenance-backed compiles; 6527 model cases (6105 no public-symbol errors); five diagnostic relinks through canonical relink gate/historical host, plus source substitution verification.",
+      "not_when": "The bounded real source/library/order families do not exhaust original inputs. The model is not a complete linker, and no exact PE equality or original identity is claimed.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-linkjoint/FINDINGS.md; baseline-model.json; ledger.json; relink-report.json; links/*/historical-host.json",
+          "tier": "PROVEN",
+          "counts": "Five relink gates PASS 116160 bytes; source verifier exits 0 with zero accepted regressions and expected sound INCOMPLETE. FIFO/arrange has 61038 unequal file bytes versus baseline 66966; all candidates fail the joint constraint. Highest raw IAT 25/128 wave+IDE; max 15/128 preserving physical name order and baseline CRT extraction. All tool jobs drained and original tools unchanged."
+        }
+      ],
+      "keywords": "LINK joint model Rich ICF IAT REF ancestry FIFO action arrange obstacle qsort",
+      "blupi_status": "inert-here",
+      "blupi_evidence": {
+        "function": "whole-image input population and sort survivors",
+        "flags": "Pinned SP3 objects/libraries, /OPT:REF /OPT:ICF, historical host; manifest compile flags",
+        "compiles": 42,
+        "outcome": "Negative input-population families; no canonical source or project change proposed.",
+        "doc_ref": "scratch/sol-linkjoint/FINDINGS.md"
+      },
+      "legacy_ids": []
     }
   ]
 }
