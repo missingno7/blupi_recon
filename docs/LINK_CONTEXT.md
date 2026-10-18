@@ -132,3 +132,32 @@ header set is the correct baseline for any future context reconstruction.
 [EVIDENCE] Tool fix: earlier ctxsweep runs after the sol-macros worker were contaminated by private headers left in
 the probe folder (quoted includes resolve next to the probe file first). Both ctxsweep tools now empty their folder,
 delete the stale object before each compile and report failed compiles; measurements before the worker are unaffected.
+
+## DX5 + header authenticity: one regression left (2026-10-18)
+
+[EVIDENCE] Reproduce: `.pyenv\python.exe scratch/linkfix/apply_state.py dx5 enum ops externs tables allh overloads macros`
+then `tools/verify.py --build-dir dx5repro` (restore with `git checkout src/ recon.json`). Components, each evidence-backed:
+DX5 SDK headers (oracle GUIDs); def.h without the SB2 namespace enum, the SDL-era POINT operators and the SB2
+MAKE_RECT/MAKE_POINT helpers (48 uses replaced by local aggregates, sol-macros); dectables.h without 44 SB2-only externs;
+decor tables + table_decor_action + DecorNextAction in decblock.cpp (oracle .data ownership); every header declaration
+with no definition and no caller removed (`allh`, 35 declarations, incl. 28 SB2-only CDecor methods and event.h/pixmap.h
+leftovers); three bodiless overload signatures removed (`overloads`: the 2-argument CDecor::PlaySound "hack", the
+8-argument CPixmap::CacheAll, the inherited CSound::PlaySoundDS(DWORD, DWORD)).
+
+| Same sources with | Accepted regressions |
+|---|---|
+| DX6 headers | 8 (MouseMove, GetBlupiInfo, five decblupi Is* helpers, MockeryDetect) |
+| **DX5 headers** | **1: MoveObjectSort** (coverage 110,960 incl. STRICT DecorNextAction, +32 net) |
+
+Intermediate DX5 states: + allh 5 regressions; + overloads 2 (GetBlupiInfo, MoveObjectSort); + macros 1. The
+three SB2-only decmove functions can stay or go without changing this (both measured).
+
+[EVIDENCE] MoveObjectSort (oracle pointer tracks `&m_moveObject[i+1]`, ours `[i]`; 8 bytes) does not respond to
+front-end probes after the includes (0-320) or at the end (0-64); top-of-file probes match at 128-192 and 464-496.
+Removing decor.h's `int SortGetType(int type);` prototype (-2 numbers in every decor TU) fixes it but breaks MouseMove
+and GetBlupiInfo; an unnamed parameter (-1), moving the prototype after the inline helpers, top includes (stdio,
+stdlib, string, math, time, direct, ddraw, dsound, Planet-Blupi sets), include reorderings, comparison spellings and
+struct assignment instead of MoveObjectCopy are inert or worse; `<io.h>` fixes it but breaks MockeryDetect (no use of
+io.h in decmove; rejected as count fitting). [OPEN] the genuine SB1 form.
+
+[OPEN] Not integrated: the gate requires zero accepted regressions. This state is the reference for further work.
