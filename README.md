@@ -69,6 +69,19 @@ Python with pefile + capstone (`.pyenv\python.exe` locally).
 Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and every compile adaptation:
 [src/PROVENANCE.md](src/PROVENANCE.md).
 
+## Distance to a byte-identical executable (2026-10-18)
+
+| Item | State |
+|---|---|
+| Game code | 116,160 / 141,488 unique bytes STRICT (82.1 %); 4 functions open: DrawButtons, ChangePhase, TreatEventBase, Build (24.8 KB) |
+| Link | canonical objects link with no unresolved externals (LINK 5.10, DX5 libraries, no dxguid) |
+| `.text` | 32 bytes short (open functions); CRT order: `_fsopen` -0x30, entry 0x24c20 vs 0x24d40 |
+| `.rdata` | virtual size exact |
+| `.data` | 48,964 bytes short (under investigation) |
+| `.rsrc` | identical apart from its base RVA (docs/RESOURCES.md) |
+| PE header | Rich block identical; 21 header bytes differ (timestamp, `.data`-dependent sizes, entry, resource RVA) |
+| Whole file | not yet identical |
+
 ## Where to continue
 
 All 4 open functions have had several worker passes; the disproven families are recorded per target

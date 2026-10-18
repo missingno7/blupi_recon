@@ -143,6 +143,7 @@ def main():
     parser.add_argument("--library", action="append", default=[], type=Path, help="additional genuine library")
     parser.add_argument("--oracle", type=Path, default=DEFAULT_ORACLE)
     parser.add_argument("--no-res", action="store_true", help="omit src/res/blupi.rc (resources)")
+    parser.add_argument("--entry", default=None, help="explicit /entry symbol (default: LINK chooses for /subsystem:windows)")
     parser.add_argument("--diagnostic", action="store_true",
                         help="link even when accepted functions regress (layout diagnostics only; the gate stays FAIL)")
     args = parser.parse_args()
@@ -227,7 +228,7 @@ def main():
     header = oracle.OPTIONAL_HEADER
     linker = LINKERS[args.linker]
     libraries = LIBRARIES + args.library
-    options = ["/nologo", "/machine:i386", "/subsystem:windows,4.0", "/entry:WinMainCRTStartup",
+    options = ["/nologo", "/machine:i386", "/subsystem:windows,4.0", *([f"/entry:{args.entry}"] if args.entry else []),
                f"/base:0x{header.ImageBase:x}", f"/align:{header.SectionAlignment}",
                "/fixed", "/incremental:no", "/nodefaultlib",
                *["/opt:" + s for s in args.opt.split(",")],

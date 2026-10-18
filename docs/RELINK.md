@@ -504,3 +504,9 @@ functions' size differences), `.data` is 48,964 bytes short, `.rsrc` is not buil
 - Remaining header differences (21 bytes in 0x000-0x3ff): timestamp, SizeOfInitializedData/SizeOfImage and section
   sizes (the `.data` deficit), entry point (0x23880 vs 0x24d40: CRT object placement), resource directory RVA.
 - `.rsrc` is identical apart from its base RVA (docs/RESOURCES.md); `.rdata` size is exact; `.text` is 32 bytes short.
+
+[EVIDENCE] Entry point: with an explicit `/entry:WinMainCRTStartup`, LINK pulls `wincrt0.obj` first and the entry lands
+at 0x23880. Without it (LINK's default entry for /subsystem:windows), CRT members come in the original order and the
+entry is 0x24c20 (oracle 0x24d40). relink.py now omits /entry by default (`--entry` to force one). Remaining CRT
+offsets: `_fsopen` 0x23ac0 vs 0x23af0 (-0x30, the game-code deficit of the open functions), and between `sprintf` and the
+entry ours is 0xF0 shorter (CRT member order or selection still differs). [OPEN]
