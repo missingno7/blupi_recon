@@ -2696,6 +2696,48 @@
         "doc_ref": "docs/COMPILER_STUDY.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SRC-04",
+      "section": "source-forms",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Arm placement of if/else on an OR chain: constant-folded outer && term inverts the last test",
+      "symptoms": {
+        "any": [
+          "block_reorder",
+          "branch_flip"
+        ]
+      },
+      "symptom": "An OR chain `if (A || B || ... || E) X else Y` whose arms share a tail: ours ends the chain with `je X` and places Y first (Y jumps into X's tail); the oracle ends with `jne Y`, X falls through and jumps into Y's tail. Arm order, De Morgan and `!(...)` forms are inert.",
+      "construct": "`BOOL b = FALSE; ... if (!b && (A || B || ... || E)) X else Y` (b never set, constant-folded) versus `if (A || ... || E) X else Y`.",
+      "explanation": "VC5 SP3 c1 lowers a bare OR chain as `if A goto X; ...; if E goto X;` with the else arm following; a single condition or an AND chain falls into the then arm. Inside an outer `&&` the chain ends with `if E goto X; goto Y; X:`, which c2 turns into `if !E goto Y` with X falling through, also when the other && term is a constant (a FALSE-initialised BOOL never reassigned, or TRUE). Tail merging then keeps the shared tail in whichever arm is placed second.",
+      "experiment": "When an OR chain's last test is inverted in the oracle, look for an ancestor condition with an extra && term (flags such as bDaniel) that is now constant, and restore it.",
+      "not_when": "Single-condition ifs and AND chains already fall into the then arm.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#addcdpath-constant-folded-outer-condition-evidence",
+          "tier": "PROVEN",
+          "counts": "1 function STRICT (AddCDPath 0x1f410); 15 variants"
+        }
+      ],
+      "keywords": "or chain short circuit block layout arm order constant folded and condition tail merge cross jump bDaniel",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "AddCDPath",
+        "rva": "0x1f410",
+        "tu": "src/misc.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 15,
+        "outcome": "STRICT",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

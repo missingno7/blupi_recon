@@ -147,7 +147,7 @@ leftovers); three bodiless overload signatures removed (`overloads`: the 2-argum
 | Same sources with | Accepted regressions |
 |---|---|
 | DX6 headers | 8 (MouseMove, GetBlupiInfo, five decblupi Is* helpers, MockeryDetect) |
-| **DX5 headers** | **1: MoveObjectSort** (coverage 110,960 incl. STRICT DecorNextAction, +32 net) |
+| **DX5 headers** | **1: MoveObjectSort** (coverage 112,768 at 0732401 incl. STRICT DecorNextAction, +32 net) |
 
 Intermediate DX5 states: + allh 5 regressions; + overloads 2 (GetBlupiInfo, MoveObjectSort); + macros 1. The
 three SB2-only decmove functions can stay or go without changing this (both measured).

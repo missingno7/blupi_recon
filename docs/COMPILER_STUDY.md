@@ -73,7 +73,7 @@ leave bytes identical but change temporaries) is the best remaining direction.
 |---|---|---|
 | `CPixmap::QuickIcon` 0x21b20 | generic path and clip/blit tail are Planet Blupi `DrawIcon` + `BltFast` code (nbx/nby, `limit`, `HRESULT ddrval`); the reconstruction's reused `num` produced the 0x10 vs 0x14 frame | STRICT |
 | `CPixmap::Create` 0x21190 | `SetDisplayMode(..., bTrueColor ? 16 : 8)` uses the parameter (oracle reads its register), `m_dim = dim`; this also removed the global zero-register promotion | 597 -> 4 bytes (one scheduling swap) |
-| `AddCDPath` 0x1f410 | SB1 prefix list from the oracle strings, no `daniel` case | 3 regions (copy-tail layout) |
+| `AddCDPath` 0x1f410 | SB1 prefix list from the oracle strings, no `daniel` case | STRICT with the constant `!bDaniel &&` term (see below) |
 | `CEvent::ChangePhase` 0x19310 | if-chain (not the SB2 `switch`), `WM_PHASE_DOQUIT`, `WM_PHASE_SETUPp`, demo worlds 200-219, `MESS_LEAVE`; Sol WIP integrated | 1,879/2,029 instructions; rest is the ebx/edi assignment of promoted 0 / `WM_PHASE_PLAY` |
 | `CDecor::Build` 0x4350 | `type >= 8 && type <= 11`; cloud loop like the net-blupi loop | 1,155/1,237 instructions; per-branch blupi QuickIcon tails still open |
 
@@ -299,6 +299,17 @@ BLUPI-SRC-03). Measured with 72 order variants (build/tmp/rx/s_dmr.py, `vary.py`
   src orders only top, bottom, left, right gives the oracle's edx/eax/edi/ecx; the others differ by 4-15 bytes.
 - [HYPOTHESIS] The field order is a fitted choice. The author usually writes left, right, top, bottom (Planet Blupi,
   most SB1 functions), but this is the only order that matches, and using it for both rects keeps them consistent.
+
+### AddCDPath: constant-folded outer condition ([EVIDENCE])
+
+STRICT with Planet Blupi's `BOOL bDaniel = FALSE;` and `if ( !bDaniel && (five prefix tests) )`; SB1 dropped only
+the `\daniel\blupi\` detection (no such string in the oracle), so `bDaniel` stays FALSE and folds away (KB
+BLUPI-SRC-04, build/tmp/rx/s_acd.py). Predicted from the layout before the trial:
+- c1 lowers a bare OR chain `if (A || ... || E) X else Y` with the last test jumping to X and Y falling through
+  (measured: 2-term OR `je, je`; single condition and 2-term AND fall into X). The oracle ends with `jne Y` and X
+  falling through, the shape of an OR chain inside an outer `&&`: `if E goto X; goto Y; X:` becomes `if !E goto Y`.
+- `TRUE && (...)` gives the same bytes, so any constant term works; the bDaniel form is the one with ancestry.
+- Inert before: arm swap with De Morgan, `!(...)`, common or duplicated tails, a relative-path BOOL, early returns.
 
 ### CPixmap::Create +0x12d ([EVIDENCE], negative)
 

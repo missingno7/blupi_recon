@@ -1923,6 +1923,12 @@
       "tu": "src/misc.cpp"
     },
     {
+      "symbol": "?AddCDPath@@YAXPAD@Z",
+      "rva": "0x0001f410",
+      "size": 336,
+      "tu": "src/misc.cpp"
+    },
+    {
       "symbol": "?AddUserPath@@YAXPAD@Z",
       "rva": "0x0001f560",
       "size": 304,

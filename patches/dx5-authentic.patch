@@ -1,5 +1,5 @@
 diff --git a/recon.json b/recon.json
-index 6bd5a71..c21c14f 100644
+index 21dfffb..bb9087b 100644
 --- a/recon.json
 +++ b/recon.json
 @@ -2,7 +2,7 @@
@@ -1014,7 +1014,7 @@ index 034b1f5..35a73a6 100644
  void CDecor::NotifStep()
  {
 diff --git a/src/decor.cpp b/src/decor.cpp
-index 9db5d3d..d704432 100644
+index d815436..da0a718 100644
 --- a/src/decor.cpp
 +++ b/src/decor.cpp
 @@ -10,17 +10,12 @@
@@ -1039,20 +1039,7 @@ index 9db5d3d..d704432 100644
  }
  
  void CDecor::VoyageInit(POINT start, POINT end, int icon, int channel)
-@@ -261,7 +256,11 @@ BOOL CDecor::DrawMap(BOOL bPlay, int team)
- 		POINT pos = { 320, 240 };
- 		Build(clip, pos);
- 	}
--	m_pPixmap->DrawMap(8, RECT(0, 0, 522, 400), RECT(0, 0, 206, 158));
-+	{
-+		RECT src = { 0, 0, 522, 400 };
-+		RECT dst = { 0, 0, 206, 158 };
-+		m_pPixmap->DrawMap(8, src, dst);
-+	}
- 	m_posDecor = oldPosDecor;
- 	m_scrollPoint = oldScrollPoint;
- 	m_phase = oldPhase;
-@@ -744,11 +743,11 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
+@@ -755,11 +750,11 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
  		for (int y = 0; y < MAXCELY; y++)
  		{
  			int icon = m_decor[x][y].icon;
@@ -1067,7 +1054,7 @@ index 9db5d3d..d704432 100644
  					{
  						cel->x = x - 1;
  						cel->y = y;
-@@ -756,7 +755,7 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
+@@ -767,7 +762,7 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
  						newBlupiPos->y = y * DIMOBJY + 6;
  						return TRUE;
  					}
@@ -1076,7 +1063,7 @@ index 9db5d3d..d704432 100644
  					{
  						cel->x = x - 2;
  						cel->y = y;
-@@ -764,7 +763,7 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
+@@ -775,7 +770,7 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
  						newBlupiPos->y = y * DIMOBJY + 6;
  						return TRUE;
  					}
@@ -1085,7 +1072,7 @@ index 9db5d3d..d704432 100644
  					{
  						cel->x = x + 1;
  						cel->y = y;
-@@ -772,7 +771,7 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
+@@ -783,7 +778,7 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
  						newBlupiPos->y = y * DIMOBJY + 6;
  						return TRUE;
  					}
@@ -1094,7 +1081,7 @@ index 9db5d3d..d704432 100644
  					{
  						cel->x = x + 2;
  						cel->y = y;
-@@ -849,7 +848,7 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
+@@ -860,7 +855,7 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
  				for (int y = 0; y < MAXCELY; y++)
  				{
  					int icon = m_decor[x][y].icon;

@@ -149,14 +149,16 @@ void GetCurrentDir(char *pName, int lg)
 void AddCDPath(char *pFilename)
 {
 	char	temp[MAX_PATH];
+	BOOL	bDaniel = FALSE;
 
 	if ( g_CDPath[0] == 0 )  return;
 
-	if ( strstr(pFilename, "data\\")    == pFilename ||
-		 strstr(pFilename, "image\\")   == pFilename ||
-		 strstr(pFilename, "image08\\") == pFilename ||
-		 strstr(pFilename, "image16\\") == pFilename ||
-		 strstr(pFilename, "movie\\")   == pFilename )
+	if ( !bDaniel &&
+		 (strstr(pFilename, "data\\")    == pFilename ||
+		  strstr(pFilename, "image\\")   == pFilename ||
+		  strstr(pFilename, "image08\\") == pFilename ||
+		  strstr(pFilename, "image16\\") == pFilename ||
+		  strstr(pFilename, "movie\\")   == pFilename) )
 	{
 		strcpy(temp, g_CDPath);
 		strcat(temp, "..\\");
