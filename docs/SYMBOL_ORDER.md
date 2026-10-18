@@ -85,3 +85,12 @@ homm1-decomp (scratch/research/techniques.md); measured here independently on VC
 Negatives from the same research round: `/YX` (automatic PCH, create and use) leaves button.cpp's functions and its `$S`
 counter identical; source-path length moves IDs only under `/Gi` (byte-tactics claim, checked); `/Gi` worsens DrawButtons
 and leaves TreatEventBase/ChangePhase unchanged; data members cost no IDs (a 97,532-byte member array leaves `$S` unchanged).
+
+## 65536-wrap hypothesis ([EVIDENCE], worker sol-idwin, 2026-10-18)
+
+F(id) wraps at 65536, so a TU-wide shift of 31,216..31,338 IDs would give DrawButtons' needed F(line2) < F(text) without
+moving declarations, and Build's keyforce gains needed ~31,600. Measured with diagnostic top-of-file shifts: all 123
+DrawButtons shifts give 755 bytes (the same failure as moving line2), and none of 17 Build shifts improves 2,328; the
+shifted TUs also regress ChangeButtons and GetBlupiInfo. Genuine header sets add nothing near 31k: restoring event.cpp's
+commented Planet Blupi includes is byte-neutral for all 94 functions (ddraw/dsound/dplay/mmsystem are already included
+transitively; only dinput.h is new). Falsified; comparison #1310 alone is not the DrawButtons residue.
