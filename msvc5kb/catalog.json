@@ -3529,6 +3529,45 @@
         "doc_ref": "docs/COMPILER_STUDY.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "VC5-DATA-01",
+      "section": "data-layout",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Uninitialized scalar order survives declaration reversal; explicit zero follows",
+      "symptoms": {
+        "any": [
+          "displacement_differs"
+        ]
+      },
+      "symptom": "Uninitialized-global offsets do not follow source definition order, while explicit =0 variables occupy a later group.",
+      "construct": "int zeta; int explicit_zero=0; int alpha; int mid; and the reversed mid/alpha/zeta declaration order.",
+      "explanation": "VC5 SP3 emits zeta/alpha/mid at .bss+0/+4/+8 and explicit_zero at +12 in both probes. The declaration-order hypothesis is contradicted for these uninitialized names; the exact VC5 sorting key remains unproved.",
+      "experiment": "Inspect COFF symbol values with the pinned compiler; do not transfer a VC4/VC6 hash formula or invent globals to fill a gap.",
+      "not_when": "This two-probe result does not identify names or types of unreferenced oracle storage.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/DATA_LAYOUT.md",
+          "tier": "PROVEN",
+          "counts": "2 serial compiler probes; manifest SP3 flags; identical order under reversal"
+        }
+      ],
+      "keywords": "data layout bss uninitialized initialized zero hash order declaration order",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "tu": "scratch/sol-relink/bss_probe.cpp and bss_probe_reversed.cpp",
+        "flags": "/W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 2,
+        "outcome": "declaration-order negative; stable uninitialized group and explicit-zero group",
+        "doc_ref": "scratch/sol-relink/FINDINGS.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

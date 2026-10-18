@@ -7,6 +7,7 @@
 #include "def.h"
 #include "pixmap.h"
 #include "text.h"
+#include "texttables.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -299,65 +300,3 @@ int GetTextWidth(char *pText, int font)
 }
 
 
-// Retourne la longueur d'un grand chiffre.
-
-void GetBignumInfo(int num, int &start, int &lg)
-{
-	static int table[11] =
-	{
-		0,53,87,133,164,217,253,297,340,382,426
-	};
-
-	start = table[num];
-	lg    = table[num+1]-table[num];
-}
-
-// Affiche un grand nombre.
-
-void DrawBignum(CPixmap *pPixmap, POINT pos, int num)
-{
-	char	string[10];
-	int		i = 0;
-	int		start, lg;
-	RECT	rect;
-
-	sprintf(string, "%d", num);
-
-	rect.top    = 0;
-	rect.bottom = 52;
-	while ( string[i] != 0 )
-	{
-		GetBignumInfo(string[i]-'0', start, lg);
-
-		rect.left  = start;
-		rect.right = start+lg;
-		pPixmap->DrawPart(-1, CHBIGNUM, pos, rect);
-		pos.x += lg+4;
-
-		i ++;
-	}
-}
-
-
-#include "texttables.h"
-
-// Retourne la longueur d'un grand nombre.
-
-int GetBignumWidth(int num)
-{
-	char	string[10];
-	int		i = 0;
-	int		start, lg;
-	int		width = -4;
-
-	sprintf(string, "%d", num);
-
-	while ( string[i] != 0 )
-	{
-		GetBignumInfo(string[i]-'0', start, lg);
-		width += lg+4;
-		i ++;
-	}
-
-	return width;
-}

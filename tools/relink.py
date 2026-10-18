@@ -74,7 +74,11 @@ def oracle_order(units):
     with (ROOT / "oracle/tu_map.csv").open(newline="", encoding="utf-8-sig") as stream:
         for row in csv.DictReader(stream):
             first[row["tu"]] = min(first.get(row["tu"], 1 << 32), int(row["rva"], 0))
-    # Data-only reconstruction TUs have no observed text order. Keep their manifest order at the tail.
+    # Atlas data is one oracle band at RVA 0x78dd8..0x7b25f, immediately
+    # before pixmap's MouseHotSpot at 0x7b260 (independent code references).
+    # The data-only TU has no text anchor; place it by that data evidence.
+    if "pixmap.cpp" in first:
+        first["dectables.cpp"] = first["pixmap.cpp"] - 1
     return sorted(units, key=lambda u: first.get(Path(u["source"]).name, 1 << 32))
 
 

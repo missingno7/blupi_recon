@@ -527,3 +527,15 @@ entry ours is 0xF0 shorter (CRT member order or selection still differs). [OPEN]
   `~CButton`/`~CJauge` folded onto it). All five LINK 5.x builds in C:	ools behave the same; `/OPT:NOICF` makes `.text`
   240 bytes too large. [OPEN] the survivor rule, and the linker build or input order that reproduces the oracle's choice.
 - After the fixes, CRT members up to `ehvecdtr` sit at the constant game-code offset (-0x30). Entry 0x24cf0 vs 0x24d40.
+
+## Initialized data recovered ([EVIDENCE], 2026-10-18, worker sol-relink; details docs/DATA_LAYOUT.md)
+
+`.data` virtual deficit 48,964 -> 128 bytes; 329,711 / 329,728 raw `.data` bytes equal at identical offsets (the 17 others
+are 16 pointer fields into the still-shifted `.text`/CRT). All nine ordinary game data bands are directly equal.
+- event.cpp phase table: 7 missing records (phases 0x600, 0x601, 0x60c, 0x60f, 0x614 bye, 0x607 insert, zero sentinel),
+  +49,588 bytes as typed Phase/Button initializers.
+- decblock.cpp: table definitions ordered by oracle location; eight unreferenced SB2 tables with no oracle slot removed.
+- pixtables.h atlas order blupi/object/element/explo; dectables.obj linked right before pixmap.obj (relink oracle_order).
+- text.cpp: data header before the functions; unreferenced `table_width[128]` and three SB2 big-number routines removed.
+- `.rsrc` is now byte-exact including its RVA. Remaining: 128 bytes of BSS without evidence-backed definitions (first
+  drift `g_hWnd` oracle 0x7e618 vs 0x7e610), and the `.text`-dependent pointer fields.

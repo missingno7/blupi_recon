@@ -509,6 +509,17 @@ static Phase table[] =
 			{ 0x5f9, 0, { 1, 0x24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0x17a, 0x146, { 1, 0xb1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
 		},
 	},
+	// Movie, exit and CD-insert phases, followed by SearchPhase's sentinel.
+	{ 0x600, "image%.2d\\movie.blp", 0, 0, { { 0 } } },
+	{ 0x601, "image%.2d\\movie.blp", 0, 0, { { 0 } } },
+	{ 0x60c, "image%.2d\\movie.blp", 0, 0, { { 0 } } },
+	{ 0x60f, "image%.2d\\movie.blp", 0, 0, { { 0 } } },
+	{ 0x614, "image%.2d\\bye.blp", 0, 0, { { 0 } } },
+	{
+		0x607, "image%.2d\\insert.blp", 0, 0,
+		{ { 0x609, 0, { 1, 0x28 }, 16, 424, { 1, 0x6a } } },
+	},
+	{ 0 },
 };
 
 

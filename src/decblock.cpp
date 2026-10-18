@@ -23,17 +23,21 @@ int table_magictrack[] =
 	163, 164, 165, 166
 };
 
-int table_decor_ventillod[] = { 129, 130, 131 };
-
 int table_decor_lave[] = { 68, 69, 70, 71, 72 };
 
 int table_decor_eau1[] = { 92, 93, 94, 95 };
 
 int table_decor_eau2[] = { 91, 96, 97, 98 };
 
+int table_decor_ventillog[] = { 126, 127, 128 };
+
+int table_decor_ventillod[] = { 129, 130, 131 };
+
 int table_decor_ventilloh[] = { 132, 133, 134 };
 
 int table_decor_ventillob[] = { 135, 136, 137 };
+
+int table_decor_ventg[] = { 110, 111, 112, 113 };
 
 int table_decor_ventd[] = { 114, 115, 116, 117 };
 
@@ -152,25 +156,13 @@ int table_36530[] = {
 	5, 139, 140, 141, 142, 143
 };
 
-int table_369d0[] = { 5, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f };
-
 int table_365a8[] = {
 	7, 186, 187, 188, 189, 190, 191, 192
 };
 
-int table_369e8[] = { 7, 0xba, 0xbb, 0xbc, 0xbd, 0xbe, 0xbf, 0xc0 };
-
 int table_365d0[] = {
 	5, 193, 194, 195, 196, 197
 };
-
-int table_36610[] = { 5, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5 };
-
-int table_36630[] = { 0x5b, 0x5c };
-
-int table_decor_ventillog[] = { 126, 127, 128 };
-
-int table_decor_ventg[] = { 110, 111, 112, 113 };
 
 int table_design_lava[] = {
     1, 68
@@ -655,8 +647,6 @@ int table_oiseau_turn2l[] = { 106, 107, 108, 109, 110, 111, 112, 113, 105, 105 }
 
 int table_oiseau_turn2r[] = { 114, 115, 116, 117, 118, 119, 120, 121, 97, 97 };
 
-int table_guepe_turn2r[] = { 203, 204, 205, 206, 207 };
-
 int table_blupih_left[] = { 66, 67, 68, 67, 66, 69, 70, 69 };
 
 int table_blupih_right[] = { 61, 62, 63, 62, 61, 64, 65, 64 };
@@ -707,13 +697,7 @@ int table_explo3[] =
 
 int table_explo4[] = { 12, 13, 14, 15, 7, 8, 9, 10, 11 };
 
-int table_explo6[] = { 54, 55, 56, 57, 58, 59 };
-
-int table_explo8[] = { 7, 8, 9, 10, 11 };
-
 int table_pollution[] = { 179, 180, 181, 182, 183, 184, 185, 186 };
-
-int table_invertstart[] = { 179, 180, 181, 182, 183, 184, 185, 186 };
 
 int table_plouf[] = { 99, 100, 101, 102, 101, 100, 99 };
 
