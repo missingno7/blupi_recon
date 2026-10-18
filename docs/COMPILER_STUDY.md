@@ -395,6 +395,9 @@ Round 3: the background loop reuses `rect.bottom` as the height (`rect.bottom -=
 then resets it to DIMDECORY): that is the oracle's eax hold of 0x1e0 that the earlier placement sweeps could not
 reproduce. The background code now matches; 2,328 differing bytes, 1177/1237 aligned, first difference +0x4b1;
 remaining body excess 38 bytes (lift block 26, cloud 8, moving objects 4).
+Round 5 (in-memory IR diagnostic, never source or output): a singleton-1 cut, moving the cloud block's Y definition
+and coalescing the initial Y copy together give 8 masked bytes and 1229/1237 aligned instructions; the lift, cloud and
+moving-object blocks and B47 then match. None of 20 C++ translations passed the IR gate (scratch/sol-build4/FINDINGS.md).
 
 ### C1XX IL emission ([EVIDENCE], worker sol-c1; docs/C1_IL.md)
 
