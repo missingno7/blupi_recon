@@ -71,3 +71,16 @@ scratch/sol-ccp, scratch/sol-cdb, scratch/sol-cteb, scratch/sol-teb/round3, scra
   rotor assignment but with a different address/order shape.
 - Now: C2 decision reverse engineering of 0x438f79 adoption (sol-cbuild r4) and of the TreatEventBase predicates
   (sol-cteb r3).
+
+## Update: TreatEventBase predicates (sol-cteb r3, 2026-10-19)
+
+Chain (EVIDENCE unless marked): `m_posCheat++;` then `cheat_code[m_rankCheat][m_posCheat] == 0` -> C1 int increment record,
+statement end, byte read + zero + equality (no byte assignment record) -> C2 compare op2f with kind-6 memory input ->
+legality dispatch 0x40e1c0 (not taken), 0x40e3c3 / 0x40e4b2 taken -> materialization mask 0 at 0x40dfe0, no extraction;
+0x41dd4c finds an adjacent compare, no preservation temp -> LEA kept because 0x42dc02 sees unequal base/output bindings
+-> oracle-identical terminator instructions. The first unexplained difference stays at +0x41b (rank-0 toggle).
+STRICT TextInputDelete's rotor byte has a real defining tuple from lowering (non-null kind-3 definition, excluded at
+0x414e4f); the distinguishing source property there is the consumer opcode/destination (a byte copy, not a compare).
+[HYPOTHESIS] The oracle's extra rotor step need not be a terminator byte; the old-flag alternative stays open. No source
+form is predicted by the recovered predicates; next is a C1-reader/CFG slice of a real compare-result across a state
+store (before 0x412d5c). Pseudocode: scratch/sol-cteb/r3/PSEUDOCODE.md.
