@@ -353,11 +353,13 @@ integration: 404 STRICT + 4 FOLDED, 113,344 / 141,488, zero regressions.
 The June 1998 demo build (same compiler) has no rank-0 (build-official-missions) cheat block. Deleting only that block
 from our TreatEventBase reproduces the demo's code exactly over +0x35f..+0x6b2 (238/238 normalized instructions, PostMessage
 hwnd edx included). So all our cheat-matcher source outside the rank-0 block is right, and the original rank-0 block
-consumes one more temp-rotor step than ours. `m_bBuildOfficialMissions ^= TRUE;` (load as a rotating temp) makes every
-later instruction align (1890/1894, one region: only xor vs sete differs), which confirms the mechanism. Inert or worse:
-chained assignments, the toggle via bEnable or a local, ternaries, == FALSE, != FALSE, casts, 1 - x, !!x (sol-teb: 87
-captured forms; supervisor: 18). [OPEN] the spelling that loads the flag as a rotating temp and still emits
-`xor ecx,ecx; test edx,edx; sete cl`.
+differs from ours by one temp-rotor step modulo 3 (rotor diagnostics: +1 or +2 at the toggle both give 0 bytes).
+`m_bBuildOfficialMissions ^= TRUE;` makes every later instruction align (1890/1894, one region), but sol-teb round 2
+showed why: its load stays a scratch pick and the rotating result assignment disappears (one step fewer, which is
+equivalent to two more), so it does not show a rotating operand. Inert or worse: chained assignments, the toggle via
+bEnable or a local, ternaries, == FALSE, != FALSE, casts, 1 - x, !!x (sol-teb: 87 full captures + 87 micros; supervisor: 18).
+[OPEN] a spelling of the rank-0 block whose rotor step count differs by one (mod 3) while still emitting
+`mov edx,[m]; xor ecx,ecx; test edx,edx; sete cl; mov [m],ecx; mov esi,ecx`.
 
 ### Instruction scheduler ([EVIDENCE], worker sol-sched; docs/SCHEDULER.md)
 
