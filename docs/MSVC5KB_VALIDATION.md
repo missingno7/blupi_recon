@@ -190,3 +190,21 @@ GetNbProviders is genuine: oracle call 0x1a378 targets the shared getter at
 [OPEN] Recover the original eligible contribution population/order and a plain
 historical-runtime launch environment. Details, diagnostic limitations, exact
 addresses, commands and unmasked linked-byte metrics: scratch/sol-icf/FINDINGS.md.
+
+## Declaration-type residue family (sol-proto, 2026-10-18)
+
+[EVIDENCE; BLUPI-TYPE-01] 1,211 serial private-header/TU variants (1,107
+singleton/additional controls, 103 mover pairs, one 16-return joint control)
+give no qualifying reduction of TreatEventBase/DrawButtons/ChangePhase/Build
+(8/63/32/2328 differing bytes). Normal setters returning their assigned value,
+wrappers returning their final call, PlayImage returning void, const values,
+coordinate-pair locals and selected enums have inert survivors. The narrower
+draw-secret field gives Build 2324 bytes but worse alignment and accepted regressions.
+
+[EVIDENCE] The final ledger has 5,522 completed TU compiles and 86 compiler
+failures through tools/msvc.py; all surviving headers are checked in every
+transitive including TU. Full private baseline verify exits 0 with zero accepted
+regressions and the expected sound.cpp INCOMPLETE historical-path gate.
+Relocation-masked fnprobe/COFF screens are diagnostic, never claimed STRICT.
+Artifacts and bounded-search limits: scratch/sol-proto/FINDINGS.md, INVENTORY.md,
+ledger.jsonl, variants.json, combination-plan.json, gate.log. No game-source patch.

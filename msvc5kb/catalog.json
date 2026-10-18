@@ -3936,6 +3936,46 @@
         "doc_ref": "scratch/sol-rich/FINDINGS.md Round 5"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-TYPE-01",
+      "section": "source",
+      "tier": "PROVEN",
+      "scope": "blupi-specific",
+      "applies": {
+        "opt": [
+          "O2"
+        ],
+        "compiler": [
+          "MSVC 5.0 SP3"
+        ]
+      },
+      "title": "Bounded declaration-type changes do not reduce the four final register residues",
+      "symptoms": {
+        "regalloc_only": true
+      },
+      "symptom": "TreatEventBase 8, DrawButtons 63, ChangePhase 32 and CDecor::Build 2328 differing non-relocation bytes.",
+      "construct": "Private return-result, signedness/width, parameter/member/local, const, enum and coordinate-pair declaration controls.",
+      "explanation": "The tested ordinary return-result forms preserve their callee bodies and screened callers but do not change the four residues, singly or in a 16-change joint control. Width/signedness movers and 103 bounded pairs do not yield a zero-regression reduction. BOOL-to-int is inert; only the rejected BOOL-to-short draw-secret field lowers raw Build differences (2324) while worsening alignment and regressing accepted code.",
+      "experiment": "1211 serial variants through fnprobe.compile_unit/tools/msvc.py with pinned manifest flags and private headers/TUs. Check callee bodies first, then all accepted functions in every transitive header-dependent TU. Use fnprobe byte counts and aligned instruction counts; audit generated EH/static label renumbering by full COFF section graphs. Baseline full verification exits 0 with expected sound historical-path INCOMPLETE.",
+      "not_when": "Bounded negative only. The code screen is not STRICT equality; SDK/CRT body variants, coupled record/pointee changes, arbitrary enum/const APIs and other combinations are not excluded.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-proto/FINDINGS.md; INVENTORY.md; ledger.jsonl; variants.json; combination-plan.json; gate.log",
+          "tier": "PROVEN",
+          "counts": "1211 variants, 5522 completed final-ledger TU compiles plus 86 compile failures; no qualifying improvement."
+        }
+      ],
+      "keywords": "prototype declaration return unused result signedness BOOL int UINT LONG DWORD const enum POINT register residues",
+      "blupi_status": "inert-here",
+      "blupi_evidence": {
+        "function": "TreatEventBase; DrawButtons; ChangePhase; CDecor::Build",
+        "flags": "SP3 /O2 /GX /Gy /ML /Gd; DX5; recon-base.json",
+        "compiles": 5608,
+        "outcome": "No zero-regression residue reduction; no game-source patch. Private baseline accepted-function gate passes with expected sound.cpp INCOMPLETE.",
+        "doc_ref": "scratch/sol-proto/FINDINGS.md"
+      },
+      "legacy_ids": []
     }
   ]
 }
