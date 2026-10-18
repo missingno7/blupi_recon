@@ -446,6 +446,15 @@ driven by allocator priority. Ledger: scratch/sol-irsearch/round2/.
   missing PLAY priority point (tie -66/-66, both edition allocation gates pass) but emits different code (5,576 bytes).
   Switch/else-if/recursion/snapshot/chained-reset forms are inert. Ledger: scratch/sol-cp2/.
 
+### C1-record-level search ([EVIDENCE], worker sol-ilsearch)
+
+New tool: scratch/sol-ilsearch/tools parses and re-serializes c1xx's postfix record stream (event.cpp: 7,950/7,309 records
+for TreatEventBase/DrawButtons) and replays c2 alone on it; an unmodified replay reproduces the whole COFF object
+byte-exactly. 1,769 record mutations (commuted operands, char/short/int/unsigned/bool conversions, not/equality/conditional
+shapes, comma/assignment chaining, a written/read local, result reuse, statement order, x definitions per argument):
+TreatEventBase best 8 (if/else seed) / 14 (expression seed), DrawButtons 63. Deleting both inner x=330 definitions gives
+the exact first-call run but 897 bytes elsewhere. Local front-end changes in these blocks do not reach the targets.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
