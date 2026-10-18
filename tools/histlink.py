@@ -149,7 +149,7 @@ def resolve(modules, module, name):
     return item['base'] + symbol.address
 
 
-def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME, timeout=120):
+def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME, timeout=120, trace_rich=False):
     """Block until LINK exits; return its exit code and always write an audit report."""
     if os.name != 'nt' or C.sizeof(C.c_void_p) != 8:
         raise RuntimeError('histlink requires 64-bit Windows Python')
@@ -258,6 +258,8 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
         for name in ('time', 'ctime', 'qsort'):
             imp = next(i for i in crt_imports if i.name == name.encode('ascii'))
             process.arm(process.u32(imp.address), 'observe', 'MSVCRT!' + name)
+        if trace_rich:
+            process.arm(0x43e3af, 'rich', 'Rich module census')
         process.disarm(entry)
         report['configured_before_entry'] = True
 
@@ -372,6 +374,18 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
                                     else:
                                         action['after'] = sort_snapshot(action['base'], action['count'], action['comparator'])
                                         report['sorts'].append(action)
+                            elif kind == 'rich':
+                                # SP3 LINK's Rich writer (0x43e340) increments
+                                # one count for the module at [esp+0x1c]. Its
+                                # outer iterator's library is [esp+0x2c].
+                                module = process.u32(context.Esp+0x1c)
+                                library = process.u32(context.Esp+0x2c)
+                                report.setdefault('rich_modules', []).append(dict(
+                                    name=process.string(process.u32(module+4)),
+                                    library=process.string(process.u32(library)),
+                                    module_index=process.u32(module+8),
+                                    archive_data_offset=process.u32(module),
+                                    compiler_stamp=process.u32(module+0x30)))
                             else:
                                 caller = process.u32(context.Esp)
                                 record_call(name, caller)
@@ -449,6 +463,7 @@ def main():
     parser.add_argument('--real-clock', action='store_true', help='control: retain the native wall clock')
     parser.add_argument('--system-crt', action='store_true', help='control: retain LINK\'s original system-CRT bindings')
     parser.add_argument('--timeout', type=int, default=120)
+    parser.add_argument('--trace-rich', action='store_true', help='observe every module counted by the Rich writer')
     parser.add_argument('arguments', nargs=argparse.REMAINDER, help='-- followed by LINK arguments, usually @response.rsp')
     args = parser.parse_args()
     arguments = args.arguments[1:] if args.arguments[:1] == ['--'] else args.arguments
@@ -458,7 +473,7 @@ def main():
         parser.error('timestamp must fit VC5 time_t; timeout must be positive')
     try:
         return launch(arguments, args.report, historical_crt=not args.system_crt,
-                      timestamp=None if args.real_clock else args.timestamp, timeout=args.timeout)
+                      timestamp=None if args.real_clock else args.timestamp, timeout=args.timeout, trace_rich=args.trace_rich)
     except (OSError, RuntimeError, ValueError) as error:
         print('histlink: ' + str(error), file=sys.stderr)
         return 1

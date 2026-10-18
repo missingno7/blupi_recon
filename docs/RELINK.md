@@ -565,3 +565,12 @@ Result with the current objects: TimeDateStamp 0x36245013 (equal); `.text` same-
 (the historical qsort orders contributions as the original LINK did); `.rdata` 4,652 / 4,978; `.rsrc` exact; `.data` size
 exact. Whole file: same size, 66,966 bytes differ, 66,622 of them in `.text` (open functions shift code); header
 differences: Rich count (268 vs 270, also in the modern link, [OPEN]), entry point (0x24d10 vs 0x24d40), `.text` size (-16).
+
+## Rich object count ([EVIDENCE], 2026-10-18)
+
+Census of our link: 19 game objects + 104 LIBC members + 145 import-library members = 268 stamp-less objects; CVTRES is the
+separate 0x60684 entry (docs/LINK_ICF.md round 3). The oracle has 270. Before the `_ftime`/`_mkdir` fix, the two OLDNAMES
+alias members for `ftime`/`mkdir` made our count 270, but they placed `ftime.obj`/`mkdir.obj` late; searching OLDNAMES
+before LIBC restores 270 yet still puts both members after wincrt0 (supervisor test). [HYPOTHESIS] The original pulled two
+OLDNAMES alias members whose real targets were already linked earlier (old-name references alongside the underscore
+names), which changes only the Rich count. [OPEN] Which two names: the image itself does not identify them.

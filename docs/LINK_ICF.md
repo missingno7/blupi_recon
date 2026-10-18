@@ -1,183 +1,237 @@
-# sol-icf: LINK 5.10 survivor selection (2026-10-18)
+# sol-icf round 3 — Rich census and CRT inventory
 
-[EVIDENCE] **PARTIAL. The survivor rule is recovered and predicts every traced
-sort entry. Historical CRT sorting fixes the unwind-filter owner in a diagnostic
-link. No genuine source/input correction reproducing all oracle choices is
-established, and no game-source patch is proposed.** The remaining getter must
-survive in the sound block, not the pixmap block stated in the task.
+STATUS: PARTIAL. [EVIDENCE] The count rule and our complete loaded-member census
+are recovered. [OPEN] The identities of the original link's two net additional
+stamp-less modules are not established. No game-source or library-order fix is
+proposed. `round3.patch` adds an optional, read-only `histlink.py --trace-rich`
+census and catalog rule BLUPI-LNK-04 (including the alias negative); it does
+not adjust a count or a linker decision.
 
-## Rule and addresses
+[EVIDENCE] Baseline: HEAD `61b1515`, supplied `build/verify/objects`, SP3 LINK,
+SP3 LIBC, DX5 imports before LIBC, historical host. The relink passes the gate
+(116,160 bytes) and reproduces the previous historical image exactly:
+SHA-256 `9f5fc9a0717d3d1bd9226443293abc3cbd233cdf62f3b6a0e1a348093e0e484d`.
+The census-enabled launcher produces that same SHA-256. No output is patched.
+The exact 19 baseline objects and logs are preserved under
+`build/sol-icf/round3-base-inputs`, with hashes checked against the measured
+link's build.json; shared `build/verify/objects` was rebuilt during this work.
 
-[EVIDENCE] Addresses below are VAs in the unmodified SP3 LINK.EXE, image base
-`0x400000` (hash in `provenance.json`). Ghidra 12.1 project:
-`build/sol-icf/ghidra/LinkICF.gpr`; exports: `decomp/`.
+## What LINK counts
 
-1. `0x4604e4` calls eligibility predicate `0x431f30`. Accepted code
-   **contributions**, including anonymous EH code and library `.text`, are
-   appended at `0x46058b` to a flat vector: pointer `0x494398`, count
-   `0x49439c`, capacity `0x4943a0`. This is not a symbol hash-table walk.
-   `0x462f10` obtains a contribution's supplemental record; its `+0x20`
-   points back to the contribution. Initial order follows object/contribution
-   loading, including library extraction. The traced vector has 793 entries.
-2. ICF entry `0x431fb0` calls imported **MSVCRT qsort** at `0x431fed`
-   through IAT slot `0x401140`, on four-byte vector elements. Comparator
-   `0x432130` uses ascending **effective raw size**, `con[+8]-con[+0x14]`,
-   then ascending relocation count, word `con[+0x24]` (zero for the special
-   linker module at global `0x47f028`). Null records/contributions sort last.
-   It returns zero for equal keys: **no name, checksum, address, or module
-   tie-breaker**. Names/total symbol population are not the selection key.
-3. `0x43202a` scans the sorted size/relocation groups. `0x432970` visits
-   each not-yet-folded candidate in that order and compares later candidates.
-   For an equivalent later body it sets `later.con[+4] |= 0x4000` and
-   `later.con[+0x10] = first.con`. **The first equivalent eligible contribution
-   in qsort's resulting order survives.** There is no later owner preference.
-   `0x432a90`/`0x432530` establish content/relocation equivalence; hashes are
-   comparison filters, not sort keys. Further ICF iterations retain this order.
+[EVIDENCE] LINK VA `0x43e340` writes Rich. It walks the image's library list
+at `this+0x1bc` with iterator `0x40faf0/0x40fb20` (next library `+0x3c`),
+and each library's loaded-module list with `0x40fb60/0x40fb90`
+(first module `library+0x38`, next module `module+0x6c`). The inner loop at
+`0x43e3af` groups by DWORD `module+0x30`. At `0x43e3cb` it increments an
+existing stamp's count; `0x43e3d0..0x43e3e6` creates a count of one. There is
+no test here for retained sections, public symbols, code size, REF or ICF.
 
-[EVIDENCE] The imported qsort's unstable equal-key permutation matters.
-The pinned linker actually loads `C:\Windows\SysWOW64\msvcrt.dll`, version
-`7.0.26100.9711`, qsort RVA `0x5da40` (observed VA `0x75d0da40`).
-`predict.py` models the historical `VC/CRT/SRC/QSORT.C`: middle pivot moved
-to the low element, cutoff eight, selection-sort small partitions. The host
-model calls Windows' x64 CRT qsort; its complete permutation equals the x86
-debuggee's. `check_models.py` checks **all 793/790 record identities**, not
-just the interesting functions. All eight controls pass (`model-checks.json`).
+[EVIDENCE] `module+0x30` is initialized from the absolute static COFF
+`@comp.id` symbol in `0x45f430`, specifically `0x45f4de..0x45f4f1`.
+Zero means no nonzero stamp was supplied. Rich stores `(stamp,count)` pairs
+at `0x43e477..0x43e484`, XORed with the header key. It stores no object name
+or archive identity. A stamp of zero also contributes zero to the rotated-stamp
+part of the key at `0x43e425..0x43e42f`.
 
-[EVIDENCE] Candidates later discarded by reference elimination still affect
-the permutation. Removing three dead SB2 bodies changes historical survivors
-despite preserving the live code inputs. Thus a count of final/live functions
-or the map's public symbols cannot reconstruct the original ICF vector.
+[EVIDENCE] The breakpoint observes each increment, reads the module and library
+from `[esp+0x1c]` and `[esp+0x2c]`, and resumes the original instruction.
+`module+4` is its name, `module+8` its load index, `module+0` the archive
+member's data offset (archive header offset +60). `library+0` points to its
+path. `rich-inventory.json` decodes every selected archive member and symbol.
 
-## Predictions versus observed selection
+| Counted category | Stamp-less modules |
+|---|---:|
+| Game command-line objects, including the data-only TU | 19 |
+| LIBC members | 104 |
+| KERNEL32 import-library members | 71 |
+| USER32 | 37 |
+| GDI32 | 13 |
+| WINMM | 14 |
+| DSOUND | 3 |
+| DDRAW | 3 |
+| DPLAYX | 4 |
+| OLDNAMES | 0 |
+| Total | **268** |
 
-[EVIDENCE] Zero-based indices in the sorted 793-entry vector:
+[EVIDENCE] The converted `.res` contributes **one additional module**, stamp
+`0x60684`, count 1. The RC input, CVTRES process and individual resources do
+not each add another stamp-less module. The trace totals 269 modules and
+reproduces both decoded Rich pairs exactly.
 
-| Family | Modern CRT order | Historical CRT order | Observed survivor |
-|---|---|---|---|
-| Empty destructors / OutputDebug | misc 142; jauge 174; button 190 | misc 168; button 191; jauge 207 | misc with both |
-| Four `mov eax,[ecx+4]; ret` getters | network 143; pixmap Back 175; Decor 176; sound 183 | network 141; pixmap Back 149; Decor 164; sound 166 | network with both |
-| Unwind filters | frame 278; ehvecdtr 299 | ehvecdtr 275; frame 287 | frame modern; ehvecdtr historical |
+[EVIDENCE] Import accounting is **128 retained imported functions + 7 DLL
+descriptors + 7 DLL null-thunk objects + 1 shared null descriptor + 2 discarded
+function-import objects = 145**. The discarded ones are KERNEL32's
+`_FindClose@4` and `_SetConsoleCtrlHandler@8`, pulled by unused portions of
+LIBC `findfile.obj` and `winsig.obj`. Their members count despite REF removing
+their thunks and IAT entries. Thus neither the final import count nor the map
+alone recovers the Rich count.
 
-[EVIDENCE] The real historical DLL produces **exactly** the modelled full
-permutation. Separate original VC5 RTM, SP2, SP3 and VC4 CRT DLLs all produce
-the historical result. Files were copied unchanged into ignored scratch
-storage; their hashes and loaded addresses are recorded in the traces and
-`build/sol-icf/*/summary.json`. SP3 qsort is `0x7802543d` when its unchanged
-DLL is loaded at `0x78000000`.
+[EVIDENCE] OLDNAMES' machine-zero weak-alias objects also count individually
+when loaded, even though their `.text` is empty. The alias trial below loads
+`oldnames/ftime.obj` (archive data offset `0xaa8c`) and `oldnames/mkdir.obj`
+(`0xe4c0`), each stamp zero, and increases exactly 268 -> 270.
 
-[EVIDENCE] These historical-runtime runs are **debugger diagnostics**:
-`link_trace.py --legacy-crt` loads an unchanged historical DLL under a distinct
-basename and dispatches the ICF qsort call to its exported function with LINK's
-actual vector/comparator. It changes only running-tool memory/stack/context;
-it does not patch any tool, object, source, output, or original-game file.
-Other linker qsort calls still use the host CRT. This is not a production
-historical-host reproduction. A copied LINK beside MSVCRT.DLL, both with and
-without `LINK.EXE.local`, still loaded the system CRT (negative controls).
+## CRT and imports compared with the oracle
 
-## Oracle getter: genuine network function; sound physical owner
+[EVIDENCE] `libscan.py` scans **all 624 LIBC members**, not just map members:
+585 ordinary COFF objects and 39 machine-zero alias objects. It searches all
+1,131 typed function bodies, 1,080 code sections (including assembly without
+function types), and 722 initialized non-code sections in the oracle and our
+image. COFF relocation fields are excluded from the signature; trailing
+alignment NOP/INT3 bytes are omitted. These are **diagnostic signature
+locations, not strict matches**. The complete results are
+`round3-libscan.json`.
 
-[EVIDENCE] `06_network.obj`'s four-byte getter is
-`?GetNbProviders@CNetwork@@QAEHXZ`, not a GetEnable definition. Its full
-16-byte section is `8b 41 04 c3` followed by twelve NOPs, identical to the
-two pixmap getters and sound's GetEnable. Its map aliases can misleadingly
-appear under `06_network.obj` with other class names.
+[EVIDENCE] No function or initialized-section signature occurs only in the
+oracle. 101 data-section signatures occur in both; 621 in neither, including
+short/zero/low-information sections for which this search supplies no useful
+identity. This is not a proof of absence for discarded members or a complete
+symbol-level initialized-data acceptance claim.
 
-[EVIDENCE] Oracle `CEvent::ChangePhase` calls `CNetwork::EnumProviders`
-at RVA `0x1a36d -> 0x20a30`, reloads the same network receiver from
-`[ebp+0x6d60]`, then calls **`0x1a378 -> 0x22dc0`** and stores the result
-as the provider count at `[ebp+0x6d04]`. The reconstructed call sequence
-independently names GetNbProviders. This is a genuine SB1 getter, folded in
-the oracle, and cannot be removed as an SB2-only function. No verifier
-acceptance/promotion is claimed for this currently unmatched caller.
+[EVIDENCE] `crtvalidate.py` additionally constrains code/IAT relocation
+targets to their independently located CRT callees or actual PE imports,
+removing 4,644 oracle and 4,617 candidate-image false candidate locations.
+It converges after two elimination rounds. Again there is no oracle-only
+function. Shared helper signatures remain possible in unlinked members
+(e.g. `mbsdup`/`strdup`, `memcpy`/`memmove`, and narrow/wide output helpers),
+so a matching signature does not prove that its archive member was selected.
 
-[EVIDENCE] `oracle/tu_map.csv` and STRICT adjacent bodies put `0x22dc0`
-inside **sound.cpp**: CSound::Create `0x22d60`, getter `0x22dc0`,
-CSound::SetState `0x22dd0`. `docs/RELINK.md`'s round-2 getter discussion
-also identifies CSound::GetEnable as the independent owner. Under the
-oracle's ordinary TU order the desired physical survivor is sound's copy.
-The task's description of this slot as the pixmap block is incorrect.
+[EVIDENCE] All **183 LIBC public/static code map rows** have oracle locations
+in `round3-report.json` / `round3-crt-map.csv`. The only initially ambiguous
+retained function, `_srand`, is resolved by its shared `holdrand` relocation
+with independently unique `_rand`. Folded `ArrayUnwindFilter` is reported by
+LINK under the surviving frame module; its body belongs to ehvecdtr too.
+128 rows have delta -0x10, 53 delta -0x30, and the two names for the shared
+filter both name our `0x27380` versus oracle `0x243f0`. There is no missing
+retained CRT body needed to explain the pre-entry extent.
 
-## Genuine input test and unmasked measurements
+| Anchor | Oracle RVA | Ours RVA | Delta |
+|---|---:|---:|---:|
+| First CRT function, `strstr` | 0x238b0 | 0x238a0 | -0x10 |
+| `_ftime` | 0x23d10 | 0x23d00 | -0x10 |
+| `ArrayUnwindFilter` / `FrameUnwindFilter` | 0x243f0 | 0x27380 | moved |
+| `srand` | 0x24410 | 0x243e0 | -0x30 |
+| `_mkdir` | 0x24b30 | 0x24b00 | -0x30 |
+| `WinMainCRTStartup` | 0x24d40 | 0x24d10 | -0x30 |
+| `DestructExceptionObject`, after the frame filter | 0x277d0 | 0x277c0 | -0x10 |
 
-[EVIDENCE] Working HEAD was `45d770c`, rather than the supplied `bc81fef`.
-The requested first reuse of `build/verify/objects` gave 29,726 same-offset
-equal `.text` bytes and entry `0x24cf0`. Its data inputs differ from the fresh
-canonical build. Subsequent controls all use the same private canonical
-objects (`build/verify-sol-icf/objects`); their hashes are in `provenance.json`.
-Do not attribute the old/rebuilt baseline difference to ICF.
+[EVIDENCE] **Entry minus game-code deficit is -0x20, not zero.** Game extent
+is short 0x10, established at `strstr`. Keeping the 32-byte filter in frame
+rather than ehvecdtr removes it before startup and restores those bytes later.
+This fully explains the additional -0x20 before `wincrt0`; it is not evidence
+for another missing live CRT function. Historical current-input ICF keeps
+button's empty return, sound's getter, and frame's filter, as in round 2.
 
-[EVIDENCE] One source-supported population correction was tested:
-remove only PlaceDecor8/9/10 definitions from decdesign.cpp, retaining headers.
-They contain SB2-only key/door/hovercraft/goal options, have no incoming source
-calls or assigned oracle bodies, and are documented as SB2-only in
-`docs/SENIOR_SOL_DECDESIGN_2.md`. Candidate: `decdesign-no-sb2.cpp`.
-The gate has zero accepted regressions; all 42 remaining decdesign bodies
-are STRICT. Eligible-vector count changes 793 -> 790.
+[EVIDENCE] Oracle/candidate have the same 128 imported names/ordinals and
+hints, and byte-identical import descriptor directories. The same seven
+`FF 25 <IAT>` sites are found in each image (four standalone DirectX thunks,
+two embedded CRT tail jumps to GetOEMCP/GetACP, and the RtlUnwind thunk), all
+at delta -0x10. There is no oracle-only retained thunk. The 326 differing
+`.rdata` bytes include INT/IAT permutations and code-dependent metadata;
+the audit explicitly lists the 33 differing bytes outside INT/IAT arrays.
 
-| Inputs / ICF sorting | ret survivor RVA / owner | getter survivor RVA / owner | unwind survivor RVA / owner | CRT entry | `.text` same-offset equal bytes |
-|---|---|---|---|---|---|
-| Oracle | `0x1f010` misc | `0x22dc0` sound block | `0x243f0` ehvecdtr | `0x24d40` | 176,019 |
-| Canonical / host CRT | `0x1f1c0` misc | `0x20a60` network | `0x27360` frame | `0x24cf0` | 30,187 |
-| Canonical / historical diagnostic | `0x1f1c0` misc | `0x20a60` network | `0x243c0` ehvecdtr | `0x24d10` | 30,262 |
-| Remove SB2 stubs / host CRT | `0x1f1c0` misc | `0x20a60` network | `0x27360` frame | `0x24cf0` | 30,187 |
-| Remove SB2 stubs / historical diagnostic | `0x1f1d0` misc | `0x21520` pixmap Decor | `0x27360` frame | `0x24cf0` | 28,273 |
+## Evidence-backed negative trials
 
-[EVIDENCE] All candidate images remain `.text` virtual-size **32 bytes short**.
-The historical canonical diagnostic places both ehvecdtr's filter and the
-entry at the oracle's constant **-0x30 game-code displacement**. It removes
-the extra -0x20 entry displacement caused by keeping frame's filter.
-These are raw, unmasked linked-byte counts, not strict image matches.
+[EVIDENCE] Reverting `_ftime`/`struct _timeb` to `ftime`/`struct timeb`, and
+`_mkdir` to `mkdir`, restores the two OLDNAMES members and Rich 270. The full
+required verifier run exits 0 with **zero accepted regressions**, 115,952
+available bytes and the expected sound-path INCOMPLETE exception:
 
-[EVIDENCE, negative] SB2-stub cleanup is not the ICF solution and is not
-proposed for integration here. Model-only restoration of Build's proven
-3872-byte oracle span, and model-only restoration of the two oracle callback
-positions, leave the three canonical historical predictions unchanged.
-Coalescing the two pixmap accessors into one also fails the historical
-prediction; no original single-accessor declaration was established, and
-no source variant was compiled or linked for that hypothesis.
-No arbitrary filler, renamed symbol, guessed deletion, or object-order
-permutation was linked to tune survivors.
-
-## Verification, reproduction, remaining work
-
-[EVIDENCE] Four serial whole-tree verification runs used the manifest SP3
-flags, canonical headers, no PCH, default jobs/slots, tools/msvc.py, and
-repo-local TMP/TEMP: canonical, negative candidate, candidate in the explicitly
-requested `sol-icf` build directory, then canonical restoration. All preserve
-every active accepted function; sound has the expected historical-path
-**INCOMPLETE**, coverage 115,952 / 141,488 in the sandbox. Logs:
-`gate-current.log`, `gate-no-sb2.log`, `gate-no-sb2-required-dir.log`,
-`gate-final.log`. No canonical source/header/manifest was modified.
-
-[EVIDENCE] A final relink after canonical restoration reproduces **every raw
-section payload byte** of the measured canonical baseline (`.text`, `.rdata`,
-`.data`, `.rsrc`), including the same 30,187 oracle-equal `.text` bytes.
-Recompilation changes COFF timestamps and whole-object hashes; both measured
-and final hashes are retained in `provenance.json`. The unchanged-source
-control objects differ only in their COFF timestamp fields. Section equality
-between these two candidate links is not a claim of oracle image equality.
-
-```powershell
-.pyenv\python.exe tools/verify.py --build-dir sol-icf
-.pyenv\python.exe tools/relink.py --objects-dir build/verify-sol-icf/objects --out-dir build/sol-icf/current --diagnostic
-.pyenv\python.exe scratch/sol-icf/measure.py host-current
-.pyenv\python.exe scratch/sol-icf/measure.py legacy-sp3 --crt C:/tools/msvc5_sp3/VC/REDIST/MSVCRT.DLL
-.pyenv\python.exe scratch/sol-icf/check_models.py
-git apply --check scratch/sol-icf/catalog.patch
+```
+.pyenv\python.exe tools/verify.py --tu src/blupi.cpp=scratch/sol-icf/round3-src/blupi.cpp --tu src/event.cpp=scratch/sol-icf/round3-src/event.cpp --build-dir sol-icf-r3
 ```
 
-[EVIDENCE] `catalog.patch` is a reviewable **documentation/catalog-only**
-candidate: correct BLUPI-LNK-01's obsolete menu ownership and add the proven
-BLUPI-LNK-02 rule plus the negative control. Plain `git apply --check` passes.
-It is not applied. All work is in ignored scratch/build; no commit, original
-game/linked-image execution, toolchain-file modification, or background
-process was performed/left running.
+[EVIDENCE] Primary layout trials reuse the attested sound object and every
+other supplied object, replacing only the two verifier-built candidate TUs
+(`build/sol-icf/round3-inputs`). Their relink gate is PASS, 116,160 bytes.
 
-[OPEN] Exact oracle eligible contribution population/order is not recovered.
-For the four identical getters the required condition is that the historical
-qsort permutation put sound's record before network and both pixmap records;
-the measured 793-entry input does not satisfy it. Final PE bytes cannot reveal
-all dead input contributions. Future source-backed corrections must predict
-the entire changed vector, rather than search arbitrary counts. A plain launch
-environment using the historical CRT is also not established. Consequently
-there is no claimed byte-identical relink or complete oracle-survivor fix.
+| Historical-host input | Rich N | Entry | Raw `.text` differing bytes |
+|---|---:|---:|---:|
+| Baseline underscored calls | 268 | 0x24d10 | 66,622 |
+| Both OLDNAMES aliases, usual libraries | 270 | 0x24c40 | 67,540 |
+| Both aliases, OLDNAMES before LIBC | 270 | 0x24c40 | 66,785 |
+| Both aliases, IDE default libraries | 270 | 0x24c40 | 67,540 |
+| RTM LIBC, unchanged game objects | 268 | 0x24d10 | 145,532 |
+| SP2 LIBC, unchanged game objects | 268 | 0x24d30 | 66,521 |
+
+[EVIDENCE] Physically putting explicit libraries before objects reproduces
+the corresponding alias rows, without repairing placement. With ordinary
+order, `_ftime` moves to `0x2b840`, `_mkdir` to `0x2b900`; with OLDNAMES
+first they land at `0x24e40` / `0x24f00`, still after startup. Both contradict
+the oracle's early member positions. These trials identify the two objects
+removed by reconstruction commit `bc81fef`, **not the original's two objects**.
+Restoring them solely to fit the Rich count is rejected. All RTM/SP2/SP3
+OLDNAMES and Win32 import libraries checked are byte-identical across service
+packs; the tested LIBC archives each load the same 104 member names.
+
+[EVIDENCE] The removed text big-number routines call `sprintf`, whose member
+is already pulled by blupi. The removed trajectory/decmove helpers use
+memset/memory intrinsics, existing game methods, rand and existing Win32
+imports; no new CRT-member requirement is established by those bodies.
+Restoring them has no evidence-based explanation for two additional modules.
+
+[EVIDENCE] `iat_inverse.py` first validates its entire 137-entry permutation
+against the live LINK trace, then inserts hypothetical missing import records
+in a **mathematical model only**. All seven existing DLLs and all insertion
+positions are tested: 966 one-record cases and 469,959 two-record cases.
+None reproduces the oracle's 128-slot order (best 51/128 and 79/128).
+Therefore the difference is not explained by simply adding one/two discarded
+import members while preserving the present initial contribution order.
+This does not rule out removed *and* added inputs, or a different initial order.
+
+## Limits, delivery and remaining work
+
+[EVIDENCE] The other worker advanced HEAD to `accd2a1`, including a new Build
+body in `cf2b637`. A separate final relink of its rebuilt current objects is
+under `build/sol-icf/round3-head-accd2a1`: gate PASS, 116,160 bytes; Rich is
+still 268+1 and the census still 269 modules. `.text` is now **32 bytes larger**
+than the oracle, with 29,721 same-offset equal initialized bytes. `strstr`
+starts at `0x238d0` (+0x20), frame still owns the filter at `0x273b0`, and
+entry is **0x24d40**, equal by cancellation: +0x20 game extent minus the
+same 0x20 filter displacement before startup. Entry minus game drift remains
+**-0x20**. This is not a corrected CRT layout. The baseline tables above
+remain pinned to the task's original objects and have not been overwritten
+with these newer measurements.
+
+[OPEN] Rich supplies a **net count**, not a named set difference. Extra
+data-only/dead game objects, weak aliases, discarded library code/imports,
+and substitutions among such inputs can leave no independent final-image
+identity. The original module list, project, map, or a source-supported
+reference is needed to name the two confidently. The present evidence does
+not justify adding two empty TUs, restoring aliases, or retaining dead SB2
+bodies to fit the count. The original TU partition is itself not fully proven
+(docs/TU_MAP.md and LINK_CONTEXT.md); current data-only ownership is partly
+a reconstruction convenience.
+
+[EVIDENCE] Remaining baseline header differences are exactly file offsets
+`0x94` (Rich 268/270), `0xd8` (entry 0x24d10/0x24d40), and `0x1b0`
+(`.text` VirtualSize 0x2af83/0x2af93). TimeDateStamp is 0x36245013;
+file size 535,552 equals the oracle. Total unequal file bytes 66,966:
+three header, 66,622 `.text`, 326 `.rdata`, 15 `.data`; `.rsrc` exact.
+
+[EVIDENCE] Delivery: `round3.patch` (optional Rich observation and catalog),
+`round3-tools/histlink.py` (candidate), the census reports under
+`build/sol-icf/round3-*`, `richtrace.py`/`richreport.py`, `libscan.py`,
+`crtvalidate.py`, `iat_inverse.py`, `round3_report.py`, JSON reports and the
+CRT/member CSVs. `git apply --check scratch/sol-icf/round3.patch` passes.
+No canonical source/docs, assets, external reference or toolchain file was
+modified; no commit or game/output-image execution occurred. The successful
+census reports have process wait 0, active job processes 0 and unchanged tool
+hashes. One exploratory driver attempted two launch() calls in one Python
+process; its second call failed before LINK entry with WinError 6. The
+corresponding single-process CLI trial was rerun successfully; the optional
+census delivery is verified through that normal CLI path.
+
+## Text for docs/RELINK.md (not applied)
+
+[EVIDENCE] Round 3 recovers LINK's Rich writer at 0x43e340. It counts every
+loaded module once by its `@comp.id` stamp, including weak aliases and members
+later discarded by REF/ICF. Current (0,268) = 19 game + 104 LIBC + 145 import
+members; the converted resource is separately (0x60684,1). The oracle's 270
+does not identify two missing live CRT members. All 183 current CRT code map
+rows have oracle signature locations and no oracle-only CRT function/data
+signature was found in the full SP3 LIBC inventory. The first CRT RVA differs
+by -0x10, whereas entry differs by -0x30: the remaining -0x20 before startup
+is the unwind filter kept later in frame.obj. Reinstating ftime/mkdir aliases
+restores Rich 270 but moves their CRT bodies past startup, contrary to the
+oracle; this is rejected. Original additional-module identities remain OPEN.

@@ -3771,6 +3771,41 @@
         "doc_ref": "scratch/sol-relink/r2/FINDINGS.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LNK-04",
+      "section": "linker",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "LINK 5.10 Rich counts every loaded module, including discarded and weak-alias objects",
+      "symptoms": {},
+      "symptom": "Rich stamp-less object count differs despite the same retained library bodies and imports.",
+      "construct": "Pinned LINK 5.10.7303 Rich writer at 0x43e340; module lists after library extraction.",
+      "explanation": "The writer walks every library/module record and increments the group keyed by module+0x30 (@comp.id). No retained-section or symbol test is made. Game objects, selected LIBC/import members and loaded machine-zero OLDNAMES aliases count; the CVTRES object has its own 0x60684 stamp. Zero-stamp module identities are not encoded in Rich.",
+      "experiment": "Use histlink.py --trace-rich to observe the increment at 0x43e3af; decode each archive member by its observed data offset. Compare the census with both Rich entries and audit retained code independently.",
+      "not_when": "A net count difference does not identify missing live functions or two specific original objects. Restoring ftime/mkdir aliases raises N from 268 to 270 with zero accepted regressions but moves their CRT bodies past startup, contrary to the oracle; reject this count-only repair.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/sol-icf/FINDINGS-round3.md; round3-report.json; round3-members.csv",
+          "tier": "PROVEN",
+          "counts": "269 observed modules = 268 stamp-less + 1 CVTRES; two weak aliases add exactly two"
+        }
+      ],
+      "keywords": "Rich object count module comp.id OLDNAMES LIBC import REF ICF CVTRES ftime mkdir",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "full link module census; Benchmark/AddUserExportPath alias negative",
+        "flags": "VC5 SP3 manifest flags; historical-host LINK /OPT:REF /OPT:ICF",
+        "compiles": 21,
+        "outcome": "19 game + 104 LIBC + 145 import members; optional observation leaves the full image unchanged. One full candidate verification (19 game + 2 CRT evidence compiles) has zero accepted regressions, expected sound-path INCOMPLETE; alias placement contradicts the oracle.",
+        "doc_ref": "scratch/sol-icf/FINDINGS-round3.md"
+      },
+      "legacy_ids": []
     }
   ]
 }
