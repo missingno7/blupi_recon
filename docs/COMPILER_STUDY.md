@@ -543,6 +543,20 @@ Causal results per open function:
 - DrawButtons: C1 emits font/text arguments before the late x store, but 0x42127d moves the x=330 definitions early;
   union view, by-reference wrapper, branch arms and buffer wrapper all get normalized the same way.
 
+### Causal round 2 (2026-10-19; sol-cbuild r2, sol-cteb)
+
+- Build (a): the reverse-moving call already reaches pressure 7/7; the missing incoming singleton-1 cut is decided by
+  batch region adoption (BB85 adopts region 1 with four compatible registers), not the pressure comparison. Redundant
+  scalar/POINT view aliases vanish before pooling (byte-identical to the control).
+- Build (b): the cloud X/Y extraction is 0x43ada6 (called from 0x43e597, early 0x42127d). Both chains pass the
+  0x43af4b output-availability test, side-effect (0x43af5a) and overlap-kill tests. Varying-Y forms (restore, feedback,
+  pointer reload) fail 0x43af4b first but leave extra native operations. Open alternative: the oracle's in-loop Y LEA
+  may be a late whole-expression rematerialization (0x41ca9b/0x41cd63), not LICM failure.
+- TreatEventBase: first difference +0x41b (old flag in ECX vs oracle EDX; result EDX vs ECX). Assignments 18..22
+  traced; the terminator byte is a compare-embedded scratch (DL) with no assign call. The terminator prefix itself
+  already matches (increment store before load, addend 0). The oracle implies one extra assignment there (byte temp
+  counterfactual), or the old-flag split; source mechanism open (next: 0x41dd18 address-versioning trace).
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
