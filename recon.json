@@ -2145,6 +2145,12 @@
       "tu": "src/pixmap.cpp"
     },
     {
+      "symbol": "?Create@CPixmap@@QAEHPAXUtagPOINT@@HHH@Z",
+      "rva": "0x00021190",
+      "size": 912,
+      "tu": "src/pixmap.cpp"
+    },
+    {
       "symbol": "?Flush@CPixmap@@QAEHXZ",
       "rva": "0x00021520",
       "size": 16,

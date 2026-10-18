@@ -2612,6 +2612,48 @@
         "outcome": "mechanism established",
         "doc_ref": "docs/COMPILER_STUDY.md"
       }
+    },
+    {
+      "id": "BLUPI-SRC-02",
+      "section": "source-forms",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "if/else assignment of a variable, not a ternary/boolean expression, behind setcc or neg/sbb sequences",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "schedule_only"
+        ]
+      },
+      "symptom": "A setcc or neg/sbb/and/add value sequence matches except for its register (callee-saved source in the oracle) or its position relative to neighbouring loads.",
+      "construct": "`if (x) v = A; else v = B;` (v a local or the reassigned parameter) versus `f(x ? A : B)`, `v = x != 0`, `v = x ? A : B`.",
+      "explanation": "VC5 SP3 /O2 turns an if/else assignment into the same branchless setcc / sbb code as the ternary, but the assigned variable becomes a register variable with its own live range, which changes register choice (CNetwork::Send: esi/edi params, setne dl) and scheduling (CPixmap::Create: sbb before the vtable load). Ternary arguments, `!!x`, `x != 0` assignments and locals initialised by a ternary fold back to the expression form; the if-only form (`v = B; if (x) v = A;`) keeps a branch.",
+      "experiment": "Rewrite the expression as a two-armed if/else assignment to a local (or to the parameter) right before its use; check both arm orders.",
+      "not_when": "When the oracle keeps a conditional branch, the if-only form is the candidate instead.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#cnetworksend-ifelse-normalisation-of-a-parameter-evidence",
+          "tier": "PROVEN",
+          "counts": "2 functions STRICT (CNetwork::Send 0x20ec0, CPixmap::Create 0x21190)"
+        }
+      ],
+      "keywords": "if else assignment ternary setne sbb neg branchless register variable scheduling",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CNetwork::Send; CPixmap::Create",
+        "rva": "0x20ec0; 0x21190",
+        "tu": "src/network.cpp; src/pixmap.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 20,
+        "outcome": "both STRICT",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

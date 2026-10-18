@@ -129,6 +129,7 @@ BOOL CPixmap::Create(HWND hwnd, POINT dim,
 	POINT				pos;
 	HDC					hdc;
 	int					caps;
+	int					depth;
 
 	hdc = CreateCompatibleDC(NULL);
 	if ( hdc == NULL )
@@ -192,7 +193,9 @@ BOOL CPixmap::Create(HWND hwnd, POINT dim,
     // Set the video mode to 640x480x8.
 	if ( m_bFullScreen )
 	{
-		ddrval = m_lpDD->SetDisplayMode(dim.x, dim.y, bTrueColor ? 16 : 8);
+		if ( bTrueColor )  depth = 16;
+		else               depth = 8;
+		ddrval = m_lpDD->SetDisplayMode(dim.x, dim.y, depth);
 		if ( ddrval != DD_OK )
 		{
 			OutputDebug("Fatal error: SetDisplayMode\n");
