@@ -396,6 +396,16 @@ then resets it to DIMDECORY): that is the oracle's eax hold of 0x1e0 that the ea
 reproduce. The background code now matches; 2,328 differing bytes, 1177/1237 aligned, first difference +0x4b1;
 remaining body excess 38 bytes (lift block 26, cloud 8, moving objects 4).
 
+### C1XX IL emission ([EVIDENCE], worker sol-c1; docs/C1_IL.md)
+
+C1XX (SP3) emits scalar reads, logical-not, typed assignments, comma expressions and whole aggregate arguments (unary entry
+0x10415738, built-in builder 0x10410239, argument prepend 0x10412057, expression emitter 0x104048fb, record writer
+0x10403296). The temp copies and definition placements that TreatEventBase and DrawButtons need are NOT C1 records: c2
+materializes values, deletes source copies, extracts effects and expands aggregate arguments. So C1 record order alone
+cannot produce either target; the missing source property must change what c2 sees (lifetimes, uses, blocks). 68 micros;
+bounded negatives: bitfields, enums, constructors, copy constructors, conversion/assignment operators, inline draw
+wrappers, varargs aggregates.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`
