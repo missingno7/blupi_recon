@@ -49,7 +49,6 @@ public:
 	BOOL	CreateSoundBuffer(int dwBuf, DWORD dwBufSize, DWORD dwFreq, DWORD dwBitsPerSample, DWORD dwBlkAlign, BOOL bStereo);
 	BOOL	ReadData(LPDIRECTSOUNDBUFFER lpDSB, FILE* pFile, DWORD dwSize, DWORD dwPos);
 	BOOL	CreateBufferFromWaveFile(int dwBuf, char *pFileName);
-	BOOL	PlaySoundDS(DWORD dwSound, DWORD dwFlags);
 	BOOL	PlaySoundDS(int channel, int volume, int pan, int playFlag);
 	BOOL	PlaySoundDS(int channel, int volume, int pan);
 

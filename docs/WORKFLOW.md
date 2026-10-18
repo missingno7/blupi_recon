@@ -1,7 +1,7 @@
 # Matching source workflow
 
 `recon.json` is the canonical input list and acceptance record. It pins the VC5
-SP3 compiler tree, `/O2 /GX /Gy` flags, DirectX 6 headers, and the `nullptr=0`
+SP3 compiler tree, `/O2 /GX /Gy` flags, DirectX 5 headers, and the `nullptr=0`
 source compatibility define. `src/` keeps original filenames and source line
 numbers; see [src/PROVENANCE.md](../src/PROVENANCE.md) for file provenance.
 

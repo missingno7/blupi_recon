@@ -309,10 +309,16 @@ void SetDecor()
 
 	if (phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST || phase == WM_PHASE_BUILD)
 	{
-		g_pDecor->Build(RECT(0, 0, LXIMAGE, LYIMAGE), posMouse);
+		{
+			RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
+			g_pDecor->Build(rect, posMouse);
+		}
 	}
 	else {
-		g_pPixmap->DrawImage(-1, 0, RECT(0, 0, LXIMAGE, LYIMAGE), 1);
+		{
+			RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
+			g_pPixmap->DrawImage(-1, 0, rect, 1);
+		}
 	}
 
 	g_pEvent->DrawButtons();
@@ -720,7 +726,9 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 
 	g_pPixmap = new CPixmap;
 	if (g_pPixmap == NULL) return InitFail("New pixmap", TRUE);
-	if (!g_pPixmap->Create(g_hWnd, POINT(LXIMAGE, LYIMAGE), g_bFullScreen, g_bTrueColorBack, g_mouseType))
+	totalDim.x = LXIMAGE;
+	totalDim.y = LYIMAGE;
+	if (!g_pPixmap->Create(g_hWnd, totalDim, g_bFullScreen, g_bTrueColorBack, g_mouseType))
 		return InitFail("Create pixmap", TRUE);
 	OutputDebug("Image: init\n");
 	totalDim.x = LXIMAGE;
@@ -733,7 +741,10 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	OutputDebug("InitSysPalette");
 	g_pPixmap->InitSysPalette();
 	g_pPixmap->SetDebug(FALSE);
-	g_pPixmap->DrawImage(-1, 0, RECT(0, 0, LXIMAGE, LYIMAGE), 1);
+	{
+		RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
+		g_pPixmap->DrawImage(-1, 0, rect, 1);
+	}
 	g_pPixmap->Display();
 
 	totalDim.x = 0x400;

@@ -2,7 +2,7 @@
   "toolchain": {
     "tree": "sp3",
     "include_dirs": [
-      "C:\\tools\\dx6sdk\\INCLUDE"
+      "C:\\tools\\dx5sdk\\INCLUDE"
     ],
     "defines": [
       "WIN32",
@@ -411,6 +411,12 @@
       "symbol": "?DrawInfo@CDecor@@QAEXXZ",
       "rva": "0x00005270",
       "size": 1024,
+      "tu": "src/decblock.cpp"
+    },
+    {
+      "symbol": "?DecorNextAction@CDecor@@QAE?AUtagPOINT@@XZ",
+      "rva": "0x00005670",
+      "size": 272,
       "tu": "src/decblock.cpp"
     },
     {

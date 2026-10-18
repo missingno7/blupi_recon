@@ -150,3 +150,25 @@ This document records the KB transfer checks against Speedy Blupi 1. **[EVIDENCE
 - **[OPEN]** No zero-regression authentic state or integration patch is established. Artifacts are in
   `scratch/sol-macros/`; canonical source and acceptance records are unchanged. Catalog BLUPI-CTX-01 and BLUPI-REG-03
   retain the findings and negatives.
+
+## Experiment 9: DX5 decmove include placement
+
+[EVIDENCE, Blupi-specific] At `70d630c` plus `dx5-authentic.patch`, moving
+the existing `decor.h` include below `misc.h` and `dectables.h` in decmove.cpp
+makes MoveObjectSort STRICT at `0x13b20` (240 bytes, two verified calls).
+The model predicts 31 + 105 + 1 = 137 declarations/parameter numbers before
+decor.h. Both orders of the two moved headers pass every active accepted
+entry in whole-tree verification; DecorNextAction stays STRICT (272 bytes).
+
+[EVIDENCE, negative] Moving only misc.h (31), or only dectables.h with
+obstacle.h (106), leaves MoveObjectSort as the sole accepted regression.
+No declaration or body was added. Seven serial full-tree runs and one
+baseline fnprobe used pinned VC5 SP3 /O2 /GX /Gy and DX5; sound retained the
+expected INCOMPLETE historical-path gate and passed accepted code-byte checks.
+
+[HYPOTHESIS] This is a plausible SB1 include arrangement using existing,
+needed declarations; exact historical ordering is not established by PB.
+PB b0270ab's decmove.h has only two one-argument prototypes (cost four),
+and its movement/icon tables are not SB1's moving-object animation tables.
+Supervisor gate outside the sandbox: `tools/verify.py --accept` 113,344 / 141,488, zero regressions; integrated
+(docs/LINK_CONTEXT.md "DX5 state integrated").

@@ -68,7 +68,7 @@ Recommended compile command for a game translation unit:
 set TMP=D:\Prog\blupi_recon\build\tmp
 set TEMP=D:\Prog\blupi_recon\build\tmp
 set PATH=C:\tools\msvc5_sp3\VC\BIN;C:\tools\msvc5_sp3\SHAREDIDE\BIN;%PATH%
-set INCLUDE=C:\tools\msvc5_sp3\VC\INCLUDE;C:\tools\dx6sdk\include
+set INCLUDE=C:\tools\msvc5_sp3\VC\INCLUDE;C:\tools\dx5sdk\include
 set LIB=C:\tools\msvc5_sp3\VC\LIB
 C:\tools\msvc5_sp3\VC\BIN\cl.exe /nologo /W3 /GX /O2 /ML /Gd /DWIN32 /DNDEBUG /D_WINDOWS /c /Fo<obj> <translation-unit>.cpp
 ```
@@ -121,5 +121,5 @@ Scripts and generated probes are under `scratch/toolchain/` and `build/toolchain
 
 The original was compiled against the **DirectX 5.0 SDK** headers: the oracle's `.rdata` holds the exact ten GUIDs of
 DX5 dplay.h (no IDirectPlay4), defined in network.cpp via INITGUID, and dxguid.lib was not linked. The SDK is installed
-at `C:	ools\dx5sdk\{INCLUDE,LIB}` (archive.org `ms-dx5-sdk`, ISO MD5 40a5aceb9683e56e6e6451d39daa3686). The manifest
-still uses dx6sdk because switching costs nine context regressions (docs/LINK_CONTEXT.md).
+at `C:\tools\dx5sdk\{INCLUDE,LIB}` (archive.org `ms-dx5-sdk`, ISO MD5 40a5aceb9683e56e6e6451d39daa3686). The manifest
+uses dx5sdk since the DX5 integration (zero regressions, docs/LINK_CONTEXT.md).

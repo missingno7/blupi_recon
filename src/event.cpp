@@ -1193,7 +1193,9 @@ BOOL CEvent::DrawButtons()
 		DrawText(m_pPixmap, pos, (char*)"by www.epsitec.com", FONTLITTLE);
 #endif
 		LoadString(TX_CHOOSEGAMER, res, 100);
-		DrawTextLeft(m_pPixmap, POINT( LXIMAGE / 2 - GetTextWidth(res) / 2, 26 ), res, FONTGOLD);
+		pos.x = LXIMAGE / 2 - GetTextWidth(res) / 2;
+		pos.y = 26;
+		DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
 		pos.x = 110;
 		pos.y = 69;
 		i = MAXGAMER;
@@ -1219,7 +1221,9 @@ BOOL CEvent::DrawButtons()
 		pos.y = 190;
 		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 
-		PutTextInputBox(POINT( LXIMAGE / 2, 232 ));
+		pos.x = LXIMAGE / 2;
+		pos.y = 232;
+		PutTextInputBox(pos);
 		if (m_textInput[0] == 0)
 		{
 			SetEnable(WM_PHASE_DP_DOCREATE, FALSE);
@@ -1243,7 +1247,9 @@ BOOL CEvent::DrawButtons()
 		pos.y = 190;
 		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 
-		PutTextInputBox(POINT( LXIMAGE / 2, 232 ));
+		pos.x = LXIMAGE / 2;
+		pos.y = 232;
+		PutTextInputBox(pos);
 	}
 
 	if (m_phase == WM_PHASE_NAMEDESIGN)
@@ -1259,7 +1265,9 @@ BOOL CEvent::DrawButtons()
 		pos.y = 190;
 		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 
-		PutTextInputBox(POINT( LXIMAGE / 2, 232 ));
+		pos.x = LXIMAGE / 2;
+		pos.y = 232;
+		PutTextInputBox(pos);
 	}
 
 	if (m_phase == WM_PHASE_CLEARGAMER)
@@ -1355,12 +1363,16 @@ BOOL CEvent::DrawButtons()
 			if (m_bDemoRec)
 			{
 				LoadString(TX_DEMOREC, res, 100);
-				DrawTextLeft(m_pPixmap, POINT(10, 10), res, FONTGOLD);
+				pos.x = 10;
+				pos.y = 10;
+				DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
 			}
 			if (m_bDemoPlay)
 			{
 				LoadString(TX_DEMOPLAY, res, 100);
-				DrawTextLeft(m_pPixmap, POINT(10, 10), res, FONTGOLD);
+				pos.x = 10;
+				pos.y = 10;
+				DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
 			}
 		}
 		
@@ -1461,14 +1473,18 @@ BOOL CEvent::DrawButtons()
 		m_phase == WM_PHASE_LOSTMULTI)
 	{
 		LoadString(TX_LOST1 + GetWorld() % 5, res, 100);
-		DrawTextLeft(m_pPixmap, POINT( 50, 424 ), res, FONTWHITE);
+		pos.x = 50;
+		pos.y = 424;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 	}
 	if (m_phase == WM_PHASE_WIN ||
 		m_phase == WM_PHASE_WINDESIGN ||
 		m_phase == WM_PHASE_WINMULTI)
 	{
 		LoadString(TX_WIN1 + GetWorld() % 5, res, 100);
-		DrawTextLeft(m_pPixmap, POINT( 50, 424 ), res, FONTWHITE);
+		pos.x = 50;
+		pos.y = 424;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 	}
 	if (m_phase == WM_PHASE_LASTWIN)
 	{
@@ -1489,17 +1505,29 @@ BOOL CEvent::DrawButtons()
 		pos.y = 36;
 		DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
 		LoadString(TX_SOUNDVOL, res, 100);
-		DrawTextLeft(m_pPixmap, POINT( 70, 80 ), res, FONTWHITE);
+		pos.x = 70;
+		pos.y = 80;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		LoadString(TX_MUSICVOL, res, 100);
-		DrawTextLeft(m_pPixmap, POINT( 70, 190 ), res, FONTWHITE);
+		pos.x = 70;
+		pos.y = 190;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		LoadString(TX_INPUT, res, 100);
-		DrawTextLeft(m_pPixmap, POINT( 370, 80 ), res, FONTWHITE);
+		pos.x = 370;
+		pos.y = 80;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		sprintf(res, "%d", m_pSound->GetAudioVolume());
-		DrawTextLeft(m_pPixmap, POINT( 160, 122 ), res, FONTWHITE);
+		pos.x = 160;
+		pos.y = 122;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		sprintf(res, "%d", m_pSound->GetMidiVolume());
-		DrawTextLeft(m_pPixmap, POINT( 160, 232 ), res, FONTWHITE);
+		pos.x = 160;
+		pos.y = 232;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		LoadString(TX_BUTTON_SETUP7, res, 100);
-		DrawTextLeft(m_pPixmap, POINT( 420, 122 ), res, FONTWHITE);
+		pos.x = 420;
+		pos.y = 122;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		LoadString(TX_BUTTON_SETUP8, res, 100);
 		pos.x = 420;
 		pos.y = 162;
@@ -1517,7 +1545,9 @@ BOOL CEvent::DrawButtons()
 		pos.y = 31;
 		DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
 		LoadString(0xF0, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(140, 79), res, FONTWHITE);
+		pos.x = 140;
+		pos.y = 79;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		pos.x = 190;
 		pos.y = 122;
 		m_nbFiles = m_pNetwork->GetNbProviders();
@@ -1533,9 +1563,13 @@ BOOL CEvent::DrawButtons()
 	if (m_phase == WM_PHASE_SESSION)
 	{
 		LoadString(0xF3, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(LXIMAGE / 2 - GetTextWidth(res) / 2, 31), res, FONTGOLD);
+		pos.x = LXIMAGE / 2 - GetTextWidth(res) / 2;
+		pos.y = 31;
+		DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
 		LoadString(0xF4, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(120, 79), res, FONTWHITE);
+		pos.x = 120;
+		pos.y = 79;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		pos.x = 170;
 		pos.y = 122;
 		m_nbFiles = m_pNetwork->GetNbSessions();
@@ -1551,20 +1585,32 @@ BOOL CEvent::DrawButtons()
 	if (m_phase == WM_PHASE_MULTI)
 	{
 		LoadString(0xFD, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(LXIMAGE / 2 - GetTextWidth(res) / 2, 31), res, FONTGOLD);
+		pos.x = LXIMAGE / 2 - GetTextWidth(res) / 2;
+		pos.y = 31;
+		DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
 		LoadString(0xFE, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(130, 82), res, FONTWHITE);
+		pos.x = 130;
+		pos.y = 82;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		LoadString(0x11E, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(288, 82), res, FONTWHITE);
+		pos.x = 288;
+		pos.y = 82;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		LoadString(0x100, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(80, 301), res, FONTWHITE);
+		pos.x = 80;
+		pos.y = 301;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		if (m_bDrawMap)
 		{
-			m_pPixmap->DrawIcon(-1, 8, 0, POINT(377, 77));
+			pos.x = 377;
+			pos.y = 77;
+			m_pPixmap->DrawIcon(-1, 8, 0, pos);
 		}
 		LoadString(0xFF, res, 100);
 		sprintf(text, res, m_multi);
-		DrawTextLeft(m_pPixmap, POINT(479 - GetTextWidth(text) / 2, 217), text, FONTWHITE);
+		pos.x = 479 - GetTextWidth(text) / 2;
+		pos.y = 217;
+		DrawTextLeft(m_pPixmap, pos, text, FONTWHITE);
 		pos.x = 130;
 		pos.y = 110;
 		for (i = 0; i < MAXNETPLAYER; i++)
@@ -1585,7 +1631,9 @@ BOOL CEvent::DrawButtons()
 			}
 			pos.y += DIMLITTLEY;
 		}
-		PutTextInputBox(POINT(221, 414));
+		pos.x = 221;
+		pos.y = 414;
+		PutTextInputBox(pos);
 		if (m_textInput[0] == '\0')
 			SetEnable(WM_BUTTON20, FALSE);
 		else
@@ -1617,9 +1665,13 @@ BOOL CEvent::DrawButtons()
 	if (m_phase == WM_PHASE_WRITEDESIGN)
 	{
 		LoadString(0xA1, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(LXIMAGE / 2 - GetTextWidth(res) / 2, 31), res, FONTGOLD);
+		pos.x = LXIMAGE / 2 - GetTextWidth(res) / 2;
+		pos.y = 31;
+		DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
 		LoadString(0xC2, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(190, 79), res, FONTWHITE);
+		pos.x = 190;
+		pos.y = 79;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 
 		pos.x = 190;
 		pos.y = 107;
@@ -1631,7 +1683,9 @@ BOOL CEvent::DrawButtons()
 			DrawTextLeft(m_pPixmap, pos, text, FONTWHITE);
 			pos.y += DIMTEXTY;
 		}
-		PutTextInputBox(POINT(320, 333));
+		pos.x = 320;
+		pos.y = 333;
+		PutTextInputBox(pos);
 	}
 	if (m_phase == WM_PHASE_GAMEREAD ||
 		m_phase == WM_PHASE_GAMEREADp ||
@@ -1645,9 +1699,13 @@ BOOL CEvent::DrawButtons()
 		{
 			LoadString(TX_LOAD_CGAME, res, 100);
 		}
-		DrawTextLeft(m_pPixmap, POINT(415 - GetTextWidth(res) / 2, 31), res, FONTGOLD);
+		pos.x = 415 - GetTextWidth(res) / 2;
+		pos.y = 31;
+		DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
 		LoadString(0x10F, res, 100);
-		DrawTextLeft(m_pPixmap, POINT(280, 79), res, FONTWHITE);
+		pos.x = 280;
+		pos.y = 79;
+		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
 		pos.y = 122;
 		for (i = 0; i < MAXSAVE; i++)
 		{
@@ -1681,7 +1739,9 @@ BOOL CEvent::DrawButtons()
 		{
 			if (m_bNamesExist[m_fileIndex])
 			{
-				m_pPixmap->DrawIcon(-1, 8, 0, POINT(33, 149));
+				pos.x = 33;
+				pos.y = 149;
+				m_pPixmap->DrawIcon(-1, 8, 0, pos);
 			}
 		}
 	}
@@ -1718,7 +1778,10 @@ BOOL CEvent::DrawButtons()
 		DrawTextLeft(m_pPixmap, m_posToolTips, m_textToolTips, FONTWHITE);
 		if (m_textToolTips2[0] != '\0')
 		{
-			DrawTextLeft(m_pPixmap, POINT(m_posToolTips.x, m_posToolTips.y + 14), m_textToolTips2, FONTGOLD);
+			{
+				POINT tipPos = { m_posToolTips.x, m_posToolTips.y + 14 };
+				DrawTextLeft(m_pPixmap, tipPos, m_textToolTips2, FONTGOLD);
+			}
 		}
 	}
 
@@ -2459,8 +2522,11 @@ OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
 		m_nbFiles = m_pNetwork->GetNbProviders();
 		m_filePageOffset = 0;
 		m_fileIndex = 0;
-		SetHide(WM_BUTTON10, TRUE);
-		bHide = m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6;
+		bHide = FALSE;
+		if (m_filePageOffset == 0) bHide = TRUE;
+		SetHide(WM_BUTTON10, bHide);
+		bHide = FALSE;
+		if (m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6) bHide = TRUE;
 		SetHide(WM_BUTTON11, bHide);
 		for (i = 0; i < 6; ++i)
 		{
@@ -2483,8 +2549,11 @@ OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
 		m_nbFiles = m_pNetwork->GetNbSessions();
 		m_filePageOffset = 0;
 		m_fileIndex = 0;
-		SetHide(WM_BUTTON10, 1);
-		bHide = m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6;
+		bHide = FALSE;
+		if (m_filePageOffset == 0) bHide = TRUE;
+		SetHide(WM_BUTTON10, bHide);
+		bHide = FALSE;
+		if (m_filePageOffset + 6 >= (m_nbFiles + 5) / 6 * 6) bHide = TRUE;
 		SetHide(WM_BUTTON11, bHide);
 		for (i = 0; i < 6; ++i)
 		{
@@ -3777,7 +3846,10 @@ void CEvent::ChatPush(char *str)
 	dest = m_chatZone[MAXCHAT - 1];
 found:
 	strcpy(dest, str);
-	m_pSound->PlayImage(SOUND_TRESOR, POINT( LXIMAGE / 2, LYIMAGE / 2 ), -1, 0);
+	{
+		POINT pos = { LXIMAGE / 2, LYIMAGE / 2 };
+		m_pSound->PlayImage(SOUND_TRESOR, pos, -1, 0);
+	}
 }
 
 void CEvent::ChatSend()

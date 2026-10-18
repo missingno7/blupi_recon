@@ -32,7 +32,6 @@ public:
 	int		SearchColor(int red, int green, int blue);
 	BOOL	Cache(int channel, char *pFilename, POINT totalDim, POINT iconDim, BOOL bUsePalette);
 	BOOL	Cache(int channel, char *pFilename, POINT totalDim, BOOL bUsePalette);
-	BOOL	BackgroundCache(int channel, const char *pFilename, POINT totalDim, POINT iconDim, BOOL bUsePalette);
 	BOOL	Cache(int channel, HBITMAP hbm, POINT totalDim);
 	void	Flush(int channel);
 	void	SetTransparent(int channel, COLORREF color);
@@ -49,10 +48,6 @@ public:
 	BOOL	DrawImage(int chDst, int channel, RECT rect, int mode=0);
 	BOOL	DrawMap(int channel, RECT src, RECT dest);
 	void	QuickIcon(int channel, int rank, POINT pos);
-	BOOL	CacheAll(BOOL cache, HWND hWnd, BOOL bFullScreen, BOOL bTrueColor, BOOL bTrueColorDecor, int mouseType, const char *pFilename, int region);
-	BOOL	GetBenchmarkSuccess();
-	void	SetTrueColorBack(BOOL bTrueColor);
-	void	SetTrueColorDecor(BOOL bTrueColorDecor);
 	BOOL	GetTrueColorBack();
 	BOOL	GetTrueColorDecor();
 

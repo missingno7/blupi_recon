@@ -6,10 +6,10 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
-**403 functions STRICT + 4 FOLDED, 113,072 / 141,488 unique game `.text` bytes (79.9 %)**, built with one shared
+**404 functions STRICT + 4 FOLDED, 113,344 / 141,488 unique game `.text` bytes (80.1 %)**, built with one shared
 header set for every TU (no per-TU preprocessor views; no active withdrawals; withdrawal history in
 [docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). `decmove.cpp`, `decdesign.cpp` and
-`decblupi.cpp` are fully strict; 6 mapped game functions (about 28 KB) remain open (docs/LINK_CONTEXT.md, docs/COMPILER_STUDY.md).
+`decblupi.cpp` are fully strict; 5 mapped game functions (about 27.6 KB) remain open (docs/LINK_CONTEXT.md, docs/COMPILER_STUDY.md).
 STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
 data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
 unverified, masked or behavioural similarity is never counted.
@@ -54,7 +54,7 @@ Per-TU details, near misses and blockers: `docs/*_TU.md`, `docs/CORE_CLUSTER.md`
 ## Reproduce
 
 Inputs (ignored by git): `assets/` (original game files and ISO), `external/` (read-only references:
-planetblupi, sb2-decomp, free-eggbert), historical toolchains under `C:\tools` (`msvc5_sp3`, `dx6sdk`, Ghidra 12.1),
+planetblupi, sb2-decomp, free-eggbert), historical toolchains under `C:\tools` (`msvc5_sp3`, `dx5sdk`, Ghidra 12.1),
 Python with pefile + capstone (`.pyenv\python.exe` locally).
 
 ```powershell
@@ -71,11 +71,10 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 ## Where to continue
 
-All 6 open functions have had several worker passes; the disproven families are recorded per target
+All 5 open functions have had several worker passes; the disproven families are recorded per target
 (docs/COMPILER_STUDY.md, msvc5kb), so new work needs a genuinely new source or context hypothesis.
 1. `event.cpp` register/scheduling residues: `TreatEventBase` (H1, terminator byte load), `DrawButtons` (330
    rematerialisation, pixmap scheduling), `ChangePhase` (constant webs) (docs/COMPILER_STUDY.md rounds 4-5).
-2. `decblock.cpp` `Build` (tail sharing, swapped spill slots); `DecorNextAction` is STRICT only in the DX5 header state
-   (patches/dx5-authentic.patch), which still regresses `MoveObjectSort` (docs/LINK_CONTEXT.md).
+2. `decblock.cpp` `Build` (zero-constant pool, shared drawing tail, swapped spill slots; docs/COMPILER_STUDY.md round 6).
 3. Open questions: the `CDecor` tail (allocated 0x258d4 bytes, no access beyond +0xdbec known; blocks `DoInit`,
    docs/LAYOUT_DEBT.md); exact linker build (Rich header has no linker entry); data-section matching and a full relink.

@@ -10,17 +10,12 @@
 #include <sound.h>
 #include <network.h>
 
-int table_adapt_decor[80] = {
-	153, 147, 148, 146, 40, 151, 150, 144, 39, 152, 149, 145, 38, 36, 37, 35,
-	153, 147, 148, 146, 40, 151, 150, 144, 39, 152, 149, 145, 38, 36, 37, 156,
-	75, 75, 155, 155, 75, 75, 155, 155, 74, 74, 154, 154, 75, 75, 155, 155,
-	157, 157, 157, 157, 109, 109, 109, 109, 108, 108, 108, 108, 107, 107, 107, 107,
-	202, 202, 138, 138, 202, 202, 138, 138, 202, 202, 138, 138, 202, 202, 138, 138
-};
-
 POINT CDecor::VoyageGetPosVie(int nbVies)
 {
-	return POINT( nbVies * 20 - 5, 417 );
+	{
+		POINT pos = { nbVies * 20 - 5, 417 };
+		return pos;
+	}
 }
 
 void CDecor::VoyageInit(POINT start, POINT end, int icon, int channel)
@@ -755,11 +750,11 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
 		for (int y = 0; y < MAXCELY; y++)
 		{
 			int icon = m_decor[x][y].icon;
-			if (icon >= Object::Level_1 && icon <= Object::Level_8)
+			if (icon >= 174 && icon <= 181)
 			{
-				if (icon - Object::Level_1 + 1 == world)
+				if (icon - 174 + 1 == world)
 				{
-					if (x > 0 && m_decor[x - 1][y].icon == Object::DoorLevel)
+					if (x > 0 && m_decor[x - 1][y].icon == 182)
 					{
 						cel->x = x - 1;
 						cel->y = y;
@@ -767,7 +762,7 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
 						newBlupiPos->y = y * DIMOBJY + 6;
 						return TRUE;
 					}
-					if (x > 1 && m_decor[x - 2][y].icon == Object::DoorLevel)
+					if (x > 1 && m_decor[x - 2][y].icon == 182)
 					{
 						cel->x = x - 2;
 						cel->y = y;
@@ -775,7 +770,7 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
 						newBlupiPos->y = y * DIMOBJY + 6;
 						return TRUE;
 					}
-					if (x < MAXCELX - 1 && m_decor[x + 1][y].icon == Object::DoorLevel)
+					if (x < MAXCELX - 1 && m_decor[x + 1][y].icon == 182)
 					{
 						cel->x = x + 1;
 						cel->y = y;
@@ -783,7 +778,7 @@ BOOL CDecor::SearchWorld(int world, POINT *cel, POINT *newBlupiPos)
 						newBlupiPos->y = y * DIMOBJY + 6;
 						return TRUE;
 					}
-					if (x < MAXCELX - 2 && m_decor[x + 2][y].icon == Object::DoorLevel)
+					if (x < MAXCELX - 2 && m_decor[x + 2][y].icon == 182)
 					{
 						cel->x = x + 2;
 						cel->y = y;
@@ -860,7 +855,7 @@ void CDecor::AdaptDoors(BOOL bPrivate, int mission)
 				for (int y = 0; y < MAXCELY; y++)
 				{
 					int icon = m_decor[x][y].icon;
-					if (icon >= Object::World_1 && icon <= Object::World_8 && (!m_doors[icon - Object::World_1 + 1] || m_bCheatDoors))
+					if (icon >= 158 && icon <= 165 && (!m_doors[icon - 158 + 1] || m_bCheatDoors))
 					{
 						m_decor[x][y].icon += 8;
 					}

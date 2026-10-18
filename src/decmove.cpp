@@ -2,9 +2,9 @@
 //
 
 #include <def.h>
-#include <decor.h>
 #include <misc.h>
 #include <dectables.h>
+#include <decor.h>
 
 void CDecor::NetDataFlush()
 {
@@ -244,7 +244,10 @@ void CDecor::DoNetSmooth(int player)
 		{
 			end.x = m_netBlupiPos[player].x + m_netVitesses[player].x;
 			end.y = m_netBlupiPos[player].y + m_netVitesses[player].y;
-			rect = RECT(m_netBlupiPos[player].x + 12, m_netBlupiPos[player].y + 11, m_netBlupiPos[player].x + DIMBLUPIX - 12, m_netBlupiPos[player].y + DIMBLUPIY - 2);
+			rect.left = m_netBlupiPos[player].x + 12;
+			rect.top = m_netBlupiPos[player].y + 11;
+			rect.right = m_netBlupiPos[player].x + DIMBLUPIX - 12;
+			rect.bottom = m_netBlupiPos[player].y + DIMBLUPIY - 2;
 			TestPath(rect, m_netBlupiPos[player], &end);
 			m_netBlupiPos[player] = end;
 		}
@@ -394,7 +397,10 @@ void CDecor::NotifPush(char* str)
 Push:
 	strcpy(pText, str);
 	m_notifTime = NOTIFDELAY;
-	m_pSound->PlayImage(SOUND_TRESOR, POINT(LXIMAGE / 2, LYIMAGE / 2), -1, 0);
+	{
+		POINT pos = { LXIMAGE / 2, LYIMAGE / 2 };
+		m_pSound->PlayImage(SOUND_TRESOR, pos, -1, 0);
+	}
 }
 void CDecor::NotifStep()
 {

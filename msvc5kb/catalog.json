@@ -1968,6 +1968,11 @@
           "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#experiment-8-authentic-aggregate-headers",
           "tier": "PROVEN",
           "counts": "Authentic def.h removals reduce existing CButton::Create static symbol suffix by 443 (enum), 62 (14 operators), 12 (MAKE helpers), total 517. Four private whole-tree states have 3/3/5/4 accepted regressions; tables+44 restores GetBlupiInfo and adds STRICT DecorNextAction (272 bytes). 859 serial TU count-probe compiles measure peer windows, including new IsVentillo thresholds 106/150; no probes retained in candidate source."
+        },
+        {
+          "ref": "blupi_recon:docs/MSVC5KB_VALIDATION.md#experiment-9-dx5-decmove-include-placement",
+          "tier": "PROVEN",
+          "counts": "DX5 authentic-header state at 70d630c: moving existing misc.h (31 predicted counter numbers) and dectables.h/obstacle.h (106) before decor.h restores MoveObjectSort STRICT at 0x13b20 (240 bytes, both relocations verified). Both relative header orders pass all active accepted entries; moving either header alone leaves MoveObjectSort MISMATCH. Seven serial whole-tree verify runs and one baseline fnprobe; supervisor gate (F: free) 113,344 bytes, zero regressions; integrated. No new declaration or function-body change. Exact historical include order remains a hypothesis."
         }
       ],
       "keywords": "sound.h declaration count MouseMove StopSound peer regression",
@@ -2614,6 +2619,89 @@
       }
     },
     {
+      "id": "BLUPI-REG-09",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Pooled zero constant: memory zero stores and compares interned before colouring, kept only at positive score",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "native_more_loads"
+        ]
+      },
+      "symptom": "Ours hoists `xor reg,reg` and uses it for `mov [m],reg` stores and `cmp [m],reg` tests across several blocks; the oracle stores immediate 0 and tests with `mov reg,[m]; test reg,reg`.",
+      "construct": "Several `m_x = 0` / `= FALSE` member stores and `if (m_y)` member tests in one region of a function.",
+      "explanation": "VC5 SP3 c2 interns eligible memory zero operands as a class-13 virtual constant before colouring (pool scan 0x414a64, eligibility 0x4156b6, intern 0x417fb7). The cost pass 0x40ee1d scores the surviving range: each zero store +1, each materialisation -1, zero compares 0. Positive ranges keep a register (binding 0x41b90e); score 0 or less spills back to immediates. CDecor::Build's range has 9 references and score +1 (two network-loop zero initialisations, m_blupiSec = 0, two materialisations, six compares).",
+      "experiment": "Count the zero stores in the range: one store fewer (or one more materialisation) flips the shape. Read the oracle at each zero site before removing anything.",
+      "not_when": "The oracle keeps every zero store (Build): then the score difference must come from range splitting or another block's code, not from a missing statement.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-6-codex-workers-evidence",
+          "tier": "PROVEN",
+          "counts": "3 micro controls (1/2/3 stores: score -1/0/+1); Build traced; no STRICT"
+        }
+      ],
+      "keywords": "zero constant pool cse xor test cmp immediate store profitability colouring score",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::Build",
+        "rva": "0x4350",
+        "tu": "src/decblock.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 300,
+        "outcome": "mechanism traced, function MISMATCH",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-REG-10",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "A byte load becomes a rotor temp only when it survives a destructive update; single-use compares are scratch picks",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "One temp-rotor step is missing (all later rotor temps shifted) while the bytes of the suspected value are already identical.",
+      "construct": "`if (T[r][p] == 0)` after `p++` (scratch pick) versus `T[r][p++ + 1]`-style forms that keep the old value across the update.",
+      "explanation": "VC5 SP3 c2 keeps an 8-bit memory value that must survive a destructive index update in the same expression as an independent copy tuple (op 1, width 1, source kind 6) that takes a rotor register. Compare-only uses, a named local, and assignment inside the condition fold to the code-generation scratch picker (BLUPI-REG-07), which does not advance the rotor. Keeping the old index in a local (`i = p++`) consumes a rotor step as a 32-bit address tuple (op 0x12, source kind 5) instead. In TreatEventBase this gives 8 -> 5 bytes, with the load before the store and a table+1 addend.",
+      "experiment": "Trace with tools/c2trace assigns and read tuple width and source kind, not only the register: an edx assignment can be the wrong tuple.",
+      "not_when": "Store-first sequences (`lea ecx,[p+1]; mov [m],ecx; mov dl,[ecx+row+T]`) remained scratch loads in all 50 tested shapes.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-6-codex-workers-evidence",
+          "tier": "PROVEN",
+          "counts": "5 micro reproductions; TreatEventBase 8 -> 5 bytes, not STRICT"
+        }
+      ],
+      "keywords": "byte temp rotor scratch pick copy tuple post increment terminator cheat",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::TreatEventBase",
+        "rva": "0x1d230",
+        "tu": "src/event.cpp",
+        "flags": "/O2 /GX /ML /Gd /Gy",
+        "compiles": 150,
+        "outcome": "mechanism traced, function MISMATCH",
+        "doc_ref": "docs/COMPILER_STUDY.md"
+      },
+      "legacy_ids": []
+    },
+    {
       "id": "BLUPI-SRC-02",
       "section": "source-forms",
       "tier": "PROVEN",
@@ -2724,6 +2812,11 @@
           "ref": "blupi_recon:docs/COMPILER_STUDY.md#addcdpath-constant-folded-outer-condition-evidence",
           "tier": "PROVEN",
           "counts": "1 function STRICT (AddCDPath 0x1f410); 15 variants"
+        },
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-6-codex-workers-evidence",
+          "tier": "PROVEN",
+          "counts": "ChangePhase: previous-page hide flags `bHide = FALSE; if (m_filePageOffset == 0) bHide = TRUE;` right after the offset reset fold to TRUE and remove 32 of 60 regions (not STRICT); folded conditions also change register webs, not only arm layout."
         }
       ],
       "keywords": "or chain short circuit block layout arm order constant folded and condition tail merge cross jump bDaniel",

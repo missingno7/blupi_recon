@@ -311,6 +311,34 @@ BLUPI-SRC-04, build/tmp/rx/s_acd.py). Predicted from the layout before the trial
 - `TRUE && (...)` gives the same bytes, so any constant term works; the bDaniel form is the one with ancestry.
 - Inert before: arm swap with De Morgan, `!(...)`, common or duplicated tails, a relative-path BOOL, early returns.
 
+## Round 6: Codex workers ([EVIDENCE])
+
+Four gpt-6.1-sol workers, briefs in scratch/prompts/{evanc,evanc_r2,evanc_r3,build3,build3_r2,build3_r3,cphase,cphase_r2,mos2}.md,
+findings in scratch/sol-{evanc,build3,cphase,mos}/FINDINGS.md (all trials with counts). Supervisor gate after
+integration: 404 STRICT + 4 FOLDED, 113,344 / 141,488, zero regressions.
+
+- **DX5 state integrated (sol-mos).** The last regression of the DX5 + authenticity state, MoveObjectSort, is fixed
+  by moving decmove.cpp's existing `#include <decor.h>` below `misc.h` and `dectables.h` (137 counter numbers before
+  decor.h, inside the measured 109-141 window); DecorNextAction becomes STRICT (+272). [HYPOTHESIS] The include order
+  is plausible, not proven (docs/LINK_CONTEXT.md "DX5 state integrated").
+- **ChangePhase (sol-cphase), integrated as best-known body.** The oracle computes the previous-page hide flag in both
+  network page lists: `bHide = FALSE; if (m_filePageOffset == 0) bHide = TRUE; SetHide(WM_BUTTON10, bHide);` (and the
+  same form for next-page) replaces `SetHide(WM_BUTTON10, TRUE)`. Right after the offset reset the test folds to TRUE,
+  yet it changes later temps: 60 -> 28 regions, 1925 -> 1995 / 2029 aligned (BLUPI-SRC-04 family). Remaining: the
+  early zero (21 refs, LR 99) and WM_PHASE_PLAY (8 refs, LR 127) webs are coloured ebx/edi instead of edi/ebx. The
+  PLAY range loses its WriteInfo comparison (BB 92) to c2 rematerialisation; zero's late uses are the index test, the
+  HideMouse argument and the Write flag. 117 forms tested, including 14 predicted from the trace; none swaps the webs.
+- **TreatEventBase (sol-evanc), not integrated.** H1 confirmed: a rotor-assigned byte temp at the terminator test
+  supplies the missing rotor step (BLUPI-REG-10). `i = m_posCheat++; if (cheat_code[m_rankCheat][i + 1] == 0)` gives
+  8 -> 5 bytes but loads before the store and uses a table+1 addend, so it stays in scratch. Round 1 tested 49 ancestry
+  forms from PB b0270ab event.cpp (direct `m_b = !m_b` toggles, PB declaration lists, default-TRUE feedback, completion
+  flags), round 3 50 byte-temp shapes. DrawButtons unchanged (63 bytes); its esi loads are scratch picks.
+- **Build (sol-build3), no change.** The hoisted zero is a pooled constant (BLUPI-REG-09): 9 references, score +1.
+  The oracle keeps both network-loop zero initialisations and `m_blupiSec = 0`, so no statement is missing there;
+  splitting the uses (shield-direct, 3+2+4) removes the web but worsens the function (74 regions). The background
+  `rect.bottom` hold is bottom-definition cloning; the spill-slot order is a history-dependent tie. Remaining: the
+  shared player-drawing tail (call count and register roles). 230+ trials, 10 micro labs.
+
 ### Negatives after SRC-03/SRC-04 ([EVIDENCE])
 
 - Build background loop (first region: the oracle keeps `rect.bottom` = 0x1e0 in eax across the inner `DrawPart`

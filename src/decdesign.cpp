@@ -889,7 +889,10 @@ void CDecor::PlaceDecor6(POINT cel, int index, int fwKeys, BOOL bMix)
 
 	if (index == 8)
 	{
-		rank = MoveObjectSearch(POINT(cel.x * DIMOBJX + 2, cel.y * DIMOBJY + 6), -1);
+		{
+			POINT pos = { cel.x * DIMOBJX + 2, cel.y * DIMOBJY + 6 };
+			rank = MoveObjectSearch(pos, -1);
+		}
 		if (rank != -1 && bMix)
 		{
 			type = m_moveObject[rank].type + 1;

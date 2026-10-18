@@ -169,4 +169,15 @@ button, menu, movie, resource, jauge, pixmap, sound, network; before def.h or af
 io.h at the top fixes MoveObjectSort but breaks MockeryDetect, math.h breaks both, the rest leave MoveObjectSort. [OPEN] which decmove-only declarations (about 109-141 counter numbers before
 decor.h) the original had.
 
-[OPEN] Not integrated: the gate requires zero accepted regressions. This state is the reference for further work.
+## DX5 state integrated (2026-10-18)
+
+[EVIDENCE] Worker sol-mos found the decmove context: moving the existing `#include <decor.h>` below `misc.h` and
+`dectables.h` in decmove.cpp places 137 counter numbers before decor.h (misc.h 12 prototypes + 19 named parameters
+= 31; dectables.h 105 externs + obstacle.h 1 = 106), inside the 109-141 window. MoveObjectSort is STRICT, every
+accepted function keeps its status, DecorNextAction becomes STRICT. Moving only one of the two headers leaves
+MoveObjectSort; both relative orders of the two pass. Supervisor gate outside the sandbox (F: free):
+`tools/verify.py --accept` 113,344 / 141,488, 0 regressions. The DX5 + authenticity state is canonical; the former
+patches/dx5-authentic.patch is removed (git history keeps it).
+[HYPOTHESIS] The include order is a plausible SB1 arrangement of needed headers, not documentary proof; PB b0270ab's
+decmove.cpp includes Windows.h, DECOR.H, MISC.H, DECMOVE.h (its decmove.h holds two prototypes only).
+Details: docs/MSVC5KB_VALIDATION.md experiment 9.

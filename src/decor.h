@@ -276,7 +276,6 @@ public:
 	void	SetJoystickEnable(BOOL bJoystick);
 	void	SetDemoPlay(BOOL param_1);
 	void	PlaySound(int sound, POINT pos, BOOL bLocal);
-	void	PlaySound(int sound, POINT pos); // hack
 	void	StopSound(int sound);
 	void	AdaptMotorVehicleSound(POINT pos);
 	void	ChangePhase(int phase);
@@ -299,7 +298,6 @@ public:
 	void	SetSuperBlupi(BOOL bSuperBlupi);
 	BOOL	GetDrawSecret();
 	void	SetDrawSecret(BOOL bDrawSecret);
-	void	SetBuildOfficialMissions(BOOL bBuildOfficialMissions);
 	BOOL	GetNetPacked();
 	void	SetNetPacked(BOOL bNetPacked);
 	BOOL	GetNetMovePredict();
@@ -316,24 +314,10 @@ public:
 	BOOL	DrawMap(BOOL bPlay, int team);
 
 	// DecBlock.cpp
-	BOOL	BlitzActif(POINT cel);
-	int		SoundEnviron(int sound, int obstacle);
 	int		IsWorld(POINT pos);
-	void	ActiveSwitch(BOOL bState, POINT cel);
 	int GetTypeBarre(POINT pos);
 	BOOL	IsLave(POINT pos);
-	BOOL	IsPiege(POINT pos);
-	BOOL	IsGoutte(POINT pos, BOOL bAlways);
-	BOOL	IsScie(POINT pos);
-	BOOL	IsSwitch(POINT pos, POINT *outCelSwitch);
-	BOOL	IsEcraseur(POINT pos);
-	BOOL	IsBlitz(POINT pos, BOOL bAlways);
 	BOOL	IsRessort(POINT pos);
-	BOOL	IsTemp(POINT pos);
-	BOOL	IsBridge(POINT pos, POINT *outCelBridge);
-	int		IsDoor(POINT pos, POINT *outCelPorte);
-	int		IsTeleporte(POINT pos);
-	BOOL	SearchTeleporte(POINT pos, POINT *newpos);
 	BOOL	IsSurfWater(POINT pos);
 	BOOL	IsDeepWater(POINT pos);
 	BOOL	IsOutWater(POINT pos);
@@ -342,8 +326,6 @@ public:
 	BOOL	IsVentillo(POINT pos);
 	void	ModifDecor(POINT pos, int icon, BOOL bMulti=TRUE);
 	BOOL	IsRightBorder(int x, int y, int dx, int dy);
-	BOOL	IsFromage(POINT cel);
-	BOOL	IsGrotte(POINT cel);
 	void	AdaptMidBorder(int x, int y);
 	void	AdaptBorder(POINT cel);
 
@@ -368,10 +350,7 @@ public:
 
 	// DecBlupi.cpp
 	void	BlupiSearchIcon();
-	BOOL	BlupiIsGround();
 	RECT	BlupiRect(POINT pos);
-	void	BlupiAdjust();
-	BOOL	BlupiBloque(POINT pos, int dir);
 	void	BlupiStep();
 	void	BlupiDead(int action, int action2);
 	POINT	GetPosDecor(POINT pos);
@@ -449,7 +428,6 @@ public:
 	void	GetMissionPath(char *out, int gamer, int mission, BOOL bUser);
 	BOOL	Write(int gamer, int mission, BOOL bUser);
 	BOOL	Read(int gamer, int mission, BOOL bUser);
-	BOOL	SomethingMissionPath(int gamer, int mission, BOOL bUser);
 	BOOL	CurrentWrite(int gamer, int mission);
 	BOOL	CurrentWrite(int gamer, int mission, BOOL bUser);
 	BOOL	CurrentRead(int gamer, int mission, int *pMission, BOOL *pbPrivate);
@@ -458,8 +436,6 @@ public:
 	BOOL	SearchWorld(int world, POINT *cel, POINT *newBlupiPos);
 	BOOL	SearchDoor(int n, POINT *cel);
 	void	AdaptDoors(BOOL bPrivate, int mission);
-	void	OpenDoorsTresor();
-	void	OpenDoor(POINT cel);
 	void	OpenDoorsWin();
 	void	OpenGoldsWin();
 	void	DoorsLost();
@@ -612,7 +588,6 @@ protected:
 
 POINT GetCel(int x, int y);
 POINT GetCel(POINT cel, int x, int y);
-POINT GetVector(int direct);
 int SortGetType(int type);
 
 inline BOOL CDecor::IsValidCel(POINT cel)

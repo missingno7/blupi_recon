@@ -64,7 +64,6 @@ public:
 	void	GetWorldGroup();
 	void	SetMission(int index);
 	BOOL	ChangePhase(UINT phase);
-	BOOL	LoadImageFromDisc();
 	UINT    GetPhase();
 	void	MovieToStart();
 	void	ReadInput();
@@ -78,7 +77,6 @@ public:
 	void	SetState(int button, int state);
 	BOOL	GetEnable(int button);
 	void	SetEnable(int button, BOOL bEnable);
-	BOOL	GetDemo(int button);
 	void	SetDemo(int button, BOOL bDemo);
 	void	SetIconMenu(int button, int* pIcons, int nbMenu);
 	BOOL	GetHide(int button);

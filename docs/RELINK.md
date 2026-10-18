@@ -479,6 +479,5 @@ The oracle instead holds ten DirectPlay GUIDs at 0x2c220..0x2c2bf, in dplay.h de
 network.cpp's `APP_GUID` (0x2c2c0): IID_IDirectPlay2, 2A, 3, 3A, CLSID_DirectPlay, DPSPGUID_IPX/TCPIP/SERIAL/MODEM,
 IID_IDirectPlay. That is the DX6 dplay.h list **without IID_IDirectPlay4/4A** (VC5's own DPLAY.H is DirectX 3 and has
 only IID_IDirectPlay). So network.cpp defined `INITGUID` before including a **DirectX 5 SDK** dplay.h, and dxguid.lib
-was not linked. The manifest's `C:	ools\dx6sdk\INCLUDE` is therefore not the original header set; DX5 headers are not
-available locally. [OPEN] Rebuild with DX5 SDK headers; their smaller declaration sets also change the counter
-context of every TU that includes ddraw.h/dsound.h/dplay.h (docs/LINK_CONTEXT.md).
+was not linked. The manifest therefore uses `C:\tools\dx5sdk\INCLUDE` since the DX5 integration (zero regressions,
+docs/LINK_CONTEXT.md); link with the DX5 libraries and without dxguid.lib.
