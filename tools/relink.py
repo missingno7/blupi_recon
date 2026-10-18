@@ -34,6 +34,22 @@ LIBRARIES = [VC / "LIB/LIBC.LIB", VC / "LIB/OLDNAMES.LIB"] + [VC / "LIB" / (s + 
 LIBRARIES += [DX / (s + ".lib") for s in ("dsound", "ddraw", "dplayx")]  # dxguid.lib was not linked (network.cpp INITGUID)
 
 
+def build_resources(out):
+    """Compile src/res/blupi.rc with the VC5 resource compiler (LINK converts the .res with CVTRES 5.00.1668)."""
+    rc = VC.parent / "SHAREDIDE/BIN/RC.EXE"
+    res = out / "blupi.res"
+    temp = ROOT / "build/tmp"
+    temp.mkdir(parents=True, exist_ok=True)
+    system = os.environ.get("SystemRoot", r"C:\Windows")
+    env = dict(SystemRoot=system, TMP=str(temp), TEMP=str(temp), INCLUDE=f"{VC / 'INCLUDE'};{VC / 'MFC/INCLUDE'}",
+               PATH=os.pathsep.join(map(str, [rc.parent, VC / "BIN", Path(system) / "System32", Path(system)])))
+    run = subprocess.run([str(rc), "/r", "/fo", str(res), "blupi.rc"], cwd=ROOT / "src/res", env=env,
+                         capture_output=True, text=True, encoding="mbcs", errors="replace")
+    if run.returncode:
+        raise SystemExit("RC failed: " + run.stdout + run.stderr)
+    return res
+
+
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -126,6 +142,7 @@ def main():
     parser.add_argument("--opt", choices=("ref,icf", "ref,noicf", "noref,noicf"), default="ref,icf")
     parser.add_argument("--library", action="append", default=[], type=Path, help="additional genuine library")
     parser.add_argument("--oracle", type=Path, default=DEFAULT_ORACLE)
+    parser.add_argument("--no-res", action="store_true", help="omit src/res/blupi.rc (resources)")
     parser.add_argument("--diagnostic", action="store_true",
                         help="link even when accepted functions regress (layout diagnostics only; the gate stays FAIL)")
     args = parser.parse_args()
@@ -215,7 +232,8 @@ def main():
                "/fixed", "/incremental:no", "/nodefaultlib",
                *["/opt:" + s for s in args.opt.split(",")],
                f"/out:{out / 'BLUPI.EXE'}", f"/map:{out / 'BLUPI.map'}"]
-    arguments = options + [str(objects[u["source"]]) for u in ordered] + list(map(str, libraries))
+    res_files = [] if args.no_res else [build_resources(out)]
+    arguments = options + [str(objects[u["source"]]) for u in ordered] + list(map(str, res_files)) + list(map(str, libraries))
     response = out / "link.rsp"
     response.write_text("\n".join(subprocess.list2cmdline([arg]) for arg in arguments) + "\n", encoding="cp1252")
     command = [str(linker), "@" + str(response)]
@@ -239,7 +257,7 @@ def main():
                   object_mode="reused; see object compile logs for candidate source provenance" if
                   args.objects_dir else "canonical", toolchain=manifest["toolchain"],
                   linker_sha256=digest(linker), libraries={str(p): digest(p) for p in libraries},
-                  degraded=degraded, exit_code=run.returncode, resource_status="OPEN: resources omitted")
+                  degraded=degraded, exit_code=run.returncode, resource_status="omitted" if args.no_res else "src/res/blupi.rc via VC5 RC + CVTRES")
     (out / "build.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     transcript = run.stdout + run.stderr
     if run.returncode:
