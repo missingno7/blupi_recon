@@ -421,43 +421,6 @@ void CDecor::NotifStep()
 
 
 
-void CDecor::StartSploutchGlu(POINT pos)
-{
-	POINT pos2;
-	pos2.x = pos.x;
-	pos2.y = pos.y;
-	ObjectStart(pos2, TYPE_SPLOUTCH1, 0);
-	pos2.x = pos.x + 15;
-	pos2.y = pos.y + 20;
-	ObjectStart(pos2, TYPE_SPLOUTCH2, 0);
-	pos2.x = pos.x - 20;
-	pos2.y = pos.y + 18;
-	ObjectStart(pos2, TYPE_SPLOUTCH2, 0);
-	pos2.x = pos.x + 23;
-	pos2.y = pos.y - 18;
-	ObjectStart(pos2, TYPE_SPLOUTCH2, 0);
-	pos2.x = pos.x - 15;
-	pos2.y = pos.y - 18;
-	ObjectStart(pos2, TYPE_SPLOUTCH2, 0);
-	pos2.x = pos.x + 32;
-	pos2.y = pos.y + 10;
-	ObjectStart(pos2, TYPE_SPLOUTCH3, 0);
-	pos2.x = pos.x - 28;
-	pos2.y = pos.y + 15;
-	ObjectStart(pos2, TYPE_SPLOUTCH3, 0);
-	StopVehicleSound();
-	PlaySound(SOUND_GLU, pos, FALSE);
-}
-
-BOOL CDecor::ObjectStart(POINT pos, int type, int speed)
-{
-	return ObjectStart(pos, type, speed, FALSE);
-}
-
-
-
-
-
 void CDecor::MoveObjectStep()
 {
 	int i, num, type;
@@ -1162,116 +1125,6 @@ void CDecor::MoveObjectStepIcon(int i)
 	m_moveObject[i].phase ++;
 }
 
-void CDecor::DynamiteStart(int i, int dx, int dy)
-{
-	POINT posStart = m_moveObject[i].posStart;
-	posStart.x -= 34;
-	posStart.y -= 34;
-	posStart.x += dx;
-	posStart.y -= dy;
-	ObjectStart(posStart, TYPE_EXPLO1, 0);
-	if (dx == 0 && dy == 0)
-	{
-		PlaySound(SOUND_BOUM, posStart, FALSE);
-		m_decorAction = 1;
-		m_decorPhase = 0;
-	}
-	RECT src;
-	src.left = posStart.x;
-	src.right = posStart.x + DIMOBJX * 2;
-	src.top = posStart.y;
-	src.bottom = posStart.y + DIMOBJY * 2;
-	POINT tinyPoint;
-	tinyPoint.y = posStart.y / DIMOBJY;
-	for (int j = 0; j < 2; j++)
-	{
-		tinyPoint.x = posStart.x / DIMOBJX;
-		for (int k = 0; k < 2; k++)
-		{
-			if (tinyPoint.x >= 0 && tinyPoint.x < MAXCELX && tinyPoint.y >= 0 && tinyPoint.y < MAXCELY)
-			{
-				int icon = m_decor[tinyPoint.x][tinyPoint.y].icon;
-				if (icon == 378 || icon == 379 || icon == 404 || icon == 410)
-				{
-					POINT pos;
-					pos.x = tinyPoint.x * DIMOBJX;
-					pos.y = tinyPoint.y * DIMOBJY;
-					ModifDecor(pos, -1);
-				}
-			}
-			tinyPoint.x++;
-		}
-		tinyPoint.y++;
-	}
-	for (i = 0; i < MAXMOVEOBJECT; i++)
-	{
-		if (m_moveObject[i].type == TYPE_BOMBEDOWN ||
-			m_moveObject[i].type == TYPE_BOMBEUP ||
-			m_moveObject[i].type == TYPE_BOMBEFOLLOW1 ||
-			m_moveObject[i].type == TYPE_BOMBEFOLLOW2 ||
-			m_moveObject[i].type == TYPE_BULLDOZER ||
-			m_moveObject[i].type == TYPE_EGG ||
-			m_moveObject[i].type == TYPE_CAISSE ||
-			m_moveObject[i].type == TYPE_HELICO ||
-			m_moveObject[i].type == TYPE_BOMBEMOVE ||
-			m_moveObject[i].type == TYPE_POISSON ||
-			m_moveObject[i].type == TYPE_TOMATES ||
-			m_moveObject[i].type == TYPE_JEEP ||
-			m_moveObject[i].type == TYPE_OISEAU ||
-			m_moveObject[i].type == TYPE_SKATE ||
-			m_moveObject[i].type == TYPE_SHIELD ||
-			m_moveObject[i].type == TYPE_POWER ||
-			m_moveObject[i].type == TYPE_TANK ||
-			m_moveObject[i].type == TYPE_DRINK ||
-			m_moveObject[i].type == TYPE_BLUPIHELICO ||
-			m_moveObject[i].type == TYPE_BLUPITANK ||
-			m_moveObject[i].type == TYPE_GLU ||
-			m_moveObject[i].type == TYPE_INVERT ||
-			m_moveObject[i].type == TYPE_GUEPE ||
-			m_moveObject[i].type == TYPE_OVER ||
-			m_moveObject[i].type == TYPE_BRIDGE ||
-			m_moveObject[i].type == TYPE_CREATURE ||
-			m_moveObject[i].type == TYPE_BOMBEPERSO1 ||
-			m_moveObject[i].type == TYPE_BOMBEPERSO2 ||
-			m_moveObject[i].type == TYPE_BOMBEPERSO3 ||
-			m_moveObject[i].type == TYPE_BOMBEPERSO4)
-		{
-			RECT src2;
-			src2.left = m_moveObject[i].posCurrent.x;
-			src2.right = m_moveObject[i].posCurrent.x + 60;
-			src2.top = m_moveObject[i].posCurrent.y;
-			src2.bottom = m_moveObject[i].posCurrent.y + 20;
-			RECT tinyRect = { 0, 0, 0, 0 };
-			if (IntersectRect(&tinyRect, &src2, &src))
-			{
-				if (m_moveObject[i].type == TYPE_CAISSE)
-				{
-					SearchLinkCaisse(i, TRUE);
-					for (int L = 0; L < m_nbLinkCaisse; L++)
-					{
-						int channel = m_moveObject[m_linkCaisse[L]].channel;
-						int icon2 = m_moveObject[m_linkCaisse[L]].icon;
-						POINT posCurrent = m_moveObject[m_linkCaisse[L]].posCurrent;
-						m_moveObject[m_linkCaisse[L]].type = 0;
-					}
-					ObjectDelete(m_moveObject[i].posCurrent, m_moveObject[i].type);
-					UpdateCaisse();
-				}
-				else
-				{
-					ObjectDelete(m_moveObject[i].posCurrent, m_moveObject[i].type);
-				}
-			}
-		}
-	}
-	if (m_blupiFocus && !m_blupiCloud && !m_blupiPosHelico.x && !m_bSuperBlupi && m_blupiPos.x > posStart.x - 30 && m_blupiPos.x < posStart.x + 30 + DIMOBJX && m_blupiPos.y > posStart.y - 30 && m_blupiPos.y < posStart.y + 30 + DIMOBJY)
-	{
-		BlupiDead(ACTION_CLEAR1, -1);
-		m_blupiAir = TRUE;
-	}
-
-}
-
 int CDecor::AscenseurDetect(RECT rect, POINT oldpos, POINT newpos)
 {
 	int i, j;
@@ -1329,11 +1182,6 @@ void CDecor::AscenseurVertigo(int i, BOOL* pbVertigoLeft, BOOL* pbVertigoRight)
 	{
 		*pbVertigoRight = TRUE;
 	}
-}
-
-BOOL CDecor::AscenseurShift(int i)
-{
-	return i != -1 && m_moveObject[i].icon >= 311 && m_moveObject[i].icon <= 316;
 }
 
 void CDecor::AscenseurSynchro(int i)

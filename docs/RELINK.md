@@ -489,3 +489,10 @@ distinguishable; both give identical objects.
 
 [EVIDENCE] 2026-10-18: MoveObjectFollow (dead SB2 helper, the BlupiRect caller) is removed with the CDecor tail
 representation (docs/LAYOUT_DEBT.md). Remaining unresolved link method: BlupiDead (called from decmove.cpp).
+
+[EVIDENCE] 2026-10-18: the four remaining caller-less SB2 decmove bodies (DynamiteStart, StartSploutchGlu, AscenseurShift,
+the 3-argument ObjectStart overload) are removed; the oracle's decmove block is fully strict and has no slot for them.
+Their decor.h declarations stay. Removing the declarations (and BlupiRect/BlupiDead's) shifts symbol IDs and regresses
+GetBlupiInfo, IsDeepWater and MoveObjectSort (measured). **The canonical objects now link with no unresolved externals**
+(LINK 5.10, DX5 libraries, no dxguid): `.rdata` virtual size equals the oracle's, `.text` is 32 bytes short (the open
+functions' size differences), `.data` is 48,964 bytes short, `.rsrc` is not built yet.
