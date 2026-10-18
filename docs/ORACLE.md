@@ -77,6 +77,24 @@ both matching the published hashes). Scripts: scratch/research/egfind.py, egcmp.
   oracle. It is a second compiled body of ChangePhase with a known small source delta.
 - No debug files (pdb/map/dbg) on the disc.
 
+## [EVIDENCE] Speedy Blupi 1998 demo and Speedy Blupi 2 (2026-10-18)
+
+From drive.openeggbert.com `Blupi/Games/Speedy_Blupi_(Windows)/` (owner-approved download, static analysis only, stored in
+`C:\tools\download\openeggbert\`). `Speedy_Blupi_I.7z` contains a `BLUPI.EXE` identical to our oracle (SHA-256 be6de5a2...).
+- **Demo** `Blupi.exe` (533,504 B, link 1998-06-18 21:29, linker 5.00, no Rich header): an earlier source revision.
+  343/408 accepted functions are byte-identical (relocations masked) and 65 differ. DoInit allocates `new CDecor` with
+  **0x258d4**. TreatEventBase has no rank-0 (build-official-missions) cheat block; the matcher goes straight to rank 1, so
+  that block, where TreatEventBase's missing rotor step lies, was added or guarded after June 1998. DrawButtons is
+  longer (8,031 B).
+- **Speedy Blupi 2** `BLUPI.EXE` (587,264 B, link 2001-05-03, linker 5.00): DoInit pushes **0x26320**. The prediction
+  derived from sb2-decomp's `int reserve[11]; BYTE dummy[100000];` history (scratch/research/ancestry_layout.md) holds:
+  SB2's members before the tail are 0xa4c bytes larger, and the block after the last-decor-index array is the same
+  100,044 bytes as in SB1.
+- **Consequence for DoInit:** four independent compiles (SB1 demo June 1998, SB1 release October 1998, eGames 1999, SB2 2001)
+  agree. The original CDecor ends with an unreferenced 100,044-byte block after `m_lastDecorIndexes[200]`, fixed across both
+  games. Its members' names and types are still unknown (no access in any build analysed so far). Only the oracle uses
+  linker 5.10; every other build used 5.00.
+
 ## [OPEN] Limits
 
 The vtable scan only reports consecutive aligned pointers to distinct Ghidra function entries. No such arrays were found, but this does not exclude dynamically initialized or indirect tables outside that pattern. The function kinds beyond the explicitly recognized thunks and CRT names use the inferred linker-order split above.

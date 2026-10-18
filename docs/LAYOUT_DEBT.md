@@ -397,3 +397,14 @@ would only satisfy that operand and are not a valid matching investigation.
   extent and 235 relocations not certified by this near match. No artificial
   header/context or allocation override was tested. `VC5-SEM-01`.
   **Classification: blupi-specific evidence; no new compiler transformation.**
+
+## Follow-up 3: the tail is a real, fixed block ([EVIDENCE], 2026-10-18)
+
+The SB1 demo (1998-06), the eGames build (1999) and Speedy Blupi 2 (2001) were compared statically (docs/ORACLE.md).
+`new CDecor` is 0x258d4 in all SB1 builds and 0x26320 in SB2. SB2's earlier members are 0xa4c bytes larger, and the
+unreferenced block after `m_lastDecorIndexes[200]` is exactly 100,044 bytes in both games, as predicted from sb2-decomp's
+header history. The block is a genuine part of the original class, not a reconstruction artifact. Data members cost no
+front-end symbol IDs (measured; docs/SYMBOL_ORDER.md), so declaring it would not shift any TU context.
+[OPEN] Its member names and types. The only evidence is its size (100,044 = 4 x 25,011). Whether an opaque
+declaration of a proven-size original block is acceptable source is a policy decision for the owner. No such
+declaration is in canonical source.
