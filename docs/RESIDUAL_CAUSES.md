@@ -304,3 +304,41 @@ Causal chain [EVIDENCE]:
    The author wrote the big-decor start from the common grid template plus the layer's 2-pixel/one-cell offset, the
    style also seen in the start-position loop (`tinyPoint.x += 10; tinyPoint.x += i * 8 - 12;`, both kept by the
    oracle). Which of the equivalent adjustment spellings the original used is not recoverable from the binary.
+
+## ChangePhase: the residue is one queue order (2026-10-19, tools: scratch-only probes)
+
+[EVIDENCE] With the oracle's guard order (`!m_bDemoPlay && (phase != PLAY || m_phase == PLAY) && ...`) and WriteInfo
+test order (`phase == GAMER || phase == PLAY`), our build and the canonical reordered-guard build are identical in the
+allocator until the 12th cost pass, which follows the batch dispatch triggered by `oldPhase`'s commit to EBX (LR78,
+BB 100..152). That dispatch's region 1 spans blocks 3..99 (EBX is free in every block until block 100), so it leaves an
+early zero fragment (21 reads, BB 3..99, overlapping `index` = EDI in BB 89..100) and an early PLAY fragment (9 reads,
+BB 8..92). Whichever is coloured first takes EBX:
+- oracle order: zero/21 is queued at -65, PLAY/9 at -78; zero takes EBX (its only colour), PLAY ends in EDI (4,668 bytes);
+- canonical order: PLAY/9 -69 beats zero/21 -71; PLAY takes EBX, its pressure scan rematerializes zero's three late
+  reads (lines 184/189/203), zero shrinks to BB 3..48 and takes EDI.
+Diagnostic (0x41b6fa, never source): with the oracle order, inserting PLAY/9 with any priority above -65 gives
+ChangePhase 0 masked bytes, 2029/2029. So "a separate late-zero component" is a consequence of PLAY being coloured
+first, not an independent precondition.
+
+[EVIDENCE] Priority model of that cost pass (0x40ee1d, all block weights W = 1 here): at each block end, P = W x n_b with
+n_b the popcount of ranges referenced in the block (0x40eda6); a range referenced in the block gains P x (operand
+benefit accumulated in the block), a range live but unreferenced loses P. Per-block deltas reproduce both priorities
+exactly (scratch probe). The 13-point gap: block 8 (the guard's first test, n = 9 from seven constant materializations)
+gives zero a free reference in the oracle order and PLAY's benefit-1 `m_phase == PLAY` compare in the canonical order
+(+8); zero gains +12 in block 18 (three `= 0` stores at n = 4) and pays -18 in blocks 92..98; PLAY pays -9 in the QUITPLAY
+path (blocks 40..45) and -9 in blocks 89/91 before its WriteInfo compare.
+[OPEN] No natural source property found that moves the gap by 14 with identical code: guard nesting, `== FALSE`, the
+multi-player guard nesting, Write-flag spellings, early-return shapes, top-declared `index`/`oldPhase`, store and
+tooltip orders, QUITPLAYTEST/mouse/DemoRec forms are all inert (gap stays -65/-78) or change code. Next discriminator:
+which other ranges are counted in n_b of the asymmetric blocks (8, 18, 40..46, 89, 91, 92..98), and whether an
+original commit order or value identity reduces or raises one of them.
+
+## TreatEventBase: the old flag is re-folded twice (2026-10-19)
+
+[EVIDENCE] Blocking 0x41ddfe for the rank-0 old-flag copy (or the terminator copy) keeps a separate `old = [flag];
+cmp old, 0` through the fold pass, but 0x409c5c folds it back before select formation (0x412412), so lowering sees the
+memory compare again: 8 bytes either way. Stopping 0x40cbc8's short definitions at L143 is inert too. If the load did
+survive to lowering, the inserted result zero (`R = 0`) would separate it from its compare and the drop-pass copy rule
+(refs == 2, use in the next tuple, 0x41a6f8) would no longer delete it; a surviving old flag in EDX (temp or global)
+makes the result's rotor scan skip EDX and EAX and take ECX, leaving the rotor where the demo build leaves it, which is
+the oracle. [OPEN] No source form keeps the old-flag load alive through 0x409c5c with the oracle's instructions.
