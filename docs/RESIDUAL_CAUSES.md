@@ -211,3 +211,12 @@ with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.
 - [EVIDENCE, sol-cutcp2 r5] Bounded experiment for C: a shared two-consumer value (iconDim, the screenY pattern)
   survives early C2 and triggers cloning in both editions, but does not give the separate late-zero / connected-PLAY
   structure and adds 7 bytes and one instruction per micro; prediction failed, no transfer.
+
+## Build B-a: the continue form (sol-cbuild r16, 2026-10-19)
+
+Writing the reverse-moving loop as `for (i = MAXMOVEOBJECT; i != 0; pMoveObject--, i--)` with the rejections as
+`if (...) continue;` statements gives Build **8 masked bytes, 1229/1237, body 3866** from ordinary source, the same as
+the a-cut diagnostic. Cause [EVIDENCE]: the changed predecessor order selects a different latch region (the header
+decision is unchanged); nested guards alone are inert. Not integrated: it regresses STRICT GetBlupiInfo (0x57b0) by a
+two-byte commutative OR input order, with identical C1 after alpha renaming, i.e. the TU-wide symbol-ID key effect.
+Next (sol-cbuild r17): pick the equivalent continue spelling whose ID cost keeps GetBlupiInfo in its window.
