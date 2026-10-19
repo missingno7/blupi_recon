@@ -179,3 +179,7 @@ instruction sequences. Result equals the earlier bc compiler-state diagnostic: 2
 aligned, body 3904 -> 3896 (oracle 3866), 52 -> 48 regions; zero accepted regressions. A name alone is not the mechanism:
 the second real consumer keeps the fork (the earlier one-consumer named baseY collapsed). B-a (singleton-1 cut) remains;
 with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.
+- [EVIDENCE, sol-cutcp2 r4] ChangePhase index preservation: keeping the Search index past the mouse calls is
+  forced by the volatile EAX return. The sign test's use of that source snapshot follows the ordinary C1 assignment/read
+  (reader tag 2; 0x413265 / 0x413245 global marking), not a special preservation predicate. Renamed, scoped or copied
+  results are substituted back by early forwarding 0x40b7b9 (measured r3). No source operation qualifies; gate closed.
