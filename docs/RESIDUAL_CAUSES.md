@@ -154,3 +154,10 @@ number-label POINT (allocator cloning), and a named cut length (operand key orde
   matched corpus does not demonstrate B-b's precondition; its source cause remains [OPEN].
 - [EVIDENCE, sol-cteb r4] Clone hypothesis for T eliminated: TreatEventBase has 29 exhausted ranges but zero
   clone-safety calls or clones, and no current range supplies the diagnostic's extra old-flag load. T stays open.
+- [EVIDENCE, sol-cteb r5] Front-end trace of the rank-0 toggle: C1 emits field read, branch, two stores, then
+  bEnable = field. Early C2 backward reconstruction (0x40cbc8 / 0x40cd08) creates a short old-flag definition, and
+  0x41ddfe folds it into the adjacent compare before if/else lowering, so it never reaches temp assignment. The earliest
+  ownership-dependent branch is 0x40cc03: a named (kind-4) local is excluded from anonymous backward splitting, the
+  anonymous field value (kind-3) passes. Required for either explanation: a short definition that survives 0x41ddfe
+  because a real intervening definition/use prevents substitution, with the same emitted MOV/XOR/TEST/SETcc. Next: find
+  such a survival in stock/STRICT code. A POINT micro produced neither shape.
