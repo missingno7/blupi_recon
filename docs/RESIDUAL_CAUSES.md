@@ -195,3 +195,8 @@ with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.
   ObjectDelete in EDI/EBP, call clobbers EAX/ECX/EDX; the local scanner cuts 1 at its second use). Build's shaping header
   already has X/EDI, Y/EBX, cursor/EBP, this/ESI across its first draw, but its coordinates start after the header
   guards, so the header keeps four free colours; the oracle's instructions do not support a direct transfer.
+- [EVIDENCE, sol-cbuild r14] Falsified: early coordinate lifetimes exhausting Build's header. An early working POINT
+  changes C1, components and occupancy but leaves two compatible colours (region 1 still adopted) and moves object-
+  position loads before the zero-type branch, contrary to the oracle (1150/1237, 2256 bytes; rejected). The missing
+  input is a stock definition/cut boundary giving camera X retained for the reverse bounds but read from home for the
+  drawing SUB, and a long lift-X component; full header occupancy and the exact singleton are not shown necessary.
