@@ -1,2 +1,4 @@
 src/** -text
 patches/*.patch -text
+# Unified-diff context contains intentional leading spaces and blank lines.
+tools/fixtures/*.patch -text -whitespace

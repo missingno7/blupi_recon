@@ -1,0 +1,56 @@
+--- a/event.cpp
++++ b/event.cpp
+@@ -2802,12 +2802,6 @@
+ 	m_bHiliInfoButton = FALSE;
+ 	m_bHiliHelpButton = FALSE;
+ 
+-	if ( phase == WM_PHASE_INTRO1 ||
+-		 phase == WM_PHASE_INTRO2 )
+-	{
+-		m_introTime = 0;
+-	}
+-
+ 	if ( phase == WM_PHASE_INIT )
+ 	{
+ 		m_demoTime = 0;
+@@ -4736,18 +4730,6 @@
+ 			}
+ 			m_rankCheat = -1;
+ 			m_posCheat = 0;
+-
+-			if ( m_phase == WM_PHASE_INTRO1 )
+-			{
+-				ChangePhase(WM_PHASE_INTRO2);
+-				return TRUE;
+-			}
+-
+-			if ( m_phase == WM_PHASE_INTRO2 )
+-			{
+-				ChangePhase(WM_PHASE_INIT);
+-				return TRUE;
+-			}
+ 
+ 			if ( m_phase == WM_PHASE_BYE )
+ 			{
+@@ -4809,6 +4791,12 @@
+ 					}
+ 					return TRUE;
+ 				case VK_RETURN:
++					if ( m_bRunMovie )
++					{
++						StopMovie();
++						m_pSound->SetSuspendSkip(1);
++						return TRUE;
++					}
+ 					if ( m_phase == WM_PHASE_PLAY  ||
+ 						 m_phase == WM_PHASE_READ  ||
+ 						 m_phase == WM_PHASE_WRITE ||
+@@ -5055,8 +5043,6 @@
+ 			if ( ChangePhase(WM_PHASE_INFO) )  return TRUE;
+ 			break;
+ 
+-		case WM_PHASE_INTRO1:
+-		case WM_PHASE_INTRO2:
+ 		case WM_PHASE_INIT:
+ 		case WM_PHASE_HISTORY0:
+ 		case WM_PHASE_HISTORY1:

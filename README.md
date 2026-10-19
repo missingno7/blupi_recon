@@ -6,21 +6,24 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
-**405 functions STRICT + 4 FOLDED, 116,160 / 141,488 unique game `.text` bytes (82.1 %)**, built with one shared
+**127,456 / 141,488 game `.text` bytes (90.1 %)**, built with one shared
 header set for every TU (no per-TU preprocessor views; no active withdrawals; withdrawal history in
-[docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). `decmove.cpp`, `decdesign.cpp` and
-`decblupi.cpp` are fully strict; 4 mapped game functions (about 24.8 KB) remain open (docs/LINK_CONTEXT.md, docs/COMPILER_STUDY.md).
+[docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). Two mapped game functions remain open:
+`CEvent::ChangePhase` and `CEvent::TreatEventBase`, each with eight differing instructions.
+Fresh verification and historical relink gates pass with zero accepted regressions, including the sound build path
+([docs/BLOCKER_CHECKS.md](docs/BLOCKER_CHECKS.md), 2026-10-19). The verifier reports 411 STRICT and 6 FOLDED emitted
+function records; these include repeated bodies across TUs.
 STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
 data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
 unverified, masked or behavioural similarity is never counted.
 
 | TU | strict | TU | strict | TU | strict |
 |---|---:|---|---:|---|---:|
-| blupi.cpp | 12 | decor.cpp | 17 | movie.cpp | 13 |
-| button.cpp | 17 (+1 folded) | event.cpp | 87 | network.cpp | 18 |
-| ddutil.cpp | 8 | jauge.cpp | 9 (+1 folded) | pixmap.cpp | 34 |
-| decblock.cpp | 24 | menu.cpp | 8 | sound.cpp | 28 |
-| decblupi.cpp | 20 | misc.cpp | 8 (+1 folded) | text.cpp | 7 |
+| blupi.cpp | 13 | decor.cpp | 21 | movie.cpp | 13 |
+| button.cpp | 18 (+1 folded) | event.cpp | 88 | network.cpp | 19 (+2 folded) |
+| ddutil.cpp | 8 | jauge.cpp | 9 (+1 folded) | pixmap.cpp | 36 (+1 folded) |
+| decblock.cpp | 26 | menu.cpp | 8 | sound.cpp | 28 |
+| decblupi.cpp | 20 | misc.cpp | 10 (+1 folded) | text.cpp | 7 |
 | decdesign.cpp | 42 | decmove.cpp | 39 | decnet.cpp | 6 |
 
 (Per-TU counts are the verifier's and include header inline bodies compiled into each TU.)
@@ -28,9 +31,9 @@ unverified, masked or behavioural similarity is never counted.
 Data: `dectables.cpp` holds SB1 tables as initialized data whose bytes the verifier checks (relocations into them are
 proven by payload). Calls to imports may go through exact `jmp [IAT]` thunks, as in the original.
 
-Largest open bodies (best-known reconstructions in `src/`, not yet strict): `CEvent::DrawButtons` 0x16f70 (7,419 B,
-65 differing bytes), `CEvent::ChangePhase` 0x19310 (6,922 vs 6,919 B), `CEvent::TreatEventBase` 0x1d230 (6,616 B,
-8 register bytes), `CDecor::Build` 0x4350 (3,846 vs 3,866 B), `CDecor::DoInit` 0x1ef0 (CDecor allocation size only).
+Open bodies (best-known reconstructions in `src/`, not yet strict): `CEvent::ChangePhase` 0x19310
+(32 differing non-relocation bytes) and `CEvent::TreatEventBase` 0x1d230 (8 register bytes).
+`CEvent::DrawButtons`, `CDecor::Build` and `CDecor::DoInit` are STRICT.
 
 Per-TU details, near misses and blockers: `docs/*_TU.md`, `docs/CORE_CLUSTER.md`, `docs/UI_CLUSTER.md`,
 `docs/ENGINE_PROBE.md`.
@@ -48,8 +51,8 @@ Per-TU details, near misses and blockers: `docs/*_TU.md`, `docs/CORE_CLUSTER.md`
   sound/movie/misc/ddutil/pixmap/UI code; game logic is the Speedy Blupi engine (SB2 reconstruction is a structural
   hint; SB1's `CDecor` lacks SB2's trajectory arrays). Free Eggbert is a fork of sb2-decomp, not independent evidence.
 - **Compiler knowledge** ([msvc5kb/README.md](msvc5kb/README.md)): rule catalog compatible with Blood II's VC5 KB;
-  45 rules, 21 validated on SB1 (incl. TU symbol-count context resolved by genuine declarations for `StopSound`,
-  statement order VC5-ORD-01, local-array layout BLUPI-LOC-01, SIB order from function-wide block shape BLUPI-REG-01).
+  SB1 validations include TU symbol-count context resolved by genuine declarations for `StopSound`,
+  statement order VC5-ORD-01, local-array layout BLUPI-LOC-01, and SIB order from function-wide block shape BLUPI-REG-01.
 
 ## Reproduce
 
@@ -69,16 +72,16 @@ Python with pefile + capstone (`.pyenv\python.exe` locally).
 Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and every compile adaptation:
 [src/PROVENANCE.md](src/PROVENANCE.md).
 
-## Distance to a byte-identical executable (2026-10-18)
+## Distance to a byte-identical executable (2026-10-19)
 
 | Item | State |
 |---|---|
-| Game code | 123,584 / 141,488 unique bytes STRICT (87.3 %); 3 functions open: ChangePhase (8 instr), TreatEventBase (8 instr), Build (8 masked bytes, size exact); docs/RESIDUAL_CAUSES.md |
-| Whole file | same size (535,552 B); historical relink (2026-10-19, Build size exact): 121,401 bytes differ at the same offset. Nearly all are a +16 shift from RVA 0x2a30 to about 0x1f000: LINK keeps button's folded empty function (~CButton/~CMenu/~CJauge/OutputDebug) where the oracle keeps a later copy (ICF survivor, link inputs), plus the CRT filter survivor, imports and the three open functions |
+| Game code | 127,456 / 141,488 bytes (90.1 %); 2 functions open: ChangePhase and TreatEventBase, 8 differing instructions each; docs/RESIDUAL_CAUSES.md |
+| Whole file | same size (535,552 B); fresh historical relink: 121,401 bytes differ at the same offset. Most are a +16 shift from RVA 0x2a30 to about 0x1f000: LINK keeps button's folded empty function (~CButton/~CMenu/~CJauge/OutputDebug) where the oracle keeps a later copy (ICF survivor, link inputs), plus the CRT filter survivor, imports and the two open functions |
 | Link | no unresolved externals; Rich header: CVTRES 5.00.1668 entry exact, stamp-less count 268 vs oracle 270 (two modules unidentified) |
-| `.text` | 16 bytes short; ICF survivors depend on LINK's MSVCRT `qsort` (historical runtime keeps the oracle's choice) |
-| `.rdata` | size exact; 4,546 / 4,978 equal (import names, hints, descriptors exact; IAT/thunk values follow `.text`) |
-| `.data` | size exact; 329,713 / 329,728 raw bytes equal (rest: pointers into shifted code); all 366 STRICT BSS references exact |
+| `.text` | size exact; 121,100 differing bytes; the historical runtime alone does not recover the oracle's ICF survivors |
+| `.rdata` | size exact; 4,680 / 4,978 initialized bytes equal |
+| `.data` | size exact; 329,727 / 329,728 raw bytes equal; one differing byte in a CRT pointer |
 | `.rsrc` | byte-exact (docs/RESOURCES.md) |
 | PE header | timestamp and `.text` size equal; 2 bytes differ: Rich count 268/270 and entry 0x24d20/0x24d40 (CRT filter survivor) |
 
@@ -86,9 +89,11 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 Current state and the paused blockers: **docs/STATUS.md** (2026-10-19).
 
-All 4 open functions have had several worker passes; the disproven families are recorded per target
-(docs/COMPILER_STUDY.md, msvc5kb), so new work needs a genuinely new source or context hypothesis.
-1. `event.cpp` register/scheduling residues: `TreatEventBase` (H1, terminator byte load), `DrawButtons` (330
-   rematerialisation, pixmap scheduling), `ChangePhase` (constant webs) (docs/COMPILER_STUDY.md rounds 4-5).
-2. `decblock.cpp` `Build` (zero-constant pool, shared drawing tail, swapped spill slots; docs/COMPILER_STUDY.md round 6).
-3. Open questions: the internal layout of CDecor's proven 100,044-byte tail (docs/LAYOUT_DEBT.md); exact linker build (Rich header has no linker entry); data-section matching and a full relink.
+The tested families and unresolved compiler decisions are recorded in `docs/RESIDUAL_CAUSES.md` and `msvc5kb`.
+TreatEventBase needs a rotor-neutral rank-zero toggle; ChangePhase needs the oracle's test order with PLAY
+allocated before zero. Original project/build evidence or LINK 5.10.7287 could help discriminate the linker
+input and version hypotheses. The latest declaration and historical compiler-front-end controls produced no
+new match ([docs/BLOCKER_CHECKS.md](docs/BLOCKER_CHECKS.md)).
+
+The independent [Planet Blupi study](docs/PLANET_ORACLE.md) found a real RTM/SP3 back-end fingerprint and natural
+Boolean/constant-allocation controls. It does not close either SB1 function; historical acceptance remains 90.1%.

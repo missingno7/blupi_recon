@@ -308,3 +308,21 @@ unchanged). No rule status changed.
 [EVIDENCE] Added BLUPI-STEER-01 (dead arm guarded by a local zero: interned by early C2, then deleted; pre-fix Build
 STRICT through the full gate) and BLUPI-NEG-05 (code-neutral constructs never reach the first cost pass; only
 identity survives). Tool: tools/c2trace/lifetime.py; micros: msvc5kb/micros/steer. Report: docs/STEERING.md.
+
+## Declaration and compiler-host controls (2026-10-19)
+
+[EVIDENCE] Added BLUPI-NEG-06. Seventeen event.cpp declaration controls give no improvement; three successful
+compiler-host observations/controls reproduce all 94 function payloads, symbolic relocations and symbol order.
+The historical front-end control binds 66 CL and 101 C1XX CRT imports before startup; C2 retains its system CRT.
+One earlier import-page-protection failure was cleaned up and rerun successfully. Fresh full verification and
+historical relink gates PASS, including sound, with zero regressions and unchanged 127,456-byte coverage.
+Details, limitations, hashes and artifacts: [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md).
+
+## Independent Planet Blupi corpus (2026-10-19)
+
+[EVIDENCE] Added BLUPI-TOOL-01: two pristine-body Planet 1.8 controls distinguish RTM C2 from SP3 with identical
+headers; component crossing follows C2. SB1 Display instead matches SP3 (RTM: 16 non-relocated bytes different).
+Added corpus evidence to BLUPI-REG-11: a member toggle uses EAX with rotor EDX unchanged, observed directly at
+SET and preference return 435db5. Added pooled-constant corpus evidence to BLUPI-ALLOC-17, distinguishing the
+688-byte STRICT BlupiCreate control from the version-adjusted, relocation-masked phase dispatcher. These do not
+validate a new SB1 source fix. Full provenance, limits and reproduction: [PLANET_ORACLE.md](PLANET_ORACLE.md).

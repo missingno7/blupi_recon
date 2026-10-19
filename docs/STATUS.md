@@ -9,7 +9,7 @@ accepted regressions. CDecor::Build became STRICT on 2026-10-19 (docs/RESIDUAL_C
 |---|---|
 | Game code | 127,456 / 141,488 bytes STRICT (90.1 %). Every game function is STRICT or FOLDED except two. |
 | Open functions | 16 differing aligned instructions in total (3,907 / 3,923) |
-| `.rsrc`, `.data`, file size, `.text` size, timestamp | `.rsrc` exact; `.data` 13-15 bytes (pointers); file and `.text` sizes equal the oracle; timestamp equal under the historical host |
+| `.rsrc`, `.data`, file size, `.text` size, timestamp | `.rsrc` exact; `.data` 1 differing byte in a CRT pointer; file and `.text` sizes equal the oracle; timestamp equal under the historical host (fresh check: docs/BLOCKER_CHECKS.md) |
 | Whole image (canonical historical relink) | 121,401 differing bytes, almost all a +16 shift from LINK keeping a different copy of a folded empty function (ICF survivor), plus the CRT filter survivor, import order and the open functions |
 
 ## The open functions
@@ -63,3 +63,19 @@ TreatEventBase rank-0 toggle (five helper forms reduce to the direct IL or coale
 
 Details and provenance: docs/RESIDUAL_CAUSES.md, docs/COMPILER_STUDY.md, docs/SYMBOL_ORDER.md, docs/LINK_ICF.md,
 msvc5kb/catalog.json.
+
+## Fresh blocker checks (2026-10-19)
+
+[EVIDENCE] Full gate PASS, including the historical sound path: 127,456 bytes, zero accepted regressions.
+Seventeen declaration controls produced no improvement. A compiler-host check observed 1,151 C1XX qsort calls;
+using historical qsort, then all 66 CL / 101 C1XX historical CRT bindings, preserved every event.cpp function
+payload, relocation and symbol order. Scope and reproducible scratch commands: [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md).
+The fresh canonical historical relink still differs in 121,401 bytes. No source or acceptance change was made.
+
+## Independent Planet Blupi controls (2026-10-19)
+
+[EVIDENCE] [PLANET_ORACLE.md](PLANET_ORACLE.md) authenticates official 1.7/1.8 binaries and the 2017 source import.
+Two unchanged 1.8 functions distinguish RTM C2 from SP3; the same Display test favors SP3 for SB1. A real member
+toggle keeps rotor EDX unchanged through an EAX preference, and a 688-byte STRICT Planet function supplies a
+pooled-constant control. Binary-evidenced version corrections give complete masked hits for both Planet event
+functions, with remaining relocation/data limits. Outcome C for SB1's two blockers; no canonical or acceptance change.

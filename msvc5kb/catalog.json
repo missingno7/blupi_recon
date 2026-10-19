@@ -4371,6 +4371,11 @@
           "ref": "blupi_recon:docs/RESIDUAL_CAUSES.md, Final targeted experiments: symbol order and inline helpers",
           "tier": "PROVEN",
           "counts": "5 inline-member variants with registered predictions (scratch/claude/t6.py); getter capture IL at 0x42ac33 equals the direct form; no peer function changed"
+        },
+        {
+          "ref": "blupi_recon:docs/PLANET_ORACLE.md; tools/planet_oracle.py",
+          "tier": "PROVEN",
+          "counts": "Planet 1.8 EventButtons: original imported member toggle has an exact 21-byte region at RVA 1b993 (no relocations). SP3 result EAX, preference into EAX at relative line 146; rotor EDX before assignment and at SET; actual preference return 435db5. Whole EventButtons is only a masked hit with data/callee limits. All 184 observed event/pixmap/decor payloads and symbolic relocations equal ordinary compilation. Planet cheat-toggle EDI preferences remain unusable for byte SETcc. No new SB1 source match."
         }
       ],
       "keywords": "setcc boolean toggle rotor preference 0x42b051 0x42afe5 0x435c37 0x491120 rotor-neutral sete store member eax ecx edx BltFast booltemps",
@@ -4462,6 +4467,11 @@
           "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs",
           "tier": "PROVEN",
           "counts": "0x40fada operand table decoded and checked on the pass-12 operands; web builder and interner rules logged. c2.exe SP3 7303 SHA-256 E75AECAF4073B0817FFB638CAE5FFF636B2E2D1A090DAABF8F68DBC954515FAE"
+        },
+        {
+          "ref": "blupi_recon:docs/PLANET_ORACLE.md; tools/planet_oracle.py",
+          "tier": "PROVEN",
+          "counts": "Planet 1.8 BlupiCreate is STRICT at RVA 9830, 688 bytes/6 verified relocations: pooled zero +119/29 references selects ECX, pooled -1 +108/9 selects EDX. Removing the binary-absent intro reset from Planet ChangePhase changes initial zero -213 to -203 and PLAY -374 to -370; selected zero remains +12/EBX. Phase is a version-adjusted masked hit with unresolved data, not STRICT. Read-only observations preserve native code; no SB1 improvement."
         }
       ],
       "keywords": "cost pass priority block weight popcount crowding operand benefit 0x40ee1d 0x40eda6 0x40fada 0x416a17 0x417fb7 0x438f79 pooled constant web range late normalization",
@@ -4598,6 +4608,91 @@
         "compiles": 75,
         "outcome": "negative for both open functions",
         "doc_ref": "docs/STEERING.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-NEG-06",
+      "section": "negative",
+      "tier": "PROVEN",
+      "scope": "negative",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Tested declarations and historical front-end CRT do not resolve the event residues",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "reorder_regalloc"
+        ]
+      },
+      "symptom": "ChangePhase and TreatEventBase retain their last allocation/rotor differences after ordinary source-form and compiler-build controls.",
+      "construct": "Diagnostic ignored-return prototypes, register locals, and host-CRT controls; no canonical source change.",
+      "explanation": "Seventeen event.cpp compiles: two controls; nine separate ignored-return prototype changes and their combination; register on i, c or bEnable; a two-consumer old flag with/without register. Return controls preserve oracle-order function payloads (ChangePhase 4668 differing bytes); register controls preserve canonical payloads (ChangePhase 32, TreatEventBase 8); both old-flag controls give 4619. Separately, a real event compile makes 1151 C1XX qsort calls, including 67 with equal keys. Routing those calls to the unchanged VC5 SP3 CRT, then binding all 66 CL and 101 C1XX CRT imports before startup, each preserves all 94 function payloads, symbolic relocations and symbol order. Only COFF timestamp byte 4 differs between each host-control object and the system-CRT observation.",
+      "experiment": "See docs/BLOCKER_CHECKS.md for scratch drivers, audited historical bindings and fresh full verifier/relink results. Run one command at a time through tools/msvc.py.",
+      "not_when": "Measured only on this event.cpp with manifest SP3 flags. C2/MSPDB retained system-CRT bindings; other TUs/runtime versions were not tested. Prototype controls change decorated relocation names and are not strict source candidates. Allocation costs were not traced in the declaration controls.",
+      "matching_effect": "No improvement to either open function; do not repeat these exact controls as an untested matching lead.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/BLOCKER_CHECKS.md; scratch/blockers-20261019/",
+          "tier": "PROVEN",
+          "counts": "17 declaration compiles + 3 successful host compiles; one earlier C1XX page-protection failure cleaned up and rerun. Full acceptance and historical relink PASS, including sound; 127456 bytes, zero regressions. No source or acceptance changes."
+        }
+      ],
+      "keywords": "ChangePhase TreatEventBase return type ignored result prototype register storage class qsort MSVCRT historical CRT compiler host C1XX",
+      "blupi_status": "inert-here",
+      "blupi_evidence": {
+        "function": "CEvent::ChangePhase; CEvent::TreatEventBase; all event.cpp functions",
+        "tu": "src/event.cpp",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 20,
+        "outcome": "negative: no new STRICT function",
+        "doc_ref": "docs/BLOCKER_CHECKS.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-TOOL-01",
+      "section": "flags",
+      "tier": "PROVEN",
+      "scope": "fixed-context compiler fingerprint",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Planet 1.8 identifies an RTM C2 fingerprint that does not transfer to SB1",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "store_reorder",
+          "reorder_regalloc"
+        ]
+      },
+      "symptom": "A large source/binary comparison is being attributed to an unavailable compiler using only linker metadata or shared utility code.",
+      "construct": "Compile full authentic TUs with fixed headers and flags; cross C1XX and C2 components on discriminating functions.",
+      "explanation": "With the 2017 Planet import, identical SP3/DX5 headers and /W3 /GX /O2 /ML /Gd /Gy, RTM reproduces pointer-overload CPixmap::BltFast at 21fb0 (96 bytes/1 relocation) and Display at 22d70 (160/3) strictly in the official Italian 1.8 executable. SP2, SP3 and NT5 1592/1691 do not. SP3 C1XX + RTM C2 reproduces these; RTM C1XX + SP3 C2 does not. Single-thread LIBC __setmbcp also matches RTM only, independently. SB1 canonical Display instead has zero non-relocated differences with SP3 and 16 with RTM. Linker 3.0/5.0/5.10 fields do not establish compiler-component versions.",
+      "experiment": "tools/planet_oracle.py: fixed four-TU matrix (204 functions), component hybrids, explicit-Planet relocation comparison; tools/fnprobe.py src/pixmap.cpp Display 0x22240 --tree rtm / sp3. Full recipe and hashes in docs/PLANET_ORACLE.md.",
+      "not_when": "Planet 1.7 has source/padding/toolchain differences and is not the same compatible witness. Reconstructed Planet event bodies are masked controls with remaining relocation/data limits. The result does not identify an unavailable C2 or solve SB1 TreatEventBase/ChangePhase.",
+      "matching_effect": "Rejects switching SB1 to RTM based on Planet alone; supplies an actual C2 discriminator instead of inferring a compiler from the Blood II 7287 linker stamp.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/PLANET_ORACLE.md; tools/planet_oracle.py",
+          "tier": "PROVEN",
+          "counts": "77 source compilations including 2 SB1 Display controls; read-only observations audited separately. Two original-body Planet STRICT fingerprints; no SB1 acceptance changes."
+        }
+      ],
+      "keywords": "Planet Blupi compiler fingerprint RTM SP2 SP3 NT5 C1XX C2 7287 linker Display BltFast source provenance",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CPixmap::Display",
+        "tu": "src/pixmap.cpp",
+        "flags": "manifest SP3 /W3 /GX /O2 /ML /Gd /Gy; RTM diagnostic",
+        "compiles": 2,
+        "outcome": "SP3 existing strict body retained; RTM 16 non-relocated bytes different",
+        "doc_ref": "docs/PLANET_ORACLE.md"
       },
       "legacy_ids": []
     }

@@ -92,6 +92,10 @@ def run(cap):
             row = st["pend"]
             st["pend"] = None
             row["reg"] = REG.get(ctx.Ecx, ctx.Ecx)
+            # The rotor path updates its cursor before calling SET. The direct
+            # preference path returns at 435db5 without advancing it.
+            row["rotor_at_set"] = REG.get((p.u32(ROTOR) - ROTOR_LIST) // 4 + 1)
+            row["assignment_return"] = hex(p.u32(ctx.Esp))
             row["path"] = "pref" if row["pref"] and row["pref"] == row["reg"] else (
                 "rotor" if row["reg"] == row["rotor"] else "rotor-skip")
             st["rows"].append(row)
