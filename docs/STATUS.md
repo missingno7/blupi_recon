@@ -48,12 +48,13 @@ accepted regressions. CDecor::Build became STRICT on 2026-10-19 (docs/RESIDUAL_C
 
 ## Best next discriminators (only with new evidence)
 
-1. Build: a source structure that gives the quotient B an earlier fragment (or an availability hole before the grid
-   loop) while keeping both countdown loops; a STRICT function where two loop-boundary reloads are ordered against
-   their fragment IDs would be the positive control.
-2. TreatEventBase: a real intervening definition/use that keeps the 0x40cbc8 old-flag copy alive past 0x41ddfe.
-3. ChangePhase: a source property that separates the three late zero reads into their own component before 0x414ba6.
-4. Link: original project data (a .dsp, map or build log) or LINK 5.10.7287 itself.
+1. TreatEventBase: a real intervening definition/use that keeps the 0x40cbc8 old-flag copy alive past 0x41ddfe, or a
+   terminator byte that reaches temp assignment; the missing rotor pick lies between temp assignments 20 and 21 and
+   must land in EDX, which only those two values do.
+2. ChangePhase: a source property that separates the three late zero reads into their own component before 0x414ba6,
+   or raises PLAY/9 by 14 at the oldPhase dispatch. The recovered cost and region model leaves no code-visible input
+   for either, so it is an IL property the machine code does not show (docs/RESIDUAL_CAUSES.md, model closure tests).
+3. Link: original project data (a .dsp, map or build log) or LINK 5.10.7287 itself.
 
 Details and provenance: docs/RESIDUAL_CAUSES.md, docs/COMPILER_STUDY.md, docs/SYMBOL_ORDER.md, docs/LINK_ICF.md,
 msvc5kb/catalog.json.

@@ -370,6 +370,8 @@ ChangePhase [EVIDENCE]:
 - Pool eligibility (0x4156b6, logged): `index` and `this` are kind 2 at pool time, so `index < 0`, the HideMouse(FALSE)
   push (always eligible) and the `!m_bBuildOfficialMissions` memory compare are genuinely pooled. Forcing exactly
   these three ineligible gives 0 masked bytes, 2029/2029; any two of them do not.
+- Commit order is not the lever: queueing oldPhase above index (diagnostic priority 62..400 at 0x41b6fa) would split
+  zero at index's commit instead, but gives 4,513..4,637 bytes with the first difference in the index block.
 - [OPEN] Within the recovered model the oracle-order IL cannot colour PLAY first, so the original IL differs in a
   property the machine code does not show (a range or web identity live in blocks 3..99, or an unmodelled cost input).
   Next discriminator: an IL-record-level search (C1 records round-trip) over code-neutral edits in blocks 3..99,
