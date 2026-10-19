@@ -187,3 +187,6 @@ with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.
   1229/1237, body 3866 (the oracle size), identical to the old abc result: B-b and B-c are fully absorbed by source.
   Build = B-a + the 8-byte residue B-r. All 27 eligible literal-1 uses share one initial pool identity; a genuine
   Boolean fork survives early C2 but adds instructions. B-a's source cause remains [OPEN].
+- [EVIDENCE, sol-cteb r6] No STRICT fold-survival control for T: across 409 STRICT functions, 78 nonadjacent
+  backward-reconstructed copies occur; 77 are later substituted, and the one retained (a COM vtable copy) is not the
+  Boolean sequence. Both T explanations remain open; the matched corpus does not demonstrate the precondition.
