@@ -183,3 +183,7 @@ with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.
   forced by the volatile EAX return. The sign test's use of that source snapshot follows the ordinary C1 assignment/read
   (reader tag 2; 0x413265 / 0x413245 global marking), not a special preservation predicate. Renamed, scoped or copied
   results are substituted back by early forwarding 0x40b7b9 (measured r3). No source operation qualifies; gate closed.
+- [EVIDENCE, sol-cbuild r12] On the canonical screenY base, the a-cut diagnostic alone gives 8 masked bytes,
+  1229/1237, body 3866 (the oracle size), identical to the old abc result: B-b and B-c are fully absorbed by source.
+  Build = B-a + the 8-byte residue B-r. All 27 eligible literal-1 uses share one initial pool identity; a genuine
+  Boolean fork survives early C2 but adds instructions. B-a's source cause remains [OPEN].
