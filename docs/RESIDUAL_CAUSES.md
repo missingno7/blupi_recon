@@ -372,6 +372,8 @@ ChangePhase [EVIDENCE]:
   these three ineligible gives 0 masked bytes, 2029/2029; any two of them do not.
 - Commit order is not the lever: queueing oldPhase above index (diagnostic priority 62..400 at 0x41b6fa) would split
   zero at index's commit instead, but gives 4,513..4,637 bytes with the first difference in the index block.
+- Dead local stores (`bEnable = FALSE;`, `bHide = FALSE;`, `num = 0;` at three places in blocks 3..99) are removed
+  before allocation: code and gap unchanged (-65/-78).
 - [OPEN] Within the recovered model the oracle-order IL cannot colour PLAY first, so the original IL differs in a
   property the machine code does not show (a range or web identity live in blocks 3..99, or an unmodelled cost input).
   Next discriminator: an IL-record-level search (C1 records round-trip) over code-neutral edits in blocks 3..99,
