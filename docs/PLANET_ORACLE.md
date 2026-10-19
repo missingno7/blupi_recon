@@ -1,5 +1,9 @@
 # Planet Blupi as an independent compiler oracle (2026-10-19)
 
+Cleanup note: extracted oracle executables, scripts and compact reports are retained
+in the local research archive; bulk distributions and compiler intermediates are
+quarantined. See [RECOVERY_MILESTONE.md](RECOVERY_MILESTONE.md) for restoration.
+
 **[EVIDENCE] Outcome C for the two remaining SB1 functions.** This investigation
 does distinguish a real RTM/SP3 back-end difference in Planet 1.8, reproduces a
 natural rotor-neutral member toggle, and authenticates a substantial pooled-

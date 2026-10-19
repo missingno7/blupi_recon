@@ -1,5 +1,8 @@
 # Source-build baseline and behavioral exceptions (2026-10-19)
 
+The milestone is consolidated; see [RECOVERY_MILESTONE.md](RECOVERY_MILESTONE.md)
+for retained artifacts and restoration of historical experiment paths.
+
 [EVIDENCE] All 19 translation units and checked-in resources compile and link
 without the original executable, asset directory, oracle maps or reference
 repositories. Historical VC5 SP3, DirectX 5 SDK and Python with pefile remain

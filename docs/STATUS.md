@@ -1,5 +1,10 @@
 # Status: Speedy Blupi 1 matching reconstruction (2026-10-19)
 
+[EVIDENCE] Recovery cleanup is complete: 24.494 GiB of obsolete experiments moved
+to `to_delete/`, leaving a 1.127 GiB active working set. The playable folder and
+verified build remain; research inputs are deduplicated in a 187.7 MiB local
+archive. See [RECOVERY_MILESTONE.md](RECOVERY_MILESTONE.md) for scope and checks.
+
 [EVIDENCE] Complete standalone source build validated without assets, oracle maps or the original EXE.
 `CEvent::ChangePhase` and `CEvent::TreatEventBase` are now accepted as **EQUIVALENT** under pinned static
 equivalence certificates, independently of STRICT. All strict peers still pass. See [STANDALONE.md](STANDALONE.md).

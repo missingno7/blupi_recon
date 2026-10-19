@@ -6,6 +6,10 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
+Recovery is consolidated: [milestone and cleanup record](docs/RECOVERY_MILESTONE.md).
+Obsolete experiments are quarantined under ignored `to_delete/`; compact research
+inputs remain in `build/recovery/` and canonical findings remain in Git.
+
 **Complete standalone source build available:** `tools/build.py` compiles all 19 TUs and resources without
 the original EXE. The two remaining game bodies are accepted as **EQUIVALENT** under checked static assumptions;
 strict matching research is deferred until new evidence. See [docs/STANDALONE.md](docs/STANDALONE.md)

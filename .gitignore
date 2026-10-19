@@ -11,3 +11,4 @@ __pycache__/
 *.dll
 *.lib
 .pyenv/
+to_delete/
