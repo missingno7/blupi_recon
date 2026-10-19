@@ -381,9 +381,30 @@ ChangePhase [EVIDENCE]:
 
 TreatEventBase [EVIDENCE]:
 - Temp-assignment trace (c2dbg): assignment 20 is the TreatTextInput lParam load (line +115, rotor ECX -> ECX) and
-  assignment 21 the rank-0 result (line +143, rotor EDX -> EDX); nothing between them passes the rotor. The oracle
-  (result ECX, later HWND EDX) needs exactly one extra rotor pick between 20 and 21 that lands in EDX. In the oracle's
-  instructions only the terminator byte (DL) or the old flag (EDX) can be it: every other value there is a global range
-  or a scratch pick in EAX/ECX/ESI/EDI. A step before assignment 20 is excluded because 20 must still give ECX.
+  assignment 21 the rank-0 result (line +143, rotor EDX -> EDX); nothing between them passes the rotor. Shifting the
+  rotor pointer by +1 or +2 slots just before assignment 21 gives 0 masked bytes, 1894/1894, and assignments 22..27
+  keep their registers. So the oracle needs only "result in ECX, rotor left at EDX", i.e. a rank-0 block that is
+  rotor-neutral, as the June 1998 demo (no rank-0 block) implies. Routes: an extra rotor pick landing in EDX between 20
+  and 21 (only the terminator byte DL or the old flag EDX qualify in the oracle's instructions), the old flag occupying
+  EDX when 21 is assigned, or 20 or 21 taking ECX by preference without moving the pointer.
+- Preference rules (c2 0x42ac33): a temp prefers a register when its tuple copies from a register-held range
+  (0x42acf4) or into one (0x42b051); 0x435d84 then uses it without moving the pointer. The flag 0x48fb60 is written
+  once (0x428733), so every other temp takes the rotor path.
+- Why rank 1 differs: its new value is forwarded to the SetAllMissions push, so the IL has `EAX = R1148` and the setcc
+  temp prefers EAX. Rank 0's if/else stores in the arms, so `bEnable = m_bBuildOfficialMissions` stays a memory reload
+  until a late peephole emits `mov esi, ecx`; the select result's only use is the store, its preference is cleared at
+  0x42afe5, and it takes the rotor.
+- Forms that forward the new value (`m_b = !m_b; bEnable = m_b;`, named results `bNew`/`i`, an old value used twice)
+  coalesce it with bEnable and emit `mov esi, r; mov [m_b], esi` (14 bytes). A named old value used twice survives but
+  is globally allocated to ECX (first free), so the result stays EDX (4,619 bytes).
+- No positive control in the game: the SETcc-to-member-store sequence occurs twice in BLUPI.EXE, this toggle and one CRT
+  site.
 - SB2 and Eggbert decompilations call `m_pDecor->SetBuildOfficialMissions(m_bBuildOfficialMissions)` in rank 0, so they
   do not constrain SB1's inline toggle.
+
+ChangePhase, further negatives [EVIDENCE]:
+- Speedy Blupi 2's BLUPI.EXE (2001, linker 5.00) has the same if-chains and the same roles in blocks 3..99: four
+  compiles (demo, release, eGames, SB2) colour PLAY first.
+- Extra flags on the oracle-order source: /Ox, /G5, /GB, /Op and /Ob0 give the same 4,668 bytes; /Oa, /Ow, /Os, /G6,
+  /Oi- and /Og- change the whole function.
+- `do { } while (0)` and `for (;;) { ... break; }` wrappers around blocks 89..99 are removed before costing (inert).
