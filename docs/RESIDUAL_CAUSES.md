@@ -116,3 +116,7 @@ variables change the late-one web's EBX exclusion or its group, keeping both nat
   Minimal input changes holding the rest fixed: group 2 shrinks from 8 to <= 2 members, or loses both EBX and EDI from
   (A-O)-U before Search, or a pre-existing zero boundary separates the late reads. No ordinary source property is
   predicted; next: trace the first loss of each saved colour for zero and the seven neighbours (0x41759e/0x41be92).
+- [EVIDENCE, sol-cbuild r7] B-a downstream costs are consequences of the cut itself: the injected singleton changes
+  the first partition before remote-cursor rebuilding (explanation A); reverse X benefit 6 and lift X 62 (baseline 14)
+  follow from it (1,135 native benefit updates verified). The controlled difference implies no upstream source property;
+  the natural cause of the cut remains [OPEN]. Further slicing of this counterfactual cannot reveal it.
