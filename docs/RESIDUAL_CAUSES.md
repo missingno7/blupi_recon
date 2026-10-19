@@ -245,3 +245,13 @@ extra bound reload (fails the native gate).
 (already different by the pool snapshot), or B was materialized earlier than A. Next discriminator: trace the early
 loop-rewrite predicate that selects counted versus direct-index form for these grid loops, and which source form keeps
 the countdown while giving B the earlier boundary reload.
+- [EVIDENCE, sol-cbuild r19] B-r causal chain confirmed: a diagnostic swapping only the animated-grid boundary reload
+  order (B before A) gives 0 masked bytes, 1237/1237; the stack-packing model confirms it causes all eight. The order is
+  made at 0x40fbfa (mode 1), which enumerates the required set in ascending fragment-ID order (A155 then B160); those IDs
+  are reused LIFO slots (previously pixmap-member and moving-icon address LEAs freed at 0x41ccbc). Both grid loops already
+  take the oracle's counted form (selector 0x43e5ed, not 0x43de8b), so the loop-rewrite hypothesis is falsified.
+  'Earlier B materialization' is also falsified for current inputs: across all 205 mode-0 boundary calls neither value is
+  ever required (98/100 live edges, zero required).
+  Handoff / precise blocker [OPEN]: the source must give either (1) B's reload before A through ordinary fragment
+  construction with the same three earlier A/B reference pairs and native loops, or (2) a pre-web B availability hole
+  (B105 in target+40 minus predecessor+44) whose stock materialization is reused without extra loads or stores.
