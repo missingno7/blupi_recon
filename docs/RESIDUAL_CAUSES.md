@@ -111,3 +111,8 @@ variables change the late-one web's EBX exclusion or its group, keeping both nat
   missing source value. A pre-lift cache micro normalizes away (identical 592 bytes). B-a is an exhaustion-order /
   partition-cost question; the oracle cannot reveal its internal priorities. Next possible step: slice the first
   differing component rebuild (reverse X two-bound child, lift X 8-read child) baseline vs sufficient control.
+- [EVIDENCE, sol-cutcp2] ChangePhase under the B-a predicates: 345 blocks (batch route); earlier zero groups keep
+  3/2/1 compatible registers; the m_bNamesExist cursor is created by C2 (0x43de8b), so loop spelling does not control it.
+  Minimal input changes holding the rest fixed: group 2 shrinks from 8 to <= 2 members, or loses both EBX and EDI from
+  (A-O)-U before Search, or a pre-existing zero boundary separates the late reads. No ordinary source property is
+  predicted; next: trace the first loss of each saved colour for zero and the seven neighbours (0x41759e/0x41be92).
