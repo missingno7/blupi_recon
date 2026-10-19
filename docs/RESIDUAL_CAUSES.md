@@ -255,3 +255,7 @@ the countdown while giving B the earlier boundary reload.
   Handoff / precise blocker [OPEN]: the source must give either (1) B's reload before A through ordinary fragment
   construction with the same three earlier A/B reference pairs and native loops, or (2) a pre-web B availability hole
   (B105 in target+40 minus predecessor+44) whose stock materialization is reused without extra loads or stores.
+- [EVIDENCE, sol-tebx] Two fresh hypotheses for T eliminated in micros: (H1) rank-1 test as an else-if after rank 0
+  changes the reader CFG as predicted, but 0x41ddfe still folds the old flag (adds a JMP/copy; result EAX, HWND ECX);
+  (H2) a single shared bEnable feedback after the rank chain is identical to the control and needs extra reloads/tests.
+  Neither yields an extra rotor definition or the old-flag interval.
