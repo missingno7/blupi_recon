@@ -205,3 +205,6 @@ with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.
   relationship has no demonstrated equivalent at Build's reverse-moving header, so no transfer is predicted. Both
   stock routes to a singleton cut are now demonstrated in STRICT code (empty A - O; G < 3); neither maps onto Build's
   oracle-constrained source as written.
+- [EVIDENCE, sol-cteb r7] Bounded experiment for T: reusing the matcher's search index as the old-flag holder keeps
+  source ownership through 0x40cc03 but gives old flag EAX / result EDX and duplicates the Boolean computation (+11 body
+  bytes) in the micro; prediction failed, no target transfer. Eliminates index-variable reuse as the old-flag split.
