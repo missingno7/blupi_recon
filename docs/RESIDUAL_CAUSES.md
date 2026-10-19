@@ -132,3 +132,8 @@ each x push; the early definition dies. Positive control: STRICT DrawInfo clones
 Result: 63 -> 30 differing bytes, 2288 -> 2300 / 2304 aligned; zero accepted regressions. The late definitions are
 produced by the stock allocator, so the earlier 'definitions are written late' inference was wrong: they are cloned.
 Remaining: 4 instructions, a subtraction ordering decided before C2 stage 0x412d5c (sol-cdb r2 FINDINGS).
+- [EVIDENCE, sol-cbuild r8] The DrawButtons clone mechanism (0x41ba2b -> 0x44ca36 -> 0x451ac3) already operates in
+  Build: whole-LEA cloning in the network-player cloud loop. The target cloud-Y range still has available registers when
+  selected, so it never reaches 0x451ac3; the initial-Y range is blocked by flag 0x08. [HYPOTHESIS] B-b is the same
+  clone, reached only if cloud Y finds no register; that depends on the selection order of original Y, derived Y and
+  shifted X (next trace). One micro failed (no clones, extra coordinate store).
