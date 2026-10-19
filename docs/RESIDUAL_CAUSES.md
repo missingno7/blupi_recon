@@ -149,3 +149,6 @@ number-label POINT (allocator cloning), and a named cut length (operand key orde
   target original Y ties at 76 with derived Y and shifted X and loses, so cloud Y keeps a register and is not cloned.
   A micro's +16/-16 credits cancelled (original Y 55 < derived Y 59, no clone). Next: a STRICT asymmetric reg+constant
   clone positive control (one axis held, the other cloned from its held base).
+- [EVIDENCE, sol-cbuild r10] No STRICT asymmetric clone control exists: across 409 STRICT functions (19 audited
+  replays) four held-base address clones occur, none with Build's three-range held-axis / cloned-derived pattern. The
+  matched corpus does not demonstrate B-b's precondition; its source cause remains [OPEN].
