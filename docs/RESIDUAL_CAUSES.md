@@ -152,3 +152,5 @@ number-label POINT (allocator cloning), and a named cut length (operand key orde
 - [EVIDENCE, sol-cbuild r10] No STRICT asymmetric clone control exists: across 409 STRICT functions (19 audited
   replays) four held-base address clones occur, none with Build's three-range held-axis / cloned-derived pattern. The
   matched corpus does not demonstrate B-b's precondition; its source cause remains [OPEN].
+- [EVIDENCE, sol-cteb r4] Clone hypothesis for T eliminated: TreatEventBase has 29 exhausted ranges but zero
+  clone-safety calls or clones, and no current range supplies the diagnostic's extra old-flag load. T stays open.
