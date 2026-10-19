@@ -783,6 +783,11 @@
           "ref": "blood2_recon@77839651:recon/knowledge/compiler/vc5.json#VC5-INL-03",
           "tier": "PROVEN",
           "counts": "recorded examples=3"
+        },
+        {
+          "ref": "blupi_recon:docs/RESIDUAL_CAUSES.md, Final targeted experiments: symbol order and inline helpers",
+          "tier": "PROVEN",
+          "counts": "SB1 instance where it is inert: open-coded rank-0 toggle vs the same body as an inline CEvent member give identical TreatEventBase bytes; C2 forwards inlined returns/parameters before select formation"
         }
       ],
       "keywords": "inline member open code helper",
@@ -2354,13 +2359,18 @@
       "symptom": "A residue whose cause is unknown: declaration-count effect, allocator decision or source form.",
       "construct": "Any open function; the diagnostic forces each 0x408d58 comparison near the residue and compares the forced object with the oracle.",
       "explanation": "tools/c2trace/keyforce.py (ported from blood2_recon's keys/force method) lists every comparator 0x408d58 call while a function is compiled, with keys, symbol IDs and domains, and can override one result inside the c2 child. If a single reversal removes the residue, the residue is a key-order decision and the required symbol-ID or temp-number relation follows from the hash (BLUPI-CTX-03); if all residue-local reversals are byte-inert, look at allocation or lifetimes (BLUPI-ALLOC-*) instead. SB1 results: TreatEventBase 53 reversals keep all 8 bytes; ChangePhase 64 residue-local reversals inert; Build gains only collateral and would need impossible shifts (about 31,600 IDs); DrawButtons comparison #1310 needs F(line2) < F(text) and moving the genuine line2 declaration reproduces it but worsens the function (63 -> 755 bytes).",
-      "experiment": "keyforce.py capture NAME src/X.cpp; keyforce.py list/trace NAME FUNC; keyforce.py force NAME FUNC EVENT RESULT. Judge by aligned instructions as well as raw bytes: a lower raw count can hide a worse aligned result.",
+      "experiment": "keyforce.py capture NAME src/X.cpp; keyforce.py list/trace NAME FUNC; keyforce.py force NAME FUNC EVENT RESULT. Judge by aligned instructions as well as raw bytes: a lower raw count can hide a worse aligned result. Screen first: `keyforce.py list NAME FUNC --equal-cost --events A-B[,C-D]` lists only pairs with equal cost halves in the event window of the region that matters; a pair whose cost halves differ is decided before any hash bit, so no declaration, header or earlier-function context can flip it.",
       "not_when": "Forced objects are diagnostics, never source. Combinations of forced comparisons were sampled only sparingly.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/SYMBOL_ORDER.md#force-diagnostic-evidence",
           "tier": "PROVEN",
           "counts": "283 sequential forces over 4 functions; 1 genuine source test"
+        },
+        {
+          "ref": "blupi_recon:docs/RESIDUAL_CAUSES.md, Final targeted experiments: symbol order and inline helpers",
+          "tier": "PROVEN",
+          "counts": "ChangePhase oracle-order source, fresh trace: 3,040 comparisons; the cost region (blocks 3..99, events 0-279 and 2003-2202) has 480, none with equal cost halves; all 82 equal-cost pairs are in later code. Symbol-ID context closed for the zero/PLAY decision without forcing."
         }
       ],
       "keywords": "force comparator key order diagnostic classify residue declaration temp allocator",
@@ -4344,7 +4354,7 @@
       "construct": "What consumes the setcc value: a return (copied into EAX), a call argument forwarded to a push, or a named local that is a byte-capable global register range (all give a preference), versus only a memory store or a callee-saved non-byte local such as ESI/EDI (rotor). Also whether the compare's register inputs (address temps, this) are still live when the result is zeroed.",
       "explanation": "c2 0x435c37 gives each setcc temp its register by one of three routes. (1) Preference: the preference pass 0x42ac33 records the destination register of a copy into a register-held range (rule at 0x42b051); 0x435d84 takes it without moving the rotor 0x491120. (2) Rotor: first free register at or after the rotor pointer, which then advances. (3) Rotor with skip: the `R = 0` zeroing precedes the compare, so registers holding the compare's inputs are busy and are skipped (the pointer still advances past the chosen slot). A select whose only use is a memory store has its preference cleared (0x42afe5); a copy into ESI/EDI cannot be honoured by a byte setcc. Early C2 coalesces named copy-before-store forms (`b = !m; x = b; m = b;`) with the callee-saved destination, which then stores from that register.",
       "experiment": "tools/c2trace/booltemps.py CAPNAME... (captures from `c2trace.py capture`) lists every setcc temp with route pref/rotor/rotor-skip and the preference rule that fired. Combine with c2trace `assigns` and `shift`: if a +1/+2 rotor shift just before the boolean gives the oracle and later assignments keep their registers, the original boolean was rotor-neutral, so look for a consumer that gives route 1 or an operand form that gives route 3.",
-      "not_when": "Global (callee-saved) boolean ranges are coloured by the allocator, not this path. In TreatEventBase's rank-0 toggle (frame-member compare, results only stored and copied into ESI) no natural form was rotor-neutral: forwarding forms coalesce with ESI (+14 bytes), a named old value used twice is global ECX (4,619 differing bytes), copy-before-store variants all coalesce; 0 of 50 corpus setcc temps uses route 1 or 3 without a register consumer or register compare input.",
+      "not_when": "Global (callee-saved) boolean ranges are coloured by the allocator, not this path. In TreatEventBase's rank-0 toggle (frame-member compare, results only stored and copied into ESI) no natural form was rotor-neutral: forwarding forms coalesce with ESI (+14 bytes), a named old value used twice is global ECX (4,619 differing bytes), copy-before-store variants all coalesce; 0 of 50 corpus setcc temps uses route 1 or 3 without a register consumer or register compare input. Inline CEvent helpers do not help either: a toggle, a member-returning toggle and an old-flag getter reduce to the direct IL (8 bytes); a setter taking the new value coalesces it with bEnable (14 bytes).",
       "matching_effect": "Predicts the consumer change that frees one rotor step (e.g. CPixmap::BltFast `if (mode == 0) dwTrans = 1; else dwTrans = 0;` gets ECX via dwTrans) and rules out spelling searches when the boolean has no register consumer.",
       "evidence": [
         {
@@ -4356,6 +4366,11 @@
           "ref": "blupi_recon@cfe6b9d:docs/RESIDUAL_CAUSES.md, Model closure tests (round 2), TreatEventBase",
           "tier": "PROVEN",
           "counts": "rotor shift +1/+2 before assignment 21: 0 masked bytes, 1894/1894, assignments 22..27 unchanged; 4 copy-before-store and 2 forwarding variants: 14 or 4,619 bytes"
+        },
+        {
+          "ref": "blupi_recon:docs/RESIDUAL_CAUSES.md, Final targeted experiments: symbol order and inline helpers",
+          "tier": "PROVEN",
+          "counts": "5 inline-member variants with registered predictions (scratch/claude/t6.py); getter capture IL at 0x42ac33 equals the direct form; no peer function changed"
         }
       ],
       "keywords": "setcc boolean toggle rotor preference 0x42b051 0x42afe5 0x435c37 0x491120 rotor-neutral sete store member eax ecx edx BltFast booltemps",

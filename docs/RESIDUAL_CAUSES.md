@@ -450,3 +450,33 @@ TreatEventBase positive controls [EVIDENCE] (tools/c2trace/booltemps.py over 18 
   added block itself must be rotor-neutral.
 - [OPEN] No stock-compiler witness in the corpus gives a select result a preference or a busy-input skip without a live
   consumer or register input; the oracle's rank-0 IL shape is therefore absent from all STRICT functions.
+
+## Final targeted experiments: symbol order and inline helpers (2026-10-19, round 4)
+
+ChangePhase, symbol-ID operand order in blocks 3..99 [EVIDENCE]:
+- Hypothesis tested: TU-wide symbol IDs -> expression keys (0x405301) -> operand order (0x408d58) -> operand benefit
+  (0x40fada) -> zero/21 vs PLAY/9 priority, with identical final code.
+- Audit. sol-keyforce traced 3,040 comparisons on the oracle-order source and forced 64; 41 of them lie in blocks 3..99,
+  and all 64 objects were byte-identical. sol-ilsearch's 155 C1-record commutes (operands and relation reversed) kept
+  -65/-78; that tests source operand order, not key order.
+- Screen. A key is (cost << 16) | hash, so a pair with unequal cost halves is decided before any hash bit and no ID
+  assignment can flip it. Fresh trace on the current tree (`keyforce.py trace` on the oracle-order candidate): blocks
+  3..99 are events 0-279 (pass 1) and 2003-2202 (pass 2), 480 comparisons, **none with equal cost halves** (gap 1 in
+  419). The 12 PLAY-literal and 40 zero-literal comparisons there pair a cost-0 literal with a cost >= 1 operand. All 82
+  equal-cost comparisons of the function are in later code (SetState loops, file-page guards, music/region, joystick).
+- Result: the largest change any header, declaration order, earlier function or inline context can make to these
+  operand orders is zero, so no forced replay was justified. Closed. Reproduce with
+  `keyforce.py list NAME '?ChangePhase@CEvent@@' --equal-cost --events 0-279,2003-2202`.
+
+TreatEventBase, inline-helper preference [EVIDENCE]:
+- Oracle and ours differ only in the register pair: oracle `mov edx,[ebp+0x6d40]; xor ecx,ecx; test edx,edx; sete cl;
+  mov [ebp+0x6d40],ecx; mov esi,ecx`, ours with ECX and EDX swapped. The old-flag load is a compare-only scratch pick,
+  so it follows the result: with the result in ECX the picker skips EAX (m_rankCheat) and ECX and takes EDX.
+- BltFast control (IL at 0x42ac33): its select ends with `ECX = R`, a copy into dwTrans, already coloured ECX, so
+  0x42b051 records the preference. Rank 0 ends with `[ebp+0x6d40] = R` and bEnable is a reload (cleared preference).
+- Five inline CEvent members defined in the class body (per-candidate event.h copy, scratch/claude/t6.py), predictions
+  written first: toggle body (control) 8 bytes; toggle returning the member 8; getter for the old flag 8; getter for
+  both reads 8; `SetBuildOfficialMissions(!m_bBuildOfficialMissions)` 14 (`sete dl; mov esi,edx; mov [m],esi`, the
+  named-copy coalescing). No other event.cpp function changed. The getter capture's rank-0 IL at 0x42ac33 equals the
+  direct form (memory compare, `[ebp+0x6d40] = R`): inlined returns and parameters are forwarded before select
+  formation, so no inline placement gives the select a register destination. Closed.

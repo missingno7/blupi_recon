@@ -66,6 +66,10 @@ list is partly stale, so recheck each row.
 Rows dominated by x87 order or hashed-ID SIB order (PopSmallest, SSMemStream::Write, MatVMul) are outside these rules.
 Rows closed only by count windows belong to CTX-10/11.
 
+Before testing a count-window or declaration-context explanation on any row, screen the region with
+`keyforce.py list NAME FUNC --equal-cost --events A-B` (Blupi BLUPI-CTX-05): only comparisons with equal cost halves
+can depend on symbol IDs. In Blupi's ChangePhase this closed the hypothesis without a single forced replay.
+
 ## 5. Minimal positive controls (before any unmatched function)
 
 Run each on a function that is already STRICT, in the module and flag set where the rule will be used:

@@ -57,5 +57,9 @@ accepted regressions. CDecor::Build became STRICT on 2026-10-19 (docs/RESIDUAL_C
    for either, so it is an IL property the machine code does not show (docs/RESIDUAL_CAUSES.md, model closure tests).
 3. Link: original project data (a .dsp, map or build log) or LINK 5.10.7287 itself.
 
+Closed in round 4 (docs/RESIDUAL_CAUSES.md, "Final targeted experiments"): symbol-ID operand order in
+ChangePhase blocks 3..99 (480 comparisons, none decided by a hash bit) and inline-helper preference for the
+TreatEventBase rank-0 toggle (five helper forms reduce to the direct IL or coalesce with bEnable).
+
 Details and provenance: docs/RESIDUAL_CAUSES.md, docs/COMPILER_STUDY.md, docs/SYMBOL_ORDER.md, docs/LINK_ICF.md,
 msvc5kb/catalog.json.

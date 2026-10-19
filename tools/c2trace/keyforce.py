@@ -403,7 +403,7 @@ def main():
     sub = p.add_subparsers(dest='command', required=True)
     s = sub.add_parser('capture'); s.add_argument('name'); s.add_argument('unit')
     s = sub.add_parser('trace'); s.add_argument('name'); s.add_argument('function', nargs='+')
-    s = sub.add_parser('list'); s.add_argument('name'); s.add_argument('function'); s.add_argument('--equal-cost', action='store_true')
+    s = sub.add_parser('list'); s.add_argument('name'); s.add_argument('function'); s.add_argument('--equal-cost', action='store_true'); s.add_argument('--events', help='event-index ranges A-B[,C-D] (one source region in each pass)')
     s = sub.add_parser('force'); s.add_argument('name'); s.add_argument('function'); s.add_argument('indices', nargs='+', type=int); s.add_argument('--result', type=int, choices=(-1, 0, 1))
     s = sub.add_parser('predict'); s.add_argument('name'); s.add_argument('function'); s.add_argument('index', type=int); s.add_argument('--radius', type=int, default=1024)
     a = p.parse_args()
@@ -418,13 +418,20 @@ def main():
         data = json.loads((cap / 'keys.json').read_text())
         rows = [e for e in data['events'] if a.function in e['function']['name']]
         if a.command == 'list':
+            spans = [tuple(int(x) for x in r.split('-')) for r in a.events.split(',')] if a.events else None
+            if spans:
+                rows = [e for e in rows if any(lo <= e['index'] <= hi for lo, hi in spans)]
+            shown = 0
             for e in rows:
                 if a.equal_cost and e['left']['key'] >> 16 != e['right']['key'] >> 16:
                     continue
+                shown += 1
                 print('#%d %s %08x / %08x = %+d | %s | %s' % (e['index'], e['caller'], e['left']['key'], e['right']['key'], e['result'], e['a_text'], e['b_text']))
                 for label in ('a', 'b'):
                     r = e.get(label+'_recipe')
                     print('  '+label+': '+(', '.join('%s=%d [%s]' % (s['name'],s['id'],s['domain']) for s in r['terms']) if r else 'unknown'))
+            # Unequal cost halves decide a comparison before any hash bit, so no symbol-ID context can flip it.
+            print('%d comparisons, %d listed%s' % (len(rows), shown, ' (equal cost halves only)' if a.equal_cost else ''))
         else:
             e = next(e for e in rows if e['index'] == a.index)
             result = dict(index=a.index, a=e['a_recipe'], b=e['b_recipe'], baseline=e['result'], domains={})

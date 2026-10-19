@@ -295,3 +295,10 @@ baseline 4,668 masked bytes, 1995/2029. The 208-run sweep was not repeated.
 [HYPOTHESIS] REG-11, ALLOC-16 and ALLOC-17 are stated as general VC5 SP3 /O2 mechanisms because they are decoded
 from c2 code paths and checked on every SB1 instance found; they are not validated on any other code base or flag
 set. Transfer notes for Blood II: docs/BLOOD2_TRANSFER.md.
+
+## Final targeted experiments (2026-10-19, round 4)
+
+[EVIDENCE] Evidence added to BLUPI-CTX-05 (cost-half screen before any declaration-context hypothesis;
+`keyforce.py list --events` window filter), BLUPI-REG-11 (inline helpers reduce to the direct IL or coalesce with
+the destination local) and VC5-INL-03 (one SB1 site where an inline member and open code are byte-identical; status
+unchanged). No rule status changed.
