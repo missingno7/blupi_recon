@@ -1737,7 +1737,8 @@ BOOL CEvent::DrawButtons()
 			else
 			{
 				strcpy(text, m_filenameBuffer[i]);
-				text[line2 - m_filenameBuffer[i]] = '\0';
+				int cutLength = line2 - m_filenameBuffer[i];
+				text[cutLength] = '\0';
 				pos.y -= DIMTEXTY / 2;
 				DrawTextLeft(m_pPixmap, pos, text, m_fileIndex == i ? FONTSELECTED : FONTWHITE);
 				pos.y += DIMTEXTY;

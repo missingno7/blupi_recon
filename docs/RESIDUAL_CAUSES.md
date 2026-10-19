@@ -8,9 +8,9 @@ bytes; Build is 38 bytes longer than the oracle, so positional byte counts shift
 |---|---|---|
 | TreatEventBase | 1886 / 1894 | 8 |
 | ChangePhase | 2021 / 2029 | 8 |
-| DrawButtons | 2300 / 2304 | 4 (was 16) |
+| DrawButtons | 2304 / 2304 | 0: STRICT (2026-10-19) |
 | CDecor::Build | 1177 / 1237 | 60 |
-| Total | 7384 / 7464 | 80 |
+| Total | 7388 / 7464 | 76 |
 
 ## Causal map
 
@@ -137,3 +137,11 @@ Remaining: 4 instructions, a subtraction ordering decided before C2 stage 0x412d
   selected, so it never reaches 0x451ac3; the initial-Y range is blocked by flag 0x08. [HYPOTHESIS] B-b is the same
   clone, reached only if cloud Y finds no register; that depends on the selection order of original Y, derived Y and
   shifted X (next trace). One micro failed (no clones, extra coordinate store).
+
+## DrawButtons STRICT (sol-cdb r3, 2026-10-19)
+
+The last 4 instructions: naming the truncation length, `int cutLength = line2 - m_filenameBuffer[i]; text[cutLength] = ' ';`,
+gives the predicted C2 operand-key order (symbol-ID key at 0x408d58; scratch/sol-cdb/r3/FINDINGS.md, PSEUDOCODE.md).
+DrawButtons: 0 differing bytes, 2304/2304, all 234 relocations verified; full gate accepted it STRICT with zero regressions
+(coverage 116,160 -> 123,584). Cause D is closed by two natural source properties: a loop-invariant title x with a separate
+number-label POINT (allocator cloning), and a named cut length (operand key order).

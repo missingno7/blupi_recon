@@ -1440,6 +1440,12 @@
       "tu": "src/event.cpp"
     },
     {
+      "symbol": "?DrawButtons@CEvent@@QAEHXZ",
+      "rva": "0x00016f70",
+      "size": 7424,
+      "tu": "src/event.cpp"
+    },
+    {
       "symbol": "?MousePosToSprite@CEvent@@QAEHUtagPOINT@@@Z",
       "rva": "0x00018c70",
       "size": 128,
@@ -1804,6 +1810,18 @@
       "rva": "0x0001efc0",
       "size": 16,
       "tu": "src/jauge.cpp"
+    },
+    {
+      "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+      "rva": "0x0001efc0",
+      "size": 16,
+      "tu": "src/network.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "?GetHide@CJauge@@QAEHXZ",
+        "rva": "0x0001efc0",
+        "tu": "src/jauge.cpp"
+      }
     },
     {
       "symbol": "?SetHide@CJauge@@QAEXH@Z",
@@ -2404,6 +2422,18 @@
       "rva": "0x00022d60",
       "size": 96,
       "tu": "src/sound.cpp"
+    },
+    {
+      "symbol": "?GetNbProviders@CNetwork@@QAEHXZ",
+      "rva": "0x00022dc0",
+      "size": 16,
+      "tu": "src/network.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "?GetEnable@CSound@@QAEHXZ",
+        "rva": "0x00022dc0",
+        "tu": "src/sound.cpp"
+      }
     },
     {
       "symbol": "?GetTrueColorDecor@CPixmap@@QAEHXZ",
