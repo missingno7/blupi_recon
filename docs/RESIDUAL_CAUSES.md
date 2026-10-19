@@ -9,8 +9,8 @@ bytes; Build is 38 bytes longer than the oracle, so positional byte counts shift
 | TreatEventBase | 1886 / 1894 | 8 |
 | ChangePhase | 2021 / 2029 | 8 |
 | DrawButtons | 2304 / 2304 | 0: STRICT (2026-10-19) |
-| CDecor::Build | 1177 / 1237 | 60 |
-| Total | 7388 / 7464 | 76 |
+| CDecor::Build | 1179 / 1237 | 58 (cloud and initial-Y sequences now match) |
+| Total | 7390 / 7464 | 74 |
 
 ## Causal map
 
@@ -167,3 +167,15 @@ number-label POINT (allocator cloning), and a named cut length (operand key orde
   early C2 and changes 0x43de8b's induction representation but adds 18 body bytes (fails the instruction gate). Needed IR:
   a separate late-zero component (index sign test, HideMouse argument, pre-Write flag) with PLAY connected through
   WriteInfo. Next: backward slice of reader finalization 0x4262d8 and 0x425f81/0x44422c preservation on existing captures.
+
+## Build B-b/B-c reproduced by source (sol-cbuild r11, canonical 2026-10-19)
+
+Source change in the normal-player branch: `long screenY = m_blupiPos.y - posDecor.y; tinyPoint.y = screenY;
+pos.y = screenY - 34;` with the cloud loop's per-iteration `pos.y` assignment removed (pos.y is reassigned before every
+other read). Chain [EVIDENCE]: C1 gets a real LONG with two consumers (4916 -> 4921 records) -> distinct definitions
+survive 0x42127d, 0x409c5c, 0x414a64 and 0x41615d -> early available-copy forwarding 0x40b7b9 substitutes screenY for
+the 4-byte shield read (0x40b811 width check, as in DrawButtons) -> stock cloning and the oracle's cloud and initial-Y
+instruction sequences. Result equals the earlier bc compiler-state diagnostic: 2328 -> 2212 masked bytes, 1177 -> 1179
+aligned, body 3904 -> 3896 (oracle 3866), 52 -> 48 regions; zero accepted regressions. A name alone is not the mechanism:
+the second real consumer keeps the fork (the earlier one-consumer named baseY collapsed). B-a (singleton-1 cut) remains;
+with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.

@@ -1286,7 +1286,9 @@ void CDecor::Build(RECT rect, POINT mousePos)
 		if (!m_blupiFront)
 		{
 			tinyPoint.x = m_blupiPos.x - posDecor.x;
-			tinyPoint.y = m_blupiPos.y - posDecor.y;
+			long screenY = m_blupiPos.y - posDecor.y;
+			tinyPoint.y = screenY;
+			pos.y = screenY - 34;
 			if (m_blupiShield)
 			{
 				m_blupiSec = SEC_SHIELD;
@@ -1317,7 +1319,6 @@ void CDecor::Build(RECT rect, POINT mousePos)
 				{
 					for (j = 0; j < 3; j++)
 					{
-						pos.y = tinyPoint.y - 34;
 						pos.x = tinyPoint.x - 34;
 						m_pPixmap->QuickIcon(CHEXPLO, (j + m_time) % 6 + 48, pos);
 					}
