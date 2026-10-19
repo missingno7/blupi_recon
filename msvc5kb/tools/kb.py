@@ -231,7 +231,9 @@ def main():
             print(f"  Symptom: {rule['symptom']}")
             print(f"  Try: {rule['experiment']}")
             print(f"  Source form: {rule['construct']}")
+            if rule.get("explanation"): print(f"  Mechanism: {rule['explanation']}")
             if rule.get("not_when"): print(f"  Limit: {rule['not_when']}")
+            if rule.get("matching_effect"): print(f"  Effect: {rule['matching_effect']}")
             ev=rule.get("blupi_evidence") or {}
             refs=[x.get("ref","") for x in rule.get("evidence",[]) if x.get("ref")]
             print(f"  SB1: {ev.get('outcome','not tested')} ({ev.get('doc_ref','')})")

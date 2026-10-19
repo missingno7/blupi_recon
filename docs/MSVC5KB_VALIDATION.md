@@ -277,3 +277,21 @@ all source negatives retain their measured scope.
 reload order -> equal-weight stack homes). Validated by the canonical Build change (8 -> 0 masked bytes, 61/61
 relocations, full gate zero regressions), 30 forced-drop diagnostics and 87 scored source variants
 (tools/c2trace/freelist.py; docs/RESIDUAL_CAUSES.md, "Build STRICT"). Uses only known symptom tags.
+
+## Hidden-input methodology and boolean routes (2026-10-19, round 3)
+
+[EVIDENCE] Added BLUPI-REG-11 (setcc route census: preference via a register consumer, rotor, or busy-input
+skip; a store-only boolean always takes the rotor), BLUPI-ALLOC-16 (tie-order vs cost-quantity classification
+with `tools/c2trace/tiesweep.py`; Build blind-recovery control 1/10), BLUPI-ALLOC-17 (per-block crowding cost
+P = W x n_b, cost-time operand benefits, one range per pooled value) and BLUPI-NEG-04 (dead stores, trivial loop
+wrappers, layout and non-codegen flags inert for allocation). Strengthened REG-06, REG-08, REG-09, ALLOC-01 and
+ALLOC-15 with evidence entries only. New optional field `matching_effect` (printed by `kb.py rule`, which now also
+prints `explanation`). Compiler for all evidence: c2.exe SP3 7303, SHA-256 E75AECAF...54515FAE (docs/TOOLCHAIN.md).
+
+[EVIDENCE] `tiesweep.py enum claude-cpo --caps build/c2trace/cap --function '?ChangePhase@CEvent@@' --rva 0x19310
+--size 6919 --until-value 0 --until-refs 21` reproduces the scratch result: 104 identity-decided insertions,
+baseline 4,668 masked bytes, 1995/2029. The 208-run sweep was not repeated.
+
+[HYPOTHESIS] REG-11, ALLOC-16 and ALLOC-17 are stated as general VC5 SP3 /O2 mechanisms because they are decoded
+from c2 code paths and checked on every SB1 instance found; they are not validated on any other code base or flag
+set. Transfer notes for Blood II: docs/BLOOD2_TRANSFER.md.

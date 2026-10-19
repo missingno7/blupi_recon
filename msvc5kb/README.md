@@ -35,7 +35,7 @@ See [`docs/TOOLCHAIN.md`](../docs/TOOLCHAIN.md) for identification evidence and 
 
 ## Recording evidence
 
-Classify each finding as **confirmed-transferable**, **Blupi-specific**, **unverified hypothesis**, or **negative**. Update the existing rule’s `blupi_status` and `blupi_evidence`, or add a `BLUPI-xxx` rule. Keep IDs and field names compatible for future bidirectional exchange; there is no sync mechanism.
+Classify each finding as **confirmed-transferable**, **Blupi-specific**, **unverified hypothesis**, or **negative**. Update the existing rule’s `blupi_status` and `blupi_evidence`, or add a `BLUPI-xxx` rule. Keep IDs and field names compatible for future bidirectional exchange; there is no sync mechanism. Optional `matching_effect` states what the rule predicts for a candidate (which source change, which bytes); `scope` says whether a rule is general VC5, flag/TU-specific, Blupi-specific or a negative.
 
 Record: triggering mismatch; original and candidate constructs; compiler and flags; TU/header/PCH context; one-variable change and code effect; compile count; strict result and peer gains/losses; provenance reference; limits and untested conditions. Use `validated` only for measured SB1 evidence, `transferred-unverified` for VC5 findings not checked on SB1, and `inert-here` or `contradicted` for SB1 negatives.
 

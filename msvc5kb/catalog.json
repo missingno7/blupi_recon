@@ -2764,6 +2764,11 @@
           "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-4",
           "tier": "PROVEN",
           "counts": "micro corpus + event.cpp traces"
+        },
+        {
+          "ref": "blupi_recon@cfe6b9d:docs/RESIDUAL_CAUSES.md, Model closure tests (round 2)",
+          "tier": "PROVEN",
+          "counts": "TreatEventBase: +1 and +2 rotor shifts before assignment 21 both give 0 bytes with 22..27 unchanged, so the missing source is a rotor-neutral block, not an extra pick (route selection: BLUPI-REG-11)"
         }
       ],
       "keywords": "rotor round robin temp register assignment preference c2 0x435c37 0x491120 eax ecx edx",
@@ -2846,6 +2851,11 @@
           "ref": "blupi_recon:docs/COMPILER_STUDY.md#round-4",
           "tier": "PROVEN",
           "counts": "micro"
+        },
+        {
+          "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs (TreatEventBase positive controls)",
+          "tier": "PROVEN",
+          "counts": "corpus census: all 15 preference-assigned setcc temps of 50 use the copy-into rule 0x42b051; none 0x42acf4. A store-only select has its preference cleared at 0x42afe5 (BLUPI-REG-11)."
         }
       ],
       "keywords": "preference coalescing copy register descriptor 0x42ac33 0x42b051 toggle setcc",
@@ -2896,6 +2906,11 @@
           "ref": "blupi_recon:scratch/sol-ccp/FINDINGS.md, 3. Cuts, interference and rematerialization; 5. Minimal IR difference and bounded experiments",
           "tier": "PROVEN",
           "counts": "One-byte memset negative in both editions: anonymous reset entity is QUITPLAY1587, not tooltip zero. Tooltip zero is already rematerialized outside zero21; N4, accumulator3 and -65/-78 priorities persist. Intrinsic expansion retains a machine LEA; no gain or STRICT result."
+        },
+        {
+          "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs",
+          "tier": "PROVEN",
+          "counts": "web builder 0x416a17..0x416a6f partitions variables/expressions only: one range per pooled value; source cannot create a separate constant web (BLUPI-ALLOC-17)"
         }
       ],
       "keywords": "zero constant pool cse xor test cmp immediate store profitability colouring score integer interner type low32 417fb7 memset",
@@ -2999,6 +3014,11 @@
           "ref": "blupi_recon:scratch/sol-posteb/FINDINGS.md, KB-gap review: measured coverage, not passing-check totals alone",
           "tier": "PROVEN",
           "counts": "Coverage limit only: ChangeButtons/TreatNetData reprioritize calls both return 0, leaving priorities 30/200 unchanged; 58 retained allocator micros have no event. Successful min(input.priority)-1 reprioritization is unvalidated in this sample, not falsified or proved unreachable."
+        },
+        {
+          "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs",
+          "tier": "PROVEN",
+          "counts": "ChangePhase tie sweep: 104 identity placements x 2 flips, none gives the oracle; the zero-first decision is quantity-driven (BLUPI-ALLOC-16/17)"
         }
       ],
       "keywords": "global register allocation priority score cost sort tie definition rank pressure",
@@ -4285,6 +4305,11 @@
           "ref": "blupi_recon:docs/RESIDUAL_CAUSES.md, Build STRICT: B-r solved by the big-decor Y start",
           "tier": "PROVEN",
           "counts": "Build 8 -> 0 masked bytes, 1229 -> 1237/1237, 61/61 relocations STRICT; full gate exit 0, zero regressions; 87 scored variants, 30 forced-drop diagnostics."
+        },
+        {
+          "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs",
+          "tier": "PROVEN",
+          "counts": "blind recovery: 10 generic rewrites of the statements carrying y%DIMOBJY and y/DIMOBJY in the pre-fix source, exactly one 0 bytes (the fix); `= 0 - y%64 + 2; -= DIMOBJY` stays 8 bytes (folds to 2 - y%64) (BLUPI-ALLOC-16)"
         }
       ],
       "keywords": "free list LIFO fragment id boundary reload order stack home equal weight overtake expression interning descriptor order split statement Build",
@@ -4295,6 +4320,185 @@
         "compiles": 90,
         "outcome": "STRICT after splitting the big-decor Y start into the grid reset plus `+= 2 - DIMOBJY`.",
         "doc_ref": "docs/RESIDUAL_CAUSES.md, Build STRICT: B-r solved by the big-decor Y start"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-REG-11",
+      "section": "registers",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "A boolean result whose only consumer is a memory store takes the temp rotor; preference needs a register consumer",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "bool_idiom"
+        ]
+      },
+      "symptom": "`xor r,r; cmp ...; setcc r8; mov [m],r` differs only in r by one rotor step (ECX vs EDX), and every later eax/ecx/edx temp in the function is shifted one step too (period 3); all other code is identical.",
+      "construct": "What consumes the setcc value: a return (copied into EAX), a call argument forwarded to a push, or a named local that is a byte-capable global register range (all give a preference), versus only a memory store or a callee-saved non-byte local such as ESI/EDI (rotor). Also whether the compare's register inputs (address temps, this) are still live when the result is zeroed.",
+      "explanation": "c2 0x435c37 gives each setcc temp its register by one of three routes. (1) Preference: the preference pass 0x42ac33 records the destination register of a copy into a register-held range (rule at 0x42b051); 0x435d84 takes it without moving the rotor 0x491120. (2) Rotor: first free register at or after the rotor pointer, which then advances. (3) Rotor with skip: the `R = 0` zeroing precedes the compare, so registers holding the compare's inputs are busy and are skipped (the pointer still advances past the chosen slot). A select whose only use is a memory store has its preference cleared (0x42afe5); a copy into ESI/EDI cannot be honoured by a byte setcc. Early C2 coalesces named copy-before-store forms (`b = !m; x = b; m = b;`) with the callee-saved destination, which then stores from that register.",
+      "experiment": "tools/c2trace/booltemps.py CAPNAME... (captures from `c2trace.py capture`) lists every setcc temp with route pref/rotor/rotor-skip and the preference rule that fired. Combine with c2trace `assigns` and `shift`: if a +1/+2 rotor shift just before the boolean gives the oracle and later assignments keep their registers, the original boolean was rotor-neutral, so look for a consumer that gives route 1 or an operand form that gives route 3.",
+      "not_when": "Global (callee-saved) boolean ranges are coloured by the allocator, not this path. In TreatEventBase's rank-0 toggle (frame-member compare, results only stored and copied into ESI) no natural form was rotor-neutral: forwarding forms coalesce with ESI (+14 bytes), a named old value used twice is global ECX (4,619 differing bytes), copy-before-store variants all coalesce; 0 of 50 corpus setcc temps uses route 1 or 3 without a register consumer or register compare input.",
+      "matching_effect": "Predicts the consumer change that frees one rotor step (e.g. CPixmap::BltFast `if (mode == 0) dwTrans = 1; else dwTrans = 0;` gets ECX via dwTrans) and rules out spelling searches when the boolean has no register consumer.",
+      "evidence": [
+        {
+          "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs (TreatEventBase positive controls)",
+          "tier": "PROVEN",
+          "counts": "18 TU captures (sound.cpp omitted): 50 setcc temps, 15 preference (all 0x42b051: rank 1 push, IsRightBorder x8, DrawIcon, DrawIconDemi, DrawIconPart, DrawPart, BltFast x2 dwTrans), 7 rotor-skip (IsLave, IsRessort, playMovie, DrawMap, MouseQuickDraw, Save/RestorePalette), 28 rotor. c2.exe SP3 7303 SHA-256 E75AECAF4073B0817FFB638CAE5FFF636B2E2D1A090DAABF8F68DBC954515FAE"
+        },
+        {
+          "ref": "blupi_recon@cfe6b9d:docs/RESIDUAL_CAUSES.md, Model closure tests (round 2), TreatEventBase",
+          "tier": "PROVEN",
+          "counts": "rotor shift +1/+2 before assignment 21: 0 masked bytes, 1894/1894, assignments 22..27 unchanged; 4 copy-before-store and 2 forwarding variants: 14 or 4,619 bytes"
+        }
+      ],
+      "keywords": "setcc boolean toggle rotor preference 0x42b051 0x42afe5 0x435c37 0x491120 rotor-neutral sete store member eax ecx edx BltFast booltemps",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::TreatEventBase 0x1d230; CPixmap::BltFast; corpus census",
+        "tu": "src/event.cpp; all TUs",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 26,
+        "outcome": "route census validated on 50 temps; TreatEventBase stays 8 bytes (no rotor-neutral form)",
+        "doc_ref": "docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-ALLOC-16",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Classify an allocation residue as tie-order or cost-quantity before searching source spellings",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "displacement_differs",
+          "reorder_regalloc"
+        ]
+      },
+      "symptom": "Two ranges swap callee-saved registers (e.g. a pooled constant in EBX vs EDI) or equal-size stack homes, with code otherwise identical; a diagnostic reorder of the allocation queue gives the oracle.",
+      "construct": "Tie class: which decisive expression is interned first (the statements that carry it, BLUPI-ALLOC-15). Quantity class: code-visible references, operand forms and block membership of the competing ranges.",
+      "explanation": "Queue insertion 0x41b6fa sorts by signed priority +0x0c, then unsigned definition rank +0x40, and puts exact ties newest first. A placement inside a group of equal priority is decided by identity (rank, creation and interning order), which code-neutral source rewrites can change; a placement between different priorities needs a cost change. Flipping each identity-decided placement to the other end of its group tells the classes apart.",
+      "experiment": "tools/c2trace/tiesweep.py enum|sweep NAME --function SUB --rva RVA --size N [--until-value V --until-refs R]. If a flip gives the oracle: rewrite only the statements that contain the decisive subexpressions with generic meaning-preserving rewrites (split an additive chain into its own statement, reassociate constants, commute operands), compile each, keep STRICT only. Positive control: from the pre-fix CDecor::Build source this generates 10 candidates and exactly one, the known fix, is 0 bytes, 1237/1237. If no flip helps, stop spelling sweeps and model the cost quantities (BLUPI-ALLOC-17).",
+      "not_when": "Flip mode `back` lowers the priority by 1 and may also cross a neighbouring group; both modes are diagnostics. Later deferral/requeue (0x437c69, 0x45aaf9) and group splits are not covered. ChangePhase: 104 identity placements before zero/21, 208 flips, 196 unchanged (4,668 bytes), 12 worse: quantity class, and ~3,000 earlier spelling/IL mutations had found nothing.",
+      "matching_effect": "Turns an open-ended source search into either a small targeted rewrite set (Build: 1 of 10 candidates STRICT) or a proof that identity rewrites cannot help.",
+      "evidence": [
+        {
+          "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs",
+          "tier": "PROVEN",
+          "counts": "Build positive control 10 candidates, 1 STRICT (known fix, canonical 1c5c07d); ChangePhase 208 diagnostic replays, 0 oracle. c2.exe SP3 7303 SHA-256 E75AECAF4073B0817FFB638CAE5FFF636B2E2D1A090DAABF8F68DBC954515FAE"
+        }
+      ],
+      "keywords": "queue tie identity quantity priority rank newest first 0x41b6fa tie sweep classification interning rewrite hidden input methodology tiesweep",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::Build 0x4350; CEvent::ChangePhase 0x19310",
+        "tu": "src/decblock.cpp; src/event.cpp",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 219,
+        "outcome": "recovers the Build fix blind; classifies ChangePhase as quantity-driven",
+        "doc_ref": "docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-ALLOC-17",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Range priority is a per-block crowding sum; benefits come from cost-time operand forms, not final code",
+      "symptoms": {
+        "any": [
+          "regalloc_only",
+          "native_more_loads",
+          "native_fewer_loads"
+        ]
+      },
+      "symptom": "Which pooled constant (or which of two competing values) gets a saved register differs; a priority count made from the final instructions does not reproduce the traced queue priorities.",
+      "construct": "In which blocks each competing range is referenced and how crowded those blocks are (how many distinct ranges they reference); whether a constant meets a memory operand, a register variable or a temp; blocks where a range is live but unused.",
+      "explanation": "Cost pass 0x40ee1d, at each block end: P = W x n_b, with n_b the number of ranges referenced in the block (popcount, 0x40eda6) and W the loop-region weight passed in EDX (1 outside loops; see docs/ALLOCATOR.md). A range referenced in the block gains P x (operand benefits in the block); a range live but unreferenced there loses P. Operand benefit 0x40fada: non-constant operand 2; for a pooled constant a zero compare 0, otherwise the tuple's first operand decides: memory with base/index or a frame operand 1, a named register variable or a temp 0. Late load splitting, load CSE, store forwarding and register-copy peepholes (`mov esi, ecx` for a member reload) run after costing, so the final code can misstate these inputs. Pooled constants form one range per value: the per-web range builder (0x416a17..0x416a6f) partitions only variables and expressions, and interning 0x417fb7 compares tag and low 32 bits only, so a constant splits only by allocation-time region adoption (0x438f79) or pressure cuts.",
+      "experiment": "Get the competing ranges' priorities at the decisive insertion (colour_trace.py, or tiesweep.py enum), then break each into per-block deltas with a breakpoint at 0x40eda6 (block end: n_b, W, referenced set). The sum must reproduce the traced value before any source hypothesis is scored; a source change must move the gap by the measured amount.",
+      "not_when": "ChangePhase: the 13-point zero/21 vs PLAY/9 gap is reproduced exactly from the oracle's own instructions (all W = 1, benefits fixed by code), and every late normalization in blocks 3..99 would cost PLAY, so no code-neutral source moves it. Dead stores and loop wrappers are gone before costing (BLUPI-NEG-04).",
+      "matching_effect": "Predicts whether adding/removing a reference, moving a constant use into a crowded block, or comparing against memory instead of a register flips which value keeps the saved register, and by how many points.",
+      "evidence": [
+        {
+          "ref": "blupi_recon@2ec1277:docs/RESIDUAL_CAUSES.md, ChangePhase: the residue is one queue order",
+          "tier": "PROVEN",
+          "counts": "per-block deltas reproduce both priorities exactly (-65/-78 oracle order, -71/-69 canonical)"
+        },
+        {
+          "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs",
+          "tier": "PROVEN",
+          "counts": "0x40fada operand table decoded and checked on the pass-12 operands; web builder and interner rules logged. c2.exe SP3 7303 SHA-256 E75AECAF4073B0817FFB638CAE5FFF636B2E2D1A090DAABF8F68DBC954515FAE"
+        }
+      ],
+      "keywords": "cost pass priority block weight popcount crowding operand benefit 0x40ee1d 0x40eda6 0x40fada 0x416a17 0x417fb7 0x438f79 pooled constant web range late normalization",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::ChangePhase 0x19310",
+        "tu": "src/event.cpp",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 30,
+        "outcome": "priority model exact; function MISMATCH (32 bytes), gap has no source route found",
+        "doc_ref": "docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-NEG-04",
+      "section": "negative",
+      "tier": "PROVEN",
+      "scope": "negative",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Dead local stores, trivial loop wrappers, line layout and non-codegen flags do not perturb allocation costs",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "A register-allocation residue in otherwise identical code (callee-saved roles of two ranges swapped).",
+      "construct": "(none - negative result)",
+      "explanation": "In ChangePhase the decisive priorities (-65/-78) stayed exactly unchanged for: dead local stores (`bEnable = FALSE;`, `bHide = FALSE;`, `num = 0;` at three places) - removed before allocation; `do { } while (0)` and `for (;;) { ... break; }` wrappers - removed before costing; guard on one line, stores on one line, blank lines; /Ox, /G5, /GB, /Op, /Ob0 (identical function bytes; /Oa, /Ow, /Os, /G6, /Oi-, /Og- change the whole function); seven compiler trees (SP3, SP2, RTM, NT5-1592, NT5-1691, SP3-DEU, SP3-JPN: same 1995/2029 aligned).",
+      "experiment": "Do not use these as allocation perturbations; check the priorities (BLUPI-ALLOC-17) instead.",
+      "not_when": "Dead stores to members or globals are real code. Declaration counts and statement spellings that shift front-end IDs (BLUPI-CTX-03..06) are a different mechanism and can matter.",
+      "matching_effect": "Removes a family of tempting but inert candidates.",
+      "evidence": [
+        {
+          "ref": "blupi_recon@4be7d15+cfe6b9d+ff497bf:docs/RESIDUAL_CAUSES.md, Model closure tests (round 2); ChangePhase, further negatives",
+          "tier": "PROVEN",
+          "counts": "dead stores 3 sites, 2 wrapper forms, 3 layout forms, 11 flags, 7 compiler trees"
+        }
+      ],
+      "keywords": "dead store do while 0 wrapper line layout flags Ox G5 GB Op Ob0 compiler tree negative allocation ChangePhase",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::ChangePhase 0x19310",
+        "tu": "src/event.cpp",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 27,
+        "outcome": "negative: priorities and 4,668 bytes unchanged",
+        "doc_ref": "docs/RESIDUAL_CAUSES.md"
       },
       "legacy_ids": []
     }
