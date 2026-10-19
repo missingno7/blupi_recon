@@ -190,3 +190,8 @@ with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.
 - [EVIDENCE, sol-cteb r6] No STRICT fold-survival control for T: across 409 STRICT functions, 78 nonadjacent
   backward-reconstructed copies occur; 77 are later substituted, and the one retained (a COM vtable copy) is not the
   Boolean sequence. Both T explanations remain open; the matched corpus does not demonstrate the precondition.
+- [EVIDENCE, sol-cbuild r13] STRICT large-function witness: CDecor::BlupiStep (0x9280, 1516 C2 blocks, G 33)
+  reaches the singleton-one cut because A - O is empty at 0x4390b6 (pooled zero EBX, this ESI, two POINT fields spanning
+  ObjectDelete in EDI/EBP, call clobbers EAX/ECX/EDX; the local scanner cuts 1 at its second use). Build's shaping header
+  already has X/EDI, Y/EBX, cursor/EBP, this/ESI across its first draw, but its coordinates start after the header
+  guards, so the header keeps four free colours; the oracle's instructions do not support a direct transfer.
