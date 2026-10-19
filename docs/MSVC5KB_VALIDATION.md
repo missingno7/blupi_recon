@@ -270,3 +270,10 @@ this review used no compiles or game execution.
 history, the exact LICM descendant and reprioritization success remain
 unpromoted. Masked/aligned diagnostics and interventions are never STRICT;
 all source negatives retain their measured scope.
+
+## Build STRICT (2026-10-19)
+
+[EVIDENCE] Added BLUPI-ALLOC-15 (expression-interning order -> web LR order -> fragment pop order -> boundary
+reload order -> equal-weight stack homes). Validated by the canonical Build change (8 -> 0 masked bytes, 61/61
+relocations, full gate zero regressions), 30 forced-drop diagnostics and 87 scored source variants
+(tools/c2trace/freelist.py; docs/RESIDUAL_CAUSES.md, "Build STRICT"). Uses only known symptom tags.

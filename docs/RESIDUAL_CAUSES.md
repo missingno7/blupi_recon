@@ -9,8 +9,8 @@ bytes; Build is 38 bytes longer than the oracle, so positional byte counts shift
 | TreatEventBase | 1886 / 1894 | 8 |
 | ChangePhase | 2021 / 2029 | 8 |
 | DrawButtons | 2304 / 2304 | 0: STRICT (2026-10-19) |
-| CDecor::Build | 1229 / 1237 | 8 (8 masked bytes; size equals the oracle) |
-| Total | 7440 / 7464 | 24 |
+| CDecor::Build | 1237 / 1237 | 0: STRICT (2026-10-19, B-r solved; section at the end) |
+| Total | 3907 / 3923 (two open functions) | 16 |
 
 ## Causal map
 
@@ -263,3 +263,44 @@ the countdown while giving B the earlier boundary reload.
   `index & 0x80000000UL` removes only the index's zero read and emits a literal-mask TEST, with no split of the other late
   zero reads; (H2) both FALSE exits through one `goto invalid_phase` failure tail keeps a shared tail into early C2 but
   changes neither zero's partition nor its costs, and shares one native epilog where the oracle has two.
+
+## Build STRICT: B-r solved by the big-decor Y start (2026-10-19)
+
+Source change (the only one): in the big-decor loop the Y start is two statements,
+`tinyPoint.y = 0 - posDecor.y % DIMOBJY; tinyPoint.y += 2 - DIMOBJY;` instead of
+`tinyPoint.y = 0 - posDecor.y % DIMOBJY + 2 - DIMOBJY;`. The first statement is textually the floor/animated grid
+reset. Build: 0 masked bytes, 1237/1237, 61/61 relocations STRICT; full gate exit 0, zero regressions, coverage
+123,584 -> 127,456. Tools: `tools/c2trace/freelist.py` (trace, forced-drop diagnostic).
+
+Causal chain [EVIDENCE]:
+1. The A/B home order is the order of the animated-boundary reloads, which 0x40fbfa (mode 1) emits in ascending
+   fragment ID (r19). The fragments come from the first group split (0x437e67/0x438544, triggered by committing the
+   animated-grid `tinyPoint.x` web LR87 to EBP; G = the 33 ranges whose last register was EBP). Members are walked in
+   ascending LR order and each pops one ID from the LIFO free list 0x493230 (head), link +0x2c.
+2. The free list at that split is batched: top = 0x41a6f8 drop pass (25 constants with < 2 references, freed through
+   0x4375fe, plus the `m_time` reload copy LR165 freed at 0x41a86c), then the 0x41ccbc LEA batch (174, 160, 156, 155,
+   ...). Each batch pops in descending ID (both passes walk ascending IDs). Canonical: B is member 28, the bound
+   member 29, A member 30; the drop batch holds 26 entries, so B, bound and A all pop from the LEA batch in descending
+   order (B160 > A155): A's reload first.
+3. Counting model, confirmed by forced-drop diagnostics (redirect 0x41a775 -> 0x41a73e, never source): forcing any one
+   of 18 group constants before B to drop gives 0 bytes / 1237 (B pops the last drop-batch entry 13, A pops 160);
+   forcing one non-member drop leaves 8 bytes (B174 > A156); two non-member drops give 0 bytes; only the pooled zero
+   (35 refs, kept in a register) breaks other code. The residue needed F - P_B in {0, 1}; canonical had -2.
+4. The counts are robust: 36 natural spellings (increment forms, block locals, aggregate vs field copies, loop forms,
+   literal sign/shift forms, term order, `IsValidCel` inlining, a floor `switch`; the switch changes code) and 39
+   declaration counts 1-128 before Build (symbol-ID context) all keep F = 26, P_B = 28. Literals are interned by value only (0x417fb7); eligibility is per
+   opcode (0x4156b6); C2 canonicalizes `+= -20`, `<< 3`, term order before pooling; literals whose reads are all
+   outside loops (25, 0xED, 0xF5, 32768, -64, -62, -51664) get no web and are freed/recycled at 0x4169a7.
+5. The fix changes which value is walked first, not the counts. Expression descriptors are numbered on interning in
+   early C2 (0x42127d) and webs get LR IDs in descriptor order (0x416a40). Canonical: the big-decor Y start folds to
+   `-62 - y%64` (descriptor 1182), the quotient B is interned there (1183), and A = NEG(y%64) first appears at the
+   floor grid (1412). With the split, NEG(y%64) is interned in the big-decor loop (1182) before the quotient (1184),
+   so A's web LR145 precedes B's LR148 in the split walk: A pops 161, B 157, the bound 156; mode 1 emits B's reload
+   first; stack history ABABABBA puts B at [esp+20], A at [esp+24] (the oracle).
+6. Boundary of the mechanism: it works only when the first statement assigns exactly the reset expression
+   (`0 - y % 64` or `-(y % 64)`) and the -62 follows as any separate statement (`+= 2 - DIMOBJY`, `-= DIMOBJY - 2`,
+   `+= 2; -= DIMOBJY`, `= tinyPoint.y + 2 - DIMOBJY`, `-= 62`): all give identical objects. Folding `- DIMOBJY` or
+   `+ 2` into the first statement keeps 8 bytes; splitting the X start the same way changes 3,175 bytes. [HYPOTHESIS]
+   The author wrote the big-decor start from the common grid template plus the layer's 2-pixel/one-cell offset, the
+   style also seen in the start-position loop (`tinyPoint.x += 10; tinyPoint.x += i * 8 - 12;`, both kept by the
+   oracle). Which of the equivalent adjustment spellings the original used is not recoverable from the binary.

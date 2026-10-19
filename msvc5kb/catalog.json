@@ -4257,6 +4257,46 @@
         "doc_ref": "scratch/sol-poscpdb/FINDINGS.md, E1: guard order changes costs, but does not imply pooling"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-ALLOC-15",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "CDecor::Build animated-grid boundary reload pair (stack-home order)",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Expression-interning order decides fragment IDs, boundary reload order and equal-weight stack homes",
+      "symptoms": {
+        "any": [
+          "displacement_differs",
+          "load_reorder"
+        ]
+      },
+      "symptom": "Two values with equal stack-reference weight swap homes; their paired boundary reloads are emitted in the other order.",
+      "construct": "Two loop-entry values (Y remainder A, Y quotient B) reloaded together at one loop boundary after a group split.",
+      "explanation": "0x40fbfa mode 1 emits boundary reloads in ascending fragment ID. Fragments are popped from the LIFO range free list 0x493230 by the first group split (0x437e67/0x438544), one per member in ascending LR order. The list is batched: 0x41a6f8 drops (refs < 2 via 0x4375fe, single-use copies via 0x41a86c) on top of the 0x41ccbc LEA batch, each popping in descending ID, so the member walked first gets the higher ID inside one batch. Web LR IDs follow expression-descriptor order (0x416a40), and descriptors are numbered when early C2 (0x42127d) interns an expression. Interning A's expression (NEG of the remainder) before B's quotient makes A's web precede B's, B pops the lower ID, B is reloaded first, and the 0x4367f0 strict-overtake history puts B in the earlier home.",
+      "experiment": "Trace drops, the first split's members/free-list top and children (tools/c2trace/freelist.py trace), then test counts with forced drops (freelist.py force). If counts are robust, change which expression is interned first: write the value's plain expression as its own statement where it first appears.",
+      "not_when": "Spelling, literal sign/shift forms, term order, inline helpers and 1-128 declarations before the function left the counts (26 top entries, B at member 28) unchanged; folding part of the adjustment into the first statement re-folds to SUB-from-constant and keeps the old order.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/RESIDUAL_CAUSES.md, Build STRICT: B-r solved by the big-decor Y start",
+          "tier": "PROVEN",
+          "counts": "Build 8 -> 0 masked bytes, 1229 -> 1237/1237, 61/61 relocations STRICT; full gate exit 0, zero regressions; 87 scored variants, 30 forced-drop diagnostics."
+        }
+      ],
+      "keywords": "free list LIFO fragment id boundary reload order stack home equal weight overtake expression interning descriptor order split statement Build",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::Build 0x4350",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 90,
+        "outcome": "STRICT after splitting the big-decor Y start into the grid reset plus `+= 2 - DIMOBJY`.",
+        "doc_ref": "docs/RESIDUAL_CAUSES.md, Build STRICT: B-r solved by the big-decor Y start"
+      },
+      "legacy_ids": []
     }
   ]
 }

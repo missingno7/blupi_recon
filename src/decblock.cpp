@@ -1202,7 +1202,8 @@ void CDecor::Build(RECT rect, POINT mousePos)
 
 	tinyPoint.x = 0 - posDecor.x % DIMOBJX - DIMOBJX;
 	for (i = posDecor.x / DIMOBJX - 1; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 3; i++) {
-		tinyPoint.y = 0 - posDecor.y % DIMOBJY + 2 - DIMOBJY;
+		tinyPoint.y = 0 - posDecor.y % DIMOBJY;
+		tinyPoint.y += 2 - DIMOBJY;
 		for (j = posDecor.y / DIMOBJY - 1; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
 		{
 			if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY)

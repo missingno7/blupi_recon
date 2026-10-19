@@ -411,6 +411,12 @@
       "tu": "src/decblock.cpp"
     },
     {
+      "symbol": "?Build@CDecor@@QAEXUtagRECT@@UtagPOINT@@@Z",
+      "rva": "0x00004350",
+      "size": 3872,
+      "tu": "src/decblock.cpp"
+    },
+    {
       "symbol": "?DrawInfo@CDecor@@QAEXXZ",
       "rva": "0x00005270",
       "size": 1024,

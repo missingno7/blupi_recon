@@ -1,27 +1,31 @@
-# Status: Speedy Blupi 1 matching reconstruction (paused 2026-10-19)
+# Status: Speedy Blupi 1 matching reconstruction (2026-10-19)
 
-Function research is paused until new evidence or a new source idea appears. Strict acceptance is unchanged: only
-STRICT counts, and every canonical change passed `tools/verify.py` with zero accepted regressions.
+Strict acceptance is unchanged: only STRICT counts, and every canonical change passed `tools/verify.py` with zero
+accepted regressions. CDecor::Build became STRICT on 2026-10-19 (docs/RESIDUAL_CAUSES.md, "Build STRICT").
 
 ## Where it stands
 
 | Area | State |
 |---|---|
-| Game code | 123,584 / 141,488 bytes STRICT (87.3 %). Every game function is STRICT or FOLDED except three. |
-| Open functions | 24 differing aligned instructions in total (7,440 / 7,464) |
+| Game code | 127,456 / 141,488 bytes STRICT (90.1 %). Every game function is STRICT or FOLDED except two. |
+| Open functions | 16 differing aligned instructions in total (3,907 / 3,923) |
 | `.rsrc`, `.data`, file size, `.text` size, timestamp | `.rsrc` exact; `.data` 13-15 bytes (pointers); file and `.text` sizes equal the oracle; timestamp equal under the historical host |
-| Whole image (canonical historical relink) | 121,401 differing bytes, almost all a +16 shift from LINK keeping a different copy of a folded empty function (ICF survivor), plus the CRT filter survivor, import order and the three open functions |
+| Whole image (canonical historical relink) | 121,401 differing bytes, almost all a +16 shift from LINK keeping a different copy of a folded empty function (ICF survivor), plus the CRT filter survivor, import order and the open functions |
 
-## The three open functions
+## The open functions
 
 | Function | Remaining | Cause (first divergent decision) | Proven by diagnostic | Source cause |
 |---|---|---|---|---|
-| CDecor::Build (0x4350) | 8 masked bytes, 1229/1237, size equal | Two values swap stack homes: A = `0 - posDecor.y % 64`, B = `posDecor.y / 64`. Order set at 0x40fbfa (mode 1), which enumerates the animated-grid boundary reloads in ascending fragment-ID order (A155 before B160); the IDs are reused LIFO slots. | Swapping only that reload order gives 0 bytes, 1237/1237 | [OPEN] Needs B's reload before A through ordinary fragment construction, or a pre-web B availability hole. Eliminated: statement order / for-init, named row variable, loop-rewrite form, earlier B materialization. |
+| CDecor::Build (0x4350) | STRICT (0 bytes, 1237/1237, 61/61 relocations) | A/B homes follow the animated-boundary reload order (0x40fbfa mode 1, ascending fragment ID); the IDs are popped by the first group split (0x437e67) in ascending member LR order from a batched LIFO free list | Forced extra drop at 0x41a6f8, or the reload swap: 0 bytes | [EVIDENCE] Solved: the big-decor Y start written as `tinyPoint.y = 0 - posDecor.y % DIMOBJY; tinyPoint.y += 2 - DIMOBJY;` interns A's NEG(y%64) identity before the quotient B, so A's web is walked first and B gets the lower fragment ID. |
 | CEvent::TreatEventBase (0x1d230) | 8 bytes, 1886/1894, register-only | One missing temp-rotor step at the rank-0 cheat toggle: early C2 backward reconstruction (0x40cbc8/0x40cd08) creates a short old-flag copy and 0x41ddfe folds it into the compare | Extra rotor assignment, or old-flag split: 0 bytes | [OPEN] Needs a copy that survives 0x41ddfe with the same MOV/XOR/TEST/SETcc. No STRICT function shows one (409 searched). Eliminated: toggle spellings, terminator forms, named/volatile/reference old values, clones, index reuse, else-if ranks, shared feedback. |
 | CEvent::ChangePhase (0x19310) | 32 bytes (8 instructions) | With the oracle's test order the pooled zero takes EBX before PLAY; zero's pool identity is fixed at 0x414ba6, before web partition; earlier groups keep 3/2/1 free colours | Zero-only cut of the three late zero reads: 0 bytes | [OPEN] Needs a separate late-zero component with PLAY connected through WriteInfo. Eliminated: condition-order families (canonical keeps a reordered guard as the closest form), flags, memset, mission arguments, renamed/copied results, counter epochs, shared two-consumer values, sign-mask test, shared failure tail. |
 
 ## What closed this phase (all canonical, zero regressions)
 
+- Build STRICT: the big-decor Y start is two statements, the plain grid reset `0 - posDecor.y % DIMOBJY` and then
+  `+= 2 - DIMOBJY` (expression-identity order 0x42127d -> web LR order 0x416a40 -> fragment pop order 0x437e67 ->
+  boundary reload order 0x40fbfa -> stack homes 0x4367f0). Found by measuring the free-list counts directly
+  (`tools/c2trace/freelist.py`) after spelling and context sweeps proved the counts robust.
 - DrawButtons STRICT: loop-invariant title `pos.x = 330` with a separate number-label `POINT` (allocator cloning at
   0x451ac3), and a named `int cutLength` (operand key order at 0x408d58).
 - Build 2,328 -> 8 bytes: `long screenY` with two real consumers (early forwarding 0x40b7b9; reproduces two of the three
