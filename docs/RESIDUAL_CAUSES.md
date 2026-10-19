@@ -408,3 +408,45 @@ ChangePhase, further negatives [EVIDENCE]:
 - Extra flags on the oracle-order source: /Ox, /G5, /GB, /Op and /Ob0 give the same 4,668 bytes; /Oa, /Ow, /Os, /G6,
   /Oi- and /Og- change the whole function.
 - `do { } while (0)` and `for (;;) { ... break; }` wrappers around blocks 89..99 are removed before costing (inert).
+
+## Methodology test: hidden compiler inputs (2026-10-19, round 3; scratch/claude probes)
+
+Positive control [EVIDENCE]. Starting from the pre-fix Build source (8 bytes), the decisive decision (group-split
+child order, found by the forced-drop diagnostic) depends on code-invisible identities: expression interning order ->
+web LR order -> fragment IDs. A generic generator (scratch/claude/hiaudit.py) that rewrites only the statements that
+mention the two decisive subexpressions (`y % DIMOBJY`, `y / DIMOBJY`), using additive-chain splits, constant
+reassociation and operand commutation, produces 10 candidates; exactly one is STRICT-sized and 0 bytes, 1237/1237:
+the known fix. Its neighbours explain the mechanism: `= 0 - y%64 + 2; -= DIMOBJY` stays at 8 bytes because it folds to
+`2 - y%64`, not the pure negation. So "identify the identity input, then rewrite only its source carriers" recovers
+this class without being told the transformation.
+
+ChangePhase is not in that class [EVIDENCE]:
+- 104 queue insertions before zero/21 are placed by identity (equal priority: rank +0x40 or newest-first). Moving
+  each one to the other end of its equal-priority group (208 diagnostic runs, scratch/claude/cptie.py) never gives
+  the oracle: 196 unchanged (4,668 bytes), 12 slightly worse. The zero-first decision is quantity-driven.
+- Operand benefit (0x40fada): a non-constant operand scores 2; for a pooled constant a zero compare scores 0,
+  otherwise the tuple's first operand decides: memory with a base/index or a frame operand (tag 2) scores 1, a named
+  register variable or a temp scores 0. Final code does not always show the pass-12 operand form (late load
+  splitting, load CSE and store forwarding exist), but every such late normalization in blocks 3..99 (m_bDemoPlay,
+  m_bPrivate and m_bMulti loads, the m_bMulti CSE) would cost PLAY, not zero.
+- Block weight is an argument of the cost pass per loop region (0x40ee1d edx); blocks 3..99 are all weight 1.
+- Interning (0x417fb7) compares only the literal tag and low 32 bits; the per-web range builder (0x416a17..0x416a6f)
+  partitions variables and expressions only, so a pooled constant is one range: a separate late-zero web has no
+  source route.
+
+TreatEventBase positive controls [EVIDENCE] (tools/c2trace/booltemps.py over 18 captured TUs; sound.cpp omitted):
+- 50 SETcc result temps. 15 get their register by preference, always the copy-into-register rule (0x42b051):
+  rank 1 (forwarded to a push, EAX), returns copied into EAX (IsRightBorder x8, DrawIcon, DrawIconDemi, DrawIconPart,
+  DrawPart), and CPixmap::BltFast's `if (mode == 0) dwTrans = 1; else dwTrans = 0;`, where the setcc temp is copied
+  into the named local dwTrans, a global range in ECX (EBX in the other overload): a rotor-neutral boolean exactly as
+  rank 0 needs.
+- 7 rotor-path temps skip busy registers (IsLave, IsRessort, playMovie, DrawMap, MouseQuickDraw, Save/RestorePalette):
+  the result is zeroed before its compare while the compare's register inputs (address temps, `this`) are live; most
+  first had a rejected EAX return preference.
+- Rank 0 can use neither: its compare input is a frame member ([ebp+0x6d40]) and its result's only consumers are a
+  memory store and bEnable (ESI, not byte-capable). Copy-before-store named forms (`bNew`/`i`, four variants) are
+  still coalesced with bEnable by early C2 and store from ESI (14 bytes).
+- The June 1998 demo already contains the `c++` letter-shift line; only the rank-0 action block was added later, so the
+  added block itself must be rotor-neutral.
+- [OPEN] No stock-compiler witness in the corpus gives a select result a preference or a busy-input skip without a live
+  consumer or register input; the oracle's rank-0 IL shape is therefore absent from all STRICT functions.
