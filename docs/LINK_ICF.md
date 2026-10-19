@@ -281,3 +281,19 @@ difference is a uniform +16 shift from RVA 0x2a30 (ours: button.obj's empty body
 Together with the CRT filter (frame vs ehvecdtr, entry 0x24d20 vs 0x24d40) this is the ICF-survivor question, which
 depends on LINK's qsort input order (link inputs), not on game source. Whole file: 121,401 same-offset differing bytes,
 2 header bytes (Rich count, entry).
+
+## Duplicate-copy survivors, bounded round (sol-linkjoint r2, 2026-10-19)
+
+- [EVIDENCE] The oracle's empty-body owner is CMenu::~CMenu at 0x1f010 (tu_map), not misc OutputDebug; filter owner
+  ehvecdtr at 0x243f0. In the current 793-entry ICF vector the four equivalent empty COMDATs sort button, misc, jauge,
+  menu and the filters frame, ehvecdtr; with every key fixed, menu would need input slot 15 and ehvecdtr slot 616
+  (6 of 48 label assignments). Not a universal relative order: other key changes also flip them (a model-only single
+  move of REF-dead CPixmap::BuildIconMask 409 -> 396 would do it; no source evidence, not used).
+- [EVIDENCE] Exhausted bounded real-input spaces: 48 label assignments, 80 equivalent moves, 1,850 dead-contribution
+  moves, 92 real configurations. Two joint successes; the better-supported one was relinked: the complete PB
+  b0270ab fifo.cpp/fifo.h (REF-dead) appended, with library order kernel32 user32 gdi32 winmm dsound LIBC OLDNAMES ddraw
+  dplayx. Result: menu empty owner and ehvecdtr filter as in the oracle; entry 0x24d30 (oracle 0x24d40); first CRT
+  0x238a0 (oracle 0x238b0); Rich 269 (oracle 270); IAT 15/128; 40,288 differing bytes (current 121,401). Verify: zero
+  accepted regressions. [HYPOTHESIS] Not integrated: no original project evidence for the FIFO input or that library
+  order, and the CRT -0x10 offset, Rich and IAT remain. The survivors constrain the original link inputs but do not
+  identify them uniquely.
