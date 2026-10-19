@@ -342,3 +342,44 @@ survive to lowering, the inserted result zero (`R = 0`) would separate it from i
 (refs == 2, use in the next tuple, 0x41a6f8) would no longer delete it; a surviving old flag in EDX (temp or global)
 makes the result's rotor scan skip EDX and EAX and take ECX, leaving the rotor where the demo build leaves it, which is
 the oracle. [OPEN] No source form keeps the old-flag load alive through 0x409c5c with the oracle's instructions.
+
+## Model closure tests for the two open functions (2026-10-19, round 2; scratch/claude probes)
+
+ChangePhase [EVIDENCE]:
+- Size of the missing effect. Decisive pair at the oldPhase dispatch (zero/21 vs PLAY/9): oracle guard and WriteInfo
+  orders -65/-78 (gap -13); canonical WriteInfo order alone -65/-73 (-8); canonical guard order alone -71/-74 (-3);
+  both canonical orders -71/-69 (+2, PLAY first). With the oracle's orders the source must supply +14.
+- The gap is local to blocks 3..99. Code-changing diagnostics that empty the later GAMER loop or MULTI block shift both
+  priorities by the same amount (-64/-77, -65/-78). Line layout (guard on one line, the three stores on one line, blank
+  lines) is inert.
+- Not a compiler-build effect: SP3, SP2, RTM, NT5-1592, NT5-1691, SP3-deu and SP3-jpn all give the oracle-order source
+  the same 1995/2029 aligned instructions.
+- Third witness: the June 1998 demo (earlier source revision) has the oracle's guard and WriteInfo orders and the same
+  roles (zero EDI early, PLAY EBX through WriteInfo). Its out-of-line DOQUIT block is only tail-merged with a different
+  TESTCD failure path. Demo, release and eGames all colour PLAY first.
+- Cost inputs are fixed by the machine code. Operand benefits (zero: seven member stores; PLAY: `cmp [m_phase]` and
+  `mov [m_phase]`), reference blocks, temps and pooled-constant materialization blocks (the dominator LCA of all reads
+  of the constant in the function) all follow from the oracle's instructions. All block weights are 1. Ranges that end
+  as immediates contribute +3 net (zero-only blocks 6, 7, 30, 94..98: +15; block 18: -8; PLAY-only blocks 40, 45, 91:
+  -4), so even removing every such fragment leaves PLAY behind. No late demotion is possible: every saved register is
+  protected by nonconstant uses (0x42ac33 profitability 0x1000000).
+- Region adoption (0x438f79): a block joins a predecessor's region while T = A - (O(block) U U(region)) is non-empty,
+  and U(region) accumulates the occupied sets. T is {EBX, EDI} over blocks 3..86, {EBX} from block 89 (index in EDI),
+  and empty only at block 100 (oldPhase in EBX). Splitting zero's late reads into their own region would need EBX
+  occupied inside the region or a spine block where no group member is live; neither occurs with this code.
+- Pool eligibility (0x4156b6, logged): `index` and `this` are kind 2 at pool time, so `index < 0`, the HideMouse(FALSE)
+  push (always eligible) and the `!m_bBuildOfficialMissions` memory compare are genuinely pooled. Forcing exactly
+  these three ineligible gives 0 masked bytes, 2029/2029; any two of them do not.
+- [OPEN] Within the recovered model the oracle-order IL cannot colour PLAY first, so the original IL differs in a
+  property the machine code does not show (a range or web identity live in blocks 3..99, or an unmodelled cost input).
+  Next discriminator: an IL-record-level search (C1 records round-trip) over code-neutral edits in blocks 3..99,
+  scored by this gap.
+
+TreatEventBase [EVIDENCE]:
+- Temp-assignment trace (c2dbg): assignment 20 is the TreatTextInput lParam load (line +115, rotor ECX -> ECX) and
+  assignment 21 the rank-0 result (line +143, rotor EDX -> EDX); nothing between them passes the rotor. The oracle
+  (result ECX, later HWND EDX) needs exactly one extra rotor pick between 20 and 21 that lands in EDX. In the oracle's
+  instructions only the terminator byte (DL) or the old flag (EDX) can be it: every other value there is a global range
+  or a scratch pick in EAX/ECX/ESI/EDI. A step before assignment 20 is excluded because 20 must still give ECX.
+- SB2 and Eggbert decompilations call `m_pDecor->SetBuildOfficialMissions(m_bBuildOfficialMissions)` in rank 0, so they
+  do not constrain SB1's inline toggle.
