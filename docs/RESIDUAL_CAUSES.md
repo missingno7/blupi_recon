@@ -259,3 +259,7 @@ the countdown while giving B the earlier boundary reload.
   changes the reader CFG as predicted, but 0x41ddfe still folds the old flag (adds a JMP/copy; result EAX, HWND ECX);
   (H2) a single shared bEnable feedback after the rank chain is identical to the control and needs extra reloads/tests.
   Neither yields an extra rotor definition or the old-flag interval.
+- [EVIDENCE, sol-cpx] Two fresh hypotheses for C eliminated in both edition micros: (H1) the index sign test as
+  `index & 0x80000000UL` removes only the index's zero read and emits a literal-mask TEST, with no split of the other late
+  zero reads; (H2) both FALSE exits through one `goto invalid_phase` failure tail keeps a shared tail into early C2 but
+  changes neither zero's partition nor its costs, and shares one native epilog where the oracle has two.
