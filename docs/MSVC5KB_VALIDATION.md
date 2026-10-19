@@ -302,3 +302,9 @@ set. Transfer notes for Blood II: docs/BLOOD2_TRANSFER.md.
 `keyforce.py list --events` window filter), BLUPI-REG-11 (inline helpers reduce to the direct IL or coalesce with
 the destination local) and VC5-INL-03 (one SB1 site where an inline member and open code are byte-identical; status
 unchanged). No rule status changed.
+
+## Source-level steering (2026-10-19, branch claude/steering)
+
+[EVIDENCE] Added BLUPI-STEER-01 (dead arm guarded by a local zero: interned by early C2, then deleted; pre-fix Build
+STRICT through the full gate) and BLUPI-NEG-05 (code-neutral constructs never reach the first cost pass; only
+identity survives). Tool: tools/c2trace/lifetime.py; micros: msvc5kb/micros/steer. Report: docs/STEERING.md.

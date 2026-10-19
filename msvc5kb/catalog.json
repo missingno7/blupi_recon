@@ -4516,6 +4516,90 @@
         "doc_ref": "docs/RESIDUAL_CAUSES.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-STEER-01",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "A dead arm guarded by a local zero is interned by early C2 before it is deleted (code-neutral identity steering)",
+      "symptoms": {
+        "any": [
+          "displacement_differs",
+          "load_reorder",
+          "regalloc_only"
+        ]
+      },
+      "symptom": "An identity-class residue (equal-weight homes, reload order, tie-decided colours) whose fix is a different expression interning order, with identical IL quantities.",
+      "construct": "`j = 0; x = j ? E : x;` (or `int k = 0; if (k) x = E;`) placed where E should be interned first; the guard must be a local that only C2 constant propagation proves zero.",
+      "explanation": "C1 keeps the arm (its condition is a variable). Early C2 numbers the arm's expressions (descriptor order, which drives web LR order, BLUPI-ALLOC-15) and then deletes the arm by constant propagation before the first cost pass. Final code is unchanged except through the identity effect. `if (0)` is removed by C1; `x != x`, `i - i` and constant products fold before interning; expression statements and unused locals are dropped; all of these have no effect. A ternary costs no front-end IDs; a declaration or `if` costs one each (BLUPI-CTX-06), which can move key-order decisions in later functions.",
+      "experiment": "tools/c2trace/lifetime.py CAP BASE: tuple counts must stay equal at the cost and preference stages while the range-id high-water mark moves. Then score the function and check every peer in the TU, then run the full verify gate.",
+      "not_when": "Quantity-driven decisions (cost priorities, BLUPI-ALLOC-17) and temp-rotor decisions do not see it: ChangePhase priorities stayed -65/-78 in 36 such variants and TreatEventBase stayed at 8 bytes in 21. It is a steering construct, never historical source.",
+      "matching_effect": "Reproduces an interning-order fix without restructuring the statement. Pre-fix Build becomes STRICT (8 -> 0 bytes) with no peer change.",
+      "evidence": [
+        {
+          "ref": "blupi_recon@claude/steering:docs/STEERING.md, Positive control",
+          "tier": "PROVEN",
+          "counts": "pre-fix Build + dead ternary: verify.py exit 0, decblock 26/26 STRICT, 127,456 bytes; 16 neighbouring forms classified. c2.exe SP3 7303 SHA-256 E75AECAF4073B0817FFB638CAE5FFF636B2E2D1A090DAABF8F68DBC954515FAE"
+        }
+      ],
+      "keywords": "steering dead branch ternary constant propagation interning descriptor order identity code-neutral Build",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CDecor::Build 0x4350",
+        "tu": "src/decblock.cpp",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 20,
+        "outcome": "SOURCE_STEERED_EXACT from the pre-fix source; canonical keeps the historical two-statement fix",
+        "doc_ref": "docs/STEERING.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-NEG-05",
+      "section": "negative",
+      "tier": "PROVEN",
+      "scope": "negative",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Code-neutral constructs are gone before the first allocation cost pass; only identity survives",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "Temptation to steer a cost-priority or temp-rotor residue with dead code, redundant tests, copies, unused declarations or helpers.",
+      "construct": "(none - negative result)",
+      "explanation": "Micro matrix (msvc5kb/micros/steer). Every tested construct reaches the C1 IL and is absent at the first cost pass 0x40ee1d: unreachable branches (C1- or C2-decidable), unused calculations and loads, self-assignments, unused declarations, dead calls to normal and dllimport functions (no object symbol either), duplicated tests, identical arms, same-value phis, constant ternaries, one-pass loops, goto, and inline helpers. The residue is range/descriptor numbering (+0..+8 ids) and front-end IDs. Constructs that survive to the cost pass (switch, conditional redundant stores, nested branches, repeated member self-copies, named 32-bit select destinations) changed the emitted code in every case; 8/16-bit select destinations survive and give the setcc a preference but add movsx.",
+      "experiment": "Use tools/c2trace/lifetime.py before building any steering hypothesis: only constructs whose cost-stage tuples differ can move a priority, and those have so far always emitted code.",
+      "not_when": "Identity-class residues (BLUPI-ALLOC-15/16) can be steered (BLUPI-STEER-01).",
+      "matching_effect": "Rules out code-neutral steering for quantity- and rotor-decided residues.",
+      "evidence": [
+        {
+          "ref": "blupi_recon@claude/steering:docs/STEERING.md",
+          "tier": "PROVEN",
+          "counts": "94 micro functions in 7 micro TUs (msvc5kb/micros/steer); ChangePhase 36 code-neutral variants keep -65/-78; TreatEventBase 21 keep 8 bytes. c2.exe SP3 7303 SHA-256 E75AECAF4073B0817FFB638CAE5FFF636B2E2D1A090DAABF8F68DBC954515FAE"
+        }
+      ],
+      "keywords": "steering negative dead code redundant copy unused declaration import helper early C2 cost pass lifetime",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::ChangePhase; CEvent::TreatEventBase; micros",
+        "tu": "src/event.cpp",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": 75,
+        "outcome": "negative for both open functions",
+        "doc_ref": "docs/STEERING.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

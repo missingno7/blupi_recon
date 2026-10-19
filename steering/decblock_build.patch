@@ -1,0 +1,11 @@
+--- a/src/decblock.cpp
++++ b/src/decblock.cpp
+@@ -1203,6 +1203,6 @@
+ 	tinyPoint.x = 0 - posDecor.x % DIMOBJX - DIMOBJX;
+ 	for (i = posDecor.x / DIMOBJX - 1; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 3; i++) {
+-		tinyPoint.y = 0 - posDecor.y % DIMOBJY;
+-		tinyPoint.y += 2 - DIMOBJY;
++		tinyPoint.y = 0 - posDecor.y % DIMOBJY + 2 - DIMOBJY;
++		j = 0; tinyPoint.y = j ? 0 - posDecor.y % DIMOBJY : tinyPoint.y;   // STEERING (not historical)
+ 		for (j = posDecor.y / DIMOBJY - 1; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
+ 		{

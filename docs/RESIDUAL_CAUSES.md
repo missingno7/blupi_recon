@@ -480,3 +480,9 @@ TreatEventBase, inline-helper preference [EVIDENCE]:
   named-copy coalescing). No other event.cpp function changed. The getter capture's rank-0 IL at 0x42ac33 equals the
   direct form (memory compare, `[ebp+0x6d40] = R`): inlined returns and parameters are forwarded before select
   formation, so no inline placement gives the select a register destination. Closed.
+
+## Source-level steering (2026-10-19, branch claude/steering)
+
+[EVIDENCE] Code-neutral constructs are removed by early C2 before the first cost pass; only identity survives.
+Identity steering makes pre-fix Build STRICT (dead ternary arm, full gate), but leaves ChangePhase at -65/-78
+(36 variants) and TreatEventBase at 8 bytes (21 variants). Details: docs/STEERING.md, KB BLUPI-STEER-01, BLUPI-NEG-05.
