@@ -48,9 +48,10 @@ accepted regressions. CDecor::Build became STRICT on 2026-10-19 (docs/RESIDUAL_C
 
 ## Best next discriminators (only with new evidence)
 
-1. TreatEventBase: a real intervening definition/use that keeps the 0x40cbc8 old-flag copy alive past 0x41ddfe, or a
-   terminator byte that reaches temp assignment; the missing rotor pick lies between temp assignments 20 and 21 and
-   must land in EDX, which only those two values do.
+1. TreatEventBase: a rank-0 block that is rotor-neutral (result in ECX, rotor left at EDX; a one-slot shift before
+   temp assignment 21 gives 0 bytes). Routes: an old-flag copy that survives 0x41ddfe/0x409c5c, a terminator byte
+   that reaches temp assignment, or a preference for the select result (rank 1 gets one because its new value is
+   forwarded to a push; rank 0's forwarded forms coalesce with bEnable instead).
 2. ChangePhase: a source property that separates the three late zero reads into their own component before 0x414ba6,
    or raises PLAY/9 by 14 at the oldPhase dispatch. The recovered cost and region model leaves no code-visible input
    for either, so it is an IL property the machine code does not show (docs/RESIDUAL_CAUSES.md, model closure tests).
