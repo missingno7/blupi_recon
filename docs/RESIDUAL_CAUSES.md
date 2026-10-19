@@ -9,8 +9,8 @@ bytes; Build is 38 bytes longer than the oracle, so positional byte counts shift
 | TreatEventBase | 1886 / 1894 | 8 |
 | ChangePhase | 2021 / 2029 | 8 |
 | DrawButtons | 2304 / 2304 | 0: STRICT (2026-10-19) |
-| CDecor::Build | 1179 / 1237 | 58 (cloud and initial-Y sequences now match) |
-| Total | 7390 / 7464 | 74 |
+| CDecor::Build | 1229 / 1237 | 8 (8 masked bytes; size equals the oracle) |
+| Total | 7440 / 7464 | 24 |
 
 ## Causal map
 
@@ -220,3 +220,12 @@ the a-cut diagnostic. Cause [EVIDENCE]: the changed predecessor order selects a 
 decision is unchanged); nested guards alone are inert. Not integrated: it regresses STRICT GetBlupiInfo (0x57b0) by a
 two-byte commutative OR input order, with identical C1 after alpha renaming, i.e. the TU-wide symbol-ID key effect.
 Next (sol-cbuild r17): pick the equivalent continue spelling whose ID cost keeps GetBlupiInfo in its window.
+
+## Build B-a reproduced by source (sol-cbuild r17, canonical 2026-10-19)
+
+Reverse-moving loop: cursor advanced in the for step (`pMoveObject--, i--`) and the rejections written as three
+`if (...) continue;` guards (type==0 or out of bounds; type 8..11; type 1). Equivalent to the old single && guard with an
+unconditional `pMoveObject--`. [EVIDENCE] The changed predecessor order selects a different latch region; Build reaches
+8 masked bytes, 1229/1237, span 3872 (= oracle), i.e. the a-cut diagnostic result, from ordinary source. The three-guard
+spelling (front-end ID delta +2) keeps GetBlupiInfo in its symbol-ID window; the four-guard spelling regressed it.
+Full strict gate: zero accepted regressions, 25 decblock peers STRICT. Remaining in Build: the 8-byte residue B-r.

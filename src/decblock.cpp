@@ -1350,24 +1350,23 @@ void CDecor::Build(RECT rect, POINT mousePos)
 
 
 	MoveObject *pMoveObject = &m_moveObject[MAXMOVEOBJECT - 1];
-	for (i = MAXMOVEOBJECT; i != 0; i--)
+	for (i = MAXMOVEOBJECT; i != 0; pMoveObject--, i--)
 	{
-		if (pMoveObject->type != 0 && pMoveObject->posCurrent.x >= posDecor.x - 64 && pMoveObject->posCurrent.y >= posDecor.y - 64 && pMoveObject->posCurrent.x <= posDecor.x + LXIMAGE && pMoveObject->posCurrent.y <= posDecor.y + LYIMAGE && (pMoveObject->type < 8 || pMoveObject->type > 11) && pMoveObject->type != 1)
+		if (pMoveObject->type == 0 || pMoveObject->posCurrent.x < posDecor.x - 64 || pMoveObject->posCurrent.y < posDecor.y - 64 || pMoveObject->posCurrent.x > posDecor.x + LXIMAGE || pMoveObject->posCurrent.y > posDecor.y + LYIMAGE) continue;
+		if (pMoveObject->type >= 8 && pMoveObject->type <= 11) continue;
+		if (pMoveObject->type == 1) continue;
+		tinyPoint.x = pMoveObject->posCurrent.x - posDecor.x;
+		tinyPoint.y = pMoveObject->posCurrent.y - posDecor.y;
+		if (pMoveObject->type == TYPE_BULLDOZER || pMoveObject->type == TYPE_BLUPIHELICO || pMoveObject->type == TYPE_BLUPITANK)
 		{
-			tinyPoint.x = pMoveObject->posCurrent.x - posDecor.x;
-			tinyPoint.y = pMoveObject->posCurrent.y - posDecor.y;
-			if (pMoveObject->type == TYPE_BULLDOZER || pMoveObject->type == TYPE_BLUPIHELICO || pMoveObject->type == TYPE_BLUPITANK)
-			{
-				tinyPoint.x += 2;
-				tinyPoint.y += BLUPIOFFY;
-			}
-			m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint);
-			if ((m_bDrawSecret || m_phase != WM_PHASE_PLAY) && pMoveObject->type == TYPE_CAISSE && pMoveObject->icon != 32 && pMoveObject->icon != 33 && pMoveObject->icon != 34)
-			{
-				m_pPixmap->QuickIcon(1, 214, tinyPoint);
-			}
+			tinyPoint.x += 2;
+			tinyPoint.y += BLUPIOFFY;
 		}
-		pMoveObject--;
+		m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint);
+		if ((m_bDrawSecret || m_phase != WM_PHASE_PLAY) && pMoveObject->type == TYPE_CAISSE && pMoveObject->icon != 32 && pMoveObject->icon != 33 && pMoveObject->icon != 34)
+		{
+			m_pPixmap->QuickIcon(1, 214, tinyPoint);
+		}
 	}
 	tinyPoint.x = 0 - posDecor.x % 64;
 	for (i = posDecor.x / 64; i < posDecor.x / 64 + LXIMAGE / 64 + 2; i++)

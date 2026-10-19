@@ -73,7 +73,7 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 | Item | State |
 |---|---|
-| Game code | 123,584 / 141,488 unique bytes STRICT (87.3 %); 3 functions open: ChangePhase, TreatEventBase, Build (about 17.4 KB, 76 differing aligned instructions; docs/RESIDUAL_CAUSES.md) |
+| Game code | 123,584 / 141,488 unique bytes STRICT (87.3 %); 3 functions open: ChangePhase (8 instr), TreatEventBase (8 instr), Build (8 masked bytes, size exact); docs/RESIDUAL_CAUSES.md |
 | Whole file | same size (535,552 B); `relink.py --historical-host` (2026-10-19): 146,680 bytes differ at the same offset, 146,340 in `.text`, almost all because Build is 30 bytes too large and shifts everything after 0x4350 by 0x20 |
 | Link | no unresolved externals; Rich header: CVTRES 5.00.1668 entry exact, stamp-less count 268 vs oracle 270 (two modules unidentified) |
 | `.text` | 16 bytes short; ICF survivors depend on LINK's MSVCRT `qsort` (historical runtime keeps the oracle's choice) |
