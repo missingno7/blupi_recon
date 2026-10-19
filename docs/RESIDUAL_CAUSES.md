@@ -208,3 +208,6 @@ with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.
 - [EVIDENCE, sol-cteb r7] Bounded experiment for T: reusing the matcher's search index as the old-flag holder keeps
   source ownership through 0x40cc03 but gives old flag EAX / result EDX and duplicates the Boolean computation (+11 body
   bytes) in the micro; prediction failed, no target transfer. Eliminates index-variable reuse as the old-flag split.
+- [EVIDENCE, sol-cutcp2 r5] Bounded experiment for C: a shared two-consumer value (iconDim, the screenY pattern)
+  survives early C2 and triggers cloning in both editions, but does not give the separate late-zero / connected-PLAY
+  structure and adds 7 bytes and one instruction per micro; prediction failed, no transfer.
