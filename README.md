@@ -84,6 +84,8 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 ## Where to continue
 
+Current state and the paused blockers: **docs/STATUS.md** (2026-10-19).
+
 All 4 open functions have had several worker passes; the disproven families are recorded per target
 (docs/COMPILER_STUDY.md, msvc5kb), so new work needs a genuinely new source or context hypothesis.
 1. `event.cpp` register/scheduling residues: `TreatEventBase` (H1, terminator byte load), `DrawButtons` (330
