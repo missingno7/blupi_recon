@@ -74,13 +74,13 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 | Item | State |
 |---|---|
 | Game code | 123,584 / 141,488 unique bytes STRICT (87.3 %); 3 functions open: ChangePhase (8 instr), TreatEventBase (8 instr), Build (8 masked bytes, size exact); docs/RESIDUAL_CAUSES.md |
-| Whole file | same size (535,552 B); `relink.py --historical-host` (2026-10-19): 146,680 bytes differ at the same offset, 146,340 in `.text`, almost all because Build is 30 bytes too large and shifts everything after 0x4350 by 0x20 |
+| Whole file | same size (535,552 B); historical relink (2026-10-19, Build size exact): 121,401 bytes differ at the same offset. Nearly all are a +16 shift from RVA 0x2a30 to about 0x1f000: LINK keeps button's folded empty function (~CButton/~CMenu/~CJauge/OutputDebug) where the oracle keeps a later copy (ICF survivor, link inputs), plus the CRT filter survivor, imports and the three open functions |
 | Link | no unresolved externals; Rich header: CVTRES 5.00.1668 entry exact, stamp-less count 268 vs oracle 270 (two modules unidentified) |
 | `.text` | 16 bytes short; ICF survivors depend on LINK's MSVCRT `qsort` (historical runtime keeps the oracle's choice) |
 | `.rdata` | size exact; 4,546 / 4,978 equal (import names, hints, descriptors exact; IAT/thunk values follow `.text`) |
 | `.data` | size exact; 329,713 / 329,728 raw bytes equal (rest: pointers into shifted code); all 366 STRICT BSS references exact |
 | `.rsrc` | byte-exact (docs/RESOURCES.md) |
-| PE header | timestamp and entry equal (entry by cancellation: +0x20 code shift, -0x20 CRT filter placement); 2 bytes differ: Rich count 268/270, `.text` size |
+| PE header | timestamp and `.text` size equal; 2 bytes differ: Rich count 268/270 and entry 0x24d20/0x24d40 (CRT filter survivor) |
 
 ## Where to continue
 

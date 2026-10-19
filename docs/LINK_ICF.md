@@ -272,3 +272,12 @@ Conclusions: (1) the ICF survivor flips with many dead COMDAT populations (even 
 it does not identify the missing modules; (2) no tested population explains the IAT order, which leaves either an
 unknown import-member population/keys or a different linker build (5.10.7287, see the round-5 correction) [OPEN].
 Not integrated: ancestry fragments added to fit counts are not accepted inputs.
+
+## Relink with exact-size game code (2026-10-19)
+
+With Build at the oracle size, `.text` VirtualSize equals the oracle (0x2af93). [EVIDENCE] The remaining game-code
+difference is a uniform +16 shift from RVA 0x2a30 (ours: button.obj's empty body survives ICF for ~CButton, ~CMenu,
+~CJauge and OutputDebug) to about 0x1f000 (after jauge.obj), so the oracle kept a later copy of that empty function.
+Together with the CRT filter (frame vs ehvecdtr, entry 0x24d20 vs 0x24d40) this is the ICF-survivor question, which
+depends on LINK's qsort input order (link inputs), not on game source. Whole file: 121,401 same-offset differing bytes,
+2 header bytes (Rich count, entry).
