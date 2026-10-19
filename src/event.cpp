@@ -1717,15 +1717,17 @@ BOOL CEvent::DrawButtons()
 		pos.x = 280;
 		pos.y = 79;
 		DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
+		pos.x = 330;
 		pos.y = 122;
 		for (i = 0; i < MAXSAVE; i++)
 		{
-			pos.x = 296;
+			POINT numberPos;
+			numberPos.x = 296;
+			numberPos.y = pos.y;
 			sprintf(text, "%d", i + 1);
-			DrawTextLeft(m_pPixmap, pos, text, m_fileIndex == i ? FONTGOLD : FONTWHITE);
+			DrawTextLeft(m_pPixmap, numberPos, text, m_fileIndex == i ? FONTGOLD : FONTWHITE);
 
 			// manually split the string into two draw calls if it contains a newline
-			pos.x = 330;
 			char* line2 = strchr(m_filenameBuffer[i], '\n');
 			if (line2 == NULL)
 			{
@@ -1736,11 +1738,9 @@ BOOL CEvent::DrawButtons()
 			{
 				strcpy(text, m_filenameBuffer[i]);
 				text[line2 - m_filenameBuffer[i]] = '\0';
-				pos.x = 330;
 				pos.y -= DIMTEXTY / 2;
 				DrawTextLeft(m_pPixmap, pos, text, m_fileIndex == i ? FONTSELECTED : FONTWHITE);
 				pos.y += DIMTEXTY;
-				pos.x = 330;
 				DrawTextLeft(m_pPixmap, pos, line2 + 1, m_fileIndex == i ? FONTSELECTED : FONTWHITE);
 				pos.y += DIMBUTTONY - DIMTEXTY / 2;
 			}

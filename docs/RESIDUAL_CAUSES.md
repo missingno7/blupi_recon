@@ -8,9 +8,9 @@ bytes; Build is 38 bytes longer than the oracle, so positional byte counts shift
 |---|---|---|
 | TreatEventBase | 1886 / 1894 | 8 |
 | ChangePhase | 2021 / 2029 | 8 |
-| DrawButtons | 2288 / 2304 | 16 |
+| DrawButtons | 2300 / 2304 | 4 (was 16) |
 | CDecor::Build | 1177 / 1237 | 60 |
-| Total | 7372 / 7464 | 92 |
+| Total | 7384 / 7464 | 80 |
 
 ## Causal map
 
@@ -120,3 +120,15 @@ variables change the late-one web's EBX exclusion or its group, keeping both nat
   the first partition before remote-cursor rebuilding (explanation A); reverse X benefit 6 and lift X 62 (baseline 14)
   follow from it (1,135 native benefit updates verified). The controlled difference implies no upstream source property;
   the natural cause of the cut remains [OPEN]. Further slicing of this counterfactual cannot reveal it.
+
+## Update: DrawButtons cause D reduced (sol-cdb r2, canonical 2026-10-19)
+
+Source change: title `pos.x = 330` set once before the save-row loop; the number labels use their own `POINT numberPos`
+(x 296, y = pos.y); the three per-iteration title x resets are removed. Chain [EVIDENCE]: one loop-invariant title x ->
+C1 early x = 330 with whole POINT arguments -> C2 reader: one 4-byte field descriptor, no partial-cover substitution
+(0x40b803/0x40b811), x stays early -> lowered loop-spanning source-field range (LR149, refs 4, benefit 26) with no
+available register -> 0x41ba2b / 0x44ca36 -> 0x451ac3 validated-site cloning -> literal 330 cloned immediately before
+each x push; the early definition dies. Positive control: STRICT DrawInfo clones a field definition the same way.
+Result: 63 -> 30 differing bytes, 2288 -> 2300 / 2304 aligned; zero accepted regressions. The late definitions are
+produced by the stock allocator, so the earlier 'definitions are written late' inference was wrong: they are cloned.
+Remaining: 4 instructions, a subtraction ordering decided before C2 stage 0x412d5c (sol-cdb r2 FINDINGS).
