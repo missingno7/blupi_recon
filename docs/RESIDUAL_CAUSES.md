@@ -145,3 +145,7 @@ gives the predicted C2 operand-key order (symbol-ID key at 0x408d58; scratch/sol
 DrawButtons: 0 differing bytes, 2304/2304, all 234 relocations verified; full gate accepted it STRICT with zero regressions
 (coverage 116,160 -> 123,584). Cause D is closed by two natural source properties: a loop-invariant title x with a separate
 number-label POINT (allocator cloning), and a named cut length (operand key order).
+- [EVIDENCE, sol-cbuild r9] Network cloud vs target cloud: the network original-Y range wins at priority 320; the
+  target original Y ties at 76 with derived Y and shifted X and loses, so cloud Y keeps a register and is not cloned.
+  A micro's +16/-16 credits cancelled (original Y 55 < derived Y 59, no clone). Next: a STRICT asymmetric reg+constant
+  clone positive control (one axis held, the other cloned from its held base).
