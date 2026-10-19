@@ -200,3 +200,8 @@ with abc the diagnostic reached 8 bytes, so B-a is now the main Build residue.
   position loads before the zero-type branch, contrary to the oracle (1150/1237, 2256 bytes; rejected). The missing
   input is a stock definition/cut boundary giving camera X retained for the reverse bounds but read from home for the
   drawing SUB, and a long lift-X component; full header occupancy and the exact singleton are not shown necessary.
+- [EVIDENCE, sol-cbuild r15] Second STRICT large-function witness in BlupiStep: a RECT top taken from end.y alone gives
+  an exhausted group G = 1, which enters the scalar path and cuts with three colours free. Its POINT/RECT consumer
+  relationship has no demonstrated equivalent at Build's reverse-moving header, so no transfer is predicted. Both
+  stock routes to a singleton cut are now demonstrated in STRICT code (empty A - O; G < 3); neither maps onto Build's
+  oracle-constrained source as written.
