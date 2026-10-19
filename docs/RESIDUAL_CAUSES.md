@@ -161,3 +161,9 @@ number-label POINT (allocator cloning), and a named cut length (operand key orde
   anonymous field value (kind-3) passes. Required for either explanation: a short definition that survives 0x41ddfe
   because a real intervening definition/use prevents substitution, with the same emitted MOV/XOR/TEST/SETcc. Next: find
   such a survival in stock/STRICT code. A POINT micro produced neither shape.
+- [EVIDENCE, sol-cutcp2 r3] ChangePhase before allocation: zero's synthetic definitions share one initial pool
+  identity fixed at 0x414ba6, before web partition 0x41615d; later fragments and groups follow from that web and ordinary
+  lifetimes. Named copies collapse early (copy propagation). A real counter-definition epoch keeps a snapshot through
+  early C2 and changes 0x43de8b's induction representation but adds 18 body bytes (fails the instruction gate). Needed IR:
+  a separate late-zero component (index sign test, HideMouse argument, pre-Write flag) with PLAY connected through
+  WriteInfo. Next: backward slice of reader finalization 0x4262d8 and 0x425f81/0x44422c preservation on existing captures.
