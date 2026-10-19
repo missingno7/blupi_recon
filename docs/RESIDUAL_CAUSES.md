@@ -229,3 +229,19 @@ unconditional `pMoveObject--`. [EVIDENCE] The changed predecessor order selects 
 8 masked bytes, 1229/1237, span 3872 (= oracle), i.e. the a-cut diagnostic result, from ordinary source. The three-guard
 spelling (front-end ID delta +2) keeps GetBlupiInfo in its symbol-ID window; the four-guard spelling regressed it.
 Full strict gate: zero accepted regressions, 25 decblock peers STRICT. Remaining in Build: the 8-byte residue B-r.
+
+## Build B-r, the final 8 bytes (sol-cbuild r18 + supervisor, 2026-10-19)
+
+[EVIDENCE] All 8 bytes are one stack-home swap between A (Y remainder `0 - posDecor.y % 64`, assigned to tinyPoint.y before
+each grid's inner loop) and B (quotient `posDecor.y / 64`, the inner loop start / bound): ours puts A at [esp+20] and B at
+[esp+24], the oracle the reverse, at the first stores (+0x6aa/+0x6b9), their reads (+0x6e2/+0x6ea), the second spills
+(+0x961/+0x96c) and the paired boundary reloads (+0xc4a/+0xc4e). The first divergent decision is the ascending boundary
+reload order of the animated-grid children A155 -> B160 before temp assignment, which fixes the home order.
+Eliminated: (1) moving tinyPoint.y into the for-init (`for (j = posDecor.y / 64, tinyPoint.y = ...)`), floor, animated or
+both grids: byte-identical (normalized before allocation); (2) a named row variable `y = posDecor.y / 64` with a real
+second consumer: ownership survives to 0x414a64 but the inner loop changes from DEC/JNE countdown to INC/CMP/JL with an
+extra bound reload (fails the native gate).
+[OPEN] Competing explanations: the original's grid loops reached a different counted-versus-direct-index loop rewrite
+(already different by the pool snapshot), or B was materialized earlier than A. Next discriminator: trace the early
+loop-rewrite predicate that selects counted versus direct-index form for these grid loops, and which source form keeps
+the countdown while giving B the earlier boundary reload.
