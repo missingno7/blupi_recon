@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "status": "EQUIVALENT",
+  "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+  "rva": "0x19310",
+  "scope": "static-local-equivalence",
+  "assumptions": [
+    "Object fields are valid ordinary RAM and remain stable during each reordered guard.",
+    "Calls obey the declared x86 ABI; scratch registers and arithmetic flags are not hidden arguments.",
+    "Equivalence covers defined memory effects, branch outcomes, call targets/arguments and return values, not timing or intermediate register observations.",
+    "Callee/data bindings are checked separately; two CRT identities use unique pinned-library signatures and one getter uses raw body identity."
+  ],
+  "payload_sha256": "3d1883c7c6fa4fc90b5132ed39a65437320a3a830d35eb5b2dff81464da04436",
+  "oracle_sha256": "be6de5a206bc636346dde1b1a4dd11ddc3bda30c6efe64eebe96513f9c8290ac",
+  "checker_sha256": "3495694ba4ebac9cd2601fa594d98deb8b177f4ded505946061494905899045d",
+  "comparator_sha256": "37c26e770a2a350eb60a1594ad49931879a0e0415ca4c9a1d6b49b14a62e038e",
+  "capstone_version": "5.0.3",
+  "crt_library_sha256": "3b5f43e920c37c8da086b0d3ef0396e6517d44fcdcb4e7d03a6058620bc13ee3",
+  "checks": {
+    "nonrelocated_differing_bytes": 32,
+    "all_differences_inside_checked_windows": true,
+    "guard_equivalence_classes": 32,
+    "writeinfo_equivalence_classes": 3,
+    "guard_dirty_register_kills": {
+      "0x110": [
+        [
+          "0x116"
+        ],
+        [
+          "0x116"
+        ]
+      ],
+      "0x11b": [
+        [
+          "0x133"
+        ],
+        [
+          "0x133"
+        ]
+      ]
+    },
+    "writeinfo_dirty_flags_kills": {
+      "0x5fc": [
+        [
+          "0x603"
+        ],
+        [
+          "0x603"
+        ]
+      ],
+      "0x616": [
+        [
+          "0x61c"
+        ],
+        [
+          "0x61c"
+        ]
+      ]
+    },
+    "relocation_status": "STRICT",
+    "verified_relocations": 231
+  },
+  "semantic_fold_binding": {
+    "symbol": "?GetTrueColorBack@CPixmap@@QAEHXZ",
+    "va": "0x422dc0",
+    "evidence": "16 raw-identical bytes, no relocations; target is STRICT CSound::GetEnable owner",
+    "strict_acceptance_changed": false
+  },
+  "crt_target_identity": {
+    "__findfirst": {
+      "va": "0x424850",
+      "size": 304,
+      "proof": "Unique relocation-masked signature in pinned SP3 LIBC findfile.obj"
+    },
+    "__findnext": {
+      "va": "0x424980",
+      "size": 288,
+      "proof": "Unique relocation-masked signature in pinned SP3 LIBC findfile.obj"
+    }
+  }
+}

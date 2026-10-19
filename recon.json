@@ -2829,5 +2829,49 @@
       "symbol": "?DrawMap@CEvent@@QAEXXZ",
       "reason": "[EVIDENCE] Same 48-byte body and target RVA 0x16e80 as CEvent::NetDraw; accept the shared code once under NetDraw while source identity remains ambiguous."
     }
+  ],
+  "standalone_link": {
+    "image_base": "0x400000",
+    "section_alignment": 4096,
+    "object_order": [
+      "src/blupi.cpp",
+      "src/button.cpp",
+      "src/ddutil.cpp",
+      "src/decblock.cpp",
+      "src/decdesign.cpp",
+      "src/decblupi.cpp",
+      "src/decnet.cpp",
+      "src/decmove.cpp",
+      "src/decor.cpp",
+      "src/event.cpp",
+      "src/jauge.cpp",
+      "src/menu.cpp",
+      "src/misc.cpp",
+      "src/movie.cpp",
+      "src/network.cpp",
+      "src/dectables.cpp",
+      "src/pixmap.cpp",
+      "src/sound.cpp",
+      "src/text.cpp"
+    ],
+    "provenance": "Existing successful source link; docs/STANDALONE.md. Explicit settings, not a claim of original linker-input identity."
+  },
+  "equivalent_functions": [
+    {
+      "name": "ChangePhase",
+      "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+      "rva": "0x19310",
+      "tu": "src/event.cpp",
+      "status": "EQUIVALENT",
+      "certificate": "evidence/equivalence/ChangePhase.json"
+    },
+    {
+      "name": "TreatEventBase",
+      "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+      "rva": "0x1d230",
+      "tu": "src/event.cpp",
+      "status": "EQUIVALENT",
+      "certificate": "evidence/equivalence/TreatEventBase.json"
+    }
   ]
 }

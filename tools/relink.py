@@ -139,7 +139,15 @@ def layout_report(oracle, candidate, map_symbols, manifest):
     return result
 
 
-def main():
+def recorded_order(units, settings):
+    names = settings['object_order']
+    by_name = {unit['source']: unit for unit in units}
+    if len(names) != len(set(names)) or set(names) != set(by_name):
+        raise ValueError('standalone object_order must contain every translation unit exactly once')
+    return [by_name[name] for name in names]
+
+
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", type=Path, default=ROOT / "build/relink")
     parser.add_argument("--objects-dir", type=Path, help="reuse objects named as verify.py names them")
@@ -147,7 +155,9 @@ def main():
     parser.add_argument("--linker", choices=LINKERS, default="sp3")
     parser.add_argument("--historical-host", action="store_true",
                         help="run unmodified SP3 LINK with the VC5 CRT and oracle UTC clock via histlink.py")
-    parser.add_argument("--order", choices=("oracle", "manifest"), default="oracle")
+    parser.add_argument("--order", choices=("oracle", "manifest", "recorded"))
+    parser.add_argument("--standalone", action="store_true",
+                        help="build from recorded source settings without reading an oracle or running verification")
     parser.add_argument("--opt", choices=("ref,icf", "ref,noicf", "noref,noicf"), default="ref,icf")
     parser.add_argument("--library", action="append", default=[], type=Path, help="additional genuine library")
     parser.add_argument("--oracle", type=Path, default=DEFAULT_ORACLE)
@@ -156,7 +166,10 @@ def main():
     parser.add_argument("--entry", default=None, help="explicit /entry symbol (default: LINK chooses for /subsystem:windows)")
     parser.add_argument("--diagnostic", action="store_true",
                         help="link even when accepted functions regress (layout diagnostics only; the gate stays FAIL)")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    args.order = args.order or ('recorded' if args.standalone else 'oracle')
+    if args.standalone and args.order == 'oracle':
+        parser.error('--standalone cannot use --order oracle')
     if args.historical_host and args.linker != "sp3":
         parser.error("--historical-host requires --linker sp3 (the pinned LINK.EXE)")
     out = args.out_dir.resolve()
@@ -215,33 +228,44 @@ def main():
     # Reuse the canonical verifier's comparison/regression logic, without its
     # clean-build operation or any manifest promotion. Supplemental CRT evidence
     # is compiled via msvc.py and is deliberately absent from the link inputs.
-    import verify
-    verify.BUILD = out
-    verify.DEGRADED.clear()
-    verify.DEGRADED.update(degraded)
-    evidence_objects = verify.compile_crt_evidence(manifest)
-    comparison = verify.run_comparator(list(objects.values()), evidence_objects, manifest)
-    stream = io.StringIO()
-    with contextlib.redirect_stdout(stream):
-        by_unit, coverage = verify.report(comparison, [u["source"] for u in units])
-    (out / "verify.log").write_text(stream.getvalue(), encoding="utf-8")
-    regressions = verify.accepted_regressions(manifest, by_unit)
-    gate = dict(regressions=regressions, degraded=degraded, coverage=coverage,
-                status="FAIL" if regressions else "INCOMPLETE" if degraded else "PASS")
+    if args.standalone:
+        regressions = []
+        gate = dict(status='NOT_RUN', reason='standalone build; no oracle read', degraded=degraded)
+    else:
+        import verify
+        verify.BUILD = out
+        verify.DEGRADED.clear()
+        verify.DEGRADED.update(degraded)
+        evidence_objects = verify.compile_crt_evidence(manifest)
+        comparison = verify.run_comparator(list(objects.values()), evidence_objects, manifest)
+        stream = io.StringIO()
+        with contextlib.redirect_stdout(stream):
+            by_unit, coverage = verify.report(comparison, [u["source"] for u in units])
+        (out / "verify.log").write_text(stream.getvalue(), encoding="utf-8")
+        regressions = verify.accepted_regressions(manifest, by_unit)
+        import equivalence
+        equivalent = equivalence.check(manifest, comparison, evidence_objects, out)
+        gate = dict(regressions=regressions, degraded=degraded, coverage=coverage,
+                    equivalence=equivalent,
+                    status="FAIL" if regressions else "INCOMPLETE" if degraded else "PASS")
     (out / "gate.json").write_text(json.dumps(gate, indent=2) + "\n", encoding="utf-8")
-    print(f"accepted-function gate {gate['status']}; coverage {coverage} / {verify.GAME_TEXT_SIZE}", flush=True)
+    print(f"accepted-function gate {gate['status']}" +
+          (f"; coverage {coverage} / {verify.GAME_TEXT_SIZE}" if not args.standalone else ''), flush=True)
     if regressions:
         print("\n".join(regressions))
         if not args.diagnostic:
             return 1
         print("DIAGNOSTIC LINK: accepted-function gate FAILED; the image is for layout measurement only", flush=True)
-    ordered = oracle_order(units) if args.order == "oracle" else units
-    oracle = pefile.PE(str(args.oracle))
-    header = oracle.OPTIONAL_HEADER
+    settings = manifest['standalone_link']
+    ordered = (oracle_order(units) if args.order == 'oracle' else
+               recorded_order(units, settings) if args.order == 'recorded' else units)
+    oracle = None if args.standalone else pefile.PE(str(args.oracle))
+    image_base = int(settings['image_base'], 0) if args.standalone else oracle.OPTIONAL_HEADER.ImageBase
+    alignment = settings['section_alignment'] if args.standalone else oracle.OPTIONAL_HEADER.SectionAlignment
     linker = LINKERS[args.linker]
     libraries = ([l for l in LIBRARIES if l.name.upper() not in ("LIBC.LIB", "OLDNAMES.LIB")] if args.default_libs else LIBRARIES) + args.library
     options = ["/nologo", "/machine:i386", "/subsystem:windows,4.0", *([f"/entry:{args.entry}"] if args.entry else []),
-               f"/base:0x{header.ImageBase:x}", f"/align:{header.SectionAlignment}",
+               f"/base:0x{image_base:x}", f"/align:{alignment}",
                "/fixed", "/incremental:no", *([] if args.default_libs else ["/nodefaultlib"]),
                *["/opt:" + s for s in args.opt.split(",")],
                f"/out:{out / 'BLUPI.EXE'}", f"/map:{out / 'BLUPI.map'}"]
@@ -261,7 +285,7 @@ def main():
                PATH=os.pathsep.join(map(str, [linker.parent, VC / "BIN", VC.parent / "SHAREDIDE/BIN",
                                              Path(system) / "System32", Path(system)])))
     # Never leave a stale successful image/map after a failed link.
-    for path in (out / "BLUPI.EXE", out / "BLUPI.map", out / "layout.json"):
+    for path in (out / "BLUPI.EXE", out / "BLUPI.map", out / "layout.json", out / "image.json"):
         if path.exists():
             path.unlink()
     if host_report and host_report.exists():
@@ -276,7 +300,9 @@ def main():
                   object_mode="reused; see object compile logs for candidate source provenance" if
                   args.objects_dir else "canonical", toolchain=manifest["toolchain"],
                   linker_sha256=digest(linker), libraries={str(p): digest(p) for p in libraries},
-                  degraded=degraded, exit_code=run.returncode, resource_status="omitted" if args.no_res else "src/res/blupi.rc via VC5 RC + CVTRES")
+                  degraded=degraded, exit_code=run.returncode, standalone=args.standalone,
+                  oracle_read=not args.standalone,
+                  resource_status="omitted" if args.no_res else "src/res/blupi.rc via VC5 RC + CVTRES")
     if host_report:
         record["historical_host"] = dict(report=str(host_report),
             launcher_sha256=digest(ROOT / "tools/histlink.py"),
@@ -295,7 +321,8 @@ def main():
     if run.returncode:
         record["duplicate_symbols"] = duplicates
         record["unresolved_symbols"] = sorted(set(re.findall(r"unresolved external symbol (.*)", transcript)))
-        record["oracle"] = image_info(oracle)
+        if oracle is not None:
+            record["oracle"] = image_info(oracle)
         (out / "build.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
         # LINK can leave an empty map on LNK1120. It is not a successful layout.
         for path in (out / "BLUPI.EXE", out / "BLUPI.map"):
@@ -303,6 +330,12 @@ def main():
                 path.unlink()
         return run.returncode
     candidate = pefile.PE(str(out / "BLUPI.EXE"))
+    if args.standalone:
+        result = image_info(candidate)
+        result['sha256'] = digest(out / 'BLUPI.EXE')
+        (out / 'image.json').write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
+        print(f"linked {out / 'BLUPI.EXE'} from source (no oracle read; static inspection only)")
+        return 0
     result = layout_report(oracle, candidate, read_map(out / "BLUPI.map"), manifest)
     (out / "layout.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(f"linked {out / 'BLUPI.EXE'} (static inspection only)")

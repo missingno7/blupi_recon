@@ -5,7 +5,10 @@ no modernization, no renderer changes in matching source.
 Hard rules:
 - `assets/` is immutable original material; `external/` holds read-only reference repos
   (planetblupi, sb2-decomp, free-eggbert). Never modify, clean or commit either.
-- Never execute BLUPI.EXE or anything from the ISO. Static analysis only.
+- Never execute the original BLUPI.EXE or programs from the ISO. Per the user's
+  2026-10-19 runtime authorization, rebuilt game executables may be smoke-tested
+  with cnc-ddraw, in an isolated build/ copy of the data. Bound each run, close its
+  process, and keep runtime evidence separate from strict/equivalence proofs.
 - Historical toolchains live under `C:\tools` (msvc5_rtm, msvc5_sp2, msvc5_sp3, msvc5_cc_*,
   msvc5_link_*, msvc6_rtm, dx5sdk, dx6sdk, dx61sdk, ghidra_*). Treat them as read-only. Run cl.exe with
   TMP/TEMP pointed at a directory inside this repo (e.g. `build/tmp`).

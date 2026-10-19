@@ -1,5 +1,12 @@
 # Matching source workflow
 
+The complete source-only build is `tools/build.py`; see [STANDALONE.md](STANDALONE.md).
+Two explicit `equivalent_functions` entries now supplement strict acceptance.
+Verification reruns their static proof and checks pinned certificates; it never
+counts EQUIVALENT as STRICT or changes the raw comparator result. Re-certification
+requires review of new evidence, not automatic promotion. Remaining strict-match
+research is deferred until new evidence or ideas arise.
+
 `recon.json` is the canonical input list and acceptance record. It pins the VC5
 SP3 compiler tree, `/O2 /GX /Gy` flags, DirectX 5 headers, and the `nullptr=0`
 source compatibility define. `src/` keeps original filenames and source line

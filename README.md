@@ -6,9 +6,15 @@ first; a clean SDL3 port is a later, separate goal. Rules for contributors and a
 
 ## Status (verified with `tools/verify.py`)
 
+**Complete standalone source build available:** `tools/build.py` compiles all 19 TUs and resources without
+the original EXE. The two remaining game bodies are accepted as **EQUIVALENT** under checked static assumptions;
+strict matching research is deferred until new evidence. See [docs/STANDALONE.md](docs/STANDALONE.md)
+for certificates, build instructions and validation limits. A cnc-ddraw runtime smoke test reaches the first
+playable level and exits cleanly; see [docs/RUNTIME.md](docs/RUNTIME.md). Full gameplay equivalence remains unproven.
+
 **127,456 / 141,488 game `.text` bytes (90.1 %)**, built with one shared
 header set for every TU (no per-TU preprocessor views; no active withdrawals; withdrawal history in
-[docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). Two mapped game functions remain open:
+[docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). Two mapped game functions remain non-STRICT:
 `CEvent::ChangePhase` and `CEvent::TreatEventBase`, each with eight differing instructions.
 Fresh verification and historical relink gates pass with zero accepted regressions, including the sound build path
 ([docs/BLOCKER_CHECKS.md](docs/BLOCKER_CHECKS.md), 2026-10-19). The verifier reports 411 STRICT and 6 FOLDED emitted
@@ -31,7 +37,7 @@ unverified, masked or behavioural similarity is never counted.
 Data: `dectables.cpp` holds SB1 tables as initialized data whose bytes the verifier checks (relocations into them are
 proven by payload). Calls to imports may go through exact `jmp [IAT]` thunks, as in the original.
 
-Open bodies (best-known reconstructions in `src/`, not yet strict): `CEvent::ChangePhase` 0x19310
+EQUIVALENT bodies (best-known reconstructions in `src/`, strict work deferred): `CEvent::ChangePhase` 0x19310
 (32 differing non-relocation bytes) and `CEvent::TreatEventBase` 0x1d230 (8 register bytes).
 `CEvent::DrawButtons`, `CDecor::Build` and `CDecor::DoInit` are STRICT.
 

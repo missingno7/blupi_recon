@@ -451,6 +451,8 @@ def main() -> int:
         by_unit, _ = report(comparison, by_unit_order)
         report_withdrawn(manifest, by_unit)
         regressions = accepted_regressions(manifest, by_unit)
+        import equivalence
+        equivalence.check(manifest, comparison, evidence_objects, BUILD)
         if regressions:
             print("\nAccepted-function regression(s):")
             for error in regressions:

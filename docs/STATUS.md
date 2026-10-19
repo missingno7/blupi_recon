@@ -1,5 +1,18 @@
 # Status: Speedy Blupi 1 matching reconstruction (2026-10-19)
 
+[EVIDENCE] Complete standalone source build validated without assets, oracle maps or the original EXE.
+`CEvent::ChangePhase` and `CEvent::TreatEventBase` are now accepted as **EQUIVALENT** under pinned static
+equivalence certificates, independently of STRICT. All strict peers still pass. See [STANDALONE.md](STANDALONE.md).
+[OPEN] Remaining strict bytes and whole-image layout are deferred pending new evidence; they do not block
+continuing from this source baseline. A bounded cnc-ddraw smoke test reaches the first playable level and exits
+cleanly ([RUNTIME.md](RUNTIME.md)); this does not establish full-game runtime equivalence.
+
+[EVIDENCE] Milestone accepted by the user after manual play (2026-10-19): the game
+looks good. Remaining strict-match and linker-layout research is parked; the
+complete source-build baseline, two EQUIVALENT certificates and runtime harness
+are ready for subsequent work. Color depth is an explicit runtime option (8/16),
+with the harness default corrected to 16 to match the supplied original settings.
+
 Strict acceptance is unchanged: only STRICT counts, and every canonical change passed `tools/verify.py` with zero
 accepted regressions. CDecor::Build became STRICT on 2026-10-19 (docs/RESIDUAL_CAUSES.md, "Build STRICT").
 
@@ -8,7 +21,7 @@ accepted regressions. CDecor::Build became STRICT on 2026-10-19 (docs/RESIDUAL_C
 | Area | State |
 |---|---|
 | Game code | 127,456 / 141,488 bytes STRICT (90.1 %). Every game function is STRICT or FOLDED except two. |
-| Open functions | 16 differing aligned instructions in total (3,907 / 3,923) |
+| Behavioral exceptions | 2 EQUIVALENT functions; 16 differing aligned instructions remain deferred strict work (3,907 / 3,923) |
 | `.rsrc`, `.data`, file size, `.text` size, timestamp | `.rsrc` exact; `.data` 1 differing byte in a CRT pointer; file and `.text` sizes equal the oracle; timestamp equal under the historical host (fresh check: docs/BLOCKER_CHECKS.md) |
 | Whole image (canonical historical relink) | 121,401 differing bytes, almost all a +16 shift from LINK keeping a different copy of a folded empty function (ICF survivor), plus the CRT filter survivor, import order and the open functions |
 
