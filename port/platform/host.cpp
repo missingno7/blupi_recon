@@ -1,0 +1,333 @@
+#include "platform/host.h"
+
+#include <SDL3/SDL.h>
+
+namespace blupi::host
+{
+namespace
+{
+SDL_Window*   g_window = nullptr;
+SDL_Renderer* g_renderer = nullptr;
+SDL_Texture*  g_texture = nullptr;
+SDL_Cursor*   g_cursor = nullptr;
+int  g_width = 0, g_height = 0;
+bool g_headless = false;
+bool g_fullscreen = false;
+
+// SDL keycode -> Win32 virtual-key code (0 = not forwarded to the game).
+int to_virtual_key(SDL_Keycode k)
+{
+    if (k >= SDLK_A && k <= SDLK_Z) return 'A' + (int)(k - SDLK_A);
+    if (k >= SDLK_0 && k <= SDLK_9) return '0' + (int)(k - SDLK_0);
+    if (k >= SDLK_F1 && k <= SDLK_F12) return 0x70 + (int)(k - SDLK_F1);
+    switch (k)
+    {
+    case SDLK_BACKSPACE: return 0x08;
+    case SDLK_TAB:       return 0x09;
+    case SDLK_RETURN:    return 0x0D;
+    case SDLK_KP_ENTER:  return 0x0D;
+    case SDLK_LSHIFT: case SDLK_RSHIFT: return 0x10;
+    case SDLK_LCTRL:  case SDLK_RCTRL:  return 0x11;
+    case SDLK_LALT:   case SDLK_RALT:   return 0x12;
+    case SDLK_PAUSE:     return 0x13;
+    case SDLK_ESCAPE:    return 0x1B;
+    case SDLK_SPACE:     return 0x20;
+    case SDLK_PAGEUP:    return 0x21;
+    case SDLK_PAGEDOWN:  return 0x22;
+    case SDLK_END:       return 0x23;
+    case SDLK_HOME:      return 0x24;
+    case SDLK_LEFT:      return 0x25;
+    case SDLK_UP:        return 0x26;
+    case SDLK_RIGHT:     return 0x27;
+    case SDLK_DOWN:      return 0x28;
+    case SDLK_INSERT:    return 0x2D;
+    case SDLK_DELETE:    return 0x2E;
+    case SDLK_KP_0: return 0x60; case SDLK_KP_1: return 0x61; case SDLK_KP_2: return 0x62;
+    case SDLK_KP_3: return 0x63; case SDLK_KP_4: return 0x64; case SDLK_KP_5: return 0x65;
+    case SDLK_KP_6: return 0x66; case SDLK_KP_7: return 0x67; case SDLK_KP_8: return 0x68;
+    case SDLK_KP_9: return 0x69;
+    default: return 0;
+    }
+}
+
+// Unicode code point -> cp1252 byte, 0 if not representable.
+int to_cp1252(uint32_t cp)
+{
+    if (cp < 0x80 || (cp >= 0xA0 && cp <= 0xFF)) return (int)cp;
+    static const uint16_t high[32] = {
+        0x20AC, 0, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021, 0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0, 0x017D, 0,
+        0, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014, 0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0, 0x017E, 0x0178};
+    for (int i = 0; i < 32; i++)
+        if (high[i] == cp) return 0x80 + i;
+    return 0;
+}
+
+void fill_buttons(Event& e)
+{
+    SDL_MouseButtonFlags state = SDL_GetMouseState(nullptr, nullptr);
+    e.leftDown = (state & SDL_BUTTON_LMASK) != 0;
+    e.rightDown = (state & SDL_BUTTON_RMASK) != 0;
+    SDL_Keymod mod = SDL_GetModState();
+    e.shift = (mod & SDL_KMOD_SHIFT) != 0;
+    e.control = (mod & SDL_KMOD_CTRL) != 0;
+}
+
+void set_position(Event& e, float x, float y)
+{
+    e.x = (int)SDL_floorf(x);
+    e.y = (int)SDL_floorf(y);
+    e.inside = e.x >= 0 && e.y >= 0 && e.x < g_width && e.y < g_height;
+}
+
+// Pending text input split into single cp1252 characters.
+char g_text[64];
+int  g_textPos = 0, g_textLen = 0;
+
+bool translate(SDL_Event& ev, Event& out)
+{
+    switch (ev.type)
+    {
+    case SDL_EVENT_QUIT:
+    case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+        out = Event{EventType::Quit};
+        return true;
+    case SDL_EVENT_WINDOW_FOCUS_GAINED:
+        out = Event{EventType::FocusGained};
+        return true;
+    case SDL_EVENT_WINDOW_FOCUS_LOST:
+        out = Event{EventType::FocusLost};
+        return true;
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_KEY_UP:
+    {
+        bool down = ev.type == SDL_EVENT_KEY_DOWN;
+        // Port-level shortcut, not seen by the game: Alt+Enter toggles fullscreen.
+        if (down && ev.key.key == SDLK_RETURN && (ev.key.mod & SDL_KMOD_ALT))
+        {
+            if (!ev.key.repeat) toggle_fullscreen();
+            return false;
+        }
+        int vk = to_virtual_key(ev.key.key);
+        if (vk == 0) return false;
+        out = Event{down ? EventType::KeyDown : EventType::KeyUp};
+        out.key = vk;
+        out.repeat = ev.key.repeat;
+        fill_buttons(out);
+        return true;
+    }
+    case SDL_EVENT_TEXT_INPUT:
+    {
+        g_textLen = 0;
+        g_textPos = 0;
+        const char* s = ev.text.text;
+        while (*s && g_textLen < (int)sizeof(g_text))
+        {
+            Uint32 cp = SDL_StepUTF8(&s, nullptr);
+            int c = to_cp1252(cp);
+            if (c >= 0x20) g_text[g_textLen++] = (char)c;
+        }
+        return false;  // delivered by poll_event from g_text
+    }
+    case SDL_EVENT_MOUSE_MOTION:
+        SDL_ConvertEventToRenderCoordinates(g_renderer, &ev);
+        out = Event{EventType::MouseMove};
+        set_position(out, ev.motion.x, ev.motion.y);
+        fill_buttons(out);
+        return true;
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+    {
+        if (ev.button.button != SDL_BUTTON_LEFT && ev.button.button != SDL_BUTTON_RIGHT) return false;
+        SDL_ConvertEventToRenderCoordinates(g_renderer, &ev);
+        out = Event{ev.type == SDL_EVENT_MOUSE_BUTTON_DOWN ? EventType::MouseDown : EventType::MouseUp};
+        out.button = ev.button.button == SDL_BUTTON_LEFT ? 1 : 2;
+        set_position(out, ev.button.x, ev.button.y);
+        fill_buttons(out);
+        return true;
+    }
+    default:
+        return false;
+    }
+}
+
+bool next_text(Event& event)
+{
+    if (g_textPos >= g_textLen) return false;
+    event = Event{EventType::Text};
+    event.ch = (unsigned char)g_text[g_textPos++];
+    return true;
+}
+}  // namespace
+
+bool init(const char* title, int logicalWidth, int logicalHeight, const Options& options)
+{
+    g_width = logicalWidth;
+    g_height = logicalHeight;
+    g_headless = options.headless;
+    if (g_headless) return SDL_Init(0);
+
+    SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+    if (!SDL_Init(SDL_INIT_VIDEO))
+    {
+        SDL_Log("SDL_Init failed: %s", SDL_GetError());
+        return false;
+    }
+    int scale = options.scale < 1 ? 1 : options.scale;
+    if (!SDL_CreateWindowAndRenderer(title, logicalWidth * scale, logicalHeight * scale,
+                                     SDL_WINDOW_RESIZABLE, &g_window, &g_renderer))
+    {
+        SDL_Log("SDL_CreateWindowAndRenderer failed: %s", SDL_GetError());
+        return false;
+    }
+    SDL_SetWindowMinimumSize(g_window, logicalWidth, logicalHeight);
+    SDL_SetRenderLogicalPresentation(g_renderer, logicalWidth, logicalHeight,
+                                     options.integerScale ? SDL_LOGICAL_PRESENTATION_INTEGER_SCALE
+                                                          : SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    SDL_SetRenderVSync(g_renderer, 1);
+    g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+                                  logicalWidth, logicalHeight);
+    if (g_texture == nullptr) return false;
+    SDL_SetTextureScaleMode(g_texture, SDL_SCALEMODE_NEAREST);
+    if (options.fullscreen) toggle_fullscreen();
+    SDL_StartTextInput(g_window);
+    return true;
+}
+
+void shutdown()
+{
+    if (g_cursor) SDL_DestroyCursor(g_cursor);
+    if (g_texture) SDL_DestroyTexture(g_texture);
+    if (g_renderer) SDL_DestroyRenderer(g_renderer);
+    if (g_window) SDL_DestroyWindow(g_window);
+    g_cursor = nullptr;
+    g_texture = nullptr;
+    g_renderer = nullptr;
+    g_window = nullptr;
+    SDL_Quit();
+}
+
+bool headless() { return g_headless; }
+
+uint64_t now_ns() { return SDL_GetTicksNS(); }
+
+bool poll_event(Event& event)
+{
+    if (g_headless) return false;
+    if (next_text(event)) return true;
+    SDL_Event ev;
+    while (SDL_PollEvent(&ev))
+    {
+        if (translate(ev, event)) return true;
+        if (next_text(event)) return true;
+    }
+    return false;
+}
+
+bool wait_event(Event& event, uint64_t timeoutNs)
+{
+    if (g_headless) return false;
+    if (poll_event(event)) return true;
+    Sint32 ms = (Sint32)(timeoutNs / 1000000);
+    SDL_Event ev;
+    if (!SDL_WaitEventTimeout(&ev, ms)) return false;
+    if (translate(ev, event)) return true;
+    return next_text(event);
+}
+
+void present(const uint32_t* argb)
+{
+    if (g_headless) return;
+    SDL_UpdateTexture(g_texture, nullptr, argb, g_width * 4);
+    SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
+    SDL_RenderClear(g_renderer);
+    SDL_RenderTexture(g_renderer, g_texture, nullptr, nullptr);
+    SDL_RenderPresent(g_renderer);
+}
+
+void toggle_fullscreen()
+{
+    if (g_window == nullptr) return;
+    g_fullscreen = !g_fullscreen;
+    SDL_SetWindowFullscreen(g_window, g_fullscreen);
+}
+
+void get_mouse(int& x, int& y)
+{
+    if (g_headless) { x = g_width / 2; y = g_height / 2; return; }
+    float wx = 0, wy = 0, lx = 0, ly = 0;
+    SDL_GetMouseState(&wx, &wy);
+    SDL_RenderCoordinatesFromWindow(g_renderer, wx, wy, &lx, &ly);
+    x = (int)SDL_floorf(lx);
+    y = (int)SDL_floorf(ly);
+}
+
+void warp_mouse(int x, int y)
+{
+    if (g_headless || !(SDL_GetWindowFlags(g_window) & SDL_WINDOW_INPUT_FOCUS)) return;
+    float wx = 0, wy = 0;
+    SDL_RenderCoordinatesToWindow(g_renderer, (float)x + 0.5f, (float)y + 0.5f, &wx, &wy);
+    SDL_WarpMouseInWindow(g_window, wx, wy);
+}
+
+void show_system_cursor(bool show)
+{
+    if (g_headless) return;
+    if (show) SDL_ShowCursor();
+    else SDL_HideCursor();
+}
+
+void set_system_cursor(Cursor cursor)
+{
+    if (g_headless) return;
+    SDL_SystemCursor id = SDL_SYSTEM_CURSOR_DEFAULT;
+    switch (cursor)
+    {
+    case Cursor::Pointer:  id = SDL_SYSTEM_CURSOR_POINTER; break;
+    case Cursor::Wait:     id = SDL_SYSTEM_CURSOR_WAIT; break;
+    case Cursor::Move:     id = SDL_SYSTEM_CURSOR_MOVE; break;
+    case Cursor::SizeNS:   id = SDL_SYSTEM_CURSOR_NS_RESIZE; break;
+    case Cursor::SizeWE:   id = SDL_SYSTEM_CURSOR_EW_RESIZE; break;
+    case Cursor::SizeNWSE: id = SDL_SYSTEM_CURSOR_NWSE_RESIZE; break;
+    case Cursor::SizeNESW: id = SDL_SYSTEM_CURSOR_NESW_RESIZE; break;
+    case Cursor::Hidden:   SDL_HideCursor(); return;
+    default: break;
+    }
+    SDL_Cursor* c = SDL_CreateSystemCursor(id);
+    if (c == nullptr) return;
+    SDL_SetCursor(c);
+    if (g_cursor) SDL_DestroyCursor(g_cursor);
+    g_cursor = c;
+}
+
+void set_title(const char* title)
+{
+    if (g_window) SDL_SetWindowTitle(g_window, title);
+}
+
+void message_box(const char* title, const char* text)
+{
+    SDL_Log("%s: %s", title, text);
+    if (!g_headless) SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, g_window);
+}
+
+std::string base_path()
+{
+    const char* p = SDL_GetBasePath();
+    return p ? std::string(p) : std::string();
+}
+
+std::string pref_path()
+{
+    char* p = SDL_GetPrefPath("Epsitec", "Speedy Blupi SDL3");
+    std::string result = p ? std::string(p) : std::string();
+    SDL_free(p);
+    return result;
+}
+
+void log_debug(const char* text) { SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s", text); }
+void log_info(const char* text) { SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s", text); }
+void set_verbose(bool verbose)
+{
+    SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, verbose ? SDL_LOG_PRIORITY_DEBUG : SDL_LOG_PRIORITY_INFO);
+}
+}  // namespace blupi::host

@@ -1,0 +1,4 @@
+[submodule "port/third_party/generaluser-gs"]
+	path = port/third_party/generaluser-gs
+	url = https://github.com/mrbumpy409/GeneralUser-GS.git
+	shallow = true

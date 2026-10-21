@@ -1,0 +1,27 @@
+# Scripted screen tour for the golden traces (frame-indexed; see port/tests/CMakeLists.txt).
+# Button centres come from the phase table in src/event.cpp.
+40 click 112 430    # title: dice -> choose player
+70 click 564 198    # choose player: name dialog
+100 click 398 346    # name: cancel
+130 click 564 240    # choose player: discard-player dialog
+160 click 398 346    # discard: cancel
+190 click 127 431    # choose player: multiplayer service
+220 key 27    # Escape back
+250 click 211 431    # choose player: open saved game
+280 click 478 407    # saved games: cancel
+310 click 350 431    # choose player: settings
+340 click 90 130    # sound volume -
+350 click 130 130    # sound volume +
+360 click 90 240    # music volume -
+370 click 130 240    # music volume +
+400 click 561 431    # settings: back
+430 click 85 431    # choose player: single player -> world 1 hub
+460 keydown 39    # walk right
+480 keyup 39
+485 keydown 17    # jump (Ctrl)
+488 keyup 17
+500 keydown 37    # walk left
+530 keyup 37
+560 key 27    # Escape -> choose player
+590 click 560 431    # back to title
+620 click 154 430    # title: film button -> attract demo

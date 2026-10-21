@@ -2,7 +2,12 @@
 
 Reconstructing the C++ source of **Speedy Blupi 1** (Epsitec, 1998; `BLUPI.EXE`, English/US build, SHA-256
 `be6de5a2…8290ac`) so that the historical compiler reproduces the original machine code exactly. Matching comes
-first; a clean SDL3 port is a later, separate goal. Rules for contributors and agents: [AGENTS.md](AGENTS.md).
+first. Rules for contributors and agents: [AGENTS.md](AGENTS.md).
+
+**Native SDL3 port (separate from the matching work):** [port/README.md](port/README.md) builds this same
+`src/` unchanged with a modern compiler and SDL3. It is a faithful 640×480 baseline: menus, levels, sound,
+MIDI music (GeneralUser GS SoundFont, a git submodule) and the original attract-mode demos run on Windows x64. The port
+never modifies the historical source.
 
 ## Status (verified with `tools/verify.py`)
 

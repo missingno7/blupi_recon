@@ -2,6 +2,10 @@ Speedy Blupi 1 (1998) matching decompilation. Goal: C/C++ source that, compiled 
 historical toolchain, reproduces BLUPI.EXE machine code exactly. Matching comes first; no SDL,
 no modernization, no renderer changes in matching source.
 
+The native SDL3 port lives only in `port/` (branch `port/sdl3`) and has its own rules in
+`port/AGENTS.md`. It compiles `src/` unchanged; never edit `src/` for the port, and never let
+port work change the matching build or its acceptance status.
+
 Hard rules:
 - `assets/` is immutable original material; `external/` holds read-only reference repos
   (planetblupi, sb2-decomp, free-eggbert). Never modify, clean or commit either.

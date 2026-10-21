@@ -1,0 +1,31 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "mingw-x64",
+      "displayName": "Windows x64, MinGW-w64 GCC, SDL3 from $env{SDL3_DIR}",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/port",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "CMAKE_PREFIX_PATH": "$env{SDL3_DIR}",
+        "BLUPI_TEST_DATA": "$env{BLUPI_DATA}"
+      }
+    },
+    {
+      "name": "msvc-x64",
+      "displayName": "Windows x64, Visual Studio 2022, SDL3 VC package from $env{SDL3_DIR}",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/port-msvc",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl",
+        "CMAKE_PREFIX_PATH": "$env{SDL3_DIR}",
+        "BLUPI_TEST_DATA": "$env{BLUPI_DATA}"
+      }
+    }
+  ]
+}

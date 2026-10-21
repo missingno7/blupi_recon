@@ -1,0 +1,14 @@
+# Scripted editor session for the golden traces and the scene gate (frame-indexed).
+# Button centres come from the phase table in src/event.cpp.
+40 click 112 430    # title: dice -> choose player
+70 click 169 431    # choose player: design your own mission
+100 click 442 124    # design screen: edit -> editor
+130 keydown 39    # scroll right
+145 keyup 39
+150 keydown 40    # scroll down
+160 keyup 40
+180 click 320 300    # click on the map with the current tool
+200 click 31 31    # first decor menu button
+230 click 31 444    # back to the design screen (minimap)
+260 click 252 418    # test this mission
+330 key 27    # Escape -> pause screen
