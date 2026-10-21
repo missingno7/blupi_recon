@@ -1,0 +1,4 @@
+# Baseline for golden_tour16_options: the tour plus the one mouse move of
+# options.input that reaches the game (the move of its first click, before the
+# Display options screen opens and takes all mouse input until it closes).
+375 move 90 350

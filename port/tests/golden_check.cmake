@@ -6,6 +6,8 @@
 # On a mismatch it reports the first differing checkpoint; find the field with
 #   blupi-sdl3 <same args> --state-dump <frame>:dump.txt
 # on both builds and diff the dumps.
+#   -DSTATE_ONLY=ON compares frame, phase and state hash only (runs whose
+#   cursor legitimately differs from the golden run).
 separate_arguments(args NATIVE_COMMAND "${ARGS}")
 file(REMOVE_RECURSE ${WORK})
 file(MAKE_DIRECTORY ${WORK})
@@ -32,6 +34,10 @@ math(EXPR last "${nwant} - 1")
 foreach(i RANGE ${last})
     list(GET got ${i} g)
     list(GET want ${i} w)
+    if(STATE_ONLY)
+        string(REGEX REPLACE " [0-9a-f]+$" "" g "${g}")
+        string(REGEX REPLACE " [0-9a-f]+$" "" w "${w}")
+    endif()
     if(NOT g STREQUAL w)
         message(FATAL_ERROR "first difference at checkpoint ${i}:\n  golden: ${w}\n  now:    ${g}\n"
                             "(columns: frame phase state-hash screen-hash; trace in ${WORK})")

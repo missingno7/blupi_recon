@@ -19,7 +19,13 @@ struct Options
     bool fullscreen = false;  // borderless desktop fullscreen, letterboxed
     int  scale = 2;           // initial window size = logical size * scale
     bool integerScale = false;
+    int  viewWidth = 0;       // widescreen: presented width (> logical width); the game's
+                              // frame is centred in it and mouse positions stay frame-relative
+    bool autoWide = false;    // widescreen: view width from the window shape (4:3 to 21:9)
 };
+
+// Widest automatic view: 21:9 at the frame height of 480.
+constexpr int kMaxViewWidth = 1120;
 
 enum class EventType
 {
@@ -57,8 +63,22 @@ bool poll_event(Event& event);
 uint64_t now_ns();
 
 // Presents a full logical frame (0xAARRGGBB, logical size, tightly packed).
-void present(const uint32_t* argb);
+// width x logical height; ignored unless width is the current view width.
+void present(const uint32_t* argb, int width);
+// True when present() waits for the display refresh (vsync).
+bool presents_with_vsync();
 void toggle_fullscreen();
+void set_fullscreen(bool on);
+bool fullscreen();
+void set_integer_scale(bool on);
+// Widescreen: automatic (window shape), or a fixed view width (the logical
+// width turns it off). view_width() is the width present() expects now.
+void set_auto_wide(bool on);
+void set_view_width(int width);
+int  view_width();
+// Where the game's frame lies in the view (default: centred); mouse positions
+// are reported relative to it.
+void set_frame_x(int x);
 
 // Logical mouse position (may lie outside the frame, like GetCursorPos).
 void get_mouse(int& x, int& y);

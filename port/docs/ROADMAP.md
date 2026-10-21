@@ -1,8 +1,30 @@
 # Roadmap: from faithful port to native rendering, interpolation and widescreen
 
-Goal: a renderer native to the port, in which interpolation and widescreen are cheap options.
-Each stage replaces one piece of the faithful baseline and must reproduce its results exactly
-before the next stage starts. Faithful mode stays the default and the reference throughout.
+Goal: a fully native, portable engine with faithful simulation, independent presentation,
+optional interpolation and true widescreen. Interpolation and widescreen should follow from the
+architecture instead of needing another rendering rewrite. Each stage replaces one piece of the
+faithful baseline and must reproduce its results exactly before the next stage starts. Faithful
+mode stays the default and the reference throughout.
+
+Direction agreed with the user (2026-10-21):
+- **GPU is optional.** GPU rasterization is not a requirement. A native software renderer with
+  SDL3 presenting through the GPU is the target. The rendering abstraction (device commands,
+  semantic scene) stays backend-neutral so an SDL_GPU backend can be added later without
+  redesigning the game or the scene; no speculative GPU infrastructure now.
+- **Rendering never touches game state.** Simulation, rendering and presentation are fully
+  separated, and rendering must work at any display rate.
+- **Historical order is preserved.** The order of side effects stays exactly historical
+  (`m_time`, camera shake, button states, the mission-10 clamp). The scene shows the state the
+  original `Build` would have drawn.
+- **Two cameras.** The simulation camera and the rendering camera are independent. Widescreen
+  shows more world without stretching and without changing gameplay.
+- **Interpolation is visual only.** It uses stable entity identities and simulation snapshots,
+  with no extra ticks and no interpolated gameplay state.
+- **The software renderer stays the reference,** and all equivalence gates stay in place.
+- **Missing coverage is a gap, not evidence.** Paths without test coverage get targeted coverage
+  before the rendering code they use changes.
+- **Order:** stage 4, then 5, then interpolation and widescreen. Android is a separate platform
+  track.
 
 Status markers: [EVIDENCE] verified in code or by a run, [OPEN] to be settled by the stage that
 needs it. Source paths are historical (`src/`).
@@ -146,7 +168,9 @@ for the GPU stage:
 
 ## Stage 2: GPU backend at 640×480 (SDL_Renderer)
 
-**Proposal (2026-10-21), pending the user's decision: defer this stage.** It is not needed for
+**DEFERRED (2026-10-21, user decision), not cancelled.** Reconsider GPU rendering only if
+real profiling shows a performance or power-efficiency problem, especially on Android, or if a
+future graphical feature genuinely needs it. The reasons for deferring: it is not needed for
 interpolation, widescreen or Android, and doing it faithfully costs more than planned.
 - **The software renderer is fast enough.** [EVIDENCE] Game logic plus full software rendering
   measure 0.5–0.7 ms per frame (headless, 7500 frames). A 144 Hz frame budget is 6.9 ms, and a
@@ -158,7 +182,7 @@ interpolation, widescreen or Android, and doing it faithfully costs more than pl
     fragment shader, palette expansion at present. That adds a shader toolchain to the build.
   - The plan below (`SDL_Renderer`, keys turned into alpha at upload) is only exact for static
     sources.
-- **Proposed order:** stage 4, then 5, then 7 and 8 on the software renderer. A GPU backend
+- **Agreed order:** stage 4, then 5, then 7 and 8 on the software renderer. A GPU backend
   comes back only if something needs it (HD effects, very large viewports), and then as
   `SDL_GPU` with raw-value shaders, gated by the same command replay.
 
@@ -245,6 +269,34 @@ interpolation, widescreen or Android, and doing it faithfully costs more than pl
   whole corpus.
 - **Result:** presentation is a pure function of an immutable scene snapshot.
 
+**Status (2026-10-21): done.** Native mode is the default; `--reference` keeps the historical
+`SetDecor` body.
+- **Coverage first** (`game/probe.cpp`, `tests/golden/effects.*`). Test-only state probes,
+  applied between ticks or just before drawing, reach the paths no demo or menu reaches:
+  - shield (steady and blinking), power, cloud, and hide (`CHTEMP` composition);
+  - Blupi in front of the decor;
+  - notification texts;
+  - the mission-10 clamp and tutorial hint (walking right);
+  - four network Blupis with effects.
+
+  The scene gate (440 `Build` calls) and the command gate pass on them before anything changed.
+- **`EndOfTick`** (`game/end_of_tick.cpp`) makes, at the point where `Build` ran and in `Build`'s
+  order, every state change the historical `Build`, `DecorNextAction`, `DrawInfo` and
+  `VoyageDraw` make: the shake step, `m_blupiSec`, the jauge redraw flags, the mission-10 clamp,
+  and `m_time`. The list comes from an audit of every member write in those functions.
+- **The UI.** `CEvent::DrawButtons` (700 lines of per-phase UI logic) still runs once per tick
+  at its historical point, so every button, enable and blink change happens in the historical
+  order. Its drawing is captured as commands.
+- **The frame.** Each tick produces a frame as data: the scene, or the captured background
+  image, plus the captured UI commands. `PortRenderFrame` draws it without reading game state;
+  jauges draw from a snapshot, not through `CJauge::Draw`.
+- **Gates** (all in `ctest`):
+  - every golden scenario passes in native mode, in reference mode (`*_reference`), and with
+    every frame rendered three extra times (`*_rerender`);
+  - the state hash now includes all jauge and button members, redraw flags included;
+  - a mutation test (disable each `EndOfTick` step in turn) failed a gate every time;
+  - the native editor session matches the historical rebuild on 371 of 371 frames.
+
 ## Stage 5: present at display rate
 
 - The simulation keeps its 50 ms fixed step (the current accumulator and drop rule). The renderer
@@ -257,6 +309,21 @@ interpolation, widescreen or Android, and doing it faithfully costs more than pl
     but must match the graphic cursor's hotspot table.
 - **Gate:** frames sampled at tick boundaries equal the faithful frames, and the traces are
   unchanged.
+
+**Status (2026-10-21): done.** `--present display` is the default; `--present tick` keeps the
+vanilla behaviour of presenting once per tick.
+- The host loop handles input every iteration. `PortPresentNow` (game/main.cpp) redraws the
+  latest tick's frame, draws the cursor at the position the input handling has just set, and
+  presents. It reads no game state and changes none. With vsync, `SDL_RenderPresent` paces the
+  loop; without it, the loop waits for input for at most 4 ms (about 250 presents per second at
+  most) and never past the next tick.
+- The cursor uses the existing `MouseBackDraw` path on the redrawn frame. It therefore moves at
+  display rate with the sprite and hotspot the game chose. The SDL hardware cursor question
+  stays [OPEN].
+- **Gates** (`*_present` in `ctest`): every golden scenario with the frame presented three extra
+  times after each tick gives the same traces.
+- [EVIDENCE] A bounded windowed run presented 1223 frames in 5.1 s (239 per second) over 100
+  game frames, at about 0.5–0.7 ms per frame for logic and software rendering.
 
 ## Stage 6: Android (independent track, after 0.4; benefits from 2 and 5)
 
@@ -290,6 +357,42 @@ Built on stage 3's identities and stage 4's snapshots.
   - state traces are identical with interpolation on or off (it cannot touch simulation);
   - targeted visual checks on the corpus at 144 Hz pacing.
 
+**Status (2026-10-21): done, opt-in (`--interpolate`).**
+- **Scene coverage.** `BuildScene` takes a `Coverage`. With it, the tile loops and the
+  move-object bounds tests also record the items `Build` would draw at a view shifted within
+  the margin, flagged `extended`. `FlattenScene` skips them, so the faithful frame is unchanged
+  (`scene_*_interp` runs the scene gate with the coverage on).
+- **Build's visibility rules travel with the items.** Each world item carries its rule: the
+  big-decor range, the decor/overlay range, or the bounds test of `posCurrent`, `posStart` or
+  `posEnd`. `DrawView` evaluates the rule at the view it draws, so a view between two ticks shows
+  exactly what `Build` would have shown there, pop-in at the 64-pixel bounds included. The
+  parallax background is regenerated for the drawn view with `Build`'s own algorithm.
+- **Identities and snapping** (`PairScenes`, once per tick):
+  - Moving items (Blupi and its effects, network Blupis, move objects, lifts, the voyage icon)
+    pair with the previous scene by (entity, index, occurrence).
+  - An item that has no counterpart, or moved more than 64 pixels, snaps.
+  - The whole scene snaps when the phase changed, the previous frame was not a world frame, or
+    the camera moved more than 64 pixels.
+  - Tiles, markers, HUD and texts are not interpolated; animation frames and icons are the
+    current tick's.
+- **Camera.** The simulation camera is interpolated. The current tick's shake offset is added
+  on top and clamped like `DecorNextAction`, and items placed with the unshaken camera (editor
+  highlight) keep their offset.
+- **Timing.** `alpha` is the time since the latest tick over the tick interval, clamped to 1.
+  The view therefore runs up to one tick (50 ms) behind the simulation; the cursor does not lag.
+  The tick's own `Display` still shows the faithful frame, so traces and the oracle are
+  unaffected.
+- **Gates** (`ctest`):
+  - `golden_*_interp`: every scenario with presents at alpha 1/3, 2/3 and 1 after each tick
+    gives the golden traces;
+  - `--check-view` (in the same tests): the view renderer at alpha 1 issues exactly the faithful
+    frame's commands, with and without the motion;
+  - a mutation test that disables the visibility rules in `DrawView` fails `--check-view` (2
+    attract frames, large explosion sprites the original culls).
+- [EVIDENCE] Visual check on the attract demos: between two ticks with an 8-pixel scroll, the
+  alpha-0.5 view is shifted by 4 pixels (2 for a 4-pixel scroll). The alpha-0 view equals the
+  previous tick's frame except for the animation frames, and alpha 0.99 equals the current one.
+
 ## Stage 8: widescreen (opt-in)
 
 - **The simulation camera stays exactly as it is.** It decides when collected pickups count (see
@@ -306,13 +409,99 @@ Built on stage 3's identities and stage 4's snapshots.
 - **Gate:** state traces are identical with widescreen on or off. The centre 640×480 region of
   a wide frame equals the faithful frame whenever the view is not clamped differently.
 
+**Status (2026-10-21): done, opt-in.** Widescreen is set on the Display options screen
+(stage 9), or for one run with `--wide auto|off|W|A:B`.
+- **Automatic aspect.** The view takes the window's shape between 4:3 (640, widescreen off in
+  effect) and 21:9 (1120) at the frame height of 480, rounded to an even width so the frame
+  sits on whole pixels. The host recomputes it when the window's pixel size changes and
+  letterboxes other shapes. A new window opens at 16:9; fullscreen takes the display's shape.
+  A fixed width (`--wide 854`, `--wide 16:9`) is for tests and comparisons.
+- **Nothing in the simulation changes.** The game keeps its 640×480 back buffer, its screen and
+  its camera; sound panning and pickup voyages still use the simulation camera. The wide view is
+  a presentation of the same scene (`DrawView` with a `ViewSpec`) into a separate target
+  (`kWideView`), which the host shows instead of the screen.
+- **View placement** (`PlaceView`). In play, the view is centred on the shaken frame and clamped
+  to the world.
+  - A world narrower than the view (`m_dimDecor.x == 0`) is centred, with black sides.
+  - The scene coverage reaches the widest view's extra width on each side, so views clamped
+    at world edges, and any window width, are covered.
+  - The parallax background is placed by the view camera: where the view is centred on the
+    frame it is `Build`'s own position. Where the view is clamped at a world edge it stays
+    still with the world. The first version placed it relative to the frame, so the background
+    slid while the clamped view stood still (reported by the user, fixed).
+- **Screen layer.** HUD, texts, jauges and the captured UI stay in the centred 640×480 frame. A
+  voyage icon starts at the object's place in the view (the frame offset) and ends at the HUD
+  counter (centred offset), blended by its own phase.
+- **The editor** (`WM_PHASE_BUILD`) also shows the wide world, with its frame anchored to the
+  view's left edge (`ViewSpec::frameLeft`).
+  - The toolbar, buttons, tooltips and caption sit at the screen's left edge as in the
+    original, and the extra world is shown to the right.
+  - The view starts at the simulation camera and is never clamped (black beyond the world).
+    Every position inside the frame, on a button or on the map, therefore reaches the game
+    unchanged with the original mapping. The host reports mouse positions relative to wherever
+    the frame lies now (`host::set_frame_x`, updated at every present).
+  - Shifting only the toolbar was rejected. The game uses one coordinate for its buttons and
+    its map, so a moved toolbar would need every click split between two mappings, with hidden
+    buttons left at their old place.
+  - Positions right of the frame, which the original rejects as outside its window, go to
+    `game/editor_wide.cpp`. That is a derivative of `CEvent::BuildDown`/`BuildMove` and
+    `ScreenPosToCelPos`, without the frame bounds test. It places, deletes and highlights
+    cells with the selected tool exactly as a click inside the frame would. Cells outside the
+    world are ignored, like positions outside the original window.
+- **Menus** show the 640×480 frame centred in the wide view.
+- **Mouse.** Positions are reported in frame coordinates (the host subtracts the frame offset).
+  The game's cursor sprite is drawn into the wide view. Over the side areas it follows the mouse
+  (presentation only), and the game is not told the mouse left its window.
+- **Gates** (`ctest`):
+  - `golden_*_wide`: every scenario with a 16:9 view, interpolation and three presents per tick
+    gives the golden traces;
+  - `wide_attract16/8` (`--check-wide`): wherever the view is centred on the frame, its centre
+    640×480 region equals the faithful frame pixel for pixel. The comparison uses `Build`'s rules
+    at the frame, since a wider view legitimately draws objects the original culls. That is
+    5980 frames per depth, with 529 clamped frames skipped.
+  - `wide_editor16/8`: the same at 21:9 on the editor session, comparing the frame region at
+    the view's left edge on every editor frame (131 compared; the 69 skipped frames are its
+    test play).
+  - A mutation test (parallax placed without the frame offset) fails all 5980.
+- [EVIDENCE] Windowed runs: `--wide 16:9 --interpolate`, then automatic widescreen from a
+  settings file. Each made about 1200 presents in 5.0 s (240 per second) over 100 game frames,
+  with a clean exit; the automatic run chose 854×480 for its 16:9 window. Screenshots of the
+  attract demos, the title screen (pillarboxed), the world-1 hub (clamped at the left edge, HUD
+  centred) and the editor at 21:9 look as intended. Resizing the window by hand is not yet
+  verified.
+
+## Stage 9: port settings and the Display options screen
+
+- **Settings file.** `blupi-sdl3.json` in the user directory (`game/settings.cpp`): widescreen,
+  interpolation, frame rate (display or original tick rate), fullscreen, whole-pixel scaling and
+  the initial window scale. It is a flat JSON object read leniently. It is written when a
+  setting changes on the screen or with Alt+Enter, never by headless runs. Command-line options
+  override it for one run.
+- **Display options screen** (`game/options_screen.cpp`). The game's settings screen (in the
+  menus and in the pause menu) gets one more button in its empty lower-left panel. It opens a
+  screen on the same background, built from the game's own `CButton` class, sprites, fonts and
+  click sound: arrow pairs like the volume settings, and choice buttons like the input devices.
+  Changes apply at once and are saved. Escape, Enter or the check button return to the game's
+  settings screen.
+  - It is a presentation layer, so `src/` is unchanged. It is drawn over the tick's frame when
+    presenting, never into the game's own frame or screen. Its buttons post port messages that
+    `DispatchPosted` handles before the window procedure. While it is open, the game's screen
+    underneath gets no mouse or key events, and the cursor is moved by the port with the game's
+    pointer/arrow rule.
+  - The original frame rate now presents once per tick through the same path, so the screen
+    stays reachable in every mode.
+- **Gate:** `golden_options16_screen` opens the screen during the menu tour, changes three
+  settings and closes it. Its state hashes equal `golden_options16`, which is the tour plus the
+  one mouse move that reaches the game, without the screen. Screen hashes are not compared,
+  since the cursor follows the clicks on the port's screen.
+
 ## Order and dependencies
 
 ```
 0.1-0.3 oracles -> 1 commands -> 2 GPU backend -> 3 scene builder -> 4 sim/present split -> 5 display rate
 0.4 Linux ------------------------------------------------------------> 6 Android (best after 2 and 5)
                                                      5 -> 7 interpolation
-                                                     5 -> 8 widescreen
+                                                     5 -> 8 widescreen -> 9 settings screen
 ```
 
 Each stage lands separately, documented in `ARCHITECTURE.md`, with its gate as a ctest.

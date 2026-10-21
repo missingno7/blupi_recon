@@ -192,6 +192,18 @@ button/jauge flags) and the camera dependence of the pickup "voyages", is in
 
 `m_time` must stay "frames drawn at logical rate" to keep demos and saves compatible.
 
+**Implemented (2026-10-21; [ROADMAP.md](ROADMAP.md) stages 4, 5 and 7).** The outline holds,
+with one change: `decblock.cpp` stays shared and unmodified.
+- `game/scene.cpp` builds the scene from const state.
+- `game/end_of_tick.cpp` makes `Build`'s state changes at `Build`'s point and in its
+  order.
+- `DrawButtons` still runs once per tick, its drawing captured.
+
+A tick therefore produces a frame as data. The host loop presents it at the display rate,
+optionally interpolated between the last two scenes (`--interpolate`, visual only). The
+simulation still runs one `UpdateFrame` + `SetDecor` per 50 ms tick, and every mode keeps the
+golden state traces.
+
 ## 5. Widescreen assumptions
 
 [EVIDENCE] Uses by TU (counts): `LXIMAGE`/`LYIMAGE`:
@@ -218,6 +230,15 @@ Plan:
 [OPEN] Whether a wider view changes gameplay. Enemies activate by distance or visibility in some
 SB titles; check `decmove`/`decblupi` for `LXIMAGE`-based activation before allowing a wider
 view in "faithful" mode.
+
+**Implemented differently (2026-10-21; [ROADMAP.md](ROADMAP.md) stage 8).** The wider view is
+presentation only, so the question above no longer affects it. No `CDecor` method has a
+variant: the simulation camera, camera clamps, sound pan and activation code are untouched,
+and the game still draws its 640×480 frame. The view renderer (`DrawView`) draws the same scene
+for a wider view, evaluating `Build`'s own tile ranges and bounds tests at that view. HUD and
+UI stay in the centred 640×480 frame, and menus and the editor are shown centred. Things in the
+extra width behave exactly as they would off-screen in the original: what the original
+simulates there, the player now sees.
 
 ## 6. Demo system as the regression harness
 

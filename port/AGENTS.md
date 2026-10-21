@@ -21,6 +21,22 @@ Layering inside `port/`:
   window procedure). Do not add a Win32/DirectX name that neither needs. Do not add
   behaviour that silently pretends to work: either implement the semantics the game relies on,
   or fail the way the original did without the service, log it once, and document it.
+- Presentation never changes game state. Every state change `Build` made while drawing lives in
+  `game/end_of_tick.cpp`, in `Build`'s order. Interpolation and the wide view draw a tick's
+  scene into the back buffer or the wide target and never write the game's screen (traces must
+  stay golden in every mode: `ctest -R golden`).
+- `DrawView` at alpha 1 and 640 wide must issue exactly `FlattenScene`'s commands
+  (`--check-view`). Items beyond `Build`'s own set are flagged `extended` and carry `Build`'s
+  visibility rule; never draw them in the faithful frame.
+- Test-only state injection goes through `--probe` (`game/probe.cpp`), never through gameplay
+  code paths.
+- Port UI (the Display options screen, `game/options_screen.cpp`) is a presentation layer:
+  drawn over the tick's frame when presenting, never into the game's frame or screen. It uses
+  its own posted messages, handled before the window procedure. Port settings live in
+  `blupi-sdl3.json` (`game/settings.h`) and must never change the simulation.
+- Input the original rejects (e.g. editor clicks over the side areas of a wide view) may be
+  handled only by a documented port derivative of the historical handler
+  (`game/editor_wide.cpp`); input inside the original frame always goes to the game unchanged.
 - `game/scene.cpp` is a derivative of `CDecor::Build` and its helpers and must stay
   equivalent (`ctest -R scene`). It reads state only through const accessors; never make it
   write game state.

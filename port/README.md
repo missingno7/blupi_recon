@@ -56,6 +56,23 @@ name, so a custom `data\config.def` can be placed in the user folder. `--color 8
 the configured colour depth, `--scale N`, `--fullscreen` (Alt+Enter toggles), `--help` lists the
 test options (`--headless`, `--frames`, `--trace`, `--screenshot`, `--input`).
 
+The game always simulates at its original 50 ms tick. Display settings that the original
+does not have are on the game's settings screen, under **Display options**. They are saved in
+`blupi-sdl3.json` in the user folder, and none of them changes the simulation:
+- **Widescreen** (off by default): the view follows the window's shape, from 4:3 up to 21:9,
+  and shows more of the world around the 640×480 frame, in play and in the editor. In play the
+  HUD stays in the centred 640×480 frame; menus are centred too. In the editor the toolbar sits
+  at the left edge and the extra world is shown to the right.
+- **Smooth motion** (off by default): movement and scrolling are interpolated between ticks.
+  The world is shown up to one tick (50 ms) late; the cursor is not delayed.
+- **Frame rate**: *Monitor* (the default) redraws at the display's rate; *Original* presents
+  once per tick like the 1998 game.
+- **Display** (window or full screen; Alt+Enter also toggles) and **Scaling** (fit the window,
+  or whole pixels only).
+
+The same options exist for one run on the command line: `--wide auto|off|16:9|854`,
+`--interpolate`, `--present display|tick`, `--fullscreen`, `--integer-scale`, `--scale N`.
+
 **Music** plays the game's MIDI files through a SoundFont synthesizer. The GeneralUser GS
 SoundFont (the one Free Eggbert ships) is the git submodule `third_party/generaluser-gs/`: the
 author's repository at a pinned commit. The build copies it next to the executable as
@@ -82,11 +99,12 @@ Verified ([EVIDENCE], reproduced by the commands above):
     original lists DirectPlay providers.
 
   See [docs/ORACLE.md](docs/ORACLE.md).
-- **Golden traces.** Per-frame simulation state hash plus screen hash, checked in for three
+- **Golden traces.** Per-frame simulation state hash plus screen hash, checked in for four
   scenarios in both colour depths (`ctest -R golden`):
   - the attract mode (7500 frames, all seven demos);
   - the screen tour;
-  - an editor session.
+  - an editor session;
+  - the effects scenario (state probes).
 
   The simulation state is identical in 8 and 16 bpp.
 - **Renderer seam and scene builder** (roadmap stages 1 and 3):
@@ -94,6 +112,20 @@ Verified ([EVIDENCE], reproduced by the commands above):
     (`ctest -R commands`);
   - the side-effect-free scene builder reproduces `CDecor::Build` command for command
     (`ctest -R scene`).
+- **Simulation separated from presentation** (stages 4, 5, 7, 8, 9). `Build`'s state changes are
+  made by `EndOfTick`, and a tick's frame is data that can be drawn any number of times. Every
+  golden scenario gives the same traces in each mode (`ctest -R golden`):
+  - reference mode;
+  - re-rendered frames;
+  - display-rate presents;
+  - interpolated presents;
+  - a 16:9 view.
+
+  The interpolating renderer at alpha 1 issues exactly the faithful commands (`--check-view`).
+  The centre of a centred wide view equals the faithful frame, in play at 16:9 and in the
+  editor at 21:9 (`ctest -R wide`). Using the Display options screen changes no game state
+  (`ctest -R options`). Test-only state probes (`tests/golden/effects.*`) cover shield, power, cloud, hide, notifications, the
+  mission-10 clamp and network Blupis.
 
 - The 12 shared historical TUs compile unchanged with GCC 12 (C++17, `-fpermissive -fwrapv
   -fno-strict-aliasing`, cp1252 source charset) against the compat headers; x64 target.
@@ -154,8 +186,10 @@ equivalence gate per stage, is in [docs/ROADMAP.md](docs/ROADMAP.md). Immediate 
 1. Run the windowed build by hand through several levels, saving and loading, the designer and
    option screens (including the music volume buttons); fix what differs. Extend the scripted
    tour and the oracle to whatever can be reached without gameplay.
-2. Roadmap stage 4 (separate simulation from presentation). Stage 0.4 (Linux) is postponed;
-   stage 2 (GPU backend) is pending a decision (see `docs/ROADMAP.md`).
+2. Try interpolation and widescreen by hand at high refresh rates. Settle the [OPEN] points in
+   the roadmap: the snap threshold, the cursor over the wide side areas, and HUD anchoring.
+3. Android (stage 6) as a separate platform track. Stage 0.4 (Linux) is postponed; stage 2 (GPU
+   backend) is deferred until profiling shows a need (see `docs/ROADMAP.md`).
 
 ## Dependencies and licences
 

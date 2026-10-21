@@ -33,6 +33,7 @@
 
 #include "game/port_game.h"
 #include "game/scene.h"
+#include "game/settings.h"
 #include "platform/audio.h"
 #include "platform/music.h"
 #include "platform/host.h"
@@ -40,6 +41,7 @@
 
 #include <new>
 #include <string>
+#include <utility>
 #include <vector>
 
 // Define Globals
@@ -71,6 +73,7 @@ UINT		g_lastPhase = 999;
 
 // Port state.
 static bool g_bQuit = false;
+static long g_portFrame = 0;        // index of the frame the next WM_UPDATE completes
 static int  g_portColorDepth = 0;	// --color: overrides config.def TrueColor
 
 static void FinishObjects(void);
@@ -287,6 +290,9 @@ void UpdateFrame(void)
 static bool g_bCheckScene = false;
 static long g_sceneFrames = 0, g_sceneMismatches = 0, g_sceneFirstMismatch = -1;
 static std::string g_sceneFirstDetail;
+// World area the scene records beyond Build's view: none in faithful mode,
+// the interpolation margin with --interpolate (ROADMAP.md stage 7).
+static blupi::scene::Coverage g_sceneCoverage;
 
 static void PortBuildDecor(RECT rect, POINT posMouse)
 {
@@ -297,12 +303,12 @@ static void PortBuildDecor(RECT rect, POINT posMouse)
 	}
 	blupi::scene::Scene scene;
 	std::vector<blupi::render::Command> historical, flattened;
-	blupi::scene::BuildScene(*g_pDecor, rect, posMouse, scene);
+	blupi::scene::BuildScene(*g_pDecor, rect, posMouse, scene, g_sceneCoverage);
 	PortPixmapCaptureBegin(true);
 	g_pDecor->Build(rect, posMouse);
 	PortPixmapCaptureEnd(historical);
 	PortPixmapCaptureBegin(false);
-	blupi::scene::FlattenScene(scene, *g_pDecor, g_pPixmap);
+	blupi::scene::FlattenScene(scene, g_pPixmap);
 	PortPixmapCaptureEnd(flattened);
 
 	size_t i = 0;
@@ -322,6 +328,273 @@ static void PortBuildDecor(RECT rect, POINT posMouse)
 	g_sceneFrames++;
 }
 
+// Port: the frame a tick produces, as data (ROADMAP.md stage 4). Rendering it
+// reads no game state, so it can be drawn again at any time.
+//   world/scene     the scene of CDecor::Build (world phases), or
+//   background      the captured commands of the full-screen background image
+//   ui              the captured commands of CEvent::DrawButtons
+//   motion          with --interpolate: where the scene's items were in the
+//                   previous tick's scene (ROADMAP.md stage 7)
+struct PortFrame
+{
+	bool world = false;
+	blupi::scene::Scene scene;
+	blupi::scene::Motion motion;
+	std::vector<blupi::render::Command> background;
+	std::vector<blupi::render::Command> ui;
+};
+static PortFrame g_frame, g_prevFrame;
+static bool g_bReference = false;   // --reference: the historical SetDecor body
+static int  g_renderRepeat = 0;     // --render-repeat: extra renders per tick (test)
+static bool g_frameValid = false;   // g_frame holds a tick's frame
+static bool g_bInterpolate = false; // --interpolate (ROADMAP.md stage 7)
+static bool g_bCheckView = false;   // --check-view
+static long g_viewFrames = 0, g_viewMismatches = 0, g_viewFirstMismatch = -1;
+static int  g_wideWidth = 0;        // --wide W: fixed view width (tests); 0: from the host
+static bool g_bCheckWide = false;   // --check-wide
+static long g_wideFrames = 0, g_wideSkipped = 0, g_wideMismatches = 0, g_wideFirstMismatch = -1;
+static bool g_bHeadless = false;
+static bool g_presentDisplayRate = true;   // --present display|tick, "Frame rate"
+static PortSettings g_settings;            // game/settings.h
+static std::string  g_settingsPath;        // empty: not saved (headless runs)
+static void PortRenderFrame(const PortFrame& frame, double alpha);
+static void PortPresentWide(double alpha, int width);
+
+// Width of the view presented now (ROADMAP.md stage 8): a fixed --wide width,
+// else the host's (the window shape with automatic widescreen).
+static int PortViewWidth()
+{
+	if (g_wideWidth > 0) return g_wideWidth;
+	if (g_bHeadless) return LXIMAGE;
+	return blupi::host::view_width();
+}
+
+// The tick's frame, or on the game's settings screen with the port's
+// "Display options" open, its background only; then the port's screen or its
+// entry button (game/options_screen.cpp). Into the back buffer.
+static void PortRenderPresentation(double alpha)
+{
+	if (PortOptionsOpen() && !g_frame.world)
+	{
+		RECT clip = g_pPixmap->GetClipping();
+		PortPixmapSubmit(g_frame.background);
+		g_pPixmap->SetClipping(clip);
+	}
+	else
+	{
+		PortRenderFrame(g_frame, alpha);
+	}
+	if (PortOptionsVisible())
+	{
+		RECT clip = g_pPixmap->GetClipping();
+		g_pPixmap->SetClipping(RECT{0, 0, LXIMAGE, LYIMAGE});
+		PortOptionsDraw();
+		g_pPixmap->SetClipping(clip);
+	}
+}
+
+// Presentation (ROADMAP.md stages 5 and 8): draws the latest tick's frame and
+// the cursor at its current position, and presents it. Reads no game state
+// and changes none; the simulation keeps its fixed tick. alpha is the time
+// since that tick, in ticks (used with interpolation only).
+static void PortPresentNow(double alpha)
+{
+	const int width = PortViewWidth();
+	PortPixmapSetWide(width > LXIMAGE ? width : 0);
+	if (width > LXIMAGE) { PortPresentWide(alpha, width); return; }
+	if (!g_bHeadless) blupi::host::set_frame_x(0);
+	if (!g_frameValid || g_bReference) return;
+	PortRenderPresentation(alpha);
+	g_pPixmap->MouseBackDraw();
+	PortPixmapPresentBack();
+}
+
+// Draws a tick's frame into the back buffer, in the original order (Build or
+// the background, then the buttons). CPixmap's clip state is left as the tick
+// left it, as in the original, where DrawButtons ran after Build. With
+// --interpolate the world is drawn at alpha between the previous tick and
+// this one; at alpha 1 that is exactly the faithful frame (--check-view).
+static void PortRenderFrame(const PortFrame& frame, double alpha)
+{
+	RECT clip = g_pPixmap->GetClipping();
+	if (frame.world && g_bInterpolate) blupi::scene::DrawView(frame.scene, &frame.motion, alpha, g_pPixmap);
+	else if (frame.world) blupi::scene::FlattenScene(frame.scene, g_pPixmap);
+	else PortPixmapSubmit(frame.background);
+	PortPixmapSubmit(frame.ui);
+	g_pPixmap->SetClipping(clip);
+}
+
+// Widescreen presentation (ROADMAP.md stage 8): the world phases (play and
+// the editor) are drawn for the wider view around the frame; menus show the
+// 640x480 frame centred. In play the frame, with the HUD and the UI, is
+// centred; the editor anchors its frame, with its toolbar, to the view's left
+// edge and shows the extra world on the right. Like PortPresentNow, it reads
+// no game state and changes none.
+static bool PortWideWorld(const PortFrame& frame)
+{
+	return frame.world;
+}
+
+static bool PortFrameLeft(const PortFrame& frame)
+{
+	return frame.world && frame.scene.phase == WM_PHASE_BUILD;
+}
+
+static blupi::scene::ViewSpec PortWideSpec(const PortFrame& frame, int width)
+{
+	blupi::scene::ViewSpec spec;
+	spec.width = width;
+	spec.frameLeft = PortFrameLeft(frame);
+	return spec;
+}
+
+// Where the frame lies in the presented view now; the host reports mouse
+// positions relative to it.
+static int PortFrameX(int width)
+{
+	if (width <= LXIMAGE) return 0;
+	const bool left = g_frameValid && !g_bReference && PortFrameLeft(g_frame);
+	return blupi::scene::FrameOffset(width, left);
+}
+
+// The mouse over a side area of a wide view (frame coordinates, outside the
+// frame but inside the view).
+static bool PortMouseInSideArea(int width, int x, int y)
+{
+	const int frameX = PortFrameX(width);
+	return width > LXIMAGE && (x < 0 || x >= LXIMAGE) && x >= -frameX && x < width - frameX &&
+		   y >= 0 && y < LYIMAGE;
+}
+
+static void PortPresentWide(double alpha, int width)
+{
+	const int frameX = PortFrameX(width);
+	if (!g_bHeadless) blupi::host::set_frame_x(frameX);
+	const bool world = g_frameValid && !g_bReference && PortWideWorld(g_frame);
+	if (g_frameValid && !g_bReference && !world) PortRenderPresentation(alpha);   // the 640x480 frame
+	if (!PortPixmapWideBegin(g_pPixmap)) return;
+	if (world)
+	{
+		blupi::scene::DrawView(g_frame.scene, g_bInterpolate ? &g_frame.motion : NULL, alpha, g_pPixmap,
+							   PortWideSpec(g_frame, width));
+		PortPixmapWideSubmit(g_frame.ui, frameX);
+	}
+	else
+	{
+		PortPixmapWideBlitBack(frameX);
+	}
+	// The cursor follows the mouse over the side areas too.
+	POINT mouse;
+	int mx = 0, my = 0;
+	blupi::host::get_mouse(mx, my);
+	mouse.x = mx;
+	mouse.y = my;
+	const bool side = !g_bHeadless && PortMouseInSideArea(width, mx, my);
+	PortPixmapWideCursor(g_pPixmap, frameX, side ? &mouse : NULL);
+	PortPixmapWideEnd(g_pPixmap);
+	PortPixmapWidePresent();
+}
+
+// World area the scene records around the frame: the interpolation margin,
+// and with widescreen the extra width on either side (a view clamped at a
+// world edge reaches that far beyond the frame). Automatic widescreen covers
+// the widest view, so resizing the window never shows an uncovered edge.
+static void PortUpdateCoverage()
+{
+	const int m = (g_bInterpolate || g_bCheckView) ? blupi::scene::kInterpolationMargin : 0;
+	int w = 0;
+	if (g_wideWidth > 0) w = g_wideWidth - LXIMAGE;
+	else if (g_settings.widescreen && !g_bHeadless) w = blupi::host::kMaxViewWidth - LXIMAGE;
+	g_sceneCoverage = blupi::scene::Coverage{m + w, m + w, m, m};
+}
+
+static void PortSaveSettings()
+{
+	if (g_settingsPath.empty()) return;
+	if (!PortSettingsSave(g_settingsPath.c_str(), g_settings))
+	{
+		blupi::host::log_info(("cannot write " + g_settingsPath).c_str());
+	}
+}
+
+// After a change on the "Display options" screen: applied at once and saved.
+static void PortApplySettings()
+{
+	g_presentDisplayRate = g_settings.displayRate;
+	g_bInterpolate = g_settings.interpolate && g_settings.displayRate;
+	if (!g_bHeadless)
+	{
+		if (g_settings.widescreen) g_wideWidth = 0;
+		if (g_wideWidth == 0) blupi::host::set_auto_wide(g_settings.widescreen);
+		blupi::host::set_fullscreen(g_settings.fullscreen);
+		blupi::host::set_integer_scale(g_settings.integerScale);
+	}
+	PortUpdateCoverage();
+	PortSaveSettings();
+}
+
+// --check-wide: where the wide view is centred on the frame (not clamped at a
+// world edge), its centre 640x480 region equals the faithful frame when the
+// items are chosen by Build's rules at the frame (ROADMAP.md stage 8 gate).
+// Called with the faithful frame, without the cursor, in the back buffer.
+static void PortCheckWide(const PortFrame& frame)
+{
+	if (!PortWideWorld(frame)) return;
+	blupi::scene::ViewSpec spec = PortWideSpec(frame, g_wideWidth);
+	spec.cullAtFrame = true;
+	const int frameX = blupi::scene::FrameOffset(g_wideWidth, spec.frameLeft);
+	if (blupi::scene::PlaceView(frame.scene, frame.scene.view, g_wideWidth, spec.frameLeft).frameX != frameX)
+	{
+		g_wideSkipped++;
+		return;
+	}
+	PortPixmapSetWide(g_wideWidth);
+	if (!PortPixmapWideBegin(g_pPixmap)) return;
+	blupi::scene::DrawView(frame.scene, NULL, 1.0, g_pPixmap, spec);
+	PortPixmapWideSubmit(frame.ui, frameX);
+	PortPixmapWideEnd(g_pPixmap);
+	if (!PortPixmapWideRegionEqualsBack(frameX))
+	{
+		if (g_wideFirstMismatch < 0) g_wideFirstMismatch = g_wideFrames;
+		g_wideMismatches++;
+	}
+	g_wideFrames++;
+}
+
+// --check-view: the view renderer at alpha 1, with and without the motion,
+// issues exactly the faithful frame's commands (ROADMAP.md stage 7 gate).
+static void PortCheckView(const PortFrame& frame)
+{
+	std::vector<blupi::render::Command> flat, view, moved;
+	RECT clip = g_pPixmap->GetClipping();
+	PortPixmapCaptureBegin(false);
+	blupi::scene::FlattenScene(frame.scene, g_pPixmap);
+	PortPixmapCaptureEnd(flat);
+	PortPixmapCaptureBegin(false);
+	blupi::scene::DrawView(frame.scene, NULL, 1.0, g_pPixmap);
+	PortPixmapCaptureEnd(view);
+	PortPixmapCaptureBegin(false);
+	blupi::scene::DrawView(frame.scene, &frame.motion, 1.0, g_pPixmap);
+	PortPixmapCaptureEnd(moved);
+	g_pPixmap->SetClipping(clip);
+
+	auto same = [](const std::vector<blupi::render::Command>& a, const std::vector<blupi::render::Command>& b)
+	{
+		if (a.size() != b.size()) return false;
+		for (size_t i = 0; i < a.size(); i++)
+		{
+			if (!blupi::render::same_command(a[i], b[i])) return false;
+		}
+		return true;
+	};
+	if (!same(flat, view) || !same(flat, moved))
+	{
+		if (g_viewFirstMismatch < 0) g_viewFirstMismatch = g_viewFrames;
+		g_viewMismatches++;
+	}
+	g_viewFrames++;
+}
+
 void SetDecor()
 {
 	UINT phase;
@@ -332,22 +605,62 @@ void SetDecor()
 
 	phase = g_pEvent->GetPhase();
 
-	if (phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST || phase == WM_PHASE_BUILD)
+	if (g_bReference || g_bCheckScene)
 	{
+		// Historical body (src/blupi.cpp): drawing and its state changes together.
+		if (phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST || phase == WM_PHASE_BUILD)
 		{
-			RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
-			PortBuildDecor(rect, posMouse);
+			{
+				RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
+				PortBuildDecor(rect, posMouse);
+			}
 		}
-	}
-	else {
-		{
-			RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
-			g_pPixmap->DrawImage(-1, 0, rect, 1);
+		else {
+			{
+				RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
+				g_pPixmap->DrawImage(-1, 0, rect, 1);
+			}
 		}
+
+		g_pEvent->DrawButtons();
+		g_lastPhase = phase;
+		g_pPixmap->MouseBackDraw();
+		return;
 	}
 
-	g_pEvent->DrawButtons();
+	// Port: simulation side of the frame. Every state change happens here, in
+	// the historical order; the drawing is kept as data in g_frame.
+	std::swap(g_prevFrame, g_frame);    // the previous tick's frame, kept for interpolation
+	const bool prevWorld = g_frameValid && g_prevFrame.world;
+	if (phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST || phase == WM_PHASE_BUILD)
+	{
+		RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
+		g_frame.world = true;
+		blupi::scene::BuildScene(*g_pDecor, rect, posMouse, g_frame.scene, g_sceneCoverage);
+		EndOfTick(*g_pDecor);                       // CDecor::Build's state changes
+		if (g_bInterpolate && prevWorld) blupi::scene::PairScenes(g_prevFrame.scene, g_frame.scene, g_frame.motion);
+		else g_frame.motion = blupi::scene::Motion();
+		if (g_bCheckView) PortCheckView(g_frame);
+	}
+	else
+	{
+		RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
+		g_frame.world = false;
+		PortPixmapCaptureBegin(false);
+		g_pPixmap->DrawImage(-1, 0, rect, 1);
+		PortPixmapCaptureEnd(g_frame.background);
+	}
+
+	PortPixmapCaptureBegin(false);
+	g_pEvent->DrawButtons();                        // its UI state changes happen now
+	PortPixmapCaptureEnd(g_frame.ui);
 	g_lastPhase = phase;
+	g_frameValid = true;
+
+	// Presentation side: the tick's own frame (alpha 1: the faithful frame).
+	PortRenderFrame(g_frame, 1.0);
+	for (int i = 0; i < g_renderRepeat; i++) PortRenderFrame(g_frame, 1.0);   // test: rendering changes nothing
+	if (g_bCheckWide) PortCheckWide(g_frame);
 	g_pPixmap->MouseBackDraw();
 }
 
@@ -394,6 +707,7 @@ static LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			if (g_bActive)
 			{
 				UpdateFrame();
+				PortProbeApplyBeforeDraw(g_portFrame);  // test-only (--probe)
 				SetDecor();
 			}
 			g_pPixmap->Display();
@@ -759,7 +1073,7 @@ namespace
 struct ScriptedInput
 {
 	long tick;
-	int  kind;    // 0 click at (x, y), 1 key press, 2 key down, 3 key up
+	int  kind;    // 0 click at (x, y), 1 key press, 2 key down, 3 key up, 4 move to (x, y)
 	int  x, y, vk;
 };
 
@@ -779,7 +1093,15 @@ struct Options
 	long        displayDumpEvery = 0;
 	bool        checkCommands = false;
 	bool        checkScene = false;
+	PortSettings settings;                   // file values, then the options below
+	bool        setWide = false, setInterpolate = false, setPresent = false;
+	bool        setFullscreen = false, setScale = false, setIntegerScale = false;
+	bool        checkView = false;
+	bool        checkWide = false;
+	int         presentRepeat = 0;           // --present-repeat (test)
+	std::string probe;
 	std::vector<std::pair<long, std::string>> screenshots;
+	double      screenshotAlpha = -1.0;      // --screenshot-alpha (test)
 	std::vector<ScriptedInput> inputs;
 	bool        verbose = false;
 };
@@ -792,6 +1114,17 @@ void Usage()
 		"  --user DIR          writable directory for saves and user missions\n"
 		"  --fullscreen        start in desktop fullscreen (Alt+Enter toggles)\n"
 		"  --scale N           initial window scale (default 2)\n"
+		"  --present display|tick  present at the display rate (default; the game still\n"
+		"                      runs at its 50 ms tick) or only when the game draws (vanilla)\n"
+		"  --interpolate       smooth movement between ticks when presenting at the display\n"
+		"                      rate (visual only; shows the world up to one tick later)\n"
+		"  --wide auto|off|W|A:B  widescreen: auto follows the window shape (4:3 to 21:9);\n"
+		"                      W or A:B is a fixed view W pixels wide (or of aspect A:B at\n"
+		"                      height 480). The world shows more around the 640x480 frame;\n"
+		"                      HUD and menus stay in the centred frame\n"
+		"settings: the window and display options are kept in blupi-sdl3.json in the user\n"
+		"directory and set on the game's settings screen (Display options); the options\n"
+		"above override them for one run.\n"
 		"  --integer-scale     scale only by whole factors\n"
 		"  --color 8|16        override TrueColor from config.def\n"
 		"  --soundfont FILE    SoundFont (.sf2) for the MIDI music; default: BLUPI_SOUNDFONT,\n"
@@ -807,10 +1140,21 @@ void Usage()
 		"  --display-dump DIR:N  raw frame file at every Nth Display\n"
 		"  --check-commands    replay every frame's rendering commands on a second device\n"
 		"                      and require identical pixels (exit code 3 otherwise)\n"
+		"  --render-repeat K   render each tick's frame K extra times (must change nothing)\n"
+		"  --present-repeat K  present each tick's frame K extra times with the cursor (test)\n"
+		"  --reference         historical SetDecor (CDecor::Build and DrawButtons drawing\n"
+		"                      directly) instead of scene + EndOfTick + captured UI\n"
 		"  --check-scene       build the frame scene before CDecor::Build and require the\n"
 		"                      same rendering commands (exit code 4 otherwise)\n"
+		"  --check-view        require the view renderer at alpha 1 to issue the faithful\n"
+		"                      frame's rendering commands (exit code 5 otherwise)\n"
+		"  --check-wide        with --wide: require the centre of the wide view to equal the\n"
+		"                      faithful frame where it is centred (exit code 6 otherwise)\n"
 		"  --screenshot N:FILE write the screen after frame N as a 24-bit BMP\n"
-		"  --input FILE        scripted input: lines 'FRAME click X Y' or 'FRAME key VK'\n");
+		"  --screenshot-alpha A  present the view at alpha A (0..1 between the previous\n"
+		"                      tick and frame N) before writing screenshots\n"
+		"  --input FILE        scripted input: lines 'FRAME click|move X Y' or\n"
+		"                      'FRAME key|keydown|keyup VK' (may be given more than once)\n");
 }
 
 bool LoadInputScript(const std::string& path, std::vector<ScriptedInput>& inputs)
@@ -823,9 +1167,10 @@ bool LoadInputScript(const std::string& path, std::vector<ScriptedInput>& inputs
 		ScriptedInput in = {};
 		char kind[16] = {};
 		if (line[0] == '#' || sscanf(line, "%ld %15s", &in.tick, kind) != 2) continue;
-		if (strcmp(kind, "click") == 0 && sscanf(line, "%ld %15s %d %d", &in.tick, kind, &in.x, &in.y) == 4)
+		if ((strcmp(kind, "click") == 0 || strcmp(kind, "move") == 0) &&
+			sscanf(line, "%ld %15s %d %d", &in.tick, kind, &in.x, &in.y) == 4)
 		{
-			in.kind = 0;
+			in.kind = strcmp(kind, "click") == 0 ? 0 : 4;
 			inputs.push_back(in);
 			continue;
 		}
@@ -847,9 +1192,9 @@ bool ParseOptions(int argc, char** argv, Options& o)
 		auto next = [&]() -> const char* { return i + 1 < argc ? argv[++i] : ""; };
 		if (a == "--data") o.dataRoot = next();
 		else if (a == "--user") o.userRoot = next();
-		else if (a == "--fullscreen") o.host.fullscreen = true;
-		else if (a == "--scale") o.host.scale = atoi(next());
-		else if (a == "--integer-scale") o.host.integerScale = true;
+		else if (a == "--fullscreen") { o.settings.fullscreen = true; o.setFullscreen = true; }
+		else if (a == "--scale") { o.settings.scale = atoi(next()); o.setScale = true; }
+		else if (a == "--integer-scale") { o.settings.integerScale = true; o.setIntegerScale = true; }
 		else if (a == "--color") o.colorDepth = atoi(next());
 		else if (a == "--soundfont") o.soundFont = next();
 		else if (a == "--verbose") o.verbose = true;
@@ -860,6 +1205,40 @@ bool ParseOptions(int argc, char** argv, Options& o)
 		else if (a == "--display-log") o.displayLog = next();
 		else if (a == "--check-commands") o.checkCommands = true;
 		else if (a == "--check-scene") o.checkScene = true;
+		else if (a == "--check-view") o.checkView = true;
+		else if (a == "--screenshot-alpha") o.screenshotAlpha = atof(next());
+		else if (a == "--interpolate") { o.settings.interpolate = true; o.setInterpolate = true; }
+		else if (a == "--check-wide") o.checkWide = true;
+		else if (a == "--wide")
+		{
+			std::string v = next();
+			o.setWide = true;
+			if (v == "auto" || v == "off")
+			{
+				o.settings.widescreen = v == "auto";
+				g_wideWidth = 0;
+				continue;
+			}
+			o.settings.widescreen = false;
+			size_t colon = v.find(':');
+			int width = colon == std::string::npos ? atoi(v.c_str())
+						: (LYIMAGE * atoi(v.c_str()) + atoi(v.c_str() + colon + 1) - 1) / atoi(v.c_str() + colon + 1);
+			width = (width + 1) & ~1;   // even: the frame is centred on whole pixels
+			if (width < LXIMAGE || width > 4 * LXIMAGE) return false;
+			g_wideWidth = width == LXIMAGE ? 0 : width;
+		}
+		else if (a == "--reference") g_bReference = true;
+		else if (a == "--render-repeat") g_renderRepeat = atoi(next());
+		else if (a == "--present")
+		{
+			std::string mode = next();
+			if (mode == "tick") o.settings.displayRate = false;
+			else if (mode == "display") o.settings.displayRate = true;
+			else return false;
+			o.setPresent = true;
+		}
+		else if (a == "--present-repeat") o.presentRepeat = atoi(next());
+		else if (a == "--probe") o.probe = next();
 		else if (a == "--display-dump")
 		{
 			std::string v = next();
@@ -936,29 +1315,49 @@ void TranslateHostEvent(const blupi::host::Event& e)
 		WindowProc(WM_ACTIVATEAPP, 0, 0);
 		break;
 	case EventType::KeyDown:
+		if (PortOptionsKey(WM_KEYDOWN, (WPARAM)e.key)) break;
 		WindowProc(WM_KEYDOWN, (WPARAM)e.key, (LPARAM)(1 | (e.repeat ? (1 << 30) : 0)));
 		// TranslateMessage: control characters that become WM_CHAR.
 		if (e.key == VK_BACK || e.key == VK_RETURN || e.key == VK_ESCAPE || e.key == VK_TAB)
 			WindowProc(WM_CHAR, (WPARAM)e.key, 1);
 		break;
 	case EventType::KeyUp:
+		if (PortOptionsKey(WM_KEYUP, (WPARAM)e.key)) break;
 		WindowProc(WM_KEYUP, (WPARAM)e.key, (LPARAM)(1 | (1 << 30) | (1u << 31)));
 		break;
 	case EventType::Text:
+		if (PortOptionsKey(WM_CHAR, (WPARAM)e.ch)) break;
 		WindowProc(WM_CHAR, (WPARAM)e.ch, 1);
 		break;
 	case EventType::MouseMove:
-		if (e.inside) WindowProc(WM_MOUSEMOVE, MouseKeys(e), MousePos(e.x, e.y));
-		else WindowProc(WM_NCMOUSEMOVE, 0, 0);
-		break;
 	case EventType::MouseDown:
-		if (!e.inside) break;
-		WindowProc(e.button == 1 ? WM_LBUTTONDOWN : WM_RBUTTONDOWN, MouseKeys(e), MousePos(e.x, e.y));
-		break;
 	case EventType::MouseUp:
-		if (!e.inside) break;
-		WindowProc(e.button == 1 ? WM_LBUTTONUP : WM_RBUTTONUP, MouseKeys(e), MousePos(e.x, e.y));
+	{
+		UINT message = WM_MOUSEMOVE;
+		if (e.type == EventType::MouseDown) message = e.button == 1 ? WM_LBUTTONDOWN : WM_RBUTTONDOWN;
+		if (e.type == EventType::MouseUp) message = e.button == 1 ? WM_LBUTTONUP : WM_RBUTTONUP;
+		if (!e.inside)
+		{
+			// Over the side areas of a wide view: the editor maps them to cells
+			// (game/editor_wide.cpp); elsewhere they are outside the game's
+			// window, as before.
+			const bool side = PortMouseInSideArea(PortViewWidth(), e.x, e.y);
+			if (side && !PortOptionsOpen() && g_frameValid && g_frame.world && g_pEvent != NULL &&
+				g_pEvent->GetPhase() == WM_PHASE_BUILD)
+			{
+				PortEditorSideMouse(g_pEvent, g_pDecor, message, (int)MouseKeys(e), POINT{e.x, e.y});
+			}
+			else if (!side && message == WM_MOUSEMOVE)
+			{
+				WindowProc(WM_NCMOUSEMOVE, 0, 0);
+			}
+			break;
+		}
+		if (PortOptionsMouse(message, MouseKeys(e), MousePos(e.x, e.y))) break;
+		WindowProc(message, MouseKeys(e), MousePos(e.x, e.y));
+		if (message == WM_MOUSEMOVE) PortOptionsHover(MousePos(e.x, e.y));
 		break;
+	}
 	}
 }
 
@@ -978,6 +1377,11 @@ void DispatchPosted()
 	PortMessage msg;
 	while (!g_bQuit && PortPopMessage(msg))
 	{
+		if (PortOptionsCommand(msg.message)) continue;   // the port's own buttons
+		// Scripted mouse input meets the port's screen like live input.
+		if ((msg.message == WM_MOUSEMOVE || msg.message == WM_LBUTTONDOWN || msg.message == WM_LBUTTONUP ||
+			 msg.message == WM_RBUTTONDOWN || msg.message == WM_RBUTTONUP) &&
+			PortOptionsMouse(msg.message, msg.wParam, msg.lParam)) continue;
 		WindowProc(msg.message, msg.wParam, msg.lParam);
 		int ch = msg.message == WM_KEYDOWN ? TranslatedChar(msg.wParam) : 0;
 		if (ch != 0 && !g_bQuit) WindowProc(WM_CHAR, (WPARAM)ch, msg.lParam);
@@ -998,6 +1402,7 @@ void PostScriptedInput(const Options& o, long frame)
 			PostMessage(g_hWnd, WM_LBUTTONDOWN, MK_LBUTTON, pos);
 			PostMessage(g_hWnd, WM_LBUTTONUP, 0, pos);
 		}
+		if (in.kind == 4) PostMessage(g_hWnd, WM_MOUSEMOVE, 0, MousePos(in.x, in.y));
 		if (in.kind == 1 || in.kind == 2)
 		{
 			PostMessage(g_hWnd, WM_KEYDOWN, (WPARAM)in.vk, 1);
@@ -1018,8 +1423,40 @@ int BlupiMain(int argc, char** argv)
 		Usage();
 		return 2;
 	}
+	// Port settings (game/settings.h): the file, then this run's options.
+	// Headless runs use defaults and options only, and save nothing.
+	g_bHeadless = o.host.headless;
+	{
+		PortSettings fromFile;
+		if (!g_bHeadless)
+		{
+			std::string user = o.userRoot.empty() ? blupi::host::pref_path() : o.userRoot + "/";
+			g_settingsPath = user + "blupi-sdl3.json";
+			PortSettingsLoad(g_settingsPath.c_str(), fromFile);
+		}
+		PortSettings& s = o.settings;
+		if (!o.setWide) s.widescreen = fromFile.widescreen;
+		if (!o.setInterpolate) s.interpolate = fromFile.interpolate;
+		if (!o.setPresent) s.displayRate = fromFile.displayRate;
+		if (!o.setFullscreen) s.fullscreen = fromFile.fullscreen;
+		if (!o.setScale) s.scale = fromFile.scale;
+		if (!o.setIntegerScale) s.integerScale = fromFile.integerScale;
+		g_settings = s;
+	}
+	o.host.fullscreen = g_settings.fullscreen;
+	o.host.scale = g_settings.scale;
+	o.host.integerScale = g_settings.integerScale;
+	o.host.autoWide = g_settings.widescreen && g_wideWidth == 0;
+	o.host.viewWidth = g_wideWidth;
+	g_bInterpolate = g_settings.interpolate && g_settings.displayRate;
+	g_presentDisplayRate = g_settings.displayRate;
 	if (!blupi::host::init(TITLE, LXIMAGE, LYIMAGE, o.host)) return 1;
 	blupi::host::set_verbose(o.verbose);
+	{
+		char text[80];
+		snprintf(text, sizeof(text), "view %dx%d", blupi::host::view_width(), LYIMAGE);
+		blupi::host::log_debug(text);
+	}
 
 	// Locate the read-only game data and the writable user directory.
 	std::vector<std::string> candidates;
@@ -1076,12 +1513,23 @@ int BlupiMain(int argc, char** argv)
 	g_portColorDepth = o.colorDepth;
 	if (o.checkCommands) PortPixmapEnableCommandCheck();
 	g_bCheckScene = o.checkScene;
+	g_bCheckView = o.checkView;
+	g_bCheckWide = o.checkWide && g_wideWidth > 0;
+	PortUpdateCoverage();
+	if (!o.probe.empty())
+	{
+		FILE* probe = fopen(o.probe.c_str(), "r");
+		if (probe == NULL) { printf("cannot open probe script %s\n", o.probe.c_str()); return 2; }
+		PortProbeLoad(probe);
+		fclose(probe);
+	}
 	if (!DoInit(NULL, (LPSTR)"", 0))
 	{
 		blupi::audio::shutdown();
 		blupi::host::shutdown();
 		return 1;
 	}
+	PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings);
 
 	Benchmark();
 
@@ -1089,6 +1537,9 @@ int BlupiMain(int argc, char** argv)
 	uint64_t nextTick = blupi::host::now_ns() + interval;
 	long frame = 0;
 	int lastTimer = 0;
+	long presents = 0;
+	const uint64_t loopStart = blupi::host::now_ns();
+	uint64_t lastTick = loopStart;   // when the latest tick ran (interpolation)
 
 	while (!g_bQuit)
 	{
@@ -1107,9 +1558,12 @@ int BlupiMain(int argc, char** argv)
 		if (o.host.headless || now >= nextTick)
 		{
 			PostScriptedInput(o, frame);
+			PortProbeApply(frame);
+			g_portFrame = frame;
 			DispatchPosted();
 			if (g_bQuit) break;
 			TimerStep();
+			lastTick = now;
 			nextTick += interval;
 			if (nextTick <= now) nextTick = now + interval;  // missed ticks are dropped
 		}
@@ -1142,13 +1596,49 @@ int BlupiMain(int argc, char** argv)
 			}
 			for (const auto& shot : o.screenshots)
 			{
-				if (shot.first == frame) PortPixmapWriteScreenBmp(shot.second.c_str());
+				if (shot.first != frame) continue;
+				// What is presented: overlays and the wide view included, at
+				// --screenshot-alpha between the ticks (test).
+				PortPresentNow(o.screenshotAlpha >= 0.0 ? o.screenshotAlpha : 1.0);
+				PortPixmapWriteScreenBmp(shot.second.c_str());
 			}
 			if (o.ticks >= 0 && frame >= o.ticks)
 			{
 				WindowProc(WM_CLOSE, 0, 0);
 				break;
 			}
+			// test: with --interpolate at alpha 1/K .. K/K, ending on the faithful frame
+			for (int i = 0; i < o.presentRepeat; i++) PortPresentNow(g_bInterpolate ? (i + 1.0) / o.presentRepeat : 1.0);
+			// Tick-rate presentation ("Frame rate: Original"): once per tick, with
+			// the port's overlays and the wide view.
+			if (!g_presentDisplayRate && !o.host.headless) PortPresentNow(1.0);
+		}
+
+		// Settings changed outside the options screen (Alt+Enter).
+		if (!o.host.headless && blupi::host::fullscreen() != g_settings.fullscreen)
+		{
+			g_settings.fullscreen = blupi::host::fullscreen();
+			PortOptionsSync();
+			PortSaveSettings();
+		}
+		if (g_pEvent != NULL) PortOptionsPhase(g_pEvent->GetPhase());
+
+		if (g_presentDisplayRate && !o.host.headless)
+		{
+			// Display rate: the latest frame and the current cursor every loop
+			// iteration; SDL_RenderPresent waits for the display (vsync).
+			double alpha = (double)(blupi::host::now_ns() - lastTick) / (double)interval;
+			PortPresentNow(alpha < 1.0 ? alpha : 1.0);
+			PortPixmapPresentIfDirty();
+			presents++;
+			if (!blupi::host::presents_with_vsync())
+			{
+				now = blupi::host::now_ns();
+				uint64_t pause = 4000000;   // no vsync: about 250 presents per second at most
+				if (now < nextTick && nextTick - now < pause) pause = nextTick - now;
+				if (now < nextTick && blupi::host::wait_event(e, pause)) TranslateHostEvent(e);
+			}
+			continue;
 		}
 
 		PortPixmapPresentIfDirty();
@@ -1160,6 +1650,14 @@ int BlupiMain(int argc, char** argv)
 		}
 	}
 
+	if (presents > 0)
+	{
+		char text[120];
+		double seconds = (blupi::host::now_ns() - loopStart) / 1e9;
+		snprintf(text, sizeof(text), "presented %ld frames in %.1f s (%.0f per second), %ld game frames",
+				 presents, seconds, presents / seconds, frame);
+		blupi::host::log_info(text);
+	}
 	if (trace) fclose(trace);
 	PortPixmapSetDisplayCapture(NULL, NULL, 0);
 	if (displayLog) fclose(displayLog);
@@ -1177,6 +1675,18 @@ int BlupiMain(int argc, char** argv)
 			   g_sceneFrames, g_sceneMismatches, g_sceneFirstMismatch,
 			   g_sceneFirstDetail.empty() ? "" : ": ", g_sceneFirstDetail.c_str());
 		if (g_sceneMismatches != 0 || g_sceneFrames == 0) result = 4;
+	}
+	if (o.checkView)
+	{
+		printf("view check: %ld frames compared, %ld mismatches (first at frame %ld)\n",
+			   g_viewFrames, g_viewMismatches, g_viewFirstMismatch);
+		if (g_viewMismatches != 0 || g_viewFrames == 0) result = 5;
+	}
+	if (g_bCheckWide)
+	{
+		printf("wide check: %ld frames compared, %ld clamped frames skipped, %ld mismatches (first at frame %ld)\n",
+			   g_wideFrames, g_wideSkipped, g_wideMismatches, g_wideFirstMismatch);
+		if (g_wideMismatches != 0 || g_wideFrames == 0) result = 6;
 	}
 	blupi::audio::shutdown();
 	blupi::music::shutdown();

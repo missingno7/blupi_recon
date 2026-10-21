@@ -77,6 +77,12 @@ Each fix has a golden-trace update with the reason recorded here:
 Also confirmed: 16 bpp loading converts by truncation to RGB565 (former [HYPOTHESIS] in
 `ARCHITECTURE.md`).
 
+One more golden-trace update came from the state hash itself, not from a fix. For roadmap
+stage 4, the hash (`port/game/state_hash.cpp`) was widened to every value member of the jauges
+and buttons, redraw flags included, so that the moved `Build` state changes are covered. Only
+the state-hash column of the attract, tour and editor traces changed. [EVIDENCE] Frame, phase
+and screen hash are identical to the previous traces at every checkpoint.
+
 ## Not covered yet
 
 - **Graphic cursor (MouseType 1):** its blits are the same code paths as icons, but not compared

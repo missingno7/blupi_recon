@@ -10,9 +10,44 @@ SDL_Window*   g_window = nullptr;
 SDL_Renderer* g_renderer = nullptr;
 SDL_Texture*  g_texture = nullptr;
 SDL_Cursor*   g_cursor = nullptr;
-int  g_width = 0, g_height = 0;
+int  g_width = 0, g_height = 0;   // the game's frame
+int  g_viewWidth = 0, g_frameX = 0; // the presented view; the frame's x in it (widescreen)
+bool g_autoWide = false;            // view width follows the window shape
+bool g_integerScale = false;
 bool g_headless = false;
 bool g_fullscreen = false;
+
+// Sets the presented view width: texture and logical presentation follow.
+void apply_view_width(int width)
+{
+    if (width < g_width) width = g_width;
+    if (width == g_viewWidth && (g_headless || g_texture != nullptr)) return;
+    g_viewWidth = width;
+    g_frameX = (g_viewWidth - g_width) / 2;   // until the port places the frame (set_frame_x)
+    if (g_headless || g_renderer == nullptr) return;
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "view %dx%d", g_viewWidth, g_height);
+    if (g_texture) SDL_DestroyTexture(g_texture);
+    g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+                                  g_viewWidth, g_height);
+    if (g_texture) SDL_SetTextureScaleMode(g_texture, SDL_SCALEMODE_NEAREST);
+    SDL_SetRenderLogicalPresentation(g_renderer, g_viewWidth, g_height,
+                                     g_integerScale ? SDL_LOGICAL_PRESENTATION_INTEGER_SCALE
+                                                    : SDL_LOGICAL_PRESENTATION_LETTERBOX);
+}
+
+// Automatic widescreen: the view as wide as the window's shape allows,
+// between the frame's 4:3 and 21:9, at the frame's height. An even width keeps
+// the frame on whole pixels. Other shapes are letterboxed.
+void update_auto_width()
+{
+    if (!g_autoWide || g_headless || g_window == nullptr) return;
+    int w = 0, h = 0;
+    if (!SDL_GetWindowSizeInPixels(g_window, &w, &h) || w <= 0 || h <= 0) return;
+    int width = (int)((long long)g_height * w / h);
+    if (width > kMaxViewWidth) width = kMaxViewWidth;
+    width &= ~1;
+    apply_view_width(width);
+}
 
 // SDL keycode -> Win32 virtual-key code (0 = not forwarded to the game).
 int to_virtual_key(SDL_Keycode k)
@@ -74,7 +109,7 @@ void fill_buttons(Event& e)
 
 void set_position(Event& e, float x, float y)
 {
-    e.x = (int)SDL_floorf(x);
+    e.x = (int)SDL_floorf(x) - g_frameX;   // frame coordinates
     e.y = (int)SDL_floorf(y);
     e.inside = e.x >= 0 && e.y >= 0 && e.x < g_width && e.y < g_height;
 }
@@ -97,6 +132,9 @@ bool translate(SDL_Event& ev, Event& out)
     case SDL_EVENT_WINDOW_FOCUS_LOST:
         out = Event{EventType::FocusLost};
         return true;
+    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+        update_auto_width();
+        return false;
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
     {
@@ -163,7 +201,12 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
 {
     g_width = logicalWidth;
     g_height = logicalHeight;
+    g_viewWidth = options.viewWidth > logicalWidth ? options.viewWidth : logicalWidth;
+    g_frameX = (g_viewWidth - logicalWidth) / 2;
     g_headless = options.headless;
+    g_autoWide = options.autoWide;
+    g_integerScale = options.integerScale;
+    g_fullscreen = false;
     if (g_headless) return SDL_Init(0);
 
     SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
@@ -173,22 +216,25 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
         return false;
     }
     int scale = options.scale < 1 ? 1 : options.scale;
-    if (!SDL_CreateWindowAndRenderer(title, logicalWidth * scale, logicalHeight * scale,
+    // Automatic widescreen opens a 16:9 window; resizing changes the shape.
+    const int windowWidth = g_autoWide ? (logicalHeight * 16 / 9 + 1) & ~1 : g_viewWidth;
+    if (!SDL_CreateWindowAndRenderer(title, windowWidth * scale, logicalHeight * scale,
                                      SDL_WINDOW_RESIZABLE, &g_window, &g_renderer))
     {
         SDL_Log("SDL_CreateWindowAndRenderer failed: %s", SDL_GetError());
         return false;
     }
-    SDL_SetWindowMinimumSize(g_window, logicalWidth, logicalHeight);
-    SDL_SetRenderLogicalPresentation(g_renderer, logicalWidth, logicalHeight,
+    SDL_SetWindowMinimumSize(g_window, logicalWidth / 2, logicalHeight / 2);
+    SDL_SetRenderLogicalPresentation(g_renderer, g_viewWidth, logicalHeight,
                                      options.integerScale ? SDL_LOGICAL_PRESENTATION_INTEGER_SCALE
                                                           : SDL_LOGICAL_PRESENTATION_LETTERBOX);
     SDL_SetRenderVSync(g_renderer, 1);
     g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-                                  logicalWidth, logicalHeight);
+                                  g_viewWidth, logicalHeight);
     if (g_texture == nullptr) return false;
     SDL_SetTextureScaleMode(g_texture, SDL_SCALEMODE_NEAREST);
     if (options.fullscreen) toggle_fullscreen();
+    update_auto_width();
     SDL_StartTextInput(g_window);
     return true;
 }
@@ -234,21 +280,65 @@ bool wait_event(Event& event, uint64_t timeoutNs)
     return next_text(event);
 }
 
-void present(const uint32_t* argb)
+void present(const uint32_t* argb, int width)
 {
-    if (g_headless) return;
-    SDL_UpdateTexture(g_texture, nullptr, argb, g_width * 4);
+    if (g_headless || g_texture == nullptr) return;
+    if (width != g_viewWidth) return;   // composed before a resize: the next one fits
+    SDL_UpdateTexture(g_texture, nullptr, argb, g_viewWidth * 4);
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
     SDL_RenderTexture(g_renderer, g_texture, nullptr, nullptr);
     SDL_RenderPresent(g_renderer);
 }
 
+bool presents_with_vsync()
+{
+    if (g_headless || g_renderer == nullptr) return false;
+    int vsync = 0;
+    return SDL_GetRenderVSync(g_renderer, &vsync) && vsync != 0;
+}
+
 void toggle_fullscreen()
 {
+    set_fullscreen(!g_fullscreen);
+}
+
+void set_fullscreen(bool on)
+{
     if (g_window == nullptr) return;
-    g_fullscreen = !g_fullscreen;
+    g_fullscreen = on;
     SDL_SetWindowFullscreen(g_window, g_fullscreen);
+}
+
+bool fullscreen() { return g_fullscreen; }
+
+void set_integer_scale(bool on)
+{
+    g_integerScale = on;
+    if (g_renderer == nullptr) return;
+    SDL_SetRenderLogicalPresentation(g_renderer, g_viewWidth, g_height,
+                                     g_integerScale ? SDL_LOGICAL_PRESENTATION_INTEGER_SCALE
+                                                    : SDL_LOGICAL_PRESENTATION_LETTERBOX);
+}
+
+void set_auto_wide(bool on)
+{
+    g_autoWide = on;
+    if (on) update_auto_width();
+    else apply_view_width(g_width);
+}
+
+void set_view_width(int width)
+{
+    g_autoWide = false;
+    apply_view_width(width);
+}
+
+int view_width() { return g_viewWidth; }
+
+void set_frame_x(int x)
+{
+    g_frameX = x;
 }
 
 void get_mouse(int& x, int& y)
@@ -257,7 +347,7 @@ void get_mouse(int& x, int& y)
     float wx = 0, wy = 0, lx = 0, ly = 0;
     SDL_GetMouseState(&wx, &wy);
     SDL_RenderCoordinatesFromWindow(g_renderer, wx, wy, &lx, &ly);
-    x = (int)SDL_floorf(lx);
+    x = (int)SDL_floorf(lx) - g_frameX;
     y = (int)SDL_floorf(ly);
 }
 
@@ -265,7 +355,7 @@ void warp_mouse(int x, int y)
 {
     if (g_headless || !(SDL_GetWindowFlags(g_window) & SDL_WINDOW_INPUT_FOCUS)) return;
     float wx = 0, wy = 0;
-    SDL_RenderCoordinatesToWindow(g_renderer, (float)x + 0.5f, (float)y + 0.5f, &wx, &wy);
+    SDL_RenderCoordinatesToWindow(g_renderer, (float)(x + g_frameX) + 0.5f, (float)y + 0.5f, &wx, &wy);
     SDL_WarpMouseInWindow(g_window, wx, wy);
 }
 

@@ -1,0 +1,8 @@
+# Display options screen (game/options_screen.cpp), used during the screen tour
+# while the game's settings screen is up (tour.input frames 310-400): open it,
+# change settings, close it. The traces must stay those of the tour alone.
+375 click 90 350    # settings: Display options
+380 click 130 130   # widescreen: on
+385 click 130 240   # smooth motion: on
+390 click 90 350    # frame rate: original
+395 click 560 430   # confirm: back to the settings screen

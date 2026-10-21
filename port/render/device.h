@@ -27,6 +27,7 @@ constexpr SurfaceId kChannelCount = 100;
 constexpr SurfaceId kBackBuffer = 100;
 constexpr SurfaceId kScreen = 101;
 constexpr SurfaceId kMouseSave = 102;
+constexpr SurfaceId kWideView = 103;   // port: widescreen view target (ROADMAP.md stage 8)
 
 struct Command
 {

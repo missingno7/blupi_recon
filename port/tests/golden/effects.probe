@@ -1,0 +1,25 @@
+# Test-only state probes (port/game/probe.cpp) for drawing paths the recorded demos and the
+# menu scripts never reach. "FRAME" applies before that frame's tick, "FRAME @draw" right
+# before drawing (after the tick's simulation). Not gameplay.
+100 effect shield 100      # shield, steady (m_blupiTimeShield > 25)
+130 effect shield 10       # shield, blinking (m_time % 4)
+160 effect power 100
+190 effect cloud 100
+220 effect cloud 10
+250 effect hide 100        # hide: composition in CHTEMP with the red mask key
+280 effect hide 10
+310 effect none
+320 front 1                # Blupi drawn in front of the decor: m_blupiSec stays 0
+321 effect shield 100
+350 front 0
+351 effect none
+360 notify Probe notification one
+370 notify Probe notification two
+400 mission 10             # DrawInfo's mission-10 clamp and tutorial hint
+440 mission 1
+450 multi 1                # network Blupis (decor drawing path only)
+450-469 @draw netblupi 1 0 90 0 0 2
+450-469 @draw netblupi 2 0 -90 0 1 2
+450-469 @draw netblupi 3 0 150 0 2 2
+470-489 @draw netblupi 2 0 -90 0 3 2
+490 multi 0

@@ -1,0 +1,6 @@
+# Effects scenario: enter the world-1 hub, then port/tests/golden/effects.probe sets the
+# drawing states the demos never reach. Frame-indexed, see port/tests/CMakeLists.txt.
+40 click 112 430    # title: dice -> choose player
+80 click 85 431     # choose player: single player -> world 1 hub
+405 keydown 39      # walk right while mission 10 is forced (tutorial clamp)
+425 keyup 39

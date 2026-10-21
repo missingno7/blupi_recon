@@ -19,8 +19,12 @@
 
 #include "game/scene.h"
 
+#include <cmath>
+#include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <string>
+#include <unordered_map>
 
 #include "dectables.h"
 #include "jauge.h"
@@ -91,6 +95,12 @@ struct DecorAccess : CDecor
 struct JaugeAccess : CJauge
 {
 	static constexpr auto m_bHide = &JaugeAccess::m_bHide;
+	static constexpr auto m_pos = &JaugeAccess::m_pos;
+	static constexpr auto m_dim = &JaugeAccess::m_dim;
+	static constexpr auto m_type = &JaugeAccess::m_type;
+	static constexpr auto m_level = &JaugeAccess::m_level;
+	static constexpr auto m_bMinimizeRedraw = &JaugeAccess::m_bMinimizeRedraw;
+	static constexpr auto m_bRedraw = &JaugeAccess::m_bRedraw;
 };
 
 // Annotation of one recorded draw call.
@@ -100,6 +110,9 @@ struct Tag
 	Entity entity;
 	int    index;
 	bool   simCamera;  // World item placed with m_posDecor instead of the shaken view
+	Item::Cull cull = Item::Cull::None;
+	POINT  ref = {0, 0};
+	bool   extended = false;
 };
 
 Tag AtBack(int index) { return {Layer::Background, Entity::Parallax, index, false}; }
@@ -107,6 +120,98 @@ Tag AtWorld(Entity e, int index = 0) { return {Layer::World, e, index, false}; }
 Tag AtWorldSim(Entity e, int index = 0) { return {Layer::World, e, index, true}; }
 Tag AtScreen(Entity e, int index = 0) { return {Layer::Screen, e, index, false}; }
 Tag AtTarget(Entity e, int index = 0) { return {Layer::Target, e, index, false}; }
+
+// Cell of a pixel coordinate; views and coverage edges can be negative.
+int FloorDiv(int a, int b)
+{
+	return a >= 0 ? a / b : -((-a + b - 1) / b);
+}
+
+// Build's visibility rules (the tile loop ranges and the move-object bounds
+// tests of CDecor::Build), for a view of any position and size. At Build's
+// own view and 640x480 they select exactly the items Build draws.
+bool VisibleRule(Item::Cull cull, int index, POINT ref, POINT view, int width, int height)
+{
+	const int i = index / MAXCELY, j = index % MAXCELY;
+	const int cx = FloorDiv(view.x, DIMOBJX), cy = FloorDiv(view.y, DIMOBJY);
+	switch (cull)
+	{
+	case Item::Cull::None:
+		return true;
+	case Item::Cull::BigCell:
+		return i >= cx - 1 && i < cx + width / DIMOBJX + 3 && j >= cy - 1 && j < cy + height / DIMOBJY + 2;
+	case Item::Cull::Cell:
+		return i >= cx && i < cx + width / DIMOBJX + 2 && j >= cy && j < cy + height / DIMOBJY + 2;
+	case Item::Cull::Point:
+		return ref.x >= view.x - DIMOBJX && ref.y >= view.y - DIMOBJY &&
+			   ref.x <= view.x + width && ref.y <= view.y + height;
+	}
+	return true;
+}
+
+// A tile cell, extended unless Build draws it at its own view.
+Tag AtCell(Entity e, Item::Cull rule, int i, int j, POINT view)
+{
+	Tag t = AtWorld(e, i * MAXCELY + j);
+	t.cull = rule;
+	t.extended = !VisibleRule(rule, t.index, t.ref, view, LXIMAGE, LYIMAGE);
+	return t;
+}
+
+// An object tested on ref, extended unless Build draws it at its own view.
+Tag AtPoint(Entity e, int index, POINT ref, POINT view)
+{
+	Tag t = AtWorld(e, index);
+	t.cull = Item::Cull::Point;
+	t.ref = ref;
+	t.extended = !VisibleRule(t.cull, index, ref, view, LXIMAGE, LYIMAGE);
+	return t;
+}
+
+// Whether Build draws an object tested on ref at some view within the
+// coverage around view (with no coverage: Build's own bounds test).
+bool Covered(POINT ref, POINT view, const Coverage& c)
+{
+	POINT from = {view.x - c.left, view.y - c.top};
+	return VisibleRule(Item::Cull::Point, 0, ref, from, LXIMAGE + c.left + c.right, LYIMAGE + c.top + c.bottom);
+}
+
+// The parallax background of Build (the first loop of CDecor::Build), as
+// DrawPart destinations and source rectangles, for the background image
+// position pos at the view's left/top corner (Build: posDecor * 2 / 3). Build
+// draws two columns; a wider view needs more.
+int ParallaxParts(POINT pos, int width, POINT* dest, RECT* src, int max)
+{
+	int   i, j, n = 0;
+	POINT tinyPoint;
+	RECT  rect;
+
+	int x = (pos.x % DIMDECORX + DIMDECORX) % DIMDECORX;   // Build: pos.x % DIMDECORX (pos >= 0)
+	rect.left = x;
+	int y = (pos.y % DIMDECORY + DIMDECORY) % DIMDECORY;
+	tinyPoint.x = 0;
+	for (i = 0; (i < 2 || tinyPoint.x < width) && n + 2 <= max; i++)
+	{
+		tinyPoint.y = 0;
+		rect.top = y;
+		rect.right = DIMDECORX;
+		rect.bottom = DIMDECORY;
+		for (j = 0; j < 2; j++)
+		{
+			dest[n] = tinyPoint;
+			src[n] = rect;
+			n++;
+			rect.bottom -= rect.top;
+			tinyPoint.y += rect.bottom;
+			rect.top = 0;
+			rect.bottom = DIMDECORY;
+		}
+		tinyPoint.x += DIMDECORX - rect.left;
+		rect.left = 0;
+	}
+	return n;
+}
+constexpr int kMaxParallaxParts = 16;
 
 // Stands in for m_pPixmap inside the copied bodies; records instead of drawing.
 class Recorder
@@ -154,10 +259,23 @@ public:
 		Place(it, pos, t);
 	}
 	// m_jauges[i].Draw()
-	void JaugeDraw(int i, Tag t)
+	// m_jauges[i].Draw(), as a snapshot of the jauge (CJauge::Draw, src/jauge.cpp).
+	// Its state change (m_bRedraw = FALSE) is made by EndOfTick.
+	void JaugeDraw(const CJauge& jauge, int i, Tag t)
 	{
-		Add(Item::Op::JaugeDraw, t).index = i;
+		if (jauge.*JaugeAccess::m_bMinimizeRedraw && !(jauge.*JaugeAccess::m_bRedraw)) return;
+		const POINT& pos = jauge.*JaugeAccess::m_pos;
+		const POINT& dim = jauge.*JaugeAccess::m_dim;
+		Item& it = Add(Item::Op::JaugeDraw, t);
+		it.index = i;
+		it.mask = jauge.*JaugeAccess::m_bHide;
+		it.mode = jauge.*JaugeAccess::m_type;
+		it.rank = jauge.*JaugeAccess::m_level;
+		it.pos = pos;
+		it.rect = RECT{pos.x, pos.y, pos.x + dim.x, pos.y + dim.y};
 	}
+
+	Item& Last() { return m_scene.items.back(); }
 
 private:
 	Item& Add(Item::Op op, Tag t)
@@ -168,6 +286,10 @@ private:
 		it.layer = t.layer;
 		it.entity = t.entity;
 		it.index = t.index;
+		it.cull = t.cull;
+		it.ref = t.ref;
+		it.simCamera = t.simCamera;
+		it.extended = t.extended;
 		return it;
 	}
 	void Place(Item& it, POINT pos, Tag t)
@@ -386,7 +508,7 @@ void DrawInfo(const CDecor& decor, Recorder* m_pPixmap)
 
 		for (i = 0; i < 2; i++)
 		{
-			if (!GetHide(m_jauges[i])) m_pPixmap->JaugeDraw(i, AtScreen(Entity::Jauge, i));
+			if (!GetHide(m_jauges[i])) m_pPixmap->JaugeDraw(m_jauges[i], i, AtScreen(Entity::Jauge, i));
 		}
 
 		if (m_mission == 10 && m_phase == WM_PHASE_PLAY && !m_bPrivate)
@@ -476,6 +598,10 @@ void VoyageDraw(const CDecor& decor, Recorder* m_pPixmap)
 		pos.x = m_voyageStart.x + (m_voyageEnd.x - m_voyageStart.x) * m_voyagePhase / m_voyageTotal;
 		pos.y = m_voyageStart.y + (m_voyageEnd.y - m_voyageStart.y) * m_voyagePhase / m_voyageTotal;
 		m_pPixmap->QuickIcon(m_voyageChannel, m_voyageIcon, pos, AtScreen(Entity::Voyage));
+		Item& voyage = m_pPixmap->Last();   // for wider views (DrawView)
+		voyage.rect = RECT{m_voyageStart.x, m_voyageStart.y, m_voyageEnd.x, m_voyageEnd.y};
+		voyage.mode = m_voyagePhase;
+		voyage.font = m_voyageTotal;
 	}
 }
 }  // namespace
@@ -483,7 +609,7 @@ void VoyageDraw(const CDecor& decor, Recorder* m_pPixmap)
 // Derived from CDecor::Build (src/decblock.cpp). Uses the value m_time had
 // before Build; the state changes of the original (m_blupiSec, m_time++ and
 // those inside DecorNextAction/DrawInfo) are not made.
-void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out)
+void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out, const Coverage& coverage)
 {
 	(void)mousePos;  // unused by Build too
 	const int& m_phase = decor.*DecorAccess::m_phase;
@@ -524,56 +650,57 @@ void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out)
 	posDecor = DecorNextAction(decor);
 	out.camera = decor.*DecorAccess::m_posDecor;
 	out.view = posDecor;
-
-	// Parallax background.
-	pos.x = posDecor.x * 2 / 3;
-	pos.y = posDecor.y * 2 / 3;
-	int x = pos.x % DIMDECORX;
-	rect.left = x;
-	int y = pos.y % DIMDECORY;
-	tinyPoint.x = 0;
-	for (i = 0; i < 2; i++)
+	out.phase = m_phase;
 	{
-		tinyPoint.y = 0;
-		rect.top = y;
-		rect.right = DIMDECORX;
-		rect.bottom = DIMDECORY;
-		for (j = 0; j < 2; j++)
-		{
-			m_pPixmap->DrawPart(-1, CHDECOR, tinyPoint, rect, 1, FALSE, AtBack(i * 2 + j));
-			rect.bottom -= rect.top;
-			tinyPoint.y += rect.bottom;
-			rect.top = 0;
-			rect.bottom = DIMDECORY;
-		}
-		tinyPoint.x += DIMDECORX - rect.left;
-		rect.left = 0;
+		// The bounds DecorNextAction clamps the shaken view to.
+		const POINT& m_dimDecor = decor.*DecorAccess::m_dimDecor;
+		out.maxView.x = m_dimDecor.x == 0 ? 0 : DIMOBJX * MAXCELX - LXIMAGE;
+		out.maxView.y = m_dimDecor.y == 0 ? 0 : DIMOBJY * MAXCELY - LYIMAGE;
 	}
 
-	// Big decor tiles.
-	tinyPoint.x = 0 - posDecor.x % DIMOBJX - DIMOBJX;
-	for (i = posDecor.x / DIMOBJX - 1; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 3; i++) {
-		tinyPoint.y = 0 - posDecor.y % DIMOBJY;
-		tinyPoint.y += 2 - DIMOBJY;
-		for (j = posDecor.y / DIMOBJY - 1; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
+	// Parallax background.
+	{
+		POINT dest[kMaxParallaxParts];
+		RECT  src[kMaxParallaxParts];
+		POINT image = {posDecor.x * 2 / 3, posDecor.y * 2 / 3};
+		int   parts = ParallaxParts(image, LXIMAGE, dest, src, kMaxParallaxParts);
+		for (i = 0; i < parts; i++)
 		{
-			if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY)
+			m_pPixmap->DrawPart(-1, CHDECOR, dest[i], src[i], 1, FALSE, AtBack(i));
+		}
+	}
+
+	// Big decor tiles. Build's loop, i from posDecor.x / DIMOBJX - 1 to
+	// posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 3 (exclusive) and j from
+	// posDecor.y / DIMOBJY - 1 to posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2,
+	// at x = i * DIMOBJX - posDecor.x and y = j * DIMOBJY - posDecor.y + 2;
+	// widened by the coverage (cells outside Build's range are extended).
+	{
+		const int i0 = FloorDiv(posDecor.x - coverage.left, DIMOBJX) - 1;
+		const int i1 = FloorDiv(posDecor.x + coverage.right, DIMOBJX) + LXIMAGE / DIMOBJX + 3;
+		const int j0 = FloorDiv(posDecor.y - coverage.top, DIMOBJY) - 1;
+		const int j1 = FloorDiv(posDecor.y + coverage.bottom, DIMOBJY) + LYIMAGE / DIMOBJY + 2;
+		for (i = i0; i < i1; i++) {
+			tinyPoint.x = i * DIMOBJX - posDecor.x;
+			for (j = j0; j < j1; j++)
 			{
-				num = m_bigDecor[i][j].icon;
-				channel = 9;
-				if (num != -1)
+				tinyPoint.y = j * DIMOBJY - posDecor.y + 2;
+				if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY)
 				{
-					if (num == 203)
+					num = m_bigDecor[i][j].icon;
+					channel = 9;
+					if (num != -1)
 					{
-						num = table_marine[m_time / 3 % 11];
-						channel = 1;
+						if (num == 203)
+						{
+							num = table_marine[m_time / 3 % 11];
+							channel = 1;
+						}
+						m_pPixmap->QuickIcon(channel, num, tinyPoint, AtCell(Entity::BigDecor, Item::Cull::BigCell, i, j, posDecor));
 					}
-					m_pPixmap->QuickIcon(channel, num, tinyPoint, AtWorld(Entity::BigDecor, i * MAXCELY + j));
 				}
 			}
-			tinyPoint.y += DIMOBJY;
 		}
-		tinyPoint.x += DIMOBJX;
 	}
 
 	// Editor start markers; not covered by the gate. i = 4 reads one element
@@ -710,10 +837,12 @@ void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out)
 	const MoveObject *pMoveObject = &m_moveObject[MAXMOVEOBJECT - 1];
 	for (i = MAXMOVEOBJECT; i != 0; pMoveObject--, i--)
 	{
-		if (pMoveObject->type == 0 || pMoveObject->posCurrent.x < posDecor.x - 64 || pMoveObject->posCurrent.y < posDecor.y - 64 || pMoveObject->posCurrent.x > posDecor.x + LXIMAGE || pMoveObject->posCurrent.y > posDecor.y + LYIMAGE) continue;
+		// Build: type == 0 || posCurrent outside [posDecor - 64, posDecor + LXIMAGE/LYIMAGE]
+		if (pMoveObject->type == 0 || !Covered(pMoveObject->posCurrent, posDecor, coverage)) continue;
 		if (pMoveObject->type >= 8 && pMoveObject->type <= 11) continue;
 		if (pMoveObject->type == 1) continue;
 		const int slot = (int)(pMoveObject - m_moveObject);
+		const Tag object = AtPoint(Entity::MoveObject, slot, pMoveObject->posCurrent, posDecor);
 		tinyPoint.x = pMoveObject->posCurrent.x - posDecor.x;
 		tinyPoint.y = pMoveObject->posCurrent.y - posDecor.y;
 		if (pMoveObject->type == TYPE_BULLDOZER || pMoveObject->type == TYPE_BLUPIHELICO || pMoveObject->type == TYPE_BLUPITANK)
@@ -721,20 +850,26 @@ void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out)
 			tinyPoint.x += 2;
 			tinyPoint.y += BLUPIOFFY;
 		}
-		m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint, AtWorld(Entity::MoveObject, slot));
+		m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint, object);
 		if ((m_bDrawSecret || m_phase != WM_PHASE_PLAY) && pMoveObject->type == TYPE_CAISSE && pMoveObject->icon != 32 && pMoveObject->icon != 33 && pMoveObject->icon != 34)
 		{
-			m_pPixmap->QuickIcon(1, 214, tinyPoint, AtWorld(Entity::MoveObject, slot));
+			m_pPixmap->QuickIcon(1, 214, tinyPoint, object);
 		}
 	}
 
-	// Decor tiles.
-	tinyPoint.x = 0 - posDecor.x % 64;
-	for (i = posDecor.x / 64; i < posDecor.x / 64 + LXIMAGE / 64 + 2; i++)
+	// Decor tiles. Build's loop, i from posDecor.x / 64 to posDecor.x / 64 +
+	// LXIMAGE / 64 + 2 (exclusive), j likewise, at x = i * 64 - posDecor.x and
+	// y = j * 64 - posDecor.y; widened by the coverage.
+	const int cellI0 = FloorDiv(posDecor.x - coverage.left, DIMOBJX);
+	const int cellI1 = FloorDiv(posDecor.x + coverage.right, DIMOBJX) + LXIMAGE / DIMOBJX + 2;
+	const int cellJ0 = FloorDiv(posDecor.y - coverage.top, DIMOBJY);
+	const int cellJ1 = FloorDiv(posDecor.y + coverage.bottom, DIMOBJY) + LYIMAGE / DIMOBJY + 2;
+	for (i = cellI0; i < cellI1; i++)
 	{
-		tinyPoint.y = 0 - posDecor.y % 64;
-		for (j = posDecor.y / 64; j < posDecor.y / 64 + LYIMAGE / 64 + 2; j++)
+		tinyPoint.x = i * DIMOBJX - posDecor.x;
+		for (j = cellJ0; j < cellJ1; j++)
 		{
+			tinyPoint.y = j * DIMOBJY - posDecor.y;
 			if (i >= 0 && i < 100 && j >= 0 && j < 100 && m_decor[i][j].icon != -1)
 			{
 				num = m_decor[i][j].icon;
@@ -755,12 +890,10 @@ void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out)
 				if (num != 68 && num != 91 && num != 92 &&
 					(num < 110 || num > 137))
 				{
-					m_pPixmap->QuickIcon(1, num, pos, AtWorld(Entity::Decor, i * MAXCELY + j));
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Decor, Item::Cull::Cell, i, j, posDecor));
 				}
 			}
-			tinyPoint.y += DIMOBJY;
 		}
-		tinyPoint.x += DIMOBJX;
 	}
 
 	// Lifts; in the editor also the mover start/end marks (not covered by the gate).
@@ -768,15 +901,13 @@ void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out)
 	for (i = MAXMOVEOBJECT; i != 0; i--)
 	{
 		const int slot = (int)(pMoveObject - m_moveObject);
+		// Build: posCurrent within [posDecor - 64, posDecor + LXIMAGE/LYIMAGE]
 		if (pMoveObject->type == TYPE_ASCENSEUR &&
-			pMoveObject->posCurrent.x >= posDecor.x - 64 &&
-			pMoveObject->posCurrent.y >= posDecor.y - 64 &&
-			pMoveObject->posCurrent.x <= posDecor.x + LXIMAGE &&
-			pMoveObject->posCurrent.y <= posDecor.y + LYIMAGE)
+			Covered(pMoveObject->posCurrent, posDecor, coverage))
 		{
 			tinyPoint.x = pMoveObject->posCurrent.x - posDecor.x;
 			tinyPoint.y = pMoveObject->posCurrent.y - posDecor.y;
-			m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint, AtWorld(Entity::Lift, slot));
+			m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint, AtPoint(Entity::Lift, slot, pMoveObject->posCurrent, posDecor));
 		}
 		if (m_phase == WM_PHASE_BUILD &&
 			(pMoveObject->type == TYPE_ASCENSEUR || pMoveObject->type == TYPE_BOMBEMOVE ||
@@ -784,38 +915,33 @@ void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out)
 			 pMoveObject->type == TYPE_OISEAU || pMoveObject->type == TYPE_BLUPIHELICO ||
 			 pMoveObject->type == TYPE_BLUPITANK))
 		{
-			if (pMoveObject->posEnd.x >= posDecor.x - 64 &&
-				pMoveObject->posEnd.y >= posDecor.y - 64 &&
-				pMoveObject->posEnd.x <= posDecor.x + LXIMAGE &&
-				pMoveObject->posEnd.y <= posDecor.y + LYIMAGE)
+			if (Covered(pMoveObject->posEnd, posDecor, coverage))
 			{
 				tinyPoint.x = pMoveObject->posEnd.x - posDecor.x;
 				tinyPoint.y = pMoveObject->posEnd.y - posDecor.y;
-				m_pPixmap->QuickIcon(1, 31, tinyPoint, AtWorld(Entity::PathMarker, slot));
+				m_pPixmap->QuickIcon(1, 31, tinyPoint, AtPoint(Entity::PathMarker, slot, pMoveObject->posEnd, posDecor));
 			}
-			if (pMoveObject->posStart.x >= posDecor.x - 64 &&
-				pMoveObject->posStart.y >= posDecor.y - 64 &&
-				pMoveObject->posStart.x <= posDecor.x + LXIMAGE &&
-				pMoveObject->posStart.y <= posDecor.y + LYIMAGE)
+			if (Covered(pMoveObject->posStart, posDecor, coverage))
 			{
 				tinyPoint.x = pMoveObject->posStart.x - posDecor.x;
 				tinyPoint.y = pMoveObject->posStart.y - posDecor.y;
-				m_pPixmap->QuickIcon(1, 30, tinyPoint, AtWorld(Entity::PathMarker, slot));
+				m_pPixmap->QuickIcon(1, 30, tinyPoint, AtPoint(Entity::PathMarker, slot, pMoveObject->posStart, posDecor));
 			}
 		}
 		pMoveObject++;
 	}
 
-	// Animated overlay tiles (lava, water, wind, fans).
-	tinyPoint.x = 0 - posDecor.x % DIMOBJX;
-	for (i = posDecor.x / DIMOBJX; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 2; i++)
+	// Animated overlay tiles (lava, water, wind, fans); same loop as the decor
+	// tiles.
+	for (i = cellI0; i < cellI1; i++)
 	{
-		tinyPoint.y = 0 - posDecor.y % DIMOBJY;
-		for (j = posDecor.y / DIMOBJY; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
+		tinyPoint.x = i * DIMOBJX - posDecor.x;
+		for (j = cellJ0; j < cellJ1; j++)
 		{
+			tinyPoint.y = j * DIMOBJY - posDecor.y;
 			if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY && m_decor[i][j].icon != -1)
 			{
-				const Tag cell = AtWorld(Entity::Overlay, i * MAXCELY + j);
+				const Tag cell = AtCell(Entity::Overlay, Item::Cull::Cell, i, j, posDecor);
 				num = m_decor[i][j].icon;
 				pos = tinyPoint;
 				if (num == 68)
@@ -874,24 +1000,20 @@ void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out)
 					m_pPixmap->QuickIcon(1, num, pos, cell);
 				}
 			}
-			tinyPoint.y += DIMOBJY;
 		}
-		tinyPoint.x += DIMOBJX;
 	}
 
 	// Move objects of types 8-11, in front of the decor.
+	// Build: posCurrent within [posDecor - DIMOBJX/DIMOBJY, posDecor + LXIMAGE/LYIMAGE]
 	for (i = 0; i < MAXMOVEOBJECT; i++)
 	{
 		if (m_moveObject[i].type != 0 &&
-			m_moveObject[i].posCurrent.x >= posDecor.x - DIMOBJX &&
-			m_moveObject[i].posCurrent.y >= posDecor.y - DIMOBJY &&
-			m_moveObject[i].posCurrent.x <= posDecor.x + LXIMAGE &&
-			m_moveObject[i].posCurrent.y <= posDecor.y + LYIMAGE &&
+			Covered(m_moveObject[i].posCurrent, posDecor, coverage) &&
 			m_moveObject[i].type >= 8 && m_moveObject[i].type <= 11)
 		{
 			tinyPoint.x = m_moveObject[i].posCurrent.x - posDecor.x;
 			tinyPoint.y = m_moveObject[i].posCurrent.y - posDecor.y;
-			m_pPixmap->QuickIcon(m_moveObject[i].channel, m_moveObject[i].icon, tinyPoint, AtWorld(Entity::MoveObject, i));
+			m_pPixmap->QuickIcon(m_moveObject[i].channel, m_moveObject[i].icon, tinyPoint, AtPoint(Entity::MoveObject, i, m_moveObject[i].posCurrent, posDecor));
 		}
 
 	}
@@ -909,27 +1031,264 @@ void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out)
 	// m_time++; if (m_time >= 32768) m_time = 0;  (state change, ROADMAP.md stage 4)
 }
 
-void FlattenScene(const Scene& scene, CDecor& decor, CPixmap* pixmap)
+namespace
+{
+// Issues one item's CPixmap call with the item drawn at pos.
+void Issue(const Item& item, POINT pos, CPixmap* pixmap, std::string& text)
+{
+	switch (item.op)
+	{
+	case Item::Op::SetClip:   pixmap->SetClipping(item.rect); break;
+	case Item::Op::DrawPart:  pixmap->DrawPart(item.chDst, item.channel, pos, item.rect, item.mode, item.mask); break;
+	case Item::Op::QuickIcon: pixmap->QuickIcon(item.channel, item.rank, pos); break;
+	case Item::Op::DrawIcon:  pixmap->DrawIcon(item.chDst, item.channel, item.rank, pos, item.mode, item.mask); break;
+	case Item::Op::DrawText:
+		text = item.text;  // the historical functions take char*
+		::DrawText(pixmap, pos, &text[0], item.font);
+		break;
+	case Item::Op::DrawTextCenter:
+		text = item.text;
+		::DrawTextCenter(pixmap, pos, &text[0], item.font);
+		break;
+	case Item::Op::JaugeDraw:
+	{
+		// Drawing part of CJauge::Draw (src/jauge.cpp) from the snapshot.
+		int  part;
+		RECT rect;
+		if (item.mask)  // bouton caché ?
+		{
+			pixmap->DrawPart(-1, CHBACK, pos, item.rect, 1);  // dessine le fond
+			break;
+		}
+		part = (item.rank*(DIMJAUGEX-6-4))/100;
+		rect.left   = 0;
+		rect.right  = DIMJAUGEX;
+		rect.top    = DIMJAUGEY*0;
+		rect.bottom = DIMJAUGEY*1;
+		pixmap->DrawPart(-1, CHJAUGE, pos, rect);  // partie noire
+		if (part > 0)
+		{
+			rect.left   = 0;
+			rect.right  = 6+part;
+			rect.top    = DIMJAUGEY*item.mode;
+			rect.bottom = DIMJAUGEY*(item.mode+1);
+			pixmap->DrawPart(-1, CHJAUGE, pos, rect);  // partie colorée
+		}
+		break;
+	}
+	}
+}
+
+// Entities whose position changes between ticks (the rest is static or
+// fixed on screen).
+bool Moves(const Item& item)
+{
+	switch (item.entity)
+	{
+	case Entity::NetBlupi:
+	case Entity::Blupi:
+	case Entity::BlupiEffect:
+	case Entity::MoveObject:
+	case Entity::Lift:
+		return item.layer == Layer::World;
+	case Entity::Voyage:
+		return item.layer == Layer::Screen;
+	default:
+		return false;
+	}
+}
+
+POINT Where(const Item& item)
+{
+	return item.layer == Layer::World ? item.world : item.pos;
+}
+
+long Mix(long from, long to, double alpha)
+{
+	return from + lround((to - from) * alpha);
+}
+}  // namespace
+
+void FlattenScene(const Scene& scene, CPixmap* pixmap)
 {
 	std::string text;
 	for (const Item& item : scene.items)
 	{
-		switch (item.op)
+		if (!item.extended) Issue(item, item.pos, pixmap, text);
+	}
+}
+
+bool Visible(const Item& item, POINT ref, POINT view, int width, int height)
+{
+	return VisibleRule(item.cull, item.index, ref, view, width, height);
+}
+
+void PairScenes(const Scene& prev, const Scene& curr, Motion& out)
+{
+	out.valid = false;
+	out.cameraFrom = curr.camera;
+	out.from.resize(curr.items.size());
+	for (size_t n = 0; n < curr.items.size(); n++) out.from[n] = Where(curr.items[n]);
+
+	if (prev.items.empty() || prev.phase != curr.phase) return;
+	if (labs(curr.camera.x - prev.camera.x) > kSnapDistance ||
+		labs(curr.camera.y - prev.camera.y) > kSnapDistance) return;
+	out.valid = true;
+	out.cameraFrom = prev.camera;
+
+	// Identity: entity, index and the occurrence of that pair in drawing order.
+	auto base = [](const Item& it) { return ((uint64_t)it.entity << 32) | (uint32_t)it.index; };
+	std::unordered_map<uint64_t, int> count;
+	std::unordered_map<uint64_t, POINT> previous;
+	for (const Item& it : prev.items)
+	{
+		if (!Moves(it)) continue;
+		uint64_t key = base(it);
+		int occurrence = count[key]++;
+		previous[key ^ ((uint64_t)occurrence << 48)] = Where(it);
+	}
+	count.clear();
+	for (size_t n = 0; n < curr.items.size(); n++)
+	{
+		const Item& it = curr.items[n];
+		if (!Moves(it)) continue;
+		uint64_t key = base(it);
+		int occurrence = count[key]++;
+		auto found = previous.find(key ^ ((uint64_t)occurrence << 48));
+		if (found == previous.end()) continue;   // appeared: snap
+		POINT was = found->second, now = Where(it);
+		if (labs(now.x - was.x) > kSnapDistance || labs(now.y - was.y) > kSnapDistance) continue;  // jumped: snap
+		out.from[n] = was;
+	}
+}
+
+ViewPlacement PlaceView(const Scene& scene, POINT view, int width, bool frameLeft)
+{
+	ViewPlacement place;
+	const int worldWidth = scene.maxView.x + LXIMAGE;
+	const int frameX = FrameOffset(width, frameLeft);
+	place.camera.y = view.y;
+	if (frameLeft)
+	{
+		place.camera.x = view.x;   // the frame at the left edge, never clamped
+	}
+	else if (worldWidth >= width)
+	{
+		// Centred on the frame, clamped to the world.
+		place.camera.x = view.x - frameX;
+		if (place.camera.x > worldWidth - width) place.camera.x = worldWidth - width;
+		if (place.camera.x < 0) place.camera.x = 0;
+	}
+	else
+	{
+		// The whole world, centred.
+		place.camera.x = (worldWidth - width) / 2;
+	}
+	place.frameX = view.x - place.camera.x;
+	place.left = place.camera.x < 0 ? -place.camera.x : 0;
+	place.right = worldWidth - place.camera.x < width ? worldWidth - place.camera.x : width;
+	return place;
+}
+
+void DrawView(const Scene& scene, const Motion* motion, double alpha, CPixmap* pixmap, const ViewSpec& spec)
+{
+	const bool lerp = motion != NULL && motion->valid && motion->from.size() == scene.items.size() && alpha < 1.0;
+	const bool wide = spec.width != LXIMAGE;
+	if (alpha < 0.0) alpha = 0.0;
+
+	// The camera, interpolated; the current tick's shake on top of it,
+	// clamped like DecorNextAction clamps it.
+	POINT camera = scene.camera, view = scene.view;
+	if (lerp)
+	{
+		camera.x = Mix(motion->cameraFrom.x, scene.camera.x, alpha);
+		camera.y = Mix(motion->cameraFrom.y, scene.camera.y, alpha);
+		view.x = camera.x + scene.view.x - scene.camera.x;
+		view.y = camera.y + scene.view.y - scene.camera.y;
+		if (view.x > scene.maxView.x) view.x = scene.maxView.x;
+		if (view.x < 0) view.x = 0;
+		if (view.y > scene.maxView.y) view.y = scene.maxView.y;
+		if (view.y < 0) view.y = 0;
+	}
+
+	// The view around the frame (at the faithful size: the frame itself).
+	const ViewPlacement place = wide ? PlaceView(scene, view, spec.width, spec.frameLeft) : ViewPlacement{view, 0, 0, LXIMAGE};
+	const int hudX = FrameOffset(spec.width, spec.frameLeft);
+	const POINT cullView = spec.cullAtFrame ? view : place.camera;
+	const int cullWidth = spec.cullAtFrame ? LXIMAGE : spec.width;
+
+	std::string text;
+	bool parallax = false, clip = false;
+	for (size_t n = 0; n < scene.items.size(); n++)
+	{
+		const Item& item = scene.items[n];
+		POINT pos = item.pos;
+		if (item.op == Item::Op::SetClip && wide)
 		{
-		case Item::Op::SetClip:   pixmap->SetClipping(item.rect); break;
-		case Item::Op::DrawPart:  pixmap->DrawPart(item.chDst, item.channel, item.pos, item.rect, item.mode, item.mask); break;
-		case Item::Op::QuickIcon: pixmap->QuickIcon(item.channel, item.rank, item.pos); break;
-		case Item::Op::DrawIcon:  pixmap->DrawIcon(item.chDst, item.channel, item.rank, item.pos, item.mode, item.mask); break;
-		case Item::Op::DrawText:
-			text = item.text;  // the historical functions take char*
-			::DrawText(pixmap, item.pos, &text[0], item.font);
-			break;
-		case Item::Op::DrawTextCenter:
-			text = item.text;
-			::DrawTextCenter(pixmap, item.pos, &text[0], item.font);
-			break;
-		case Item::Op::JaugeDraw: (decor.*DecorAccess::m_jauges)[item.index].Draw(); break;
+			// Build's clip is the whole frame: here the part of the view that
+			// shows the world. The caller restores the clip afterwards.
+			if (!clip) pixmap->SetClipping(RECT{place.left, 0, place.right, LYIMAGE});
+			clip = true;
+			continue;
 		}
+		if (item.layer == Layer::Background)
+		{
+			// Regenerated for the drawn view (Build's algorithm), at the same
+			// place relative to the frame.
+			if (parallax) continue;
+			parallax = true;
+			POINT dest[kMaxParallaxParts];
+			RECT  src[kMaxParallaxParts];
+			// The view camera decides it, as Build's camera does: the image as
+			// Build would place it for a frame centred in this view, extended
+			// sideways. Where the view is centred on the frame this is Build's
+			// own position; where the view is clamped at a world edge, the
+			// background stays still with the world.
+			POINT image = {(place.camera.x + hudX) * 2 / 3 - hudX, view.y * 2 / 3};
+			int   parts = ParallaxParts(image, spec.width, dest, src, kMaxParallaxParts);
+			for (int i = 0; i < parts; i++) pixmap->DrawPart(item.chDst, item.channel, dest[i], src[i], item.mode, item.mask);
+			continue;
+		}
+		if (item.layer == Layer::World)
+		{
+			POINT world = item.world;
+			if (lerp)
+			{
+				world.x = Mix(motion->from[n].x, item.world.x, alpha);
+				world.y = Mix(motion->from[n].y, item.world.y, alpha);
+			}
+			if (item.cull != Item::Cull::None)
+			{
+				POINT ref = {item.ref.x + world.x - item.world.x, item.ref.y + world.y - item.world.y};
+				if (!Visible(item, ref, cullView, cullWidth, LYIMAGE)) continue;
+			}
+			// Items placed with the unshaken camera keep their offset from the
+			// shaken ones (the frame moves with the shake).
+			pos.x = world.x - (item.simCamera ? camera.x : view.x) + place.frameX;
+			pos.y = world.y - (item.simCamera ? camera.y : view.y);
+		}
+		else if (item.extended)
+		{
+			continue;
+		}
+		else if (item.layer == Layer::Screen)
+		{
+			if (lerp && item.entity == Entity::Voyage)
+			{
+				pos.x = Mix(motion->from[n].x, item.pos.x, alpha);
+				pos.y = Mix(motion->from[n].y, item.pos.y, alpha);
+			}
+			if (item.entity == Entity::Voyage && item.font > 0)
+			{
+				// From the object (frame placement) to the HUD (centred frame).
+				pos.x += place.frameX + (hudX - place.frameX) * item.mode / item.font;
+			}
+			else
+			{
+				pos.x += hudX;
+			}
+		}
+		Issue(item, pos, pixmap, text);
 	}
 }
 }  // namespace blupi::scene

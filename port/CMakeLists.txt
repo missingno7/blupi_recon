@@ -99,6 +99,11 @@ add_library(blupi_game STATIC
     game/network.cpp
     game/state_hash.cpp
     game/scene.cpp
+    game/probe.cpp
+    game/end_of_tick.cpp
+    game/editor_wide.cpp
+    game/options_screen.cpp
+    game/settings.cpp
     $<TARGET_OBJECTS:blupi_hist>)
 target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform)
 target_include_directories(blupi_game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

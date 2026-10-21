@@ -7,8 +7,8 @@
 // Not hashed: pointers and handles, CDecor::m_unknownTail (size-only
 // placeholder, never accessed), buffers of transient file-dialog data
 // (CEvent::m_filenameBuffer, m_names), the demo buffer contents (owned by the
-// demo file) and the CJauge/CButton/CMenu objects' pointers (their visible
-// state is hashed through public getters). Character arrays are hashed up to
+// demo file), the CJauge/CButton objects' pointers and handles (their other
+// members are hashed), and CEvent::m_menu (CMenu is never drawn in SB1). Character arrays are hashed up to
 // their terminating NUL, because bytes after it are never read by the game.
 // CEvent::m_joyID and m_nbJoy are excluded: the historical constructor leaves
 // them uninitialised (heap contents), and the game only reads them after the
@@ -98,6 +98,24 @@ struct Hash
 #define EVENT_TEXTS(X) \
 	X(m_textInput) X(m_name) X(m_movieToStart) X(m_textToolTips) X(m_textToolTips2) X(m_chatZone)
 
+// Value members of the UI objects inside CDecor and CEvent (redraw flags
+// included: DrawButtons and EndOfTick manage them).
+struct JaugeAccess : CJauge
+{
+#define DECL(m) static constexpr auto m = &JaugeAccess::m;
+	DECL(m_bHide) DECL(m_pos) DECL(m_dim) DECL(m_type) DECL(m_level) DECL(m_bMinimizeRedraw) DECL(m_bRedraw)
+#undef DECL
+};
+
+struct ButtonAccess : CButton
+{
+#define DECL(m) static constexpr auto m = &ButtonAccess::m;
+	DECL(m_type) DECL(m_bEnable) DECL(m_bDemo) DECL(m_bHide) DECL(m_message) DECL(m_pos) DECL(m_dim)
+	DECL(m_state) DECL(m_mouseState) DECL(m_iconMenu) DECL(m_toolTips) DECL(m_nbMenu) DECL(m_nbToolTips)
+	DECL(m_selMenu) DECL(m_bMouseDown) DECL(m_bMinimizeRedraw) DECL(m_bRedraw)
+#undef DECL
+};
+
 template <typename F, size_t N>
 void visit_texts(F& f, const char* name, const char (&s)[N])
 {
@@ -143,11 +161,12 @@ void visit_state(F&& f)
 #define VISIT(m) visit_texts(f, "CDecor::" #m, d.*DecorAccess::m);
 		DECOR_TEXTS(VISIT)
 #undef VISIT
-		int i = 0;
-		for (CJauge& j : const_cast<CDecor&>(d).*DecorAccess::jauges)
+		for (const CJauge& j : d.*DecorAccess::jauges)
 		{
-			int v[3] = {j.GetHide(), j.GetLevel(), j.GetType()};
-			f(i++ == 0 ? "CDecor::m_jauges[0]" : "CDecor::m_jauges[1]", v, sizeof(v));
+#define VISIT(m) f("CDecor::m_jauges[]." #m, &(j.*JaugeAccess::m), sizeof(j.*JaugeAccess::m));
+			VISIT(m_bHide) VISIT(m_pos) VISIT(m_dim) VISIT(m_type) VISIT(m_level)
+			VISIT(m_bMinimizeRedraw) VISIT(m_bRedraw)
+#undef VISIT
 		}
 	}
 	if (g_pEvent != NULL)
@@ -159,10 +178,14 @@ void visit_state(F&& f)
 #define VISIT(m) visit_texts(f, "CEvent::" #m, e.*EventAccess::m);
 		EVENT_TEXTS(VISIT)
 #undef VISIT
-		for (CButton& b : const_cast<CEvent&>(e).*EventAccess::buttons)
+		for (const CButton& b : e.*EventAccess::buttons)
 		{
-			int v[4] = {b.GetState(), b.GetMenu(), b.GetEnable(), b.GetHide()};
-			f("CEvent::m_buttons[]", v, sizeof(v));
+#define VISIT(m) f("CEvent::m_buttons[]." #m, &(b.*ButtonAccess::m), sizeof(b.*ButtonAccess::m));
+			VISIT(m_type) VISIT(m_bEnable) VISIT(m_bDemo) VISIT(m_bHide) VISIT(m_message) VISIT(m_pos)
+			VISIT(m_dim) VISIT(m_state) VISIT(m_mouseState) VISIT(m_iconMenu) VISIT(m_toolTips)
+			VISIT(m_nbMenu) VISIT(m_nbToolTips) VISIT(m_selMenu) VISIT(m_bMouseDown)
+			VISIT(m_bMinimizeRedraw) VISIT(m_bRedraw)
+#undef VISIT
 		}
 	}
 }
