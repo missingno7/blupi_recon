@@ -715,6 +715,7 @@ static LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		if (g_timer > 0) g_timer--;
 		break;
 	case WM_ACTIVATEAPP:
+		OutputDebug(wParam != 0 ? "Port: WM_ACTIVATEAPP active\n" : "Port: WM_ACTIVATEAPP inactive\n");
 		g_bActive = (wParam != 0);
 		if (g_pEvent != NULL)
 		{

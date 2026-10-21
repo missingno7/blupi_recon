@@ -130,6 +130,9 @@ void PortSoundPoll()
 
 	if ( finished != 0 && finished == s_notifyDevice )
 	{
+		char	text[100];
+		sprintf(text, "MIDI end of song (device %u): MCI_NOTIFY_SUCCESSFUL\n", finished);
+		OutputDebug(text);
 		PostMessage(s_notifyWnd, MM_MCINOTIFY, MCI_NOTIFY_SUCCESSFUL, (LPARAM)finished);
 		s_notifyDevice = 0;
 	}
