@@ -18,6 +18,7 @@
 //    network (m_bMulti) paths.
 
 #include "game/scene.h"
+#include "game/member_access.h"
 
 #include <cmath>
 #include <cstdint>
@@ -38,70 +39,59 @@ namespace
 {
 // Read access to the protected state of CDecor (and CJauge) without changing
 // any header: pointers to members formed through a derived class.
-struct DecorAccess : CDecor
-{
-#define DECL(m) static constexpr auto m = &DecorAccess::m;
-	DECL(m_pPixmap)
-	DECL(m_pNetwork)
-	DECL(m_decor)
-	DECL(m_bigDecor)
-	DECL(m_moveObject)
-	DECL(m_posDecor)
-	DECL(m_dimDecor)
-	DECL(m_posCelHili)
-	DECL(m_dimCelHili)
-	DECL(m_liftEnd)
-	DECL(m_phase)
-	DECL(m_time)
-	DECL(m_blupiPos)
-	DECL(m_blupiIcon)
-	DECL(m_blupiChannel)
-	DECL(m_blupiShield)
-	DECL(m_blupiPower)
-	DECL(m_blupiCloud)
-	DECL(m_blupiHide)
-	DECL(m_blupiFront)
-	DECL(m_blupiBullet)
-	DECL(m_blupiPerso)
-	DECL(m_blupiTimeShield)
-	DECL(m_blupiStartPos)
-	DECL(m_blupiStartDir)
-	DECL(m_bMulti)
-	DECL(m_team)
-	DECL(m_netBlupiPos)
-	DECL(m_netBlupiIcon)
-	DECL(m_netBlupiSec)
-	DECL(m_netBlupiTransport)
-	DECL(m_notifText)
-	DECL(m_jauges)
-	DECL(m_bPrivate)
-	DECL(m_bDrawSecret)
-	DECL(m_bJoystick)
-	DECL(m_mission)
-	DECL(m_nbVies)
-	DECL(m_nbTresor)
-	DECL(m_totalTresor)
-	DECL(m_voyageIcon)
-	DECL(m_voyageChannel)
-	DECL(m_voyagePhase)
-	DECL(m_voyageTotal)
-	DECL(m_voyageStart)
-	DECL(m_voyageEnd)
-	DECL(m_decorAction)
-	DECL(m_decorPhase)
-#undef DECL
-};
+#define SCENE_DECOR_MEMBERS(X) \
+	X(m_pPixmap) \
+	X(m_pNetwork) \
+	X(m_decor) \
+	X(m_bigDecor) \
+	X(m_moveObject) \
+	X(m_posDecor) \
+	X(m_dimDecor) \
+	X(m_posCelHili) \
+	X(m_dimCelHili) \
+	X(m_liftEnd) \
+	X(m_phase) \
+	X(m_time) \
+	X(m_blupiPos) \
+	X(m_blupiIcon) \
+	X(m_blupiChannel) \
+	X(m_blupiShield) \
+	X(m_blupiPower) \
+	X(m_blupiCloud) \
+	X(m_blupiHide) \
+	X(m_blupiFront) \
+	X(m_blupiBullet) \
+	X(m_blupiPerso) \
+	X(m_blupiTimeShield) \
+	X(m_blupiStartPos) \
+	X(m_blupiStartDir) \
+	X(m_bMulti) \
+	X(m_team) \
+	X(m_netBlupiPos) \
+	X(m_netBlupiIcon) \
+	X(m_netBlupiSec) \
+	X(m_netBlupiTransport) \
+	X(m_notifText) \
+	X(m_jauges) \
+	X(m_bPrivate) \
+	X(m_bDrawSecret) \
+	X(m_bJoystick) \
+	X(m_mission) \
+	X(m_nbVies) \
+	X(m_nbTresor) \
+	X(m_totalTresor) \
+	X(m_voyageIcon) \
+	X(m_voyageChannel) \
+	X(m_voyagePhase) \
+	X(m_voyageTotal) \
+	X(m_voyageStart) \
+	X(m_voyageEnd) \
+	X(m_decorAction) \
+	X(m_decorPhase)
+BLUPI_MEMBER_ACCESS(DecorAccess, CDecor, SCENE_DECOR_MEMBERS)
 
-struct JaugeAccess : CJauge
-{
-	static constexpr auto m_bHide = &JaugeAccess::m_bHide;
-	static constexpr auto m_pos = &JaugeAccess::m_pos;
-	static constexpr auto m_dim = &JaugeAccess::m_dim;
-	static constexpr auto m_type = &JaugeAccess::m_type;
-	static constexpr auto m_level = &JaugeAccess::m_level;
-	static constexpr auto m_bMinimizeRedraw = &JaugeAccess::m_bMinimizeRedraw;
-	static constexpr auto m_bRedraw = &JaugeAccess::m_bRedraw;
-};
+#define SCENE_JAUGE_MEMBERS(X) X(m_bHide) X(m_pos) X(m_dim) X(m_type) X(m_level) X(m_bMinimizeRedraw) X(m_bRedraw)
+BLUPI_MEMBER_ACCESS(JaugeAccess, CJauge, SCENE_JAUGE_MEMBERS)
 
 // Annotation of one recorded draw call.
 struct Tag

@@ -56,6 +56,10 @@ Saves and data:
 
 Testing:
 - Build: `cmake --preset mingw-x64 -S port`, `cmake --build build/port -j 4` (keep `-j` ≤ 4).
+  Linux (WSL): `sh port/tools/linux_check.sh` builds and runs the suite from a case-sensitive
+  copy; both platforms must give the same golden traces.
+- Use `game/member_access.h` to reach protected members of game classes (GCC 15 rejects the
+  older same-name pointer idiom).
 - `ctest --test-dir build/port` with `SDL3.dll` on PATH. Configure with `BLUPI_DATA` set to the
   game folder to enable the demo-replay determinism and music tests (the music tests use the
   GeneralUser GS submodule in `third_party/generaluser-gs/` by default; initialise it with

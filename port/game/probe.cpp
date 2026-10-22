@@ -25,6 +25,7 @@
 #include "network.h"
 
 #include "game/port_game.h"
+#include "game/member_access.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -37,15 +38,12 @@ extern CNetwork* g_pNetwork;
 
 namespace
 {
-struct DecorWrite : CDecor
-{
-#define DECL(m) static constexpr auto m = &DecorWrite::m;
-	DECL(m_blupiShield) DECL(m_blupiPower) DECL(m_blupiCloud) DECL(m_blupiHide)
-	DECL(m_blupiTimeShield) DECL(m_blupiFront) DECL(m_mission) DECL(m_bPrivate)
-	DECL(m_bMulti) DECL(m_blupiPos) DECL(m_netBlupiPos) DECL(m_netBlupiIcon)
-	DECL(m_netBlupiSec) DECL(m_netBlupiTransport)
-#undef DECL
-};
+#define PROBE_DECOR_MEMBERS(X) \
+	X(m_blupiShield) X(m_blupiPower) X(m_blupiCloud) X(m_blupiHide) \
+	X(m_blupiTimeShield) X(m_blupiFront) X(m_mission) X(m_bPrivate) \
+	X(m_bMulti) X(m_blupiPos) X(m_netBlupiPos) X(m_netBlupiIcon) \
+	X(m_netBlupiSec) X(m_netBlupiTransport)
+BLUPI_MEMBER_ACCESS(DecorWrite, CDecor, PROBE_DECOR_MEMBERS)
 
 struct Probe
 {

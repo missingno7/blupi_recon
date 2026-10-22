@@ -138,6 +138,31 @@ Every later gate compares against these.
 - **0.4 Linux build.** It is cheap now and keeps the code honest about portability: case-sensitive
   data lookup is done, and the forced header covers `rand`. Run the corpus on both systems.
 
+  **Status (2026-10-22): done.** `port/tools/linux_check.sh` copies `src/`, `port/` and the
+  game data to a case-sensitive file system, then configures (`linux` preset), builds and runs
+  the whole suite. The copy matters because a Windows drive mounted in WSL is
+  case-insensitive. The machine was Ubuntu 26.04 in WSL2, with GCC 15.2, CMake 4.2 and the
+  system SDL 3.4.2.
+  - [EVIDENCE] All 85 tests pass. The golden traces, state and screen hashes, are the same
+    files as on Windows. The simulation and the reference renderer are therefore
+    bit-identical across compilers, C libraries and operating systems.
+  - [EVIDENCE] A windowed run under WSLg opened a Wayland window, presented at the display's
+    60 Hz, played music and exited cleanly.
+  - What Linux found:
+    - `__cdecl` is a Windows compiler keyword; the compat header defines it away elsewhere.
+    - `CEvent::CopyMission` reads the VC5 C runtime's `FILE::_flag` directly, through the
+      expanded `ferror` macro. The shared historical TUs now get a port stream type, `BlupiFile`
+      (`compat/include/port_hist_stdio.h`), with exactly the members they use. It compiles on
+      every C library, including bionic, where `FILE` is opaque.
+    - GCC 15 rejects the port's accessor idiom, a pointer named like the member it points to.
+      `game/member_access.h` replaces it with a standard-clean form.
+    - The case aliases (`DEF.H`, `Windows.h`) now include the real headers by absolute path,
+      so a case-insensitive build directory cannot make them include themselves.
+    - Reads just outside static tables that the original makes: a crash in `MouseHotSpot`,
+      plus explosion icon 53 and element rank −1. AddressSanitizer found them. The port now
+      reproduces what BLUPI.EXE read there (`docs/ORACLE.md`). The only report left is the
+      start-up read in the shared `CEvent::MouseOnButton`, which is harmless (documented there).
+
 ## Stage 1: draw commands as the renderer's input
 
 - `CPixmap` (port-owned) records every drawing call as a command instead of only rasterising:
@@ -328,10 +353,17 @@ vanilla behaviour of presenting once per tick.
 ## Stage 6: Android (independent track, after 0.4; benefits from 2 and 5)
 
 Rendering does not block Android, since the software path also presents through SDL_Renderer.
-It fits best once the GPU path and present-rate cursor exist, because touch input belongs to the
-presentation layer.
+Touch input belongs to the presentation layer, next to the Display options screen.
 
-- **Data:** `vfs` reads through `SDL_IOStream` for APK assets; the user root is the SDL pref path.
+- **Data:** decided (2026-10-22), each player supplies their own copy of the game. The app
+  imports it once from a folder the player chooses (Storage Access Framework) into its private
+  storage. From then on the existing `vfs`, `FILE*` and `std::filesystem` paths work unchanged;
+  nothing is bundled and no `SDL_IOStream` read path is needed. The user root is the SDL pref
+  path.
+- **Text input:** the host enables SDL text input for the whole session, which would keep the
+  soft keyboard open. On Android, enable it only while the game asks for a name. Key presses
+  must then also produce the `WM_CHAR` the cheat codes rely on (`TranslatedChar`).
+- **Gamepads** already work (winmm joystick calls on SDL gamepads; Start is Escape).
 - **Lifecycle:** map to `WM_ACTIVATEAPP`; the game already pauses and suspends music.
 - **Touch:** taps synthesize the existing mouse messages. An on-screen d-pad, jump and fire
   synthesize the existing key messages. No new input path in game code.

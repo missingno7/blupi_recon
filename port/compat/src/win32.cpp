@@ -178,11 +178,45 @@ void OutputDebugString(LPCSTR text)
 DWORD GetTickCount(void) { return (DWORD)(blupi::host::now_ns() / 1000000); }
 DWORD timeGetTime(void) { return GetTickCount(); }
 
-// Joystick: not implemented yet; report "no device" exactly as winmm does
-// without a joystick, so the game keeps keyboard control (see port/README.md).
-UINT joyGetNumDevs(void) { return 0; }
-MMRESULT joyGetDevCaps(UINT, LPJOYCAPS, UINT) { return JOYERR_PARMS; }
-MMRESULT joyGetPosEx(UINT, LPJOYINFOEX) { return JOYERR_UNPLUGGED; }
+// Joystick (winmm) on SDL gamepads. The game lists the devices on its
+// settings screen (joyGetNumDevs, joyGetDevCaps) and, once one is chosen,
+// reads it every tick with joyGetPosEx: X and Y on winmm's 0..65535 scale
+// (it turns them into directions at 16384 and 49152) and buttons 1 to 4.
+// Gamepad buttons south, east, west, north are joystick buttons 1 to 4; the
+// d-pad counts as the stick.
+UINT joyGetNumDevs(void)
+{
+    return (UINT)blupi::host::gamepad_count();
+}
+
+MMRESULT joyGetDevCaps(UINT id, LPJOYCAPS caps, UINT size)
+{
+    if (caps == NULL || size < sizeof(JOYCAPS)) return JOYERR_PARMS;
+    char name[MAXPNAMELEN];
+    if (!blupi::host::gamepad_name((int)id, name, sizeof(name))) return JOYERR_PARMS;
+    memset(caps, 0, size);
+    strcpy(caps->szPname, name);
+    caps->wXmax = caps->wYmax = 65535;
+    caps->wNumButtons = caps->wMaxButtons = 4;
+    caps->wNumAxes = caps->wMaxAxes = 2;
+    return JOYERR_NOERROR;
+}
+
+MMRESULT joyGetPosEx(UINT id, LPJOYINFOEX info)
+{
+    int x = 0, y = 0;
+    unsigned buttons = 0;
+    if (info == NULL) return JOYERR_PARMS;
+    if (!blupi::host::gamepad_state((int)id, x, y, buttons)) return JOYERR_UNPLUGGED;
+    info->dwXpos = (DWORD)(x + 32768);
+    info->dwYpos = (DWORD)(y + 32768);
+    info->dwZpos = info->dwRpos = info->dwUpos = info->dwVpos = 32768;
+    info->dwButtons = buttons;
+    info->dwButtonNumber = 0;
+    for (unsigned b = buttons; b != 0; b &= b - 1) info->dwButtonNumber++;
+    info->dwPOV = 65535;   // JOY_POVCENTERED
+    return JOYERR_NOERROR;
+}
 
 // ---------------------------------------------------------------------------
 // C runtime random generator of the original (Microsoft LIBC rand/srand).

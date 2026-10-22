@@ -287,9 +287,16 @@ needs a hook outside `src/` (for example in the cnc-ddraw `Blt` path, or a debug
 - Input: SDL keycodes map to VK codes in `platform/host.cpp`. Messages are synthesized in Win32
   order (`WM_KEYDOWN`, then `WM_CHAR` for Backspace/Enter/Escape/Tab; `WM_NCMOUSEMOVE` over the
   letterbox).
+- Stdio in the shared TUs: `fopen/fread/fwrite/fclose` on `BlupiFile`
+  (`compat/include/port_hist_stdio.h`, forced only for those TUs). It carries the VC5
+  `_flag`/`_IOERR` bits that `CEvent::CopyMission` reads, so the historical code compiles
+  against any C library. The port's own TUs keep the real `FILE`.
+- Reads outside static tables made by the original are reproduced with BLUPI.EXE's neighbouring
+  values (`game/pixmap.cpp`, `docs/ORACLE.md`), so they do not depend on a compiler's data
+  layout.
 - Android (later):
-  - storage: SDL pref path for the user root; game data via an `SDL_IOStream`-backed read path
-    in `vfs` (`std::filesystem` cannot read APK assets);
+  - storage: SDL pref path for the user root; the game data, supplied by the player, imported
+    once into app storage so the file-based `vfs` works unchanged;
   - lifecycle: map to `WM_ACTIVATEAPP`;
   - touch: synthesize mouse and key messages;
   - ARM64: the struct layout notes above apply unchanged.

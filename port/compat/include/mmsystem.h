@@ -1,5 +1,5 @@
 // Port compatibility header: the winmm names used by the shared game TUs.
-// Joystick queries report no device (joystick support: see port/README.md).
+// Joystick queries are answered from SDL gamepads (compat/src/win32.cpp).
 #ifndef BLUPI_COMPAT_MMSYSTEM_H
 #define BLUPI_COMPAT_MMSYSTEM_H
 

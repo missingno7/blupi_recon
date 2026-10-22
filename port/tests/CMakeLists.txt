@@ -11,6 +11,11 @@ add_executable(test_layout test_layout.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../compat
 target_link_libraries(test_layout PRIVATE blupi_hist_context blupi_platform)
 add_test(NAME layout COMMAND test_layout)
 
+# Joystick (winmm) calls of the game answered from an SDL virtual gamepad.
+add_executable(test_gamepad test_gamepad.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../compat/src/win32.cpp)
+target_link_libraries(test_gamepad PRIVATE blupi_hist_context blupi_platform)
+add_test(NAME gamepad COMMAND test_gamepad)
+
 set(BLUPI_TEST_DATA "" CACHE PATH "Game root (DATA/, IMAGE08/, ...) for replay tests")
 option(BLUPI_UPDATE_GOLDEN "Golden tests rewrite tests/golden/*.trace instead of comparing" OFF)
 if(BLUPI_TEST_DATA)

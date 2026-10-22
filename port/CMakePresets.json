@@ -15,6 +15,16 @@
       }
     },
     {
+      "name": "linux",
+      "displayName": "Linux, GCC or Clang, the system SDL3 (e.g. Ubuntu libsdl3-dev)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/port-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "BLUPI_TEST_DATA": "$env{BLUPI_DATA}"
+      }
+    },
+    {
       "name": "msvc-x64",
       "displayName": "Windows x64, Visual Studio 2022, SDL3 VC package from $env{SDL3_DIR}",
       "generator": "Ninja",

@@ -24,24 +24,19 @@
 #include "dectables.h"
 
 #include "game/port_game.h"
+#include "game/member_access.h"
 
 namespace
 {
-struct DecorWrite : CDecor
-{
-#define DECL(m) static constexpr auto m = &DecorWrite::m;
-	DECL(m_decorAction) DECL(m_decorPhase) DECL(m_phase) DECL(m_blupiSec) DECL(m_blupiFront)
-	DECL(m_blupiShield) DECL(m_blupiPower) DECL(m_blupiCloud) DECL(m_blupiHide)
-	DECL(m_jauges) DECL(m_mission) DECL(m_bPrivate) DECL(m_nbTresor) DECL(m_blupiPos)
-	DECL(m_time)
-#undef DECL
-};
+#define TICK_DECOR_MEMBERS(X) \
+	X(m_decorAction) X(m_decorPhase) X(m_phase) X(m_blupiSec) X(m_blupiFront) \
+	X(m_blupiShield) X(m_blupiPower) X(m_blupiCloud) X(m_blupiHide) \
+	X(m_jauges) X(m_mission) X(m_bPrivate) X(m_nbTresor) X(m_blupiPos) \
+	X(m_time)
+BLUPI_MEMBER_ACCESS(DecorWrite, CDecor, TICK_DECOR_MEMBERS)
 
-struct JaugeWrite : CJauge
-{
-	static constexpr auto m_bHide = &JaugeWrite::m_bHide;
-	static constexpr auto m_bRedraw = &JaugeWrite::m_bRedraw;
-};
+#define TICK_JAUGE_MEMBERS(X) X(m_bHide) X(m_bRedraw)
+BLUPI_MEMBER_ACCESS(JaugeWrite, CJauge, TICK_JAUGE_MEMBERS)
 }  // namespace
 
 void EndOfTick(CDecor& decor)

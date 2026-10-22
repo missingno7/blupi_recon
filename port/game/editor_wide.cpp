@@ -14,15 +14,12 @@
 #include "event.h"
 
 #include "game/port_game.h"
+#include "game/member_access.h"
 
 namespace
 {
-struct DecorEdit : CDecor
-{
-	static constexpr auto m_posDecor = &DecorEdit::m_posDecor;
-	static constexpr auto m_dimCelHili = &DecorEdit::m_dimCelHili;
-	static constexpr auto m_posCelHili = &DecorEdit::m_posCelHili;
-};
+#define EDITOR_DECOR_MEMBERS(X) X(m_posDecor) X(m_dimCelHili) X(m_posCelHili)
+BLUPI_MEMBER_ACCESS(DecorEdit, CDecor, EDITOR_DECOR_MEMBERS)
 
 int FloorDiv(int a, int b)
 {

@@ -14,7 +14,8 @@ Current milestone: **faithful 640×480 SDL3 desktop baseline** (Windows x64 firs
 |---|---|---|
 | `../src/*.cpp, *.h, res/` | historical reconstruction | Compiled unchanged. 12 TUs are shared as-is: `button decblock decblupi decdesign decmove decnet decor dectables event jauge menu text` |
 | `compat/include/` | port | Declaration-only Win32/DirectX/winmm names the shared TUs need, with SDK values; `port_forced.h` (forced include: `fopen`→port file system, `rand`→MS LIBC generator) |
-| `compat/src/win32.cpp` | port | Behaviour behind those names: posted-message queue, cursor, rectangles, file APIs, joystick "no device", MS `rand` |
+| `compat/src/win32.cpp` | port | Behaviour behind those names: posted-message queue, cursor, rectangles, file APIs, winmm joystick on SDL gamepads, MS `rand` |
+| `compat/src/hist_stdio.cpp` | port | `BlupiFile` streams for the shared TUs' file I/O (`compat/include/port_hist_stdio.h`) |
 | `game/` | port, derived from historical TUs | Replacements of the 7 platform TUs: `main.cpp`←`blupi.cpp`, `pixmap.cpp`, `sound.cpp`, `misc.cpp`, `movie.cpp`, `network.cpp`; `ddutil.cpp` is not needed. Each file header names its historical origin; copied method bodies are kept verbatim where possible |
 | `render/` | port | Rendering device interface and commands (`device.h`), software reference renderer (8 bpp palettized and RGB565 surfaces, DirectDraw blit rules), BMP reader. No SDL, no Win32 names |
 | `platform/` | port | SDL3 host: window/presentation, input, timing, audio mixer, MIDI synthesizer, file system roots, embedded string table, `SDL_main` entry |
@@ -42,6 +43,23 @@ ctest --test-dir build/port --output-on-failure   # SDL3.dll must be on PATH or 
 ```
 
 The `msvc-x64` preset (Visual Studio 2022 + SDL3 VC package) is provided but **not yet tested**.
+
+## Build (Linux)
+
+Requirements: CMake ≥ 3.20, Ninja, GCC or Clang with C++17, the SDL3 development files
+(Ubuntu 26.04: `sudo apt install libsdl3-dev ninja-build`). Tested: Ubuntu 26.04 in WSL2, GCC
+15.2, SDL 3.4.2.
+
+```bash
+git submodule update --init port/third_party/generaluser-gs
+BLUPI_DATA="$HOME/speedy-blupi" cmake --preset linux -S port
+cmake --build build/port-linux -j 4
+ctest --test-dir build/port-linux --output-on-failure
+```
+
+From WSL with the repository on a Windows drive, run `sh port/tools/linux_check.sh` instead.
+It copies the sources and the data to a case-sensitive folder (`~/blupi-linux`) and builds and
+tests there.
 
 ## Run
 
@@ -171,12 +189,17 @@ Not implemented / known gaps (each fails the way the original did when the servi
   without the MCI AVI driver. The movie files are not part of the installed data anyway.
 - **Multiplayer**: `CNetwork` enumerates no DirectPlay providers; the multiplayer screens open
   with nothing to join.
-- **Joystick**: winmm reports no device; keyboard only.
+- **Gamepads** stand in for the 1998 joystick. The game's own joystick code runs unchanged on
+  SDL gamepads: choose the gamepad under "Choose input device" on the settings screen (each
+  session, as in the original). Stick or d-pad move; A, B, X, Y are joystick buttons 1–4;
+  Start is Escape (a port addition). Tested with a virtual gamepad (`ctest -R gamepad`), not
+  yet with real hardware.
 - **MouseType 2/3** (Windows cursors): mapped to SDL system cursors, not the original `.cur`
   shapes. The default MouseType 1 (game-drawn cursor) is exact.
 - The cross-build oracle covers the attract mode and the screen tour, not yet every screen, the
   graphic cursor, the editor or save/load ([docs/ORACLE.md](docs/ORACLE.md)).
-- Linux and Android builds have not been attempted; the code avoids known blockers.
+- **Linux**: builds and passes the whole test suite with traces identical to Windows (see
+  the build section). Android has not been attempted yet; see the roadmap's stage 6.
 
 ## Next steps
 
@@ -188,8 +211,9 @@ equivalence gate per stage, is in [docs/ROADMAP.md](docs/ROADMAP.md). Immediate 
    tour and the oracle to whatever can be reached without gameplay.
 2. Try interpolation and widescreen by hand at high refresh rates. Settle the [OPEN] points in
    the roadmap: the snap threshold, the cursor over the wide side areas, and HUD anchoring.
-3. Android (stage 6) as a separate platform track. Stage 0.4 (Linux) is postponed; stage 2 (GPU
-   backend) is deferred until profiling shows a need (see `docs/ROADMAP.md`).
+3. Android (stage 6) as a separate platform track: player-supplied data imported into app
+   storage, touch controls in the presentation layer, text input only while the game asks. Stage
+   2 (GPU backend) is deferred until profiling shows a need (see `docs/ROADMAP.md`).
 
 ## Dependencies and licences
 

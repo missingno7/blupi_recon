@@ -16,6 +16,7 @@ namespace blupi::host
 struct Options
 {
     bool headless = false;    // no window, no audio device, no waiting (automated tests)
+    bool gamepads = false;    // headless only: gamepad events anyway (tests)
     bool fullscreen = false;  // borderless desktop fullscreen, letterboxed
     int  scale = 2;           // initial window size = logical size * scale
     bool integerScale = false;
@@ -76,6 +77,14 @@ void set_integer_scale(bool on);
 void set_auto_wide(bool on);
 void set_view_width(int width);
 int  view_width();
+// Gamepads (SDL gamepad API), numbered in the order they were connected;
+// none in headless runs. Axes -32768..32767 (left stick, the d-pad overrides
+// it); buttons: bit 0 south (A), 1 east (B), 2 west (X), 3 north (Y). Start
+// arrives as the Escape key.
+int  gamepad_count();
+bool gamepad_name(int index, char* name, int size);   // in the game's code page
+bool gamepad_state(int index, int& x, int& y, unsigned& buttons);
+
 // Where the game's frame lies in the view (default: centred); mouse positions
 // are reported relative to it.
 void set_frame_x(int x);

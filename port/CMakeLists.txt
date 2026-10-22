@@ -26,12 +26,15 @@ set(BLUPI_SHARED_TUS
     decor.cpp dectables.cpp event.cpp jauge.cpp menu.cpp text.cpp)
 list(TRANSFORM BLUPI_SHARED_TUS PREPEND ${BLUPI_HIST_SRC}/)
 
-# Case-sensitive hosts: forward the spellings the historical source uses.
+# Case-sensitive hosts: forward the spellings the historical source uses. The
+# aliases name the real headers by absolute path, so they cannot include
+# themselves where the build directory is case-insensitive (e.g. a Windows
+# drive under WSL).
 set(BLUPI_CASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/compat_case)
 file(MAKE_DIRECTORY ${BLUPI_CASE_DIR})
 if(NOT CMAKE_HOST_WIN32)
-    file(WRITE ${BLUPI_CASE_DIR}/Windows.h "#include \"windows.h\"\n")
-    file(WRITE ${BLUPI_CASE_DIR}/DEF.H "#include \"def.h\"\n")
+    file(WRITE ${BLUPI_CASE_DIR}/Windows.h "#include \"${CMAKE_CURRENT_SOURCE_DIR}/compat/include/windows.h\"\n")
+    file(WRITE ${BLUPI_CASE_DIR}/DEF.H "#include \"${BLUPI_HIST_SRC}/def.h\"\n")
 endif()
 
 # Interface carrying the historical-source compile context.
@@ -53,10 +56,13 @@ endif()
 # The historical files are cp1252; keep their string bytes unchanged.
 add_library(blupi_hist OBJECT ${BLUPI_SHARED_TUS})
 target_link_libraries(blupi_hist PRIVATE blupi_hist_context)
+# Their file I/O goes through BlupiFile (compat/include/port_hist_stdio.h).
 if(MSVC)
-    target_compile_options(blupi_hist PRIVATE /source-charset:.1252 /execution-charset:.1252)
+    target_compile_options(blupi_hist PRIVATE /source-charset:.1252 /execution-charset:.1252
+        /FI${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_hist_stdio.h)
 else()
-    target_compile_options(blupi_hist PRIVATE -finput-charset=CP1252 -fexec-charset=CP1252)
+    target_compile_options(blupi_hist PRIVATE -finput-charset=CP1252 -fexec-charset=CP1252
+        "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_hist_stdio.h")
 endif()
 
 # Software reference renderer: plain C++, no SDL and no Win32 names.
@@ -91,6 +97,7 @@ target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/ge
 # historical objects: everything that sees the Win32 compatibility names.
 add_library(blupi_game STATIC
     compat/src/win32.cpp
+    compat/src/hist_stdio.cpp
     game/main.cpp
     game/misc.cpp
     game/pixmap.cpp
@@ -119,10 +126,12 @@ if(WIN32)
     endif()
 endif()
 
-# Ship SDL3 next to the executable.
-add_custom_command(TARGET blupi POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:blupi>)
+# Windows: ship SDL3.dll next to the executable (elsewhere the system's SDL3).
+if(WIN32)
+    add_custom_command(TARGET blupi POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:blupi>)
+endif()
 
 # GeneralUser GS SoundFont for the MIDI music: git submodule third_party/generaluser-gs
 # (shallow, pinned; see third_party/README.md). Without it the game runs without music.

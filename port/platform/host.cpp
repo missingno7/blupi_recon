@@ -2,6 +2,8 @@
 
 #include <SDL3/SDL.h>
 
+#include <vector>
+
 namespace blupi::host
 {
 namespace
@@ -15,7 +17,29 @@ int  g_viewWidth = 0, g_frameX = 0; // the presented view; the frame's x in it (
 bool g_autoWide = false;            // view width follows the window shape
 bool g_integerScale = false;
 bool g_headless = false;
+bool g_headlessPads = false;   // tests: gamepads without a window
 bool g_fullscreen = false;
+std::vector<SDL_Gamepad*> g_pads;   // in the order they were connected
+
+void open_gamepad(SDL_JoystickID id)
+{
+    for (SDL_Gamepad* pad : g_pads)
+    {
+        if (SDL_GetGamepadID(pad) == id) return;
+    }
+    if (SDL_Gamepad* pad = SDL_OpenGamepad(id)) g_pads.push_back(pad);
+}
+
+void close_gamepad(SDL_JoystickID id)
+{
+    for (size_t i = 0; i < g_pads.size(); i++)
+    {
+        if (SDL_GetGamepadID(g_pads[i]) != id) continue;
+        SDL_CloseGamepad(g_pads[i]);
+        g_pads.erase(g_pads.begin() + (long)i);
+        return;
+    }
+}
 
 // Sets the presented view width: texture and logical presentation follow.
 void apply_view_width(int width)
@@ -135,6 +159,21 @@ bool translate(SDL_Event& ev, Event& out)
     case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
         update_auto_width();
         return false;
+    case SDL_EVENT_GAMEPAD_ADDED:
+        open_gamepad(ev.gdevice.which);
+        return false;
+    case SDL_EVENT_GAMEPAD_REMOVED:
+        close_gamepad(ev.gdevice.which);
+        return false;
+    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+    case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        // Port convenience, not seen as a joystick button by the game: Start
+        // is the Escape key (pause and back), so a gamepad alone can play.
+        if (ev.gbutton.button != SDL_GAMEPAD_BUTTON_START) return false;
+        out = Event{ev.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN ? EventType::KeyDown : EventType::KeyUp};
+        out.key = 0x1B;   // VK_ESCAPE
+        fill_buttons(out);
+        return true;
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
     {
@@ -207,10 +246,11 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
     g_autoWide = options.autoWide;
     g_integerScale = options.integerScale;
     g_fullscreen = false;
-    if (g_headless) return SDL_Init(0);
+    g_headlessPads = options.headless && options.gamepads;
+    if (g_headless) return SDL_Init(g_headlessPads ? SDL_INIT_GAMEPAD : 0);
 
     SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
-    if (!SDL_Init(SDL_INIT_VIDEO))
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     {
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
         return false;
@@ -258,7 +298,7 @@ uint64_t now_ns() { return SDL_GetTicksNS(); }
 
 bool poll_event(Event& event)
 {
-    if (g_headless) return false;
+    if (g_headless && !g_headlessPads) return false;
     if (next_text(event)) return true;
     SDL_Event ev;
     while (SDL_PollEvent(&ev))
@@ -335,6 +375,45 @@ void set_view_width(int width)
 }
 
 int view_width() { return g_viewWidth; }
+
+int gamepad_count()
+{
+    return (int)g_pads.size();
+}
+
+bool gamepad_name(int index, char* name, int size)
+{
+    if (index < 0 || index >= (int)g_pads.size() || size <= 0) return false;
+    const char* utf8 = SDL_GetGamepadName(g_pads[(size_t)index]);
+    if (utf8 == nullptr) utf8 = "Gamepad";
+    int n = 0;
+    while (*utf8 && n < size - 1)
+    {
+        int c = to_cp1252(SDL_StepUTF8(&utf8, nullptr));
+        if (c >= 0x20) name[n++] = (char)c;
+    }
+    name[n] = 0;
+    return true;
+}
+
+bool gamepad_state(int index, int& x, int& y, unsigned& buttons)
+{
+    if (index < 0 || index >= (int)g_pads.size()) return false;
+    SDL_Gamepad* pad = g_pads[(size_t)index];
+    if (!SDL_GamepadConnected(pad)) return false;
+    x = SDL_GetGamepadAxis(pad, SDL_GAMEPAD_AXIS_LEFTX);
+    y = SDL_GetGamepadAxis(pad, SDL_GAMEPAD_AXIS_LEFTY);
+    if (SDL_GetGamepadButton(pad, SDL_GAMEPAD_BUTTON_DPAD_LEFT)) x = -32768;
+    if (SDL_GetGamepadButton(pad, SDL_GAMEPAD_BUTTON_DPAD_RIGHT)) x = 32767;
+    if (SDL_GetGamepadButton(pad, SDL_GAMEPAD_BUTTON_DPAD_UP)) y = -32768;
+    if (SDL_GetGamepadButton(pad, SDL_GAMEPAD_BUTTON_DPAD_DOWN)) y = 32767;
+    buttons = 0;
+    if (SDL_GetGamepadButton(pad, SDL_GAMEPAD_BUTTON_SOUTH)) buttons |= 1;
+    if (SDL_GetGamepadButton(pad, SDL_GAMEPAD_BUTTON_EAST)) buttons |= 2;
+    if (SDL_GetGamepadButton(pad, SDL_GAMEPAD_BUTTON_WEST)) buttons |= 4;
+    if (SDL_GetGamepadButton(pad, SDL_GAMEPAD_BUTTON_NORTH)) buttons |= 8;
+    return true;
+}
 
 void set_frame_x(int x)
 {

@@ -6,6 +6,7 @@
 #include "def.h"
 #include "decor.h"
 #include "event.h"
+#include "pixtables.h"   // defined here too: this test does not link dectables.cpp
 
 #include <stdio.h>
 #include <string>
@@ -24,6 +25,12 @@ static_assert(sizeof(DescFile) == 868, "DescFile");
 static_assert(sizeof(DescGameFile) == 54416, "DescGameFile (saved game)");
 static_assert(sizeof(DemoHeader) == 204, "DemoHeader");
 static_assert(sizeof(DemoEvent) == 4, "DemoEvent");
+// Value counts (count included) that game/pixmap.cpp's IconValue relies on;
+// table_icon_explo's last entry lacks its sixth value (54 declared, 323 values).
+static_assert(sizeof(table_icon_blupi) / sizeof(short) == 1747, "table_icon_blupi");
+static_assert(sizeof(table_icon_object) / sizeof(short) == 1477, "table_icon_object");
+static_assert(sizeof(table_icon_element) / sizeof(short) == 1123, "table_icon_element");
+static_assert(sizeof(table_icon_explo) / sizeof(short) == 324, "table_icon_explo");
 
 static int failures = 0;
 

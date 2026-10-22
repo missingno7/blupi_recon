@@ -77,6 +77,26 @@ Each fix has a golden-trace update with the reason recorded here:
 Also confirmed: 16 bpp loading converts by truncation to RGB565 (former [HYPOTHESIS] in
 `ARCHITECTURE.md`).
 
+The Linux build (roadmap 0.4, AddressSanitizer) found reads the original makes just outside
+its static tables. Each used whatever BLUPI.EXE has next to the table, and the port now
+reproduces that explicitly instead of reading its own, compiler-dependent neighbours
+(`port/game/pixmap.cpp`). [EVIDENCE] The values were read from BLUPI.EXE's `.data` with pefile;
+nothing was executed.
+- `table_icon_explo` declares 54 icons but holds 53 and five values. Explosion icon 53, a
+  frame of the cloud effect, takes its height from the next table: 95. It is now drawn
+  124×95. The port had drawn whatever height its own memory gave, which was not 95, since the
+  screen hash changed. This is the one golden-trace update: the screen hash of the effects scenarios at the cloud
+  frames (200–230 and 480–490). Their state hashes are unchanged.
+- An element icon of rank −1 reads the object table's tail and padding. It is 0 pixels wide
+  in the original, so it is never drawn. There was no visible change.
+- `CPixmap::MouseHotSpot` indexes its 4-entry table up to `SPRITE_WAIT` (11), reading text in
+  the original. The hotspots are then about 1.7e9 and the wait cursor is never drawn. This
+  also crashed the Linux build.
+- `CEvent::MouseOnButton` reads the phase table at index −1 once, at start-up, before the
+  first phase is set. That is in shared code (`src/event.cpp`), so it stays. Its result is
+  overwritten by `WaitMouse` immediately afterwards, and it reads nearby static data on every
+  platform tried.
+
 One more golden-trace update came from the state hash itself, not from a fix. For roadmap
 stage 4, the hash (`port/game/state_hash.cpp`) was widened to every value member of the jauges
 and buttons, redraw flags included, so that the moved `Build` state changes are covered. Only

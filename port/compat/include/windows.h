@@ -19,6 +19,9 @@
 #define WINAPI
 #define CALLBACK
 #define APIENTRY
+#ifndef _WIN32
+#define __cdecl     // a compiler keyword on Windows compilers only
+#endif
 #define FAR
 #define NEAR
 

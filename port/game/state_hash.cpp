@@ -19,6 +19,7 @@
 #include "event.h"
 
 #include "game/port_game.h"
+#include "game/member_access.h"
 
 #include <cstring>
 
@@ -100,21 +101,15 @@ struct Hash
 
 // Value members of the UI objects inside CDecor and CEvent (redraw flags
 // included: DrawButtons and EndOfTick manage them).
-struct JaugeAccess : CJauge
-{
-#define DECL(m) static constexpr auto m = &JaugeAccess::m;
-	DECL(m_bHide) DECL(m_pos) DECL(m_dim) DECL(m_type) DECL(m_level) DECL(m_bMinimizeRedraw) DECL(m_bRedraw)
-#undef DECL
-};
+#define HASH_JAUGE_MEMBERS(X) \
+	X(m_bHide) X(m_pos) X(m_dim) X(m_type) X(m_level) X(m_bMinimizeRedraw) X(m_bRedraw)
+BLUPI_MEMBER_ACCESS(JaugeAccess, CJauge, HASH_JAUGE_MEMBERS)
 
-struct ButtonAccess : CButton
-{
-#define DECL(m) static constexpr auto m = &ButtonAccess::m;
-	DECL(m_type) DECL(m_bEnable) DECL(m_bDemo) DECL(m_bHide) DECL(m_message) DECL(m_pos) DECL(m_dim)
-	DECL(m_state) DECL(m_mouseState) DECL(m_iconMenu) DECL(m_toolTips) DECL(m_nbMenu) DECL(m_nbToolTips)
-	DECL(m_selMenu) DECL(m_bMouseDown) DECL(m_bMinimizeRedraw) DECL(m_bRedraw)
-#undef DECL
-};
+#define HASH_BUTTON_MEMBERS(X) \
+	X(m_type) X(m_bEnable) X(m_bDemo) X(m_bHide) X(m_message) X(m_pos) X(m_dim) \
+	X(m_state) X(m_mouseState) X(m_iconMenu) X(m_toolTips) X(m_nbMenu) X(m_nbToolTips) \
+	X(m_selMenu) X(m_bMouseDown) X(m_bMinimizeRedraw) X(m_bRedraw)
+BLUPI_MEMBER_ACCESS(ButtonAccess, CButton, HASH_BUTTON_MEMBERS)
 
 template <typename F, size_t N>
 void visit_texts(F& f, const char* name, const char (&s)[N])
@@ -128,23 +123,11 @@ void visit_texts(F& f, const char* name, const char (&s)[N][M])
 	for (size_t i = 0; i < N; i++) f(name, s[i], strnlen(s[i], M));
 }
 
-struct DecorAccess : CDecor
-{
-#define DECL(m) static constexpr auto m = &DecorAccess::m;
-	DECOR_VALUES(DECL)
-	DECOR_TEXTS(DECL)
-#undef DECL
-	static constexpr auto jauges = &DecorAccess::m_jauges;
-};
+#define HASH_DECOR_MEMBERS(X) DECOR_VALUES(X) DECOR_TEXTS(X) X(m_jauges)
+BLUPI_MEMBER_ACCESS(DecorAccess, CDecor, HASH_DECOR_MEMBERS)
 
-struct EventAccess : CEvent
-{
-#define DECL(m) static constexpr auto m = &EventAccess::m;
-	EVENT_VALUES(DECL)
-	EVENT_TEXTS(DECL)
-#undef DECL
-	static constexpr auto buttons = &EventAccess::m_buttons;
-};
+#define HASH_EVENT_MEMBERS(X) EVENT_VALUES(X) EVENT_TEXTS(X) X(m_buttons)
+BLUPI_MEMBER_ACCESS(EventAccess, CEvent, HASH_EVENT_MEMBERS)
 
 // Calls f(name, bytes, size) for every hashed piece of state, in a fixed order.
 template <typename F>
@@ -161,7 +144,7 @@ void visit_state(F&& f)
 #define VISIT(m) visit_texts(f, "CDecor::" #m, d.*DecorAccess::m);
 		DECOR_TEXTS(VISIT)
 #undef VISIT
-		for (const CJauge& j : d.*DecorAccess::jauges)
+		for (const CJauge& j : d.*DecorAccess::m_jauges)
 		{
 #define VISIT(m) f("CDecor::m_jauges[]." #m, &(j.*JaugeAccess::m), sizeof(j.*JaugeAccess::m));
 			VISIT(m_bHide) VISIT(m_pos) VISIT(m_dim) VISIT(m_type) VISIT(m_level)
@@ -178,7 +161,7 @@ void visit_state(F&& f)
 #define VISIT(m) visit_texts(f, "CEvent::" #m, e.*EventAccess::m);
 		EVENT_TEXTS(VISIT)
 #undef VISIT
-		for (const CButton& b : e.*EventAccess::buttons)
+		for (const CButton& b : e.*EventAccess::m_buttons)
 		{
 #define VISIT(m) f("CEvent::m_buttons[]." #m, &(b.*ButtonAccess::m), sizeof(b.*ButtonAccess::m));
 			VISIT(m_type) VISIT(m_bEnable) VISIT(m_bDemo) VISIT(m_bHide) VISIT(m_message) VISIT(m_pos)

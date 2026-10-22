@@ -20,6 +20,7 @@
 #include "misc.h"
 
 #include "game/port_game.h"
+#include "game/member_access.h"
 #include "platform/host.h"
 #include "platform/vfs.h"
 #include "render/bmp.h"
@@ -87,6 +88,50 @@ extern short table_icon_object[];
 extern short table_icon_element[];
 extern short table_icon_blupi[];
 extern short table_icon_explo[];
+
+// Port: reads of the icon tables (src/pixtables.h, defined in dectables.cpp)
+// go through IconValue. The original reads a little outside them in two
+// cases: rank -1 (a negative rank passes the "rank >= count" test) and the
+// last explosion icon, whose entry lacks its sixth value (the table holds
+// 323 values after the count of 54). It then used whatever BLUPI.EXE has next
+// to the tables; a modern compiler places other data or padding there. So the
+// values around each table are those of the 1998 binary. [EVIDENCE] BLUPI.EXE
+// .data: blupi 0x478dd8, object 0x479b80, element 0x47a710, explo 0x47afd8
+// (consecutive, padded), then table_mouse_hotspot; read with pefile.
+// Consequences: an element icon of rank -1 is 0 pixels wide (never drawn),
+// and explosion icon 53 is 124x95 (its height is the hotspot table's 95).
+namespace
+{
+struct IconTable
+{
+	const short* table;
+	int          size;        // values, count included (tests/test_layout.cpp)
+	short        before[6];   // the original's values at index -6..-1
+	short        after[6];    // and at size..size+5
+};
+
+const IconTable s_iconTables[] =
+{
+	{ table_icon_blupi,   1747, { 17742, 18770, 67, 0, 0, 0 }, { 0, 246, 441, 475, 0, 0 } },
+	{ table_icon_object,  1477, { 317, 14, 8, 37, 51, 0 },     { 0, 0, 0, 187, 198, 121 } },
+	{ table_icon_element, 1123, { 0, 64, 64, 0, 0, 0 },        { 0, 54, 0, 0, 48, 51 } },
+	{ table_icon_explo,   324,  { 51, 2, 32, 54, 27, 0 },      { 95, 0, 0, 0, 30, 0 } },
+};
+
+short IconValue(const short* table, int index)
+{
+	for ( const IconTable& t : s_iconTables )
+	{
+		if ( t.table != table )  continue;
+		if ( index >= 0 && index < t.size )  return t.table[index];
+		if ( index < 0 && index >= -6 )  return t.before[index + 6];
+		if ( index >= t.size && index < t.size + 6 )  return t.after[index - t.size];
+		blupi::host::log_debug("icon table read beyond the modelled neighbourhood");
+		return 0;
+	}
+	return 0;
+}
+}  // namespace
 
 // DirectDraw results used by the historical method bodies.
 #define DD_OK         ((HRESULT)0)
@@ -866,43 +911,43 @@ void CPixmap::QuickIcon(int channel, int rank, POINT pos)
 
     if ( channel == 1 )
     {
-        if ( rank >= table_icon_object[0] ) return;
-        rect.left = table_icon_object[rank*6+1];
-        rect.right = rect.left + table_icon_object[rank*6+5];
-        rect.top = table_icon_object[rank*6+2];
-        rect.bottom = rect.top + table_icon_object[rank*6+6];
-        pos.x += table_icon_object[rank*6+3];
-        pos.y += table_icon_object[rank*6+4];
+        if ( rank >= IconValue(table_icon_object, 0) ) return;
+        rect.left = IconValue(table_icon_object, rank*6+1);
+        rect.right = rect.left + IconValue(table_icon_object, rank*6+5);
+        rect.top = IconValue(table_icon_object, rank*6+2);
+        rect.bottom = rect.top + IconValue(table_icon_object, rank*6+6);
+        pos.x += IconValue(table_icon_object, rank*6+3);
+        pos.y += IconValue(table_icon_object, rank*6+4);
     }
     else if ( channel == 10 )
     {
-        if ( rank >= table_icon_element[0] ) return;
-        rect.left = table_icon_element[rank*6+1];
-        rect.right = rect.left + table_icon_element[rank*6+5];
-        rect.top = table_icon_element[rank*6+2];
-        rect.bottom = rect.top + table_icon_element[rank*6+6];
-        pos.x += table_icon_element[rank*6+3];
-        pos.y += table_icon_element[rank*6+4];
+        if ( rank >= IconValue(table_icon_element, 0) ) return;
+        rect.left = IconValue(table_icon_element, rank*6+1);
+        rect.right = rect.left + IconValue(table_icon_element, rank*6+5);
+        rect.top = IconValue(table_icon_element, rank*6+2);
+        rect.bottom = rect.top + IconValue(table_icon_element, rank*6+6);
+        pos.x += IconValue(table_icon_element, rank*6+3);
+        pos.y += IconValue(table_icon_element, rank*6+4);
     }
     else if ( channel == 2 || channel == 11 || channel == 12 || channel == 13 )
     {
-        if ( rank >= table_icon_blupi[0] ) return;
-        rect.left = table_icon_blupi[rank*6+1];
-        rect.right = rect.left + table_icon_blupi[rank*6+5];
-        rect.top = table_icon_blupi[rank*6+2];
-        rect.bottom = rect.top + table_icon_blupi[rank*6+6];
-        pos.x += table_icon_blupi[rank*6+3];
-        pos.y += table_icon_blupi[rank*6+4];
+        if ( rank >= IconValue(table_icon_blupi, 0) ) return;
+        rect.left = IconValue(table_icon_blupi, rank*6+1);
+        rect.right = rect.left + IconValue(table_icon_blupi, rank*6+5);
+        rect.top = IconValue(table_icon_blupi, rank*6+2);
+        rect.bottom = rect.top + IconValue(table_icon_blupi, rank*6+6);
+        pos.x += IconValue(table_icon_blupi, rank*6+3);
+        pos.y += IconValue(table_icon_blupi, rank*6+4);
     }
     else if ( channel == 9 )
     {
-        if ( rank >= table_icon_explo[0] ) return;
-        rect.left = table_icon_explo[rank*6+1];
-        rect.right = rect.left + table_icon_explo[rank*6+5];
-        rect.top = table_icon_explo[rank*6+2];
-        rect.bottom = rect.top + table_icon_explo[rank*6+6];
-        pos.x += table_icon_explo[rank*6+3];
-        pos.y += table_icon_explo[rank*6+4];
+        if ( rank >= IconValue(table_icon_explo, 0) ) return;
+        rect.left = IconValue(table_icon_explo, rank*6+1);
+        rect.right = rect.left + IconValue(table_icon_explo, rank*6+5);
+        rect.top = IconValue(table_icon_explo, rank*6+2);
+        rect.bottom = rect.top + IconValue(table_icon_explo, rank*6+6);
+        pos.x += IconValue(table_icon_explo, rank*6+3);
+        pos.y += IconValue(table_icon_explo, rank*6+4);
     }
     else
     {
@@ -995,43 +1040,43 @@ BOOL CPixmap::DrawIcon(int chDst, int channel, int rank, POINT pos,
 
     if ( channel == 1 )
     {
-        if ( rank >= table_icon_object[0] ) return FALSE;
-        rect.left = table_icon_object[rank*6+1];
-        rect.right = rect.left + table_icon_object[rank*6+5];
-        rect.top = table_icon_object[rank*6+2];
-        rect.bottom = rect.top + table_icon_object[rank*6+6];
-        pos.x += table_icon_object[rank*6+3];
-        pos.y += table_icon_object[rank*6+4];
+        if ( rank >= IconValue(table_icon_object, 0) ) return FALSE;
+        rect.left = IconValue(table_icon_object, rank*6+1);
+        rect.right = rect.left + IconValue(table_icon_object, rank*6+5);
+        rect.top = IconValue(table_icon_object, rank*6+2);
+        rect.bottom = rect.top + IconValue(table_icon_object, rank*6+6);
+        pos.x += IconValue(table_icon_object, rank*6+3);
+        pos.y += IconValue(table_icon_object, rank*6+4);
     }
     else if ( channel == 10 )
     {
-        if ( rank >= table_icon_element[0] ) return FALSE;
-        rect.left = table_icon_element[rank*6+1];
-        rect.right = rect.left + table_icon_element[rank*6+5];
-        rect.top = table_icon_element[rank*6+2];
-        rect.bottom = rect.top + table_icon_element[rank*6+6];
-        pos.x += table_icon_element[rank*6+3];
-        pos.y += table_icon_element[rank*6+4];
+        if ( rank >= IconValue(table_icon_element, 0) ) return FALSE;
+        rect.left = IconValue(table_icon_element, rank*6+1);
+        rect.right = rect.left + IconValue(table_icon_element, rank*6+5);
+        rect.top = IconValue(table_icon_element, rank*6+2);
+        rect.bottom = rect.top + IconValue(table_icon_element, rank*6+6);
+        pos.x += IconValue(table_icon_element, rank*6+3);
+        pos.y += IconValue(table_icon_element, rank*6+4);
     }
     else if ( channel == 2 || channel == 11 || channel == 12 || channel == 13 )
     {
-        if ( rank >= table_icon_blupi[0] ) return FALSE;
-        rect.left = table_icon_blupi[rank*6+1];
-        rect.right = rect.left + table_icon_blupi[rank*6+5];
-        rect.top = table_icon_blupi[rank*6+2];
-        rect.bottom = rect.top + table_icon_blupi[rank*6+6];
-        pos.x += table_icon_blupi[rank*6+3];
-        pos.y += table_icon_blupi[rank*6+4];
+        if ( rank >= IconValue(table_icon_blupi, 0) ) return FALSE;
+        rect.left = IconValue(table_icon_blupi, rank*6+1);
+        rect.right = rect.left + IconValue(table_icon_blupi, rank*6+5);
+        rect.top = IconValue(table_icon_blupi, rank*6+2);
+        rect.bottom = rect.top + IconValue(table_icon_blupi, rank*6+6);
+        pos.x += IconValue(table_icon_blupi, rank*6+3);
+        pos.y += IconValue(table_icon_blupi, rank*6+4);
     }
     else if ( channel == 9 )
     {
-        if ( rank >= table_icon_explo[0] ) return FALSE;
-        rect.left = table_icon_explo[rank*6+1];
-        rect.right = rect.left + table_icon_explo[rank*6+5];
-        rect.top = table_icon_explo[rank*6+2];
-        rect.bottom = rect.top + table_icon_explo[rank*6+6];
-        pos.x += table_icon_explo[rank*6+3];
-        pos.y += table_icon_explo[rank*6+4];
+        if ( rank >= IconValue(table_icon_explo, 0) ) return FALSE;
+        rect.left = IconValue(table_icon_explo, rank*6+1);
+        rect.right = rect.left + IconValue(table_icon_explo, rank*6+5);
+        rect.top = IconValue(table_icon_explo, rank*6+2);
+        rect.bottom = rect.top + IconValue(table_icon_explo, rank*6+6);
+        pos.x += IconValue(table_icon_explo, rank*6+3);
+        pos.y += IconValue(table_icon_explo, rank*6+4);
     }
     else
     {
@@ -1519,12 +1564,12 @@ void CPixmap::MouseRectSprite(RECT *rcRect, POINT *pos)
     if ( m_mouseSprite == SPRITE_POINTER ) rank = 38;
     if ( m_mouseSprite == SPRITE_WAIT ) rank = 39;
 
-    rcRect->left = table_icon_element[rank*6+1];
-    rcRect->right = rcRect->left + table_icon_element[rank*6+5];
-    rcRect->top = table_icon_element[rank*6+2];
-    rcRect->bottom = rcRect->top + table_icon_element[rank*6+6];
-    pos->x += table_icon_element[rank*6+3];
-    pos->y += table_icon_element[rank*6+4];
+    rcRect->left = IconValue(table_icon_element, rank*6+1);
+    rcRect->right = rcRect->left + IconValue(table_icon_element, rank*6+5);
+    rcRect->top = IconValue(table_icon_element, rank*6+2);
+    rcRect->bottom = rcRect->top + IconValue(table_icon_element, rank*6+6);
+    pos->x += IconValue(table_icon_element, rank*6+3);
+    pos->y += IconValue(table_icon_element, rank*6+4);
 }
 
 void CPixmap::MouseHotSpot()
@@ -1544,8 +1589,23 @@ void CPixmap::MouseHotSpot()
 	{
 		rank = m_mouseSprite;
 
-		m_mouseHotSpot.x = table_mouse_hotspot[rank*2+0];
-		m_mouseHotSpot.y = table_mouse_hotspot[rank*2+1];
+		// Port: the table has 4 entries, but the original indexes it up to
+		// SPRITE_WAIT (11). [EVIDENCE] In BLUPI.EXE the table (.data
+		// 0x47b260) is followed by text, so ranks 4..11 read hotspots around
+		// 1.7e9 (SPRITE_WAIT: 1701867625, 1769414770): every blit of such a
+		// sprite is clipped to an empty, invalid rectangle and the sprite is
+		// never drawn. The port reproduces that effect instead of reading
+		// past the array (undefined, and fatal on Linux).
+		if ( rank*2+1 < (int)(sizeof(table_mouse_hotspot)/sizeof(table_mouse_hotspot[0])) )
+		{
+			m_mouseHotSpot.x = table_mouse_hotspot[rank*2+0];
+			m_mouseHotSpot.y = table_mouse_hotspot[rank*2+1];
+		}
+		else
+		{
+			m_mouseHotSpot.x = 1701867625;
+			m_mouseHotSpot.y = 1769414770;
+		}
 	}
 	else
 	{
@@ -1657,13 +1717,10 @@ bool PortPixmapWriteScreenBmp(const char* path)
 
 namespace
 {
-struct PixmapAccess : CPixmap
-{
-#define DECL(m) static constexpr auto m = &PixmapAccess::m;
-	DECL(m_lpDDSBack) DECL(m_lpDDSurface) DECL(m_clipRect) DECL(m_mousePos) DECL(m_mouseHotSpot)
-	DECL(m_mouseType) DECL(m_mouseSprite) DECL(m_bMouseShow) DECL(MouseRectSprite)
-#undef DECL
-};
+#define WIDE_PIXMAP_MEMBERS(X) \
+	X(m_lpDDSBack) X(m_lpDDSurface) X(m_clipRect) X(m_mousePos) X(m_mouseHotSpot) \
+	X(m_mouseType) X(m_mouseSprite) X(m_bMouseShow) X(MouseRectSprite)
+BLUPI_MEMBER_ACCESS(PixmapAccess, CPixmap, WIDE_PIXMAP_MEMBERS)
 }  // namespace
 
 static int                 s_wideWidth = 0;      // 0: the host shows the screen
