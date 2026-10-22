@@ -1,5 +1,11 @@
 # Toolchain identification
 
+[EVIDENCE, 2026-10-20] Full English VC5 SP1 was obtained from the user's
+[old-dos.ru source](http://old-dos.ru/files/file_2693.html). C1XX 7149, C2 7153,
+LINK 7132 and LIBC are byte-identical to installed SP2. Earlier SP2 compiler
+controls therefore cover the same compiler binaries. See
+[CONTEXT_REVISIT.md](CONTEXT_REVISIT.md) for archive hashes and provenance limits.
+
 ## [EVIDENCE] Oracle and linker
 
 `assets/Speedy Blupi/BLUPI.EXE` is SHA-256 `be6de5a206bc636346dde1b1a4dd11ddc3bda30c6efe64eebe96513f9c8290ac`, PE32/i386, timestamp 1998-10-14 07:17:39 UTC, PE linker version **5.10**, image base `0x400000`, entry RVA `0x24d40`, section alignment `0x1000`, and file alignment `0x200`. Sections are `.text` RVA `0x1000`/vsize `0x2af93`, `.rdata` `0x2c000`/`0x1372`, `.data` `0x2e000`/`0x51e1c`, and `.rsrc` `0x80000`/`0x5b88`. There is no base-relocation or debug directory. The import directory and IAT are both in `.rdata`.
@@ -118,6 +124,13 @@ The driver versions come from file metadata; front-end versions are listed for t
 Scripts and generated probes are under `scratch/toolchain/` and `build/toolchain/` respectively.
 
 ## DirectX SDK ([EVIDENCE], 2026-10-18)
+
+Later bounded controls are recorded in [CONTEXT_REVISIT.md](CONTEXT_REVISIT.md)
+(2026-10-20): VC4.2 does not improve the current event TU; local LINK file version
+5.11.7351 emits PE 5.10/Rich and the same section payloads as SP3 under the system
+CRT. Coarse PE properties do not uniquely select SP3. SP1 Core omits the compiler;
+full SP1 was subsequently obtained and its C1XX/C2, LINK and LIBC files are
+identical to tested SP2. Package hashes and the exact scope are in that study.
 
 The original was compiled against the **DirectX 5.0 SDK** headers: the oracle's `.rdata` holds the exact ten GUIDs of
 DX5 dplay.h (no IDirectPlay4), defined in network.cpp via INITGUID, and dxguid.lib was not linked. The SDK is installed

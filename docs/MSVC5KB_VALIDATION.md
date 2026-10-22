@@ -1,5 +1,19 @@
 # MSVC 5.0 knowledge-base transfer validation
 
+## Broader-context revisit (2026-10-20)
+
+[EVIDENCE] BLUPI-NEG-07 records 40 full-event-TU source controls outside the residue
+windows and around shared tails/value lifetimes: no new strict match. A separately
+staged VC4.2 control gives substantially different target bodies with fixed headers.
+BLUPI-LNK-09 records that LINK file version 5.11.7351 fits PE 5.10/Rich properties
+and produces the same section payloads as SP3 with the same system CRT. Earlier
+claims about local linker uniqueness must be scoped to the earlier tested set.
+[EVIDENCE] BLUPI-TOOL-02 records the later full-SP1 acquisition from old-dos.ru:
+C1XX/C2, LINK and LIBC match installed SP2 byte-for-byte, closing the compiler
+inventory gap. The earlier signed Core package omits those compiler files.
+No distinct compiler build or strict gain follows. Full scope, provenance and
+reproduction: [CONTEXT_REVISIT.md](CONTEXT_REVISIT.md).
+
 This document records the KB transfer checks against Speedy Blupi 1. **[EVIDENCE]** marks measured outcomes, **[HYPOTHESIS]** marks the question being tested or an interpretation, and **[OPEN]** marks unresolved coverage. Canonical `src/` files were not edited. Source variants and TU snapshots are under ignored `scratch/kb/merge/`; compiler objects, listings, JSON, and logs are under ignored `build/kb/`.
 
 ## Strictness and setup

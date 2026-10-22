@@ -24,6 +24,7 @@ LINKERS = {
     "1592": Path(r"C:\tools\msvc5_link_nt5_1592\bin\LINK.EXE"),
     "1691": Path(r"C:\tools\msvc5_link_nt5_1691\bin\LINK.EXE"),
     "1197": Path(r"C:\tools\msvc5_link_psdk1197\bin\LINK.EXE"),
+    "7351": Path(r"C:\tools\msvc5_link_ce200_7351\bin\link.exe"),
 }
 VC = Path(r"C:\tools\msvc5_sp3\VC")
 DX = Path(r"C:\tools\dx5sdk\LIB")  # DX5 SDK: oracle GUIDs (docs/TOOLCHAIN.md)

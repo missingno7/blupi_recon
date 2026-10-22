@@ -4695,6 +4695,119 @@
         "doc_ref": "docs/PLANET_ORACLE.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-NEG-07",
+      "section": "regalloc",
+      "tier": "PROVEN",
+      "scope": "bounded SB1 full-context controls",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Tested network-prefix and duplicated-tail forms do not remove the event residues",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "The last event functions or final linked image remain unmatched.",
+      "construct": "Network Receive/packet/input forms, unfactored shared call-return tails, BOOL feedback, chained zero stores and phase/index lifetimes.",
+      "explanation": "40 successful full-event-TU controls (3 seeds and 37 variants), through serial msvc.py, give no strict gain. All five duplicated-tail forms emit identical function bytes. Most prefix/value forms are inert; code-producing changes add differences. Phase-reference form is 279/4664 differing bytes on canonical/oracle guard orders versus 32/4668 controls, not a useful improvement. Generated COFF symbol renumbering is recorded separately from byte changes.",
+      "experiment": "docs/CONTEXT_REVISIT.md; scratch/context-20261020/probe.py; build/context-20261020/",
+      "not_when": "Does not exclude every combined source form, historical header or unmodelled lowering/cost input. Separately staged VC4.2 gives TEB 6785 bytes/5189 non-relocation differences and CP 7011 bytes; that one toolset/header/source control is not a statement about all VC4 variants. SP1 was later obtained and its English C1XX/C2 match already tested SP2 exactly (BLUPI-TOOL-02).",
+      "matching_effect": "No strict or EQUIVALENT acceptance changes. Respect the measured scope before reusing this negative.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/CONTEXT_REVISIT.md",
+          "tier": "PROVEN",
+          "counts": "40 event TU source compiles; linker controls and VC4.2 test are separately described."
+        }
+      ],
+      "keywords": "ChangePhase TreatEventBase network prefix Receive shared tail goto DemoRecEvent BOOL feedback context VC4.2 SP1",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::ChangePhase / CEvent::TreatEventBase or whole-image link",
+        "tu": "src/event.cpp / frozen objects",
+        "flags": "manifest flags and SDK; system CRT for linker controls",
+        "compiles": 40,
+        "outcome": "Tested network-prefix and duplicated-tail forms do not remove the event residues",
+        "doc_ref": "docs/CONTEXT_REVISIT.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LNK-09",
+      "section": "linker",
+      "tier": "PROVEN",
+      "scope": "bounded SB1 full-context controls",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "CE 200 LINK 5.11.7351 also emits PE 5.10 and Rich; hold the host CRT fixed",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "The last event functions or final linked image remain unmatched.",
+      "construct": "Identical frozen verified objects, resources, library order and flags under SP3 and CE 200 7351 with the system CRT.",
+      "explanation": "All four PE section payloads are identical between these versions under the same system CRT. 7351 emits PE 5.10 and Rich values [0,268,394884,1]. Its measured 26296 whole-file oracle differences versus historical-CRT SP3 121401 are a host-runtime/ICF confound, not a version gain. Only SP3 among all local tools fitting those coarse image properties is therefore too broad.",
+      "experiment": "docs/CONTEXT_REVISIT.md; scratch/context-20261020/probe.py; build/context-20261020/",
+      "not_when": "Historical-CRT 7351 and its sort vectors were not traced. Earlier four pre-SP3 tools remain negative in their original scope. No original-project identification or whole-image strict claim follows.",
+      "matching_effect": "No strict or EQUIVALENT acceptance changes. Respect the measured scope before reusing this negative.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/CONTEXT_REVISIT.md",
+          "tier": "PROVEN",
+          "counts": "0 event TU source compiles; linker controls and VC4.2 test are separately described."
+        }
+      ],
+      "keywords": "LINK 7351 7303 CE 200 file version PE 5.10 Rich system historical CRT ICF",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::ChangePhase / CEvent::TreatEventBase or whole-image link",
+        "tu": "src/event.cpp / frozen objects",
+        "flags": "manifest flags and SDK; system CRT for linker controls",
+        "compiles": 0,
+        "outcome": "CE 200 LINK 5.11.7351 also emits PE 5.10 and Rich; hold the host CRT fixed",
+        "doc_ref": "docs/CONTEXT_REVISIT.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-TOOL-02",
+      "section": "flags",
+      "tier": "PROVEN",
+      "scope": "full English SP1 component identity; Core and retail inventory controls",
+      "applies": { "opt": ["O2"] },
+      "title": "Full English SP1 compiler, linker and LIBC are byte-identical to tested SP2",
+      "symptoms": { "any": ["regalloc_only"] },
+      "symptom": "VC5 SP1 is proposed as an untested explanation for the two event residues.",
+      "construct": "Download old-dos.ru dl.php?id=7415, statically extract the full SP1 update manifest, English compiler files and LIBC, then compare complete files against installed SP2.",
+      "explanation": "Full SP1 archive SHA256 c24ad1b63aa7464d01d0f06c80038b8120e3710c0a237df543684b1dcb78e91c contains C1XX 7149, C2 7153, LINK 7132 and LIBC.LIB identical to installed SP2. C1 and MSPDB50 also match. Full SETUP.INF installs the compiler files, and its English readme equals the readme in the signature-verified io Programmo SP1 Core package. Core alone omits the compiler; the VS97 retail disc set supplies RTM. Exact component identity, rather than inferred dates, closes the missing SP1 compiler-version gap.",
+      "experiment": "build/sp1-hunt-20261020/old-dos/components.json; build/context-20261020/sp1/inventory.json; docs/CONTEXT_REVISIT.md",
+      "not_when": "Scope is the English components listed, not every SP1/SP2 header, locale or library. The outer RAR is a repackaged tree and its compiler files are unsigned: provenance is the manifest, readme match and independent installed-file identity, not an authenticated original ISO. No newly distinct compiler or original-project identification follows.",
+      "matching_effect": "Already recorded SP2 compiler controls exercise these exact SP1 C1XX/C2 binaries. No new compiler-version experiment is supplied; both residual functions remain EQUIVALENT and strict acceptance is unchanged.",
+      "evidence": [{
+        "ref": "blupi_recon:docs/CONTEXT_REVISIT.md; http://old-dos.ru/files/file_2693.html; http://old-dos.ru/dl.php?id=7415",
+        "tier": "PROVEN",
+        "counts": "10 selectively extracted full-SP1 members; 124 Core CAB members and install manifest; three retail-disc indexes and four RTM tool members; 0 new source compiles; no installer execution."
+      }],
+      "keywords": "VC5 SP1 Core full compiler package download provenance signature ChangePhase TreatEventBase C1XX C2 VS97 Professional retail Disc 1 Disc 3 RTM",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CEvent::ChangePhase / CEvent::TreatEventBase",
+        "tu": "src/event.cpp (unchanged)",
+        "flags": "not applicable: static package inventory",
+        "compiles": 0,
+        "outcome": "Full English SP1 C1XX/C2, LINK and LIBC equal tested SP2 files exactly; no compiler inventory gap or new strict gain",
+        "doc_ref": "docs/CONTEXT_REVISIT.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

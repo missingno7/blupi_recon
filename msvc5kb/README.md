@@ -41,7 +41,7 @@ Record: triggering mismatch; original and candidate constructs; compiler and fla
 
 ## SB1 notes
 
-- SP3 is pinned for matching. The controlled SP2/RTM sweep is target-specific; RTM changed two sound helpers even though the selected sound function stayed strict.
+- SP3 is pinned for matching. The controlled SP2/RTM sweep is target-specific; RTM changed two sound helpers even though the selected sound function stayed strict. Full English SP1 C1XX/C2 were subsequently obtained and are byte-identical to SP2 (docs/CONTEXT_REVISIT.md); they are not an untested compiler build.
 - The linker is from the PE 5.10 family. Fifty-six `OutputDebug` call sites resolve to the bare `ret` owned by `CMenu::~CMenu` at `0x1f010`; `cmpfunc.py` models these as `FOLDED`.
 - Keep compiler code generation separate from linker folding and from SB1 source conventions such as headers, macros, and `__FILE__`/`__LINE__` inputs.
 - Private evidence appears only as repository-path/commit references in `catalog.json`; review all transferred text before public release.

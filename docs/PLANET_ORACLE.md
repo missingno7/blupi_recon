@@ -81,6 +81,10 @@ call/data evidence. This is not a repeat of the old misc/fifo family test.
 | NT5 1592 (7156) | 1 | neither matches |
 | NT5 1691 (7156) | 1 | neither matches |
 
+[EVIDENCE, 2026-10-20] The subsequently obtained full English SP1 C1XX/C2 files
+are byte-identical to the SP2 pair above; this is the same compiler control, not
+an additional build or compile. Provenance: [CONTEXT_REVISIT.md](CONTEXT_REVISIT.md).
+
 [EVIDENCE] Differences are event TreatEventBase plus pixmap Create, pointer
 BltFast, SearchColor and Display for RTM; only SearchColor for SP2/NT5.
 "Changed" compares code plus symbolic relocation lists; it does not mean a

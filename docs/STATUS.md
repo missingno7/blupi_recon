@@ -1,5 +1,13 @@
 # Status: Speedy Blupi 1 matching reconstruction (2026-10-19)
 
+[EVIDENCE, 2026-10-20] Broader-context revisit: 40 full-event-TU controls, a VC4.2
+fingerprint and controlled LINK 7351 comparison yield no new STRICT match.
+Tested shared tails and earlier network/input forms do not explain the register
+residue. Full VC5 SP1 was subsequently obtained via the user's old-dos.ru link:
+its C1XX/C2, LINK and LIBC are byte-identical to the tested SP2 components. The
+SP1 compiler-version inventory gap is closed; it supplies no new strict match.
+See [CONTEXT_REVISIT.md](CONTEXT_REVISIT.md).
+
 [EVIDENCE] Recovery cleanup is complete: 24.494 GiB of obsolete experiments moved
 to `to_delete/`, leaving a 1.127 GiB active working set. The playable folder and
 verified build remain; research inputs are deduplicated in a 187.7 MiB local
