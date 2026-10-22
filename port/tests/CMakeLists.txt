@@ -97,6 +97,9 @@ if(BLUPI_TEST_DATA)
     set(effects "--input ${golden}/effects.input --probe ${golden}/effects.probe")
     blupi_golden(effects16 5  "--color 16 --frames 520 ${effects}")
     blupi_golden(effects8  5  "--color 8 --frames 520 ${effects}")
+    # Languages (docs/LANGUAGES.md): the tour in German. Its state hashes
+    # differ from the US tour's only through CEvent's tooltip text buffer.
+    blupi_golden(tour16_de 5  "--color 16 --frames 800 --input ${golden}/tour.input --language de")
     # Stage-1 gate (ROADMAP.md): every frame's rendering commands, replayed on an
     # independent device, give the same back buffer, screen and palette.
     foreach(depth 16 8)
@@ -225,3 +228,17 @@ add_test(NAME settings COMMAND test_settings ${CMAKE_CURRENT_BINARY_DIR}/setting
 add_executable(test_language test_language.cpp)
 target_link_libraries(test_language PRIVATE blupi_platform)
 add_test(NAME language COMMAND test_language ${CMAKE_CURRENT_SOURCE_DIR}/../languages)
+
+# Speedy Eggbert 1 (docs/MULTI_GAME.md): its attract mode with the port's
+# code, a regression gate. Configure with -DBLUPI_TEST_DATA_EGGBERT=<its game root>.
+set(BLUPI_TEST_DATA_EGGBERT "" CACHE PATH "Speedy Eggbert 1 game root, for its replay test")
+if(BLUPI_TEST_DATA_EGGBERT)
+    add_test(NAME golden_eggbert_attract16
+        COMMAND ${CMAKE_COMMAND}
+            -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA_EGGBERT}
+            -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_eggbert_attract16
+            -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/eggbert_attract16.trace -DEVERY=10
+            "-DARGS=--color 16 --frames 7500"
+            -DUPDATE=${BLUPI_UPDATE_GOLDEN}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/golden_check.cmake)
+endif()
