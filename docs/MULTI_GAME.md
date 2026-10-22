@@ -54,14 +54,23 @@ Static reads of the executables (no execution), 2026-10-22. Measures:
   - **one layout difference in German**: the help screen (`WM_PHASE_HELP`, in the 7,419-byte
     `event.cpp` function at 0x16f70) stacks two texts 13 px apart, where the US build puts them
     side by side. The same change is in SB1/blupi's and SB1/eggbert's German builds.
-  - **about 15 bytes of one data table** in SB1/eggbert's Deu, Esp, Ita and Por builds.
-    [OPEN] which table.
+  - **the character table `table_char`** (SB1 0x7b530: 6 bytes for each of 256 codes, a base
+    glyph plus an optional accent glyph and offset) in SB1/eggbert's Deu, Esp, Ita and Por
+    builds: about 15 bytes, which compose a few more accented letters than the English build.
   - SB2/blupi's German and French builds differ only in `.rsrc`.
 - [EVIDENCE] **Data and sounds are shared by all languages.** The `SOUND` folder of every
   language folder is identical to the main one (SB1: 76 files; SB2: 103 files); DATA and IMAGE
   folders exist once. SB1/eggbert's `SOUND` is also identical to SB1/blupi's.
 - [EVIDENCE] SB1/blupi's US and ENGLISH executables and the installed one are identical; so are
   SB2/blupi's main and english ones.
+- [EVIDENCE] **The font** (SB1/blupi/us `table_char`):
+  - plain glyphs for ASCII, lower-case `à â ä ç è é ê ë î ï ô ö ù û ü`, and `¡ ¿`;
+  - `á í ñ ó ú` composed from a base letter and an accent glyph;
+  - no upper-case accented letters and no `ß`.
+
+  A new language can use every plain glyph and compose more letters from the accents the font
+  has. Letters needing other accents (Czech háček and ring) need those accent glyphs added to the
+  font image first.
 
 ### Games
 
@@ -95,15 +104,16 @@ Static reads of the executables (no execution), 2026-10-22. Measures:
 
 **SB1 first, in every edition and language; SB2 prepared, not started.**
 
-1. **Port: multilingual SB1 and Eggbert 1** (release 1.1). The strings come from the player's
-   own executable, so the language they installed just works, and a CD offers all of its
-   languages. Nothing new is embedded and `src/` does not change. This is quick and useful to
-   players.
-2. **Matching: SB1's other targets.**
-   - Eggbert 1 English: 358 of 361 functions already identical; three edition switches.
-   - The German and French builds: a per-language `.rc`, and the help-screen switch.
-   - The Eggbert languages: `.rc`, plus the data table.
-   - These are cheap targets on today's source, and they add evidence for `ChangePhase`.
+1. **Language packs and SB1's other targets, together** (release 1.1). Both start from the same
+   per-language `.rc` files and the same switches.
+   - Matching:
+     - Eggbert 1 English: 358 of 361 functions already identical; three edition switches.
+     - The German and French builds: a per-language `.rc`, and the help-screen switch.
+     - The Eggbert languages: `.rc`, plus the character-table entries.
+     - These are cheap targets on today's source, and they add evidence for `ChangePhase`.
+   - Port: the language-pack format, built-in packs from the `.rc` files, user packs, the
+     Language option, build recognition and CD layouts.
+2. **Port structure for several games:** split `port/` into `common` and `games/sb1`.
 3. **SB2**, once 1 and 2 are done:
    - move SB1 into `games/sb1/`;
    - seed `games/sb2/` from the SB1 engine TUs and `external/sb2-decomp`;
@@ -134,7 +144,7 @@ docs/                 method, toolchain, workflow, status across targets, this p
 tests/
 port/
   common/             compat/, render/, platform/, settings, options screen, touch, release/,
-                      game-folder and language detection, string tables from the executable
+                      language packs, build recognition, game-folder and CD detection
   games/sb1/          game/ replacements (main, pixmap, sound, misc, movie, network),
                       scene builder, end of tick, editor, probe, state hash, golden traces
   games/sb2/          the same for SB2, when it starts
@@ -143,7 +153,7 @@ targets.json          target registry: game, edition, language, asset path, SHA-
                       build path
 ```
 
-In step 1 only `port/` is split. `src/` stays where it is until step 3.
+`port/` is split in step 2; `src/` stays where it is until step 3.
 
 ## Source model (matching)
 
@@ -176,11 +186,10 @@ In step 1 only `port/` is split. `src/` stays where it is until step 3.
 ## Manifest and tools
 
 - `targets.json` (committed) names each target's executable by path and SHA-256, its linker
-  family and its build path. Asset paths may point outside the repository (SB2's assets are in
-  `D:\Prog\eggbert2_recon\assets`). `assets/` stays read-only for every tool; the registry
-  follows whatever layout it has. The language executables are reference copies kept apart from
-  the installed games (`assets/blupi_variants`, `assets/eggbert_variants`), since an
-  installation holds only one.
+  family and its build path. `assets/` stays read-only for every tool; the registry follows its
+  layout: one installed folder per game and edition (`Speedy Blupi`, `eggbert`, `blupi2`,
+  `eggbert2`) and the reference language executables beside them (`blupi_variants`,
+  `eggbert_variants`, `blupi2_variants`), since an installation holds only one.
 - `recon.json` keeps today's format for `sb1/blupi/us`, plus a `targets` object for what differs
   per target: defines, oracle folder, resources, accepted functions, symbol mappings, forced
   locations, exclusions, equivalent functions, link order. A function accepted for one target is
@@ -207,36 +216,63 @@ How the originals are installed (from the CD images, 2026-10-22):
   language `EGAMES.EXE`. The game data is only inside the installer.
 - **Eggbert 2 CD:** an installer only.
 
-So an installed game has **one executable in one language**. The port therefore:
-- **Follows the installed language.** It reads the strings from the executable in the game folder
-  (a small PE resource reader in `port/common/platform`), in place of the embedded US table.
-  Whatever language the player installed works, with nothing new embedded in the port.
-- **Recognises the build** (game, edition, language) from that executable, using a table of known
-  builds by size and `.text` hash. An unknown executable still works with its strings, as
-  "unknown build".
-- **Offers a choice only when there is one.** Pointed at a CD (or a folder with several language
-  executables in subfolders), it lists them. The chosen language folder becomes an overlay over
-  the data root, which is where the CD keeps `SOUND`. The choice is a Language entry on the
-  Display options screen, kept in `blupi-sdl3.json`, and is shown only when there is more than
-  one executable. Changing it restarts the game's screens, since the original loads strings when
-  a screen opens.
-- **Android.** The import copies the executable along with the data. Only its string table is
-  read, never its code.
-- **Fallback.** Without any executable (data copied without it), the embedded SB1 US table is
-  used, as today.
-- **Code that differs by language or edition** (German help layout, Eggbert's three functions
-  and its data table) cannot be chosen at run time while the port compiles `src/` as it is. Two
-  options, for review:
-  - **(a)** the port builds the `blupi`/US variant of that code for every language: the German
-    help screen keeps the US layout (to be checked on screen), and Eggbert's CD/path differences
-    are already replaced by the port's own `main.cpp`;
-  - **(b)** the matching source writes those switches as `if (LANGUAGE_DE)` on a defined
-    constant, but only if the verifier proves the bytes identical to `#if`. The port then
-    defines the constant as its run-time language. This is a source form chosen with the port in
-    mind, which the rules ("never edit `src/` for the port") would have to allow explicitly.
-  - Recommended: (a) now, (b) only if a layout difference turns out to matter.
+So an installed game has one executable in one language. The port goes further: **every
+language is switchable at run time**, and new ones can be added.
 
-### Several games (step 3)
+**Language packs.** A language is a UTF-8 text file the port reads, holding everything a
+language changes:
+
+```
+# Speedy Blupi language pack
+name     = Deutsch
+code     = de
+game     = sb1                    # whose string ids these are
+edition  = blupi                  # optional: names, help texts of one edition
+layout   = help-stacked           # language layout switches the port knows (here: one)
+
+[chars]                           # Unicode letter -> game character code and its glyphs
+ä = 0xe4                          # a plain glyph of the font
+á = 0xe1 a + accent 0x02 @ 2,2    # composed: base letter, accent glyph, offset
+č = 0x8d c + accent caron @ 0,0   # needs a caron glyph added to the font (custom graphics)
+
+[strings]                         # string table id = text
+<id> = <text in UTF-8>
+...
+```
+
+- **Built-in packs** are generated at build time from the matching source's per-language `.rc`
+  files (`tools/make_rc.py --target`) plus each target's known switches. SB1 gets US, German and
+  French; Eggbert 1 gets English, German, Spanish, French, Italian and Portuguese. The port
+  already embeds the US table, so this follows the same practice.
+- **User packs** in the user folder (`languages/*.txt`) add or override languages. A fan
+  translation is one text file. `port/tools/language_pack.py` turns any owned executable's
+  string table into a pack to start from.
+- **Characters.** The game draws single-byte codes. A pack maps each letter it uses to a code and
+  says how to draw it: an existing glyph, or a base letter plus an accent glyph at an offset (the
+  game's own `table_char` mechanism). The port applies a pack's character entries to
+  `table_char` when the language is loaded; this is font data, not simulation state. Letters
+  needing an accent the font lacks wait for custom graphics.
+- **Choosing.** The language follows the installed executable at first (recognised by a table of
+  known builds), with the US pack as the fallback. The Display options screen gets a Language
+  entry listing every available pack, kept in `blupi-sdl3.json`. Changing it restarts the game's
+  screens, since the original loads strings when a screen opens.
+- **CDs.** Pointed at an SB1 or SB2 CD, the port uses the root's data and the `SOUND` folder of a
+  language folder (identical in all of them).
+- **Layout switches** (German help screen). These are code in `event.cpp`, which the port
+  compiles from `src/` as it is. To switch them at run time, the matching source writes each
+  language or edition switch as an ordinary `if` on a target constant (`if (LANGUAGE_DE)`) rather
+  than `#if`. The matching build defines the constant per target; the port defines it as its
+  run-time language.
+  - This form is allowed only where the verifier proves the matching bytes identical to the
+    `#if` form; otherwise the switch stays `#if`, and the port shows the US variant there.
+  - It is a source form chosen with the port in mind, so `AGENTS.md` must allow it explicitly:
+    only for switches the matching needs anyway, and only when byte-neutral.
+- **Edition switches** (Eggbert 1's three functions) follow the same rule. The CD and path checks
+  among them are already replaced by the port's own `main.cpp`.
+- **Matching** keeps `sb1/blupi/us` as the primary target, the one every acceptance number
+  refers to. The other languages and editions are secondary targets on the same source.
+
+### Several games (steps 2 and 3)
 
 - `port/common/` is today's `compat/`, `render/`, `platform/`, settings, the Display options
   screen, touch controls, `member_access.h`, `release/`, and the new folder and language
@@ -269,8 +305,8 @@ So an installed game has **one executable in one language**. The port therefore:
 
 | Step | Work | Gate |
 |---|---|---|
-| 1 | Port: split `port/` into `common` and `games/sb1`; strings from the game's executable; build recognition; CD layout with a language choice; Android import of the executable | Port `ctest` on Windows and Linux; SB1/eggbert golden attract trace; strings of every available language read; matching untouched |
-| 2 | `targets.json`, `tools/targets.py`, `--target`; oracles for SB1's other targets; edition and language switches, per-language `.rc`; LINK 5.00 found | `sb1/blupi/us` verifier report identical (411 STRICT, 6 FOLDED, 127,456 / 141,488 B; same per-TU counts). New targets' reports recorded |
+| 1 | `targets.json`, `tools/targets.py`, `--target`; oracles and per-language `.rc` for SB1's other targets; edition and language switches (`if` form where byte-neutral); LINK 5.00 found. Port: language packs (format, built-in, user), `table_char` entries, Language option, build recognition, CD layouts | `sb1/blupi/us` verifier report identical (411 STRICT, 6 FOLDED, 127,456 / 141,488 B; same per-TU counts); new targets' reports recorded; port `ctest` on Windows and Linux with golden traces unchanged in US; SB1/eggbert golden attract trace |
+| 2 | Port split into `common` and `games/sb1` | Port gates unchanged; matching untouched |
 | 3a | `git mv` SB1 into `games/sb1/`; manifest paths rewritten by a script; port paths | Every SB1 target's verifier, relink and equivalence results identical; port gates |
 | 3b | SB2 bring-up: registry, Ghidra inventory, `games/sb2/src`, `buildpath.py` D: mode; Eggbert 2 first | SB2 report; SB1 gates unchanged |
 | 3c | `common/` extraction by `commoncheck.py` | Every target's report identical before and after |
@@ -284,12 +320,15 @@ Taken (2026-10-22):
   `D:\Blupi\Profil egames 2\`, removed after each compile).
 - SB1 and Eggbert 1, all languages, come first; SB2 is prepared, not started.
 
+- The SB2 assets are in `assets/` (`blupi2`, `eggbert2`, `blupi2_variants`).
+- Languages are switchable in the port and extensible by language packs. Language and edition
+  switches in the source use the `if` form where it is byte-neutral, so the port can bind them
+  at run time.
+- `sb1/blupi/us` stays the primary matching target.
+
 For review:
-1. The port's handling of language- and edition-specific code: option (a) or (b) above.
-2. Where the SB2 assets live: copied into `blupi_recon/assets/`, or registered in
-   `D:\Prog\eggbert2_recon\assets`.
-3. Release 1.1 for multilingual SB1 and Eggbert 1 after step 1, before the matching work of
-   step 2?
+1. The language-pack format above (one text file per language: header, `[chars]`, `[strings]`).
+2. Release 1.1 after step 1?
 
 ## Risks
 
