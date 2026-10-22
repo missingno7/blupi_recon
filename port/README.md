@@ -61,6 +61,13 @@ From WSL with the repository on a Windows drive, run `sh port/tools/linux_check.
 It copies the sources and the data to a case-sensitive folder (`~/blupi-linux`) and builds and
 tests there.
 
+## Build (Android)
+
+`port/android` is a Gradle project around the same CMake build: `.\gradlew.bat assembleDebug`
+with a JDK 17, the Android SDK/NDK 28.2 and the SDL 3.4.16 source. Players supply their own copy
+of the game; the app imports it on first run. Controls are a touch joystick and buttons, or a
+gamepad. See [android/README.md](android/README.md).
+
 ## Run
 
 ```powershell
@@ -199,7 +206,10 @@ Not implemented / known gaps (each fails the way the original did when the servi
 - The cross-build oracle covers the attract mode and the screen tour, not yet every screen, the
   graphic cursor, the editor or save/load ([docs/ORACLE.md](docs/ORACLE.md)).
 - **Linux**: builds and passes the whole test suite with traces identical to Windows (see
-  the build section). Android has not been attempted yet; see the roadmap's stage 6.
+  the build section).
+- **Android**: a first playable build, checked on the Android 16 emulator. It covers the
+  import of the player's own game folder, menus by tap, and play with the touch joystick
+  ([android/README.md](android/README.md)). It has not yet been tried on a physical device.
 
 ## Next steps
 

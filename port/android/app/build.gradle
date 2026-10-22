@@ -1,0 +1,75 @@
+plugins {
+    id 'com.android.application'
+}
+
+// SDL3 source tree: built by CMake as libSDL3.so, and its Java glue
+// (org.libsdl.app) compiled into the app. Default: build/third_party/SDL3-3.4.16
+// of the repository (the version the desktop build uses); override with
+// -Pblupi.sdl3.dir=... or in gradle.properties.
+def sdl3Dir = file(project.findProperty('blupi.sdl3.dir') ?: "${rootDir}/../../build/third_party/SDL3-3.4.16")
+if (!file("${sdl3Dir}/CMakeLists.txt").exists()) {
+    throw new GradleException("SDL3 source not found at ${sdl3Dir} (see port/android/README.md)")
+}
+
+android {
+    namespace 'io.github.missingno7.speedyblupi'
+    compileSdk 35
+    ndkVersion '28.2.13676358'
+
+    defaultConfig {
+        applicationId 'io.github.missingno7.speedyblupi'
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName '0.1'
+        externalNativeBuild {
+            cmake {
+                // At most 4 compiles and 2 links at a time (the repository's
+                // host-safety limit; Gradle runs one ABI at a time, gradle.properties).
+                arguments '-DANDROID_STL=c++_static',
+                          "-DBLUPI_SDL3_SOURCE_DIR=${sdl3Dir}",
+                          '-DCMAKE_JOB_POOLS=compile=4;link=2',
+                          '-DCMAKE_JOB_POOL_COMPILE=compile',
+                          '-DCMAKE_JOB_POOL_LINK=link'
+                // phones: arm64-v8a; emulators and x86 Chromebooks: x86_64
+                abiFilters 'arm64-v8a', 'x86_64'
+            }
+        }
+    }
+
+    // The same CMake project as the desktop builds (port/CMakeLists.txt).
+    externalNativeBuild {
+        cmake {
+            path '../../CMakeLists.txt'
+            version '3.22.1'
+            buildStagingDirectory "${rootDir}/../../build/port-android/cxx"
+        }
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs += ["${sdl3Dir}/android-project/app/src/main/java"]
+            assets.srcDirs += ["${buildDir}/generated/blupiAssets"]
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+// The music SoundFont (GeneralUser GS, port/third_party) as the APK asset
+// "soundfont.sf2". The game data is not packaged: each player imports their own
+// copy (SetupActivity).
+tasks.register('copySoundFont', Copy) {
+    from('../../third_party/generaluser-gs/GeneralUser-GS.sf2')
+    rename { 'soundfont.sf2' }
+    into "${buildDir}/generated/blupiAssets"
+}
+preBuild.dependsOn copySoundFont

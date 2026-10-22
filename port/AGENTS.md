@@ -58,6 +58,11 @@ Testing:
 - Build: `cmake --preset mingw-x64 -S port`, `cmake --build build/port -j 4` (keep `-j` ≤ 4).
   Linux (WSL): `sh port/tools/linux_check.sh` builds and runs the suite from a case-sensitive
   copy; both platforms must give the same golden traces.
+- Android (`port/android`, see its README): build output under `build/port-android`, native
+  compiles capped by CMake job pools, one Gradle task at a time. Never bundle game data in the
+  APK: players import their own copy. Emulator runs are bounded; stop the emulator afterwards.
+- Code shared with Android must build with Clang as well as GCC (`-fsigned-char` and
+  `-fms-extensions` stand in for MSVC semantics in the historical context).
 - Use `game/member_access.h` to reach protected members of game classes (GCC 15 rejects the
   older same-name pointer idiom).
 - `ctest --test-dir build/port` with `SDL3.dll` on PATH. Configure with `BLUPI_DATA` set to the

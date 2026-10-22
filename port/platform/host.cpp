@@ -1,7 +1,10 @@
 #include "platform/host.h"
 
+#include "platform/touch.h"
+
 #include <SDL3/SDL.h>
 
+#include <deque>
 #include <vector>
 
 namespace blupi::host
@@ -20,6 +23,14 @@ bool g_headless = false;
 bool g_headlessPads = false;   // tests: gamepads without a window
 bool g_fullscreen = false;
 std::vector<SDL_Gamepad*> g_pads;   // in the order they were connected
+std::deque<Event> g_pending;        // synthesized events (touch), before SDL's
+#ifdef SDL_PLATFORM_ANDROID
+const bool g_touchControls = true;  // on-screen controls in play (platform/touch.h)
+#else
+const bool g_touchControls = false;
+#endif
+SDL_FingerID g_mouseFinger = 0;     // the finger acting as the mouse, 0: none
+bool g_mouseFingerDown = false;
 
 void open_gamepad(SDL_JoystickID id)
 {
@@ -90,6 +101,7 @@ int to_virtual_key(SDL_Keycode k)
     case SDLK_LALT:   case SDLK_RALT:   return 0x12;
     case SDLK_PAUSE:     return 0x13;
     case SDLK_ESCAPE:    return 0x1B;
+    case SDLK_AC_BACK:   return 0x1B;   // Android Back: Escape (pause, back)
     case SDLK_SPACE:     return 0x20;
     case SDLK_PAGEUP:    return 0x21;
     case SDLK_PAGEDOWN:  return 0x22;
@@ -159,6 +171,58 @@ bool translate(SDL_Event& ev, Event& out)
     case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
         update_auto_width();
         return false;
+    case SDL_EVENT_FINGER_DOWN:
+    case SDL_EVENT_FINGER_MOTION:
+    case SDL_EVENT_FINGER_UP:
+    {
+        if (!g_touchControls || g_renderer == nullptr) return false;
+        const int type = ev.type == SDL_EVENT_FINGER_DOWN ? 0 : ev.type == SDL_EVENT_FINGER_UP ? 2 : 1;
+        int ow = 0, oh = 0, ww = 0, wh = 0;
+        SDL_GetRenderOutputSize(g_renderer, &ow, &oh);
+        SDL_GetWindowSize(g_window, &ww, &wh);
+        std::vector<touch::KeyChange> keys;
+        if (touch::finger(type, ev.tfinger.fingerID, ev.tfinger.x * ow, ev.tfinger.y * oh, ow, oh, keys))
+        {
+            for (const touch::KeyChange& k : keys)
+            {
+                Event e{k.down ? EventType::KeyDown : EventType::KeyUp};
+                e.key = k.vk;
+                g_pending.push_back(e);
+            }
+            return false;
+        }
+        // Any other finger (one at a time) is the mouse's left button.
+        if (type == 0 && g_mouseFingerDown) return false;
+        if (type != 0 && (!g_mouseFingerDown || ev.tfinger.fingerID != g_mouseFinger)) return false;
+        float lx = 0, ly = 0;
+        SDL_RenderCoordinatesFromWindow(g_renderer, ev.tfinger.x * ww, ev.tfinger.y * wh, &lx, &ly);
+        Event move{EventType::MouseMove};
+        set_position(move, lx, ly);
+        if (type == 0)
+        {
+            g_mouseFinger = ev.tfinger.fingerID;
+            g_mouseFingerDown = true;
+            g_pending.push_back(move);           // the pointer first moves there
+            out = Event{EventType::MouseDown};
+            out.button = 1;
+            set_position(out, lx, ly);
+            out.leftDown = true;
+            g_pending.push_back(out);
+            return false;
+        }
+        if (type == 2)
+        {
+            g_mouseFingerDown = false;
+            out = Event{EventType::MouseUp};
+            out.button = 1;
+            set_position(out, lx, ly);
+            g_pending.push_back(out);
+            return false;
+        }
+        move.leftDown = true;
+        g_pending.push_back(move);
+        return false;
+    }
     case SDL_EVENT_GAMEPAD_ADDED:
         open_gamepad(ev.gdevice.which);
         return false;
@@ -245,11 +309,17 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
     g_headless = options.headless;
     g_autoWide = options.autoWide;
     g_integerScale = options.integerScale;
-    g_fullscreen = false;
+    g_fullscreen = g_touchControls;   // touch screens: created full screen
     g_headlessPads = options.headless && options.gamepads;
     if (g_headless) return SDL_Init(g_headlessPads ? SDL_INIT_GAMEPAD : 0);
 
     SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+#ifdef SDL_PLATFORM_ANDROID
+    // A landscape game; without the hint SDL lets a resizable window rotate freely.
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
+#endif
+    // Touch: our own controls and mouse (above), not SDL's mouse emulation.
+    if (g_touchControls) SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     {
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
@@ -258,8 +328,13 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
     int scale = options.scale < 1 ? 1 : options.scale;
     // Automatic widescreen opens a 16:9 window; resizing changes the shape.
     const int windowWidth = g_autoWide ? (logicalHeight * 16 / 9 + 1) & ~1 : g_viewWidth;
+#ifdef SDL_PLATFORM_ANDROID
+    const SDL_WindowFlags windowFlags = SDL_WINDOW_FULLSCREEN;   // the whole screen, system bars hidden
+#else
+    const SDL_WindowFlags windowFlags = SDL_WINDOW_RESIZABLE;
+#endif
     if (!SDL_CreateWindowAndRenderer(title, windowWidth * scale, logicalHeight * scale,
-                                     SDL_WINDOW_RESIZABLE, &g_window, &g_renderer))
+                                     windowFlags, &g_window, &g_renderer))
     {
         SDL_Log("SDL_CreateWindowAndRenderer failed: %s", SDL_GetError());
         return false;
@@ -275,7 +350,7 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
     SDL_SetTextureScaleMode(g_texture, SDL_SCALEMODE_NEAREST);
     if (options.fullscreen) toggle_fullscreen();
     update_auto_width();
-    SDL_StartTextInput(g_window);
+    if (!text_input_on_demand()) SDL_StartTextInput(g_window);
     return true;
 }
 
@@ -298,6 +373,12 @@ uint64_t now_ns() { return SDL_GetTicksNS(); }
 
 bool poll_event(Event& event)
 {
+    if (!g_pending.empty())
+    {
+        event = g_pending.front();
+        g_pending.pop_front();
+        return true;
+    }
     if (g_headless && !g_headlessPads) return false;
     if (next_text(event)) return true;
     SDL_Event ev;
@@ -305,6 +386,7 @@ bool poll_event(Event& event)
     {
         if (translate(ev, event)) return true;
         if (next_text(event)) return true;
+        if (!g_pending.empty()) return poll_event(event);
     }
     return false;
 }
@@ -328,6 +410,19 @@ void present(const uint32_t* argb, int width)
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
     SDL_RenderTexture(g_renderer, g_texture, nullptr, nullptr);
+    if (touch::active())
+    {
+        // The controls in output pixels, also over the bars beside the frame.
+        SDL_FRect frame{};
+        SDL_GetRenderLogicalPresentationRect(g_renderer, &frame);
+        SDL_SetRenderLogicalPresentation(g_renderer, 0, 0, SDL_LOGICAL_PRESENTATION_DISABLED);
+        int ow = 0, oh = 0;
+        SDL_GetRenderOutputSize(g_renderer, &ow, &oh);
+        touch::draw(g_renderer, ow, oh, frame);
+        SDL_SetRenderLogicalPresentation(g_renderer, g_viewWidth, g_height,
+                                         g_integerScale ? SDL_LOGICAL_PRESENTATION_INTEGER_SCALE
+                                                        : SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    }
     SDL_RenderPresent(g_renderer);
 }
 
@@ -345,7 +440,7 @@ void toggle_fullscreen()
 
 void set_fullscreen(bool on)
 {
-    if (g_window == nullptr) return;
+    if (g_window == nullptr || g_touchControls) return;   // touch screens: always full screen
     g_fullscreen = on;
     SDL_SetWindowFullscreen(g_window, g_fullscreen);
 }
@@ -375,6 +470,23 @@ void set_view_width(int width)
 }
 
 int view_width() { return g_viewWidth; }
+
+bool touch_screen()
+{
+    return g_touchControls;
+}
+
+void set_touch_controls(bool on)
+{
+    std::vector<touch::KeyChange> keys;
+    touch::set_active(on && g_touchControls && !g_headless, keys);
+    for (const touch::KeyChange& k : keys)
+    {
+        Event e{k.down ? EventType::KeyDown : EventType::KeyUp};
+        e.key = k.vk;
+        g_pending.push_back(e);
+    }
+}
 
 int gamepad_count()
 {
@@ -483,6 +595,35 @@ std::string base_path()
 {
     const char* p = SDL_GetBasePath();
     return p ? std::string(p) : std::string();
+}
+
+std::vector<std::string> data_dirs()
+{
+    std::vector<std::string> dirs;
+#ifdef SDL_PLATFORM_ANDROID
+    // The player's own copy of the game, imported into app storage by the
+    // launcher activity (port/android), or pushed by adb for development.
+    if (const char* p = SDL_GetAndroidInternalStoragePath()) dirs.push_back(std::string(p) + "/game");
+    if (const char* p = SDL_GetAndroidExternalStoragePath()) dirs.push_back(std::string(p) + "/game");
+#endif
+    return dirs;
+}
+
+void set_text_input(bool on)
+{
+    if (g_headless || g_window == nullptr) return;
+    if (on == SDL_TextInputActive(g_window)) return;
+    if (on) SDL_StartTextInput(g_window);
+    else SDL_StopTextInput(g_window);
+}
+
+bool text_input_on_demand()
+{
+#ifdef SDL_PLATFORM_ANDROID
+    return true;    // the on-screen keyboard covers the game
+#else
+    return false;   // always on: names, and the cheat codes typed while playing
+#endif
 }
 
 std::string pref_path()

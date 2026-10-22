@@ -1,3 +1,6 @@
 # Shell scripts run under Linux/WSL: keep LF in every checkout (core.autocrlf would
 # otherwise turn them into CRLF on Windows, which /bin/sh rejects).
 *.sh text eol=lf
+android/gradlew text eol=lf
+android/gradlew.bat text eol=crlf
+*.jar binary

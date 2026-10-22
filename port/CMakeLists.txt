@@ -14,7 +14,20 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(SDL3 REQUIRED CONFIG)
+# Android builds SDL3 from its source (BLUPI_SDL3_SOURCE_DIR, passed by
+# port/android/app/build.gradle) as libSDL3.so; elsewhere an installed SDL3.
+if(ANDROID)
+    set(BLUPI_SDL3_SOURCE_DIR "" CACHE PATH "SDL3 source tree")
+    if(NOT EXISTS "${BLUPI_SDL3_SOURCE_DIR}/CMakeLists.txt")
+        message(FATAL_ERROR "BLUPI_SDL3_SOURCE_DIR must point to an SDL3 source tree (see port/android/README.md)")
+    endif()
+    set(SDL_SHARED ON CACHE BOOL "" FORCE)
+    set(SDL_STATIC OFF CACHE BOOL "" FORCE)
+    set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
+    add_subdirectory(${BLUPI_SDL3_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/SDL3 EXCLUDE_FROM_ALL)
+else()
+    find_package(SDL3 REQUIRED CONFIG)
+endif()
 
 set(BLUPI_HIST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/../src)
 
@@ -48,12 +61,20 @@ if(MSVC)
         /FI${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_forced.h
         /permissive /Zc:forScope- /W0)
 else()
+    # -fsigned-char: char is signed in MSVC (and on x86) but unsigned on ARM;
+    # the historical code relies on the former (cp1252 bytes, -1 in char tables).
+    # GCC needs -fpermissive and Clang -fms-extensions for the same MSVC
+    # leniencies (e.g. CEvent::LoadState's (int) cast of a pointer variable
+    # used as int storage).
     target_compile_options(blupi_hist_context INTERFACE
         -include ${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_forced.h
-        -fpermissive -fno-strict-aliasing -fwrapv -w)
+        -fno-strict-aliasing -fwrapv -fsigned-char -w
+        $<$<CXX_COMPILER_ID:GNU>:-fpermissive>
+        $<$<CXX_COMPILER_ID:Clang>:-fms-extensions>)
 endif()
 
-# The historical files are cp1252; keep their string bytes unchanged.
+# The historical files are cp1252; keep their string bytes unchanged (GCC is
+# told the charset; Clang has no such option and keeps the bytes as they are).
 add_library(blupi_hist OBJECT ${BLUPI_SHARED_TUS})
 target_link_libraries(blupi_hist PRIVATE blupi_hist_context)
 # Their file I/O goes through BlupiFile (compat/include/port_hist_stdio.h).
@@ -61,7 +82,9 @@ if(MSVC)
     target_compile_options(blupi_hist PRIVATE /source-charset:.1252 /execution-charset:.1252
         /FI${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_hist_stdio.h)
 else()
-    target_compile_options(blupi_hist PRIVATE -finput-charset=CP1252 -fexec-charset=CP1252
+    target_compile_options(blupi_hist PRIVATE
+        $<$<CXX_COMPILER_ID:GNU>:-finput-charset=CP1252>
+        $<$<CXX_COMPILER_ID:GNU>:-fexec-charset=CP1252>
         "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_hist_stdio.h")
 endif()
 
@@ -75,6 +98,7 @@ target_include_directories(blupi_render PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 # SDL3 host. Must not see compat/include.
 add_library(blupi_platform STATIC
     platform/host.cpp
+    platform/touch.cpp
     platform/vfs.cpp
     platform/audio.cpp
     platform/music.cpp
@@ -115,10 +139,16 @@ add_library(blupi_game STATIC
 target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform)
 target_include_directories(blupi_game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Entry point TU (SDL_main) without the compatibility include path.
-add_executable(blupi platform/entry.cpp)
+# Entry point TU (SDL_main) without the compatibility include path. On Android
+# the game is libmain.so, which SDL's Java activity loads.
+if(ANDROID)
+    add_library(blupi SHARED platform/entry.cpp)
+    set_target_properties(blupi PROPERTIES OUTPUT_NAME main)
+else()
+    add_executable(blupi platform/entry.cpp)
+    set_target_properties(blupi PROPERTIES OUTPUT_NAME blupi-sdl3)
+endif()
 target_link_libraries(blupi PRIVATE blupi_game SDL3::SDL3)
-set_target_properties(blupi PROPERTIES OUTPUT_NAME blupi-sdl3)
 if(WIN32)
     set_target_properties(blupi PROPERTIES WIN32_EXECUTABLE $<NOT:$<CONFIG:Debug>>)
     if(MINGW)
@@ -142,11 +172,14 @@ if(NOT EXISTS ${BLUPI_SOUNDFONT_FILE})
                     "  git submodule update --init port/third_party/generaluser-gs")
     set(BLUPI_SOUNDFONT_FILE "")
 endif()
-if(BLUPI_BUNDLE_SOUNDFONT AND BLUPI_SOUNDFONT_FILE)
+# (Android: the APK carries it as an asset, see port/android/app/build.gradle.)
+if(BLUPI_BUNDLE_SOUNDFONT AND BLUPI_SOUNDFONT_FILE AND NOT ANDROID)
     add_custom_command(TARGET blupi POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 ${BLUPI_SOUNDFONT_FILE} $<TARGET_FILE_DIR:blupi>/soundfont.sf2)
 endif()
 
-enable_testing()
-add_subdirectory(tests)
+if(NOT ANDROID)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

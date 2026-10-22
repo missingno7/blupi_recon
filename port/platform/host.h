@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace blupi::host
 {
@@ -85,6 +86,13 @@ int  gamepad_count();
 bool gamepad_name(int index, char* name, int size);   // in the game's code page
 bool gamepad_state(int index, int& x, int& y, unsigned& buttons);
 
+// On-screen touch controls (touch screens: Android), shown and used while on;
+// the port turns them on while the game is being played.
+void set_touch_controls(bool on);
+// A touch-screen platform (Android): always full screen, controls on screen,
+// no cursor sprite.
+bool touch_screen();
+
 // Where the game's frame lies in the view (default: centred); mouse positions
 // are reported relative to it.
 void set_frame_x(int x);
@@ -99,7 +107,13 @@ void set_system_cursor(Cursor cursor);
 void set_title(const char* title);
 void message_box(const char* title, const char* text);
 std::string base_path();   // directory of the executable, with trailing separator
-std::string pref_path();   // per-user writable directory, with trailing separator
+std::string pref_path();
+// Extra places for the game data on this platform (Android: the app storage).
+std::vector<std::string> data_dirs();
+// Text input (and so the on-screen keyboard on Android). Where it is "on
+// demand", the port turns it on only while the game asks for typed text.
+void set_text_input(bool on);
+bool text_input_on_demand();   // per-user writable directory, with trailing separator
 
 // Diagnostics (SDL log; debug messages are shown with --verbose).
 void log_debug(const char* text);

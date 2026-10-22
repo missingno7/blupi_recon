@@ -67,6 +67,7 @@ CSound*       s_sound = NULL;
 PortSettings* s_settings = NULL;
 void        (*s_apply)() = NULL;
 bool          s_open = false;
+bool          s_windowChoice = true;   // the Window / Full screen choice is offered
 bool          s_setup = false;   // the game's settings screen is up
 CButton       s_entry;
 CButton       s_buttons[kControlCount];
@@ -99,6 +100,8 @@ void Refresh()
 	Find(MSG_RATE_NEXT)->SetEnable(!s.displayRate);
 	Find(MSG_WINDOW)->SetState(s.fullscreen ? 0 : 1);
 	Find(MSG_FULLSCREEN)->SetState(s.fullscreen ? 1 : 0);
+	Find(MSG_WINDOW)->SetHide(!s_windowChoice);
+	Find(MSG_FULLSCREEN)->SetHide(!s_windowChoice);
 	Find(MSG_FIT)->SetState(s.integerScale ? 0 : 1);
 	Find(MSG_WHOLE)->SetState(s.integerScale ? 1 : 0);
 }
@@ -119,8 +122,10 @@ void Changed()
 }
 }  // namespace
 
-void PortOptionsInit(CPixmap* pixmap, CSound* sound, PortSettings* settings, void (*apply)())
+void PortOptionsInit(CPixmap* pixmap, CSound* sound, PortSettings* settings, void (*apply)(),
+					 bool windowChoice)
 {
+	s_windowChoice = windowChoice;
 	s_pixmap = pixmap;
 	s_sound = sound;
 	s_settings = settings;
@@ -240,9 +245,12 @@ void PortOptionsDraw()
 	Text(70, 300, "Frame rate", FONTWHITE);
 	Text(160, 342, s.displayRate ? "Monitor" : "Original", FONTWHITE);
 
-	Text(370, 80, "Display", FONTWHITE);
-	Text(420, 122, "Window", FONTWHITE);
-	Text(420, 162, "Full screen", FONTWHITE);
+	if (s_windowChoice)
+	{
+		Text(370, 80, "Display", FONTWHITE);
+		Text(420, 122, "Window", FONTWHITE);
+		Text(420, 162, "Full screen", FONTWHITE);
+	}
 	Text(370, 210, "Scaling", FONTWHITE);
 	Text(420, 252, "Fit the window", FONTWHITE);
 	Text(420, 292, "Whole pixels", FONTWHITE);

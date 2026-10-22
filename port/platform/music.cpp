@@ -5,6 +5,8 @@
 #define TML_IMPLEMENTATION
 #include "third_party/tinysoundfont/tml.h"
 
+#include <SDL3/SDL.h>
+
 #include <mutex>
 #include <vector>
 
@@ -66,9 +68,19 @@ void dispatch(const tml_message* m)
 
 bool load_soundfont(const std::string& path)
 {
+    {
+        std::lock_guard<std::mutex> guard(g_lock);
+        if (g_font) return true;
+    }
+    // Through SDL, so that an Android APK asset ("soundfont.sf2") loads too.
+    size_t size = 0;
+    void* data = SDL_LoadFile(path.c_str(), &size);
+    if (data == nullptr) return false;
+    tsf* font = tsf_load_memory(data, (int)size);
+    SDL_free(data);
     std::lock_guard<std::mutex> guard(g_lock);
-    if (g_font) return true;
-    g_font = tsf_load_filename(path.c_str());
+    if (g_font == nullptr) g_font = font;
+    else if (font) tsf_close(font);
     return g_font != nullptr;
 }
 

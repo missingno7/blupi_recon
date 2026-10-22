@@ -37,6 +37,9 @@ void     PortPixmapSubmit(const std::vector<blupi::render::Command>& commands);
 // Copies the back buffer to the screen for display-rate presentation.
 void     PortPixmapPresentBack();
 
+// Touch screens: the game's cursor sprite is not drawn (a tap is the click).
+void     PortPixmapHideCursor(bool hidden);
+
 // Widescreen view (ROADMAP.md stage 8). With a view width set, the host shows
 // a target of that width instead of the 640x480 screen; the game's own back
 // buffer and screen stay as they are.
@@ -81,7 +84,9 @@ void     EndOfTick(CDecor& decor);
 
 // "Display options" screen (options_screen.cpp), shown on the game's settings
 // screens. apply is called after every change of the settings.
-void     PortOptionsInit(CPixmap* pixmap, CSound* sound, PortSettings* settings, void (*apply)());
+// windowChoice: offer window or full screen (desktop; Android is always full screen).
+void     PortOptionsInit(CPixmap* pixmap, CSound* sound, PortSettings* settings, void (*apply)(),
+                         bool windowChoice);
 void     PortOptionsPhase(unsigned int phase);  // every frame: shows or closes it
 bool     PortOptionsVisible();   // the entry button or the screen is shown
 bool     PortOptionsOpen();      // the screen is shown

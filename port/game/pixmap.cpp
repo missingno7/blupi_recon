@@ -1425,11 +1425,20 @@ void CPixmap::MouseBackClear()
 
 // Dessine la souris dans m_lpDDSBack.
 
+// Port: touch screens show no cursor; a tap is the click itself.
+static bool s_cursorHidden = false;
+
+void PortPixmapHideCursor(bool hidden)
+{
+	s_cursorHidden = hidden;
+}
+
 void CPixmap::MouseBackDraw()
 {
 	POINT	dst;
 	RECT	rcRect;
 
+	if ( s_cursorHidden )  return;   // port (touch screens)
 	if ( m_lpDDSurface[CHPIXMAP_CURSOR] == NULL )  return;
 	if ( m_mouseType != MOUSETYPEGRA )  return;
 	if ( m_mouseSprite == SPRITE_EMPTY )  return;
@@ -1788,7 +1797,7 @@ void PortPixmapWideCursor(CPixmap* pixmap, int dx, const POINT* at)
 	POINT dst;
 	RECT  rcRect;
 
-	if ( s_wide == NULL || sprite == NULL )  return;
+	if ( s_wide == NULL || sprite == NULL || s_cursorHidden )  return;
 	if ( pixmap->*PixmapAccess::m_mouseType != MOUSETYPEGRA )  return;
 	if ( pixmap->*PixmapAccess::m_mouseSprite == SPRITE_EMPTY )  return;
 	if ( pixmap->*PixmapAccess::m_mouseSprite == SPRITE_DISABLE )  return;

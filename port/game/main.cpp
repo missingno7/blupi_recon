@@ -34,6 +34,7 @@
 #include "game/port_game.h"
 #include "game/scene.h"
 #include "game/settings.h"
+#include "game/member_access.h"
 #include "platform/audio.h"
 #include "platform/music.h"
 #include "platform/host.h"
@@ -715,7 +716,7 @@ static LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		if (g_timer > 0) g_timer--;
 		break;
 	case WM_ACTIVATEAPP:
-		OutputDebug(wParam != 0 ? "Port: WM_ACTIVATEAPP active\n" : "Port: WM_ACTIVATEAPP inactive\n");
+		blupi::host::log_debug(wParam != 0 ? "Port: WM_ACTIVATEAPP active" : "Port: WM_ACTIVATEAPP inactive");
 		g_bActive = (wParam != 0);
 		if (g_pEvent != NULL)
 		{
@@ -910,6 +911,23 @@ int Benchmark()
 	return time;
 }
 
+// Port: CEvent::Create leaves m_index at -1, and the first ChangePhase asks
+// MouseOnButton about table[m_index] (via HideMouse) before it sets m_index to
+// the new phase. The original thus read the phase table at index -1: harmless
+// on Windows and Linux (nearby static data), a fault on Android, where the
+// memory before the table is not mapped. Setting m_index to the phase being
+// entered first changes nothing observable: ChangePhase sets the same value
+// right after, and the cursor sprite chosen in between is replaced at once by
+// the wait cursor (WaitMouse).
+#define PORT_EVENT_MEMBERS(X) X(m_index) X(SearchPhase)
+BLUPI_MEMBER_ACCESS(PortEventAccess, CEvent, PORT_EVENT_MEMBERS)
+
+static void PortFirstPhaseIndex(CEvent* event, UINT phase)
+{
+	int index = (event->*PortEventAccess::SearchPhase)(phase);
+	if (index >= 0) event->*PortEventAccess::m_index = index;
+}
+
 static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	BOOL bOK;
@@ -1058,6 +1076,7 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	g_pEvent->Create(hInstance, g_hWnd, g_pPixmap, g_pDecor, g_pSound, g_pNetwork, g_pMovie);
 	g_pEvent->SetFullScreen(g_bFullScreen);
 	g_pEvent->SetMouseType(g_mouseType);
+	PortFirstPhaseIndex(g_pEvent, WM_PHASE_INIT);
 	g_pEvent->ChangePhase(WM_PHASE_INIT);
 	g_bTermInit = TRUE;
 	return TRUE;
@@ -1464,6 +1483,7 @@ int BlupiMain(int argc, char** argv)
 	if (!o.dataRoot.empty()) candidates.push_back(o.dataRoot);
 	if (const char* env = getenv("BLUPI_DATA")) candidates.push_back(env);
 	candidates.push_back(blupi::host::base_path());
+	for (const std::string& dir : blupi::host::data_dirs()) candidates.push_back(dir);
 	candidates.push_back(".");
 	std::string root;
 	for (const std::string& c : candidates)
@@ -1492,6 +1512,7 @@ int BlupiMain(int argc, char** argv)
 			if (const char* env = getenv("BLUPI_SOUNDFONT")) fonts.push_back(env);
 			fonts.push_back(user + "/soundfont.sf2");
 			fonts.push_back(blupi::host::base_path() + "soundfont.sf2");
+			fonts.push_back("soundfont.sf2");   // Android: the APK asset
 		}
 		for (const std::string& f : fonts)
 		{
@@ -1530,7 +1551,8 @@ int BlupiMain(int argc, char** argv)
 		blupi::host::shutdown();
 		return 1;
 	}
-	PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings);
+	PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings, !blupi::host::touch_screen());
+	PortPixmapHideCursor(blupi::host::touch_screen());
 
 	Benchmark();
 
@@ -1622,7 +1644,21 @@ int BlupiMain(int argc, char** argv)
 			PortOptionsSync();
 			PortSaveSettings();
 		}
-		if (g_pEvent != NULL) PortOptionsPhase(g_pEvent->GetPhase());
+		if (g_pEvent != NULL)
+		{
+			const UINT phase = g_pEvent->GetPhase();
+			PortOptionsPhase(phase);
+			// Touch screens: the on-screen controls while the game is played.
+			blupi::host::set_touch_controls(phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST);
+			// Android: the on-screen keyboard only while the game asks for text
+			// (the phases whose WM_CHAR handling edits a name, src/event.cpp).
+			if (blupi::host::text_input_on_demand())
+			{
+				blupi::host::set_text_input(phase == WM_PHASE_NAMEGAMER || phase == WM_PHASE_NAMEDESIGN ||
+											phase == WM_PHASE_WRITEDESIGN || phase == WM_PHASE_CREATE ||
+											phase == WM_PHASE_MULTI);
+			}
+		}
 
 		if (g_presentDisplayRate && !o.host.headless)
 		{

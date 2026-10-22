@@ -370,6 +370,40 @@ Touch input belongs to the presentation layer, next to the Display options scree
 - **ARM64:** layout asserts already cover saved files.
 - **Gate:** the corpus traces are identical on device (headless mode where possible).
 
+**Status (2026-10-22): first playable build.** Details and build steps are in
+`port/android/README.md`.
+- **Project.** `port/android` is a Gradle project (AGP 8.7.3, NDK 28.2, arm64-v8a and
+  x86_64) around the same CMake project. On Android it builds SDL 3.4.16 from source as
+  `libSDL3.so` and the game as `libmain.so`. SDL's Java glue is compiled from the SDL source,
+  so none of it is copied into the repository.
+- **Data.** `SetupActivity` imports the player's folder through the system picker into
+  `files/game`. The host lists that folder as a data root (`host::data_dirs`), and the
+  SoundFont is an APK asset loaded through `SDL_LoadFile`.
+- **Screen.** Always full screen and landscape. The Display options screen hides the
+  window/full-screen choice.
+- **Input.**
+  - `platform/touch.cpp`: a joystick (left) and jump, fire and pause (right). They give the
+    keyboard's keys, so there is no new input path in game code. Other touches are direct
+    clicks; the game's cursor sprite is not drawn on touch screens.
+  - Back is Escape.
+  - The soft keyboard is shown only in the phases that edit a name.
+- **What Clang (the NDK compiler) found in the shared historical code,** without changing
+  `src/`:
+  - ARM's `char` is unsigned, but the game relies on MSVC's signed `char`, hence
+    `-fsigned-char`.
+  - MSVC leniencies GCC took with `-fpermissive` need `-fms-extensions` under Clang, e.g. the
+    `(int)` cast in `CEvent::LoadState`.
+  - The start-up read of `table[-1]` in `CEvent::MouseOnButton` faults on Android. The
+    port's `DoInit` now sets `m_index` to the phase being entered just before the first
+    `ChangePhase`, which leaves every observable result unchanged
+    (`PortFirstPhaseIndex`, `game/main.cpp`).
+- [EVIDENCE] On the Android 16 x86_64 emulator: import through the picker, the title screen,
+  menus by tap, and the world-1 hub played with the joystick and jump. All 85 desktop tests
+  still pass on Windows and Linux.
+- [OPEN] A physical (arm64) device, audio on device, gamepads on Android, the name keyboard,
+  and background/foreground. The corpus gate on device is not run yet; a headless test runner
+  in the APK would be needed.
+
 ## Stage 7: interpolation (opt-in)
 
 Built on stage 3's identities and stage 4's snapshots.

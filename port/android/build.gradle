@@ -1,0 +1,19 @@
+// Android build of the SDL3 port (port/docs/ROADMAP.md stage 6). See README.md.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.7.3'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    // Build output in the repository's ignored build/ folder.
+    layout.buildDirectory = file("${rootDir}/../../build/port-android/${project.name}")
+}
