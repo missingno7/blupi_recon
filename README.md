@@ -5,9 +5,10 @@ Reconstructing the C++ source of **Speedy Blupi 1** (Epsitec, 1998; `BLUPI.EXE`,
 first. Rules for contributors and agents: [AGENTS.md](AGENTS.md).
 
 **Native SDL3 port (separate from the matching work):** [port/README.md](port/README.md) builds this same
-`src/` unchanged with a modern compiler and SDL3. It is a faithful 640×480 baseline: menus, levels, sound,
-MIDI music (GeneralUser GS SoundFont, a git submodule) and the original attract-mode demos run on Windows x64. The port
-never modifies the historical source.
+`src/` unchanged with a modern compiler and SDL3: the faithful 640×480 game with sound and MIDI music, plus
+optional widescreen and smooth motion, on Windows, Linux and Android (release 1.0.0:
+[notes](port/docs/RELEASE_NOTES.md)). Players use their own copy of the game. The port never modifies the
+historical source.
 
 ## Status (verified with `tools/verify.py`)
 
@@ -112,3 +113,27 @@ new match ([docs/BLOCKER_CHECKS.md](docs/BLOCKER_CHECKS.md)).
 
 The independent [Planet Blupi study](docs/PLANET_ORACLE.md) found a real RTM/SP3 back-end fingerprint and natural
 Boolean/constant-allocation controls. It does not close either SB1 function; historical acceptance remains 90.1%.
+
+## Repository layout
+
+| Path | Contents |
+|---|---|
+| `src/` | The reconstructed historical source (matching target); compiled unchanged by the port too |
+| `tools/`, `tests/`, `oracle/`, `evidence/`, `steering/`, `recon.json` | Matching build, verifier, oracle inventory, equivalence certificates and steering patches |
+| `docs/` | Matching research, findings and status ([docs/STATUS.md](docs/STATUS.md)) |
+| `msvc5kb/` | Knowledge base of MSVC 5 code-generation findings |
+| `port/` | The native SDL3 port: its own build, docs and rules ([port/README.md](port/README.md)) |
+
+Not in the repository: `assets/` (the original game), `external/` (reference repositories),
+`build/` and `scratch/` (generated output).
+
+## Licence
+
+The source in this repository is free software under the GNU General Public License, version 3
+([LICENSE](LICENSE)). The reconstruction derives from Planet Blupi (GPLv3 or later) and the
+Speedy Eggbert 2 reconstruction (GPLv3); see [src/PROVENANCE.md](src/PROVENANCE.md). The port's
+third-party components keep their own licences ([port/third_party/README.md](port/third_party/README.md)).
+
+Speedy Blupi and its data (graphics, sounds, music, levels) are © Epsitec SA. They are not part
+of this repository or of its licence; the port's icon (`port/res/`) is cut from the game's own
+Blupi sprite. This is a fan project, not affiliated with Epsitec.
