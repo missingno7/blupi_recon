@@ -352,14 +352,6 @@ BOOL CPixmap::IsPalette()
 }
 
 
-// Rempli une zone rectangulaire avec une couleur uniforme.
-
-void CPixmap::Fill(RECT rect, COLORREF color)
-{
-	// à faire si nécessaire ...
-}
-
-
 // Restore all lost objects.
 
 HRESULT CPixmap::RestoreAll()

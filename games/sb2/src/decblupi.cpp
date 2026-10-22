@@ -4956,7 +4956,9 @@ BOOL CDecor::IsBlitz(POINT pos, BOOL bAlways)
 	POINT tinyPoint;
 	tinyPoint.x = pos.x / DIMOBJX;
 	tinyPoint.y = pos.y / DIMOBJY;
-	return m_decor[tinyPoint.x][tinyPoint.y].icon == 305 && (bAlways || BlitzActif(tinyPoint));
+	if (m_decor[tinyPoint.x][tinyPoint.y].icon != 305) return FALSE;
+	if (bAlways) return TRUE;
+	return BlitzActif(tinyPoint);
 }
 
 BOOL CDecor::IsRessort(POINT pos)

@@ -1,8 +1,8 @@
 # Speedy Blupi 2 / Speedy Eggbert 2: matching
 
-Status (2026-10-22, round 2): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
+Status (2026-10-23, round 3): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
 target with its own oracle, source tree `games/sb2/src/` and manifest `games/sb2/recon.json`.
-Accepted: **441 STRICT + 11 FOLDED functions, 130,064 / 172,992 game `.text` bytes (75.2%)**: engine 24,896, application 5,408, game logic 99,760 (round 1: 23,408 bytes, 13.5%). The SB1 targets, certificates and relinked image are unchanged.
+Accepted: **445 STRICT + 11 FOLDED functions, 135,648 / 172,992 game `.text` bytes (78.4%)**: engine 25,344, application 5,408, game logic 104,896 (round 1: 23,408 bytes, 13.5%). The SB1 targets, certificates and relinked image are unchanged.
 
 ```powershell
 .\.pyenv\python.exe tools\verify.py --target sb2/eggbert/en             # clean build + strict report
@@ -69,35 +69,38 @@ Accepted unique bytes per TU (`tools/target_coverage.py` counts them by group):
 
 | TU | STRICT | FOLDED | bytes |
 |---|---:|---:|---:|
-| blupi.cpp | 13 | | 5,408 |
-| button.cpp | 17 | 1 | 1,600 |
-| ddutil.cpp | 8 | | 2,064 |
-| decblock.cpp | 27 | | 5,504 |
-| decblupi.cpp | 37 | | 8,976 |
-| decdesign.cpp | 45 | | 16,832 |
-| decmove.cpp | 42 | | 17,616 |
-| decnet.cpp | 7 | | 1,120 |
-| decor.cpp | 25 | | 12,032 |
-| event.cpp | 86 | | 37,680 |
-| jauge.cpp | 10 | | 560 |
+| blupi.cpp | 13 |  | 5,408 |
+| button.cpp | 18 | 1 | 1,808 |
+| ddutil.cpp | 8 |  | 2,064 |
+| decblock.cpp | 28 |  | 10,528 |
+| decblupi.cpp | 38 |  | 9,088 |
+| decdesign.cpp | 45 |  | 16,832 |
+| decmove.cpp | 42 |  | 17,616 |
+| decnet.cpp | 7 |  | 1,120 |
+| decor.cpp | 25 |  | 12,032 |
+| event.cpp | 86 |  | 37,680 |
+| jauge.cpp | 10 |  | 560 |
 | menu.cpp | 7 | 1 | 480 |
 | misc.cpp | 11 | 1 | 3,872 |
-| movie.cpp | 13 | | 1,152 |
+| movie.cpp | 13 |  | 1,152 |
 | network.cpp | 19 | 1 | 2,672 |
-| pixmap.cpp | 41 | 4 | 8,272 |
+| pixmap.cpp | 42 | 4 | 8,512 |
 | sound.cpp | 26 | 3 | 3,552 |
-| text.cpp | 7 | | 640 |
+| text.cpp | 7 |  | 640 |
 
-Not yet STRICT (43,450 oracle bytes): `CDecor::BlupiStep` 35,449 (SB2 body in the tree: 9,187/9,211
+Not yet STRICT (about 37,500 oracle bytes): `CDecor::BlupiStep` 35,449 (SB2 body in the tree: 9,187/9,211
 instructions aligned, 20 residue regions: operand order in the wind cell expressions, two constant
 initialisation orders, literal 1/10 promotion in the vertigo and Jeep edge guards, one `test` operand
-order; `scratch/w-blupistep/REPORT.md`); `CDecor::Build` 5,018 (1,518/1,598 instructions; 83 bytes of
-stack-slot allocation); twelve small decblupi predicates and `MoveObjectSort` (operand-order context);
+order; `scratch/w-blupistep/REPORT.md`); twelve small decblupi predicates and `MoveObjectSort` (operand-order context);
 `CEvent::CEvent` (one scheduling position); `CSound::CreateSoundBuffer` (line 64); withdrawn functions
 below.
 
 Withdrawn from the gate (declaration context, section 8; source unchanged, each with evidence in the
-manifest): `CPixmap::BltFast`, `CButton::MouseMove`, `CDecor::IsWorld`, `IsDeepWater`, `SetMoveTraj`, `IsMoveTraj`, `IsVentillo` (1,488 bytes). Withdrawn earlier and re-accepted after later genuine context: `MouseMove` (once), `NetAscenseurSynchro`, `GetBlupiInfo`, `IsLave`, `IsRessort`, `IsVentillo` (once).
+manifest): `CDecor::IsWorld`, `IsDeepWater`, `SetMoveTraj`, `IsMoveTraj`, `IsVentillo` (1,040 bytes).
+Withdrawn earlier and re-accepted after later genuine context: `MouseMove` (twice), `BltFast`,
+`NetAscenseurSynchro`, `GetBlupiInfo`, `IsLave`, `IsRessort`, `IsVentillo` (once). `MouseMove` and
+`BltFast` returned in round 3 once inherited SB1 definitions that SB2 does not have (`CButton::Redraw`,
+`CButton::GetEnable`, the empty `CPixmap::Fill` stub; no callers, no SB2 body) were removed.
 
 Shared bodies with unproven owner (counted once): `CButton::GetHide`/`CNetwork::IsHost` (0x28100, not
 accepted under either name); `CPixmap::SetTrueColorBack`/`CSound::SetState` (0x28cf0) and
@@ -184,6 +187,37 @@ matched again after later genuine declarations). 1,488 bytes are withdrawn now; 
 other functions). The full sb2-decomp declaration set
 (+31 CDecor methods) breaks four accepted functions, so sb2-decomp's header is not SB2's either.
 Recovering the real header context (method set and order, include sets) is the next structural task.
+
+[EVIDENCE] Window survey (round 3, `tools/c2trace/ctxwindows.py`, one capture and one c2 replay per TU;
+results in `build/ctxwin/*.json`): 84 context-sensitive functions in 15 TUs. The STRICT functions of
+event.cpp and decblock.cpp tolerate a uniform shift of exactly [0, 0], decblupi.cpp's [−1, +3], decor.cpp's
+[−7, 0]: many independent windows meeting at today's point, which says the entity counts in front of
+those functions are already right. The remaining decblupi mismatches (`IsWorld`, `IsDeepWater`,
+`IsVentillo`, the trajectory helpers) are decided by their own parameters, whose IDs depend on every
+entity defined before them in the TU, i.e. on the exact source of earlier bodies (BlupiStep, the
+unmatched predicates); several need shifts of +40..+220 that no header change could give without
+breaking event.cpp. So the lever is authentic earlier bodies, solved function by function in
+definition order, not header totals.
+
+[EVIDENCE] Exact ledgers of decblupi.cpp (`scratch/w-context/REPORT.md`): BlupiStep's body consumes 838
+front-end IDs, its helpers 185 more before `IsWorld`. Isolated diagnostic shifts flip each remaining
+mismatch to zero differing bytes (`IsWorld` +187, `IsDeepWater` +45, `SetMoveTraj`/`IsMoveTraj` +5/+4,
+`IsVentillo` +216; BlupiStep's wind expression +179, which removes 5 of its 20 regions). [NEGATIVE]
+No single insertion of k entities (k = −300..600) at any function boundary, shifting only IDs after
+it, satisfies all 25 context-sensitive functions together (exact c2 key model,
+`scratch/sb2/deadcode2.py`): the original TU differs from ours in several local places, not by one
+missing block (such as one dead-stripped function). [NEGATIVE] Local respellings of IsWorld,
+IsDeepWater and the trajectory helpers are inert. `IsBlitz` became STRICT by returning BlitzActif's
+result unnormalised (+2 IDs for later functions, all still inside their windows).
+
+[EVIDENCE] Round 3 results: `CDecor::Build` is STRICT (5,024 bytes, 80 relocations) after recovering
+two source forms from its stack-home map (animated-column storage in the existing `x`, one combined
+big-decoration Y reset) with its entity count unchanged (`scratch/w-build/REPORT.md`). BlupiStep's
+source-form residues: snapshotting the key mask before the IsDoor/key guard removes three residue
+groups (9,199/9,211 instructions, 9 regions) but loads the member before its guard, which the oracle
+does not; that candidate stays in `scratch/w-step2` and the tree keeps the 9,187/9,211 body. Guarded
+variants (nested guards, conditional snapshots, comma assignments) are inert or worse
+(`scratch/w-step2/REPORT.md`).
 
 ## 9. Tools and limitations
 

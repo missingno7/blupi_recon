@@ -299,13 +299,13 @@
           "reason": "[EVIDENCE] declaration-count context (msvc5kb BLUPI-CTX-03): source unchanged; button.cpp includes decor.h, and the genuine SB2 CDecor declarations needed by decmove/decblock (BlitzActif, SoundEnviron, MoveObjectFollow, MoveAscenseurDetect, trajectory helpers, OpenDoor family pending) move its operand-order window [-2,5] (tools/c2trace/ctxpredict.py). It matched only with the SB1-derived header count.",
           "evidence": "ctxpredict MouseMove: #65 window [-2,5]; scratch/w-decmove/REPORT.md",
           "date": "2026-10-22"
+        },
+        {
+          "reason": "[EVIDENCE] declaration-count context (msvc5kb BLUPI-CTX-03): source unchanged; the 15 genuine SB2 CDecor declarations integrated with decblupi.cpp's SB2 helpers (IsPiege..SearchTeleporte, ActiveSwitch, BlupiIsGround/Adjust/Bloque) move its operand-order window. Matched only in the earlier header context.",
+          "evidence": "scratch/w-decblupi/REPORT.md; tools/c2trace/ctxpredict.py windows",
+          "date": "2026-10-22"
         }
-      ],
-      "withdrawn": {
-        "reason": "[EVIDENCE] declaration-count context (msvc5kb BLUPI-CTX-03): source unchanged; the 15 genuine SB2 CDecor declarations integrated with decblupi.cpp's SB2 helpers (IsPiege..SearchTeleporte, ActiveSwitch, BlupiIsGround/Adjust/Bloque) move its operand-order window. Matched only in the earlier header context.",
-        "evidence": "scratch/w-decblupi/REPORT.md; tools/c2trace/ctxpredict.py windows",
-        "date": "2026-10-22"
-      }
+      ]
     },
     {
       "symbol": "?MouseUp@CButton@@IAEHUtagPOINT@@@Z",
@@ -455,6 +455,12 @@
       "symbol": "?BlitzActif@CDecor@@QAEHUtagPOINT@@@Z",
       "rva": "0x00003eb0",
       "size": 256,
+      "tu": "games/sb2/src/decblock.cpp"
+    },
+    {
+      "symbol": "?Build@CDecor@@QAEXUtagRECT@@UtagPOINT@@@Z",
+      "rva": "0x00003fb0",
+      "size": 5024,
       "tu": "games/sb2/src/decblock.cpp"
     },
     {
@@ -948,6 +954,12 @@
       "symbol": "?IsEcraseur@CDecor@@QAEHUtagPOINT@@@Z",
       "rva": "0x00014620",
       "size": 128,
+      "tu": "games/sb2/src/decblupi.cpp"
+    },
+    {
+      "symbol": "?IsBlitz@CDecor@@QAEHUtagPOINT@@H@Z",
+      "rva": "0x000146a0",
+      "size": 112,
       "tu": "games/sb2/src/decblupi.cpp"
     },
     {
@@ -2640,11 +2652,13 @@
       "rva": "0x00028dc0",
       "size": 240,
       "tu": "games/sb2/src/pixmap.cpp",
-      "withdrawn": {
-        "reason": "[EVIDENCE] declaration-count context (msvc5kb BLUPI-CTX-03): source unchanged; the SB2 pixmap.h declarations of Create/CacheAll/Benchmark/BackgroundCache and the setters (needed by DoInit, WindowProc, CacheAll) move this function's operand-order window; it matched only with SB1's header entity count. Returns when the authentic SB2 header/TU context is recovered.",
-        "evidence": "tools/c2trace/ctxpredict.py windows (IsVentillo [-255,0]); scratch/w-pixmap/REPORT.md context isolation",
-        "date": "2026-10-22"
-      }
+      "withdrawal_history": [
+        {
+          "reason": "[EVIDENCE] declaration-count context (msvc5kb BLUPI-CTX-03): source unchanged; the SB2 pixmap.h declarations of Create/CacheAll/Benchmark/BackgroundCache and the setters (needed by DoInit, WindowProc, CacheAll) move this function's operand-order window; it matched only with SB1's header entity count. Returns when the authentic SB2 header/TU context is recovered.",
+          "evidence": "tools/c2trace/ctxpredict.py windows (IsVentillo [-255,0]); scratch/w-pixmap/REPORT.md context isolation",
+          "date": "2026-10-22"
+        }
+      ]
     },
     {
       "symbol": "?BltFast@CPixmap@@IAEJPAUIDirectDrawSurface@@HUtagPOINT@@UtagRECT@@H@Z",

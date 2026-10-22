@@ -196,11 +196,6 @@ void CButton::Draw()
 
 }
 
-void CButton::Redraw()
-{
-	m_bRedraw = TRUE;
-}
-
 int CButton::GetState()
 {
 	return m_state;
@@ -233,11 +228,6 @@ void CButton::SetMenu(int menu)
 	m_selMenu = menu;
 }
 
-
-BOOL CButton::GetEnable()
-{
-	return m_bEnable;
-}
 
 void CButton::SetEnable(BOOL bEnable)
 {

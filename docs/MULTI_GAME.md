@@ -38,7 +38,7 @@ Two goals, kept apart:
 | `sb1/blupi/fr` | 127,456 / 141,488 | strings only |
 | `sb1/eggbert/en`, `fr` | 123,120 / 141,328 | `_EGAMES`; WindowProc and DoInit excluded ([EGGBERT.md](EGGBERT.md)) |
 | `sb1/eggbert/de`, `es`, `it`, `pt` | 123,120 / 141,328 | also `LANGUAGE_DE` (de), `LANGUAGE_ACCENTS`, `LANGUAGE_ES` (es), `LANGUAGE_PT` (pt) |
-| `sb2/eggbert/en` | 130,064 / 172,992 | own tree `games/sb2/src/`; 441 STRICT, 11 FOLDED; engine, application and game logic ([SB2.md](SB2.md)) |
+| `sb2/eggbert/en` | 135,648 / 172,992 | own tree `games/sb2/src/`; 445 STRICT, 11 FOLDED; engine, application and game logic ([SB2.md](SB2.md)) |
 
 `tools/verify.py` without `--target` is the primary target, byte-identical to its report before the
 registry existed. `--target <id>` verifies another one on the same `src/`; targets with their own

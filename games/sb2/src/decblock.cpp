@@ -1133,8 +1133,7 @@ void CDecor::Build(RECT rect, POINT mousePos)
 
 	tinyPoint.x = 0 - posDecor.x % DIMOBJX - DIMOBJX;
 	for (i = posDecor.x / DIMOBJX - 1; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 3; i++) {
-		tinyPoint.y = 0 - posDecor.y % DIMOBJY;
-		tinyPoint.y += 2 - DIMOBJY;
+		tinyPoint.y = 2 - posDecor.y % DIMOBJY - DIMOBJY;
 		for (j = posDecor.y / DIMOBJY - 1; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
 		{
 			if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY)
@@ -1406,40 +1405,40 @@ void CDecor::Build(RECT rect, POINT mousePos)
 		pMoveObject++;
 	}
 	tinyPoint.x = 0 - posDecor.x % DIMOBJX;
-	for (i = posDecor.x / DIMOBJX; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 2; i++)
+	for (x = posDecor.x / DIMOBJX; x < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 2; x++)
 	{
 		tinyPoint.y = 0 - posDecor.y % DIMOBJY;
 		for (j = posDecor.y / DIMOBJY; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
 		{
-			if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY && m_decor[i][j].icon != -1)
+			if (x >= 0 && x < MAXCELX && j >= 0 && j < MAXCELY && m_decor[x][j].icon != -1)
 			{
-				num = m_decor[i][j].icon;
+				num = m_decor[x][j].icon;
 				pos = tinyPoint;
 				if (num == 68)
 				{
-					num = table_decor_lave[(i * 13 + j * 7 + m_time / 3) % 8];
+					num = table_decor_lave[(x * 13 + j * 7 + m_time / 3) % 8];
 					m_pPixmap->QuickIcon(1, num, pos);
 				}
 				if (num == 373)
 				{
 					if (m_blupiFocus)
-						num = table_decor_piege1[(i * 13 + j * 7 + m_time / 4) % 16];
+						num = table_decor_piege1[(x * 13 + j * 7 + m_time / 4) % 16];
 					else
-						num = table_decor_piege2[(i * 13 + j * 7 + m_time / 2) % 4];
+						num = table_decor_piege2[(x * 13 + j * 7 + m_time / 2) % 4];
 					m_pPixmap->QuickIcon(1, num, pos);
 				}
 				if (num == 404 || num == 410)
 				{
-					num = table_decor_goutte[(i * 13 + j * 7 + m_time / 2) % 48];
+					num = table_decor_goutte[(x * 13 + j * 7 + m_time / 2) % 48];
 					pos.y -= 9;
 					m_pPixmap->QuickIcon(1, num, pos);
 					if (num >= 404 && num <= 407)
 					{
-						m_decor[i][j].icon = 404;
+						m_decor[x][j].icon = 404;
 					}
 					else
 					{
-						m_decor[i][j].icon = 410;
+						m_decor[x][j].icon = 410;
 					}
 				}
 				if (num == 317)
@@ -1449,7 +1448,7 @@ void CDecor::Build(RECT rect, POINT mousePos)
 				}
 				if (num == 378)
 				{
-					num = table_decor_scie[(i * 13 + j * 7 + m_time / 1) % 6];
+					num = table_decor_scie[(x * 13 + j * 7 + m_time / 1) % 6];
 					m_pPixmap->QuickIcon(1, num, pos);
 				}
 				if (num == 324)
@@ -1459,20 +1458,20 @@ void CDecor::Build(RECT rect, POINT mousePos)
 				}
 				if (num == 92)
 				{
-					num = table_decor_eau1[(i * 13 + j * 7 + m_time / 3) % 4];
+					num = table_decor_eau1[(x * 13 + j * 7 + m_time / 3) % 4];
 					m_pPixmap->QuickIcon(1, num, pos);
 				}
 				if (num == 91)
 				{
-					num = table_decor_eau2[(i * 13 + j * 7 + m_time / 3) % 4];
+					num = table_decor_eau2[(x * 13 + j * 7 + m_time / 3) % 4];
 					m_pPixmap->QuickIcon(1, num, pos);
 				}
 				if (num == 305)
 				{
-					POINT cel = { i, j };
+					POINT cel = { x, j };
 					if (BlitzActif(cel))
 					{
-						num = table_decor_blitz[(i * 13 + j * 7 + m_time) % 50];
+						num = table_decor_blitz[(x * 13 + j * 7 + m_time) % 50];
 						m_pPixmap->QuickIcon(1, num, pos);
 					}
 				}

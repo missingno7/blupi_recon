@@ -18,11 +18,12 @@ Unchanged copies of SB1 files: `ddutil.cpp`, `jauge.cpp`, `menu.cpp`, `movie.cpp
   offsets and initial values from the binary); `~CPixmap` → `ReleaseAll` (split from the binary; name a
   hypothesis); `Create` (six arguments), `CacheAll`, `Benchmark`, `BackgroundCache`, true-colour and
   benchmark setters (written from the binary with Free Eggbert's `pixmap.cpp` as a hint); arrow hot
-  spot from the binary.
+  spot from the binary; the empty inherited `Fill` stub removed (no callers, no SB2 body).
 - sound.h, sound.cpp: `m_bCDAudio`, `int m_music` (as sb2-decomp); `PlayMusic(HWND, int)`,
   `PlayCDAudio` (written from the binary, sb2-decomp as the starting point), `SuspendMusic`'s `MCI_STOP`,
   constructor defaults, `SetCDAudio` (sb2-decomp). Lines 1-63 are SB1's; the `TRY_DS` line is [OPEN].
-- button.cpp: `Draw`'s enabled/demo condition. misc.cpp: `GetCurrentDir` (`\release\`), `AddCDPath`.
+- button.cpp: `Draw`'s enabled/demo condition; SB1's `Redraw` and `GetEnable` definitions removed (no
+  callers, no SB2 body; removing them puts `MouseMove` in its context window). misc.cpp: `GetCurrentDir` (`\release\`), `AddCDPath`.
 - blupi.cpp: `ReadConfig`, `UpdateFrame`, `WindowProc`, `Benchmark`, `DoInit` from the binary.
 
 ## Game logic
@@ -30,7 +31,8 @@ Unchanged copies of SB1 files: `ddutil.cpp`, `jauge.cpp`, `menu.cpp`, `movie.cpp
 - event.h, event.cpp: CEvent layout (`m_menuDecor[20]`, `m_9984`); the phase table `table[]` generated
   from the binary (40 phases); constructor, `CreateButtons`, `ReadInfo`, `MousePosToSprite`,
   `IntroStep`, `LoadImageFromDisc` (sb2-decomp, corrected), `BuildDown`, `ChangeButtons` (settings
-  screen, region and dimension handlers), mission/demo numbering.
+  screen, region and dimension handlers), `DrawButtons`, `ChangePhase`, `TreatEventBase` (worker
+  reports `scratch/w-event`), mission/demo numbering.
 - def.h: `WM_DIMS1..4` values.
 - decor.h: CDecor members per sb2-decomp with the corrections in docs/SB2.md section 4; `DescGameFile`
   SB2 fields; declarations of SB2 methods whose bodies exist in the binary and are called by
