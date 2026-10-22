@@ -15,8 +15,10 @@ same `src/`:
   only code or data that differs in that target's executable and says so in a comment. Branches inherited
   from the SB2 or Planet Blupi sources that no SB1 executable shows are removed, not kept behind a switch
   (docs/EGGBERT.md).
-- Only `LANGUAGE_DE` may appear outside `#if`: the port defines it as a run-time call. The other switches
-  are used in `#if` only, and the port leaves them 0.
+- Only `LANGUAGE_DE` and `VERSION_TEXT` (the title screen's version label, a `def.h` define derived from
+  `_EGAMES`) may appear outside `#if`: the port defines them as run-time calls
+  (`port/games/sb1/game/port_switches.h`). The other switches are used in `#if` only; the port leaves them
+  at their defaults, except `LANGUAGE_ES` (set: it only narrows `¡`, which only Spanish text uses).
 - Write a switch as arithmetic on the constant (`140 - 20 * LANGUAGE_DE`), so the port can bind it at run
   time. [EVIDENCE] An `if (LANGUAGE_DE)` block changed TreatEventBase's code in the US build; the arithmetic
   form did not. Keep a form only when the primary report stays byte-identical; otherwise use `#if`.

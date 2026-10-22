@@ -103,6 +103,12 @@ and buttons, redraw flags included, so that the moved `Build` state changes are 
 the state-hash column of the attract, tour and editor traces changed. [EVIDENCE] Frame, phase
 and screen hash are identical to the previous traces at every checkpoint.
 
+The Speedy Eggbert trace (`eggbert_attract16.trace`) was updated once (2026-10-22), when its title
+screen started to say "Version 1.1" like the original 1.1 (`VERSION_TEXT`,
+[../../docs/EGGBERT.md](../../docs/EGGBERT.md)). [EVIDENCE] Only the screen hash of the 99
+title-screen checkpoints (frames 10–990, `WM_PHASE_INIT`) changed; frame, phase and state hash are
+identical at all 750 checkpoints. The Speedy Blupi traces did not change.
+
 ## Not covered yet
 
 - **Graphic cursor (MouseType 1):** its blits are the same code paths as icons, but not compared

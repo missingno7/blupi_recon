@@ -80,6 +80,16 @@ reconstruction builds both, and what it means for the port. Static reads only (2
 - **CD and paths:** the port's own `main.cpp` and file system replace them for both editions.
 - **Presentation and languages:** from the data (title, font, buttons) and the language packs
   (strings and `[chars]`).
-- [OPEN] **"Version 1.0"** still shows on Eggbert's title screen: the label is a literal in the
-  shared `DrawButtons`.
-- [OPEN] **The Spanish `¡`** is drawn 10 pixels wide in the port, where 1.1's Spanish build uses 5.
+- [EVIDENCE] **The version label** is `VERSION_TEXT` (`src/def.h`): "Version 1.1" under `_EGAMES`,
+  otherwise "Version 1.0". Every target's preprocessed source is unchanged, and so are all nine
+  reports and the relinked image. The port defines it as the recognised edition's label
+  (`port/games/sb1/game/port_switches.h`, `language.cpp`), so Eggbert's title screen says
+  "Version 1.1" (screenshot, 2026-10-22; the Eggbert golden trace changed in those frames only,
+  `port/docs/ORACLE.md`).
+- [EVIDENCE] **The Spanish `¡`:** the port compiles `text.cpp` with `LANGUAGE_ES` set, so glyph 5
+  has 1.1's Spanish width (5 instead of 10) in every language. Glyph 5 is drawn only for `¡`, and
+  only the Spanish pack has `¡`, so no other language's text changes (`ctest -R text`).
+- **A background image that fails to load** behaves as in 1.0 in both editions (the port compiles
+  `_EGAMES` as 0): it logs, waits for a click and shows the insert-CD screen. Only a damaged game
+  folder reaches it.
+- The port's own release numbers (1.0.0, 1.1.0, ...) are unrelated to the game's 1.0 and 1.1.

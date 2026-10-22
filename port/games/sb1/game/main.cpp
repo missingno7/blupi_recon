@@ -1229,6 +1229,12 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 
 namespace
 {
+// The player's folder: saves, settings, languages (README: "Your files").
+std::string PortUserFolder()
+{
+	return blupi::host::pref_path("Epsitec", "Speedy Blupi SDL3");
+}
+
 struct ScriptedInput
 {
 	long tick;
@@ -1632,7 +1638,7 @@ int BlupiMain(int argc, char** argv)
 		PortSettings fromFile;
 		if (!g_bHeadless)
 		{
-			std::string user = o.userRoot.empty() ? blupi::host::pref_path() : o.userRoot + "/";
+			std::string user = o.userRoot.empty() ? PortUserFolder() : o.userRoot + "/";
 			g_settingsPath = user + "blupi-sdl3.json";
 			PortSettingsLoad(g_settingsPath.c_str(), fromFile);
 		}
@@ -1715,7 +1721,7 @@ int BlupiMain(int argc, char** argv)
 		blupi::host::shutdown();
 		return 1;
 	}
-	std::string user = o.userRoot.empty() ? blupi::host::pref_path() : o.userRoot;
+	std::string user = o.userRoot.empty() ? PortUserFolder() : o.userRoot;
 	blupi::vfs::set_roots(root, user);
 	// A CD (Speedy Blupi 1 and 2): the data at its root, SOUND in each language
 	// folder (identical in all of them). The English one is preferred.

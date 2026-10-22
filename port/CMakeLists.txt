@@ -68,6 +68,7 @@ target_include_directories(blupi_hist_context BEFORE INTERFACE
 if(MSVC)
     target_compile_options(blupi_hist_context INTERFACE
         /FI${BLUPI_COMMON}/compat/include/port_forced.h
+        /FI${BLUPI_GAME_DIR}/game/port_switches.h
         /permissive /Zc:forScope- /W0)
 else()
     # -fsigned-char: char is signed in MSVC (and on x86) but unsigned on ARM;
@@ -76,7 +77,8 @@ else()
     # leniencies (e.g. CEvent::LoadState's (int) cast of a pointer variable
     # used as int storage).
     target_compile_options(blupi_hist_context INTERFACE
-        -include ${BLUPI_COMMON}/compat/include/port_forced.h
+        "SHELL:-include ${BLUPI_COMMON}/compat/include/port_forced.h"
+        "SHELL:-include ${BLUPI_GAME_DIR}/game/port_switches.h"
         -fno-strict-aliasing -fwrapv -fsigned-char -w
         $<$<CXX_COMPILER_ID:GNU>:-fpermissive>
         $<$<CXX_COMPILER_ID:Clang>:-fms-extensions>)
@@ -111,22 +113,11 @@ add_library(blupi_platform STATIC
     common/platform/vfs.cpp
     common/platform/audio.cpp
     common/platform/music.cpp
-    common/platform/resources.cpp
     common/platform/language.cpp
     common/platform/icon.cpp)
 target_include_directories(blupi_platform PUBLIC ${BLUPI_COMMON})
 target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})   # third_party/
 target_link_libraries(blupi_platform PUBLIC SDL3::SDL3 blupi_render)
-
-# The historical string table, embedded verbatim and parsed at start-up.
-set(BLUPI_RC ${BLUPI_HIST_SRC}/res/blupi.rc)
-set(BLUPI_RC_INC ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_rc.inc)
-add_custom_command(OUTPUT ${BLUPI_RC_INC}
-    COMMAND ${CMAKE_COMMAND} -DIN=${BLUPI_RC} -DOUT=${BLUPI_RC_INC}
-            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_bytes.cmake
-    DEPENDS ${BLUPI_RC} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_bytes.cmake
-    COMMENT "Embedding src/res/blupi.rc")
-target_sources(blupi_platform PRIVATE ${BLUPI_RC_INC})
 
 # The port's icon (res/icon.png, tools/make_icon.py), for the window on
 # systems without executable resources.

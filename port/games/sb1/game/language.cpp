@@ -29,6 +29,7 @@ extern char table_char[];
 
 std::string g_portLanguageVariant = "us";
 
+// game/port_switches.h
 extern "C" int blupi_language_de(void)
 {
 	return g_portLanguageVariant == "de";
@@ -76,10 +77,11 @@ const KnownBuild k_builds[] = {
 	{0x459defd64dd9b032ULL, 536576, "eggbert", "pt"},
 };
 
-// IMAGE08\INIT.BLP, the title image, tells the editions apart.
-const struct { unsigned long long hash; const char* edition; } k_titles[] = {
-	{0xe9654ea706e78a9bULL, "blupi"},
-	{0x847cfb0febbd955aULL, "eggbert"},
+// The editions. IMAGE08\INIT.BLP, the title image, tells them apart; the
+// version is the one their title screen shows (docs/EGGBERT.md).
+const struct { unsigned long long hash; const char* edition; const char* version; } k_titles[] = {
+	{0xe9654ea706e78a9bULL, "blupi", "Version 1.0"},
+	{0x847cfb0febbd955aULL, "eggbert", "Version 1.1"},
 };
 
 const int  kCharBytes = 6;
@@ -424,6 +426,15 @@ std::string PortLanguageName(int index)
 const std::string& PortEdition()
 {
 	return g_edition;
+}
+
+extern "C" const char* blupi_version_text(void)
+{
+	for (const auto& t : k_titles)
+	{
+		if (g_edition == t.edition) return t.version;
+	}
+	return k_titles[0].version;
 }
 
 bool PortLanguageExport(const std::string& which, const std::string& path)

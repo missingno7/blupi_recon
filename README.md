@@ -10,9 +10,16 @@ optional widescreen and smooth motion, in every original language and for Speedy
 Linux and Android (release 1.1.0: [notes](port/docs/RELEASE_NOTES.md)). Players use their own copy of the game.
 The port never modifies the historical source.
 
-**Other builds** of the game are verified on the same `src/` as further targets: the German and French
-Speedy Blupi, and Speedy Eggbert 1 (version 1.1) in six languages (`targets.json`,
-[docs/MULTI_GAME.md](docs/MULTI_GAME.md), [docs/EGGBERT.md](docs/EGGBERT.md)).
+**Other builds** of the game are verified on the same `src/` as further targets
+(`tools/verify.py --target <id>`; [docs/MULTI_GAME.md](docs/MULTI_GAME.md),
+[docs/EGGBERT.md](docs/EGGBERT.md)). Every acceptance number below refers to the primary target.
+
+| Target | Executable | Strict game `.text` |
+|---|---|---|
+| `sb1/blupi/us` (primary) | Speedy Blupi 1.0, US | 127,456 / 141,488 |
+| `sb1/blupi/de`, `fr` | Speedy Blupi 1.0, German, French | 127,456 / 141,488 |
+| `sb1/eggbert/en`, `de`, `es`, `fr`, `it`, `pt` | Speedy Eggbert 1 (version 1.1), six languages | 123,120 / 141,328 (WindowProc, DoInit excluded) |
+| `sb2/*` | Speedy Blupi 2, Speedy Eggbert 2 | planned, not started |
 
 ## Status (verified with `tools/verify.py`)
 
@@ -109,6 +116,9 @@ Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and ev
 
 Current state and the paused blockers: **docs/STATUS.md** (2026-10-19).
 
+Next new work: the first step of Speedy Blupi 2 / Speedy Eggbert 2 (registry and inventory only),
+[docs/MULTI_GAME.md](docs/MULTI_GAME.md).
+
 The tested families and unresolved compiler decisions are recorded in `docs/RESIDUAL_CAUSES.md` and `msvc5kb`.
 TreatEventBase needs a rotor-neutral rank-zero toggle; ChangePhase needs the oracle's test order with PLAY
 allocated before zero. Original project/build evidence or LINK 5.10.7287 could help discriminate the linker
@@ -122,11 +132,12 @@ Boolean/constant-allocation controls. It does not close either SB1 function; his
 
 | Path | Contents |
 |---|---|
-| `src/` | The reconstructed historical source (matching target); compiled unchanged by the port too |
-| `tools/`, `tests/`, `oracle/`, `evidence/`, `steering/`, `recon.json` | Matching build, verifier, oracle inventory, equivalence certificates and steering patches |
+| `src/` | The reconstructed historical source of every SB1 target; compiled unchanged by the port too |
+| `targets.json` | Target registry: every executable, its linker, build path, defines and oracle |
+| `tools/`, `tests/`, `oracle/`, `evidence/`, `steering/`, `recon.json` | Matching build, verifier, oracle inventories (`oracle/` primary, `oracle/<target>/` others), equivalence certificates and steering patches |
 | `docs/` | Matching research, findings and status ([docs/STATUS.md](docs/STATUS.md)) |
 | `msvc5kb/` | Knowledge base of MSVC 5 code-generation findings |
-| `port/` | The native SDL3 port: its own build, docs and rules ([port/README.md](port/README.md)) |
+| `port/` | The native SDL3 port: `common/` (no game names), `games/sb1/` (Speedy Blupi 1 and Speedy Eggbert 1), language packs, its own build, docs and rules ([port/README.md](port/README.md)) |
 
 Not in the repository: `assets/` (the original game), `external/` (reference repositories),
 `build/` and `scratch/` (generated output).

@@ -15,12 +15,12 @@ Current release: **1.1.0** for Windows x64, Linux x86-64 and Android
 | Path | Owner | Contents |
 |---|---|---|
 | `../src/*.cpp, *.h, res/` | historical reconstruction | Compiled unchanged. 12 TUs are shared as-is: `button decblock decblupi decdesign decmove decnet decor dectables event jauge menu text` |
-| `common/compat/include/` | port | Declaration-only Win32/DirectX/winmm names the shared TUs need, with SDK values; `port_forced.h` (forced include: `fopen`→port file system, `rand`→MS LIBC generator) |
+| `common/compat/include/` | port | Declaration-only Win32/DirectX/winmm names the shared TUs need, with SDK values; `port_forced.h` (forced include: `fopen`→port file system, `rand`→MS LIBC generator; no game names) |
 | `common/compat/src/win32.cpp` | port | Behaviour behind those names: posted-message queue, cursor, rectangles, file APIs, winmm joystick on SDL gamepads, MS `rand` |
 | `common/compat/src/hist_stdio.cpp` | port | `BlupiFile` streams for the shared TUs' file I/O (`common/compat/include/port_hist_stdio.h`) |
-| `games/sb1/game/` | port, derived from historical TUs | Replacements of the 7 platform TUs: `main.cpp`←`blupi.cpp`, `pixmap.cpp`, `sound.cpp`, `misc.cpp`, `movie.cpp`, `network.cpp`; `ddutil.cpp` is not needed. Each file header names its historical origin; copied method bodies are kept verbatim where possible |
+| `games/sb1/game/` | port, partly derived from historical TUs | Speedy Blupi 1's and Speedy Eggbert 1's port code. Replacements of the 7 platform TUs: `main.cpp`←`blupi.cpp`, `pixmap.cpp`, `sound.cpp`, `misc.cpp`, `movie.cpp`, `network.cpp`; `ddutil.cpp` is not needed. Each file header names its historical origin; copied method bodies are kept verbatim where possible. Port-owned: scene builder and end of tick (`scene.cpp`, `end_of_tick.cpp`), wide editor, Display options, settings, languages and edition recognition (`language.cpp`), the build switches' port values (`port_switches.h`, second forced include), state hash and test probes |
 | `common/render/` | port | Rendering device interface and commands (`device.h`), software reference renderer (8 bpp palettized and RGB565 surfaces, DirectDraw blit rules), BMP reader. No SDL, no Win32 names |
-| `common/platform/` | port | SDL3 host: window/presentation, input, timing, audio mixer, MIDI synthesizer, file system roots, embedded string table, `SDL_main` entry |
+| `common/platform/` | port | SDL3 host: window/presentation, input, touch controls, timing, audio mixer, MIDI synthesizer, file system roots, the language-pack format, icon, `SDL_main` entry (calls the game's `BlupiMain`). No game names: the game passes its own (e.g. its user folder's) |
 | `third_party/tinysoundfont/` | vendored | TinySoundFont v0.9 (MIT) and TinyMidiLoader v0.7 (zlib) headers, unchanged; provenance in its README |
 | `third_party/generaluser-gs/` | git submodule | GeneralUser GS v2.0.3 SoundFont, the author's repository at a pinned commit (shallow); provenance, licence and SHA-256 in [third_party/README.md](third_party/README.md) |
 | `tests/` | port | Unit tests, music tests, golden traces (`tests/golden/`) |
@@ -45,7 +45,7 @@ $env:SDL3_DIR = "C:\tools\sdl3-3.4.16-mingw\SDL3-3.4.16\x86_64-w64-mingw32"
 $env:BLUPI_DATA = "D:\Prog\blupi_recon\assets\Speedy Blupi"   # optional: enables replay tests
 cmake --preset mingw-x64 -S port
 cmake --build build/port -j 4
-ctest --test-dir build/port --output-on-failure   # SDL3.dll must be on PATH or next to the tests
+ctest --test-dir build/port --output-on-failure   # the build copies SDL3.dll next to the tests
 ```
 
 The executable links the GCC runtimes statically, so it needs only `SDL3.dll` next to it. The
@@ -118,8 +118,9 @@ The same options exist for one run on the command line: `--wide auto|off|16:9|85
 `--language CODE`.
 
 **Speedy Eggbert 1** (the eGames edition, version 1.1 of the game) is the same game: point the
-port at its folder. Version 1.1 changes no gameplay. Like 1.1, the port then quits without the goodbye
-screen; it still shows "Version 1.0" on the title screen ([../docs/EGGBERT.md](../docs/EGGBERT.md)).
+port at its folder. Version 1.1 changes no gameplay. Like 1.1, the port then shows "Version 1.1"
+on the title screen and quits without the goodbye screen ([../docs/EGGBERT.md](../docs/EGGBERT.md)).
+The game's versions (1.0, 1.1) are unrelated to the port's own release numbers (`VERSION.txt`).
 A **CD** (Speedy Blupi 1) works too: the port uses the data at its root and the `SOUND` folder of
 a language folder.
 
@@ -249,6 +250,9 @@ After 1.1.0:
    in the APK for the corpus gate on device.
 3. Custom port graphics (touch controls, icon) from a player-supplied folder; stage 2 (GPU
    backend) only if profiling shows a need.
+4. Speedy Blupi 2 and Speedy Eggbert 2 start in the matching reconstruction
+   ([../docs/MULTI_GAME.md](../docs/MULTI_GAME.md)); `games/sb2/` follows once their source
+   exists.
 
 ## Dependencies and licences
 

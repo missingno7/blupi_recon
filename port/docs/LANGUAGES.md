@@ -83,8 +83,7 @@ variant = de                           <- the original's code variant (see below
   will come later.
 - **Variant.** Most of the original's languages differ only in text. The German build also lays
   out the help screen differently, for its longer texts. `variant = de` asks for that layout;
-  any other value uses the original US one. (The layout switch arrives with the matching work
-  on the German build; see `docs/MULTI_GAME.md`.)
+  any other value uses the original US one.
 - **Port texts.** The Display options screen's own texts can be translated too, with these
   ids:
 
@@ -124,9 +123,10 @@ The built-in packs keep the original's bytes exactly, including the few letters 
 draw (Eggbert's Italian `È`, shown as the font's blank glyph, as in 1999). Only players' packs
 fall back to base letters.
 
-One language difference is not in the packs: Eggbert's Spanish build draws `¡` 5 pixels wide
-instead of 10, through the font's width table, which a pack cannot change. The port draws it 10
-pixels wide in every language ([../../docs/EGGBERT.md](../../docs/EGGBERT.md)).
+One language difference is not in the packs: Eggbert's Spanish build gives `¡` (glyph 5) a width
+of 5 instead of 10 in the font's width table, which a pack cannot change. The port uses the Spanish
+width in every language: only `¡` is drawn with that glyph and only Spanish text has `¡`, so no
+other language changes ([../../docs/EGGBERT.md](../../docs/EGGBERT.md), `ctest -R text`).
 
 ## Implementation
 
@@ -136,5 +136,6 @@ pixels wide in every language ([../../docs/EGGBERT.md](../../docs/EGGBERT.md)).
   pack. Its strings answer `LoadString`, and its `[chars]` entries go into `table_char`, the
   font table, which is restored before each pack. A letter outside Windows-1252 gets a code
   the font leaves blank.
+- `games/sb1/game/port_switches.h`: `LANGUAGE_DE`, the pack's `variant` as the shared code sees it.
 - `games/sb1/game/options_screen.cpp`: the Language row. A change enters the current phase again, since
   the original draws a screen's texts when the phase starts.

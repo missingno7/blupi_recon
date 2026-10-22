@@ -1312,6 +1312,15 @@ Term;
 #ifndef LANGUAGE_PT
 #define LANGUAGE_PT 0
 #endif
+// The title screen's version (event.cpp): Speedy Eggbert 1 is version 1.1
+// (docs/EGGBERT.md). The port gives it the recognised edition's.
+#ifndef VERSION_TEXT
+#if _EGAMES
+#define VERSION_TEXT "Version 1.1"
+#else
+#define VERSION_TEXT "Version 1.0"
+#endif
+#endif
 
 #endif /* DEF_H */
 

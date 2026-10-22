@@ -282,8 +282,8 @@ needs a hook outside `src/` (for example in the cnc-ddraw `Blt` path, or a debug
 - Saves: `CDecor::Write/Read`, `CurrentWrite/Read` and `CEvent::WriteInfo/ReadInfo` use raw
   `fwrite(sizeof struct)`. Layout is preserved (section 2). Endianness is little only. A
   big-endian target would need explicit serialization; none is planned.
-- Text: strings and fonts are cp1252 byte codes; the string table is the historical `.rc`
-  embedded verbatim. Text input converts UTF-8 to cp1252.
+- Text: strings and fonts are cp1252 byte codes. The strings come from the language packs
+  (section 9); the US pack equals the historical `.rc`. Text input converts UTF-8 to cp1252.
 - Input: SDL keycodes map to VK codes in `common/platform/host.cpp`. Messages are synthesized in Win32
   order (`WM_KEYDOWN`, then `WM_CHAR` for Backspace/Enter/Escape/Tab; `WM_NCMOUSEMOVE` over the
   letterbox).
@@ -367,3 +367,26 @@ Port (`games/sb1/game/sound.cpp` + `common/platform/music.cpp`):
   0 → >0 the forgotten song continues and a new one is opened. [OPEN] Whether the 1998
   sequencer played both or refused the second open (MIDI port in use). The port replaces the
   old song with the restarted one.
+
+## 9. Games, editions and languages
+
+- **Layout.** `common/` (`compat/`, `platform/`, `render/`) holds what does not depend on a
+  game; it names no game. `games/sb1/` holds Speedy Blupi 1's port code, which also serves
+  Speedy Eggbert 1. A second game gets `games/sb2/` and its own executable linking the same
+  `common/` libraries; code moves to `common/` only when both games build with it. There is
+  no game interface or registry: `common/platform/entry.cpp` calls the game's `BlupiMain`.
+- **One program per game, for all its editions and languages.** [EVIDENCE] Speedy Blupi 1.0
+  and Speedy Eggbert 1.1 have the same gameplay code (`docs/EGGBERT.md`). Their differences
+  reach the port as:
+  - the player's data (title image, font, buttons), read as it is;
+  - language packs: strings, `[chars]` and the code `variant` ([LANGUAGES.md](LANGUAGES.md));
+  - the build switches' port values (`games/sb1/game/port_switches.h`, a second forced
+    include): `LANGUAGE_DE` and `VERSION_TEXT` are run-time calls answered from the pack and
+    the recognised edition; `LANGUAGE_ES` is set (it only narrows `¡`);
+  - one edition branch, for behaviour the data cannot carry: Speedy Eggbert quits without the
+    goodbye screen (`main.cpp`).
+- **What the port leaves out on purpose:** the CD checks (it reads a game folder or a CD's
+  root, `vfs`) and the 1.0/1.1 difference after a background image fails to load (only a
+  damaged folder reaches it). The matching targets keep both.
+- **Versions.** The port's release version (`VERSION.txt`) is its own; the game's 1.0 and 1.1
+  are editions' data, shown on their title screens.

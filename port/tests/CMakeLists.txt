@@ -224,10 +224,30 @@ target_link_libraries(test_settings PRIVATE blupi_hist_context blupi_game)
 target_include_directories(test_settings PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../games/sb1)
 add_test(NAME settings COMMAND test_settings ${CMAKE_CURRENT_BINARY_DIR}/settings_test.json)
 
-# Language packs (platform/language.cpp, the built-in packs in languages/).
-add_executable(test_language test_language.cpp)
+# Language packs (platform/language.cpp, the built-in packs in languages/),
+# and the US pack against the reconstructed string table, embedded here only.
+set(BLUPI_RC_INC ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_rc.inc)
+add_custom_command(OUTPUT ${BLUPI_RC_INC}
+    COMMAND ${CMAKE_COMMAND} -DIN=${BLUPI_HIST_SRC}/res/blupi.rc -DOUT=${BLUPI_RC_INC}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/embed_bytes.cmake
+    DEPENDS ${BLUPI_HIST_SRC}/res/blupi.rc ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/embed_bytes.cmake
+    COMMENT "Embedding src/res/blupi.rc")
+add_executable(test_language test_language.cpp rc_strings.cpp ${BLUPI_RC_INC})
+target_include_directories(test_language PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
 target_link_libraries(test_language PRIVATE blupi_platform)
 add_test(NAME language COMMAND test_language ${CMAKE_CURRENT_SOURCE_DIR}/../languages)
+
+# Font metrics set by the port's build switches (game/port_switches.h).
+add_executable(test_text test_text.cpp)
+target_link_libraries(test_text PRIVATE blupi_hist_context blupi_game)
+add_test(NAME text COMMAND test_text)
+
+# Windows: the tests that link SDL3 find SDL3.dll next to them.
+if(WIN32)
+    add_custom_command(TARGET test_layout POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:SDL3::SDL3-shared> ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 
 # Speedy Eggbert 1 (docs/MULTI_GAME.md): its attract mode with the port's
 # code, a regression gate. Configure with -DBLUPI_TEST_DATA_EGGBERT=<its game root>.

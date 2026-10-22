@@ -10,6 +10,9 @@ The original game's files are NOT included: you need your own copy of
 Speedy Blupi (the CD, or the game installed from it). Speedy Eggbert, the
 eGames edition (version 1.1 of the same game), works too.
 
+The version number at the top is the port's own. The game itself is
+version 1.0 (Speedy Blupi) or 1.1 (Speedy Eggbert), as its title screen says.
+
 
 Starting the game
 -----------------

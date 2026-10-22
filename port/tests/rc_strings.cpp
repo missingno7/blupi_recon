@@ -1,4 +1,4 @@
-#include "platform/resources.h"
+#include "rc_strings.h"
 
 #include <cctype>
 #include <cstdlib>
@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-namespace blupi::resources
+namespace blupi::rc_strings
 {
 namespace
 {
@@ -107,4 +107,4 @@ int count()
 {
     return (int)table().size();
 }
-}  // namespace blupi::resources
+}  // namespace blupi::rc_strings

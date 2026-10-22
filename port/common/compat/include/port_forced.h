@@ -1,5 +1,5 @@
 // Forced include for every TU compiled with the historical-source context
-// (shared ../src TUs and port/game). Keeps the historical source unchanged
+// (the shared ../src TUs and each game's port code). Keeps the historical source unchanged
 // while routing its C runtime calls to deterministic, portable port services:
 //
 //  * fopen      -> blupi_fopen: '\\' paths, case-insensitive lookup in the
@@ -7,6 +7,9 @@
 //  * rand/srand -> the Microsoft C runtime LCG the original was linked with
 //                  (VC5 LIBC), so level generation and demos replay identically
 //                  on every C library.
+//
+// Game-independent; each game adds its own build switches in a second forced
+// include (games/sb1/game/port_switches.h).
 #ifndef BLUPI_PORT_FORCED_H
 #define BLUPI_PORT_FORCED_H
 
@@ -26,10 +29,6 @@ extern "C" {
 FILE* blupi_fopen(const char* path, const char* mode);
 int   blupi_rand(void);
 void  blupi_srand(unsigned int seed);
-// The language variant of the game's code (def.h LANGUAGE_DE): the matching
-// builds set it per target; the port answers from the chosen language pack
-// at run time (game/language.cpp, port/docs/LANGUAGES.md).
-int   blupi_language_de(void);
 #ifdef __cplusplus
 }
 #endif
@@ -37,6 +36,5 @@ int   blupi_language_de(void);
 #define fopen  blupi_fopen
 #define rand   blupi_rand
 #define srand  blupi_srand
-#define LANGUAGE_DE (blupi_language_de())
 
 #endif

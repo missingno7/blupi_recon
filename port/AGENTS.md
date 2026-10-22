@@ -6,9 +6,11 @@ overrides the root file's "no SDL, no modernization" rule *only inside `port/`*.
 Boundary with the reconstruction:
 - `src/` is the historical reconstruction. Never edit it for the port: not for a modern
   compiler, not for SDL, not for portability. If a shared TU cannot be used as is, add a
-  port-side replacement under `port/game/`, name its historical origin in the file header, and
+  port-side replacement under `games/sb1/game/`, name its historical origin in the file header, and
   list it in `port/README.md` (ownership table). Keep copied bodies verbatim where possible so
-  they can be diffed against `src/`.
+  they can be diffed against `src/`. The one kind of `src/` change that serves the port is the form of
+  a target switch (root AGENTS.md, Targets), and only when every target's verifier report and the
+  relinked image stay identical.
 - The port must never change what `tools/verify.py`, `tools/build.py` or `tools/relink.py`
   produce. It has its own build (`port/CMakeLists.txt`, output in `build/port*`).
 - Shared TUs (compiled unchanged from `src/`) are listed in `BLUPI_SHARED_TUS` in
@@ -58,9 +60,12 @@ Games and languages (docs/MULTI_GAME.md, docs/LANGUAGES.md):
 - Languages are packs (`languages/*.txt`), generated from the original executables by
   `tools/language_pack.py` and embedded at build time. The US pack must equal `src/res/blupi.rc`
   (`ctest -R language`); the built-in packs keep the original's bytes.
-- The language's code variant reaches the shared TUs through `LANGUAGE_DE`, defined in
-  `common/compat/include/port_forced.h` as a run-time call; the matching source writes it as arithmetic
-  (root AGENTS.md, Targets).
+- The game's build switches (`src/def.h`) get their port values in `games/sb1/game/port_switches.h`, a
+  second forced include after the game-independent `common/compat/include/port_forced.h`. `LANGUAGE_DE`
+  (the language's code variant) and `VERSION_TEXT` (the edition's title label) are run-time calls; the
+  matching source uses them only in expressions (root AGENTS.md, Targets). Express an edition or language
+  difference there, as data from the original, or as a language-pack field; add a port-side edition
+  branch only for behaviour the data cannot carry (today one: Eggbert's quit, `main.cpp`).
 - The edition is recognised from the data, the installed language from the installed executable's size
   and hash; the port uses nothing else of an original executable and never runs one.
 
@@ -79,7 +84,7 @@ Testing:
   `-fms-extensions` stand in for MSVC semantics in the historical context).
 - Use `games/sb1/game/member_access.h` to reach protected members of game classes (GCC 15 rejects the
   older same-name pointer idiom).
-- `ctest --test-dir build/port` with `SDL3.dll` on PATH. Configure with `BLUPI_DATA` set to the
+- `ctest --test-dir build/port` (on Windows the build copies `SDL3.dll` next to the tests). Configure with `BLUPI_DATA` set to the
   game folder to enable the demo-replay determinism and music tests (the music tests use the
   GeneralUser GS submodule in `third_party/generaluser-gs/` by default; initialise it with
   `git submodule update --init port/third_party/generaluser-gs`).

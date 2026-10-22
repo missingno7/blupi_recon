@@ -709,9 +709,9 @@ bool text_input_on_demand()
 #endif
 }
 
-std::string pref_path()
+std::string pref_path(const char* org, const char* app)
 {
-    char* p = SDL_GetPrefPath("Epsitec", "Speedy Blupi SDL3");
+    char* p = SDL_GetPrefPath(org, app);
     std::string result = p ? std::string(p) : std::string();
     SDL_free(p);
     return result;

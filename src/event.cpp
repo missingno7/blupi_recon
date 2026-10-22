@@ -1177,11 +1177,7 @@ BOOL CEvent::DrawButtons()
 #else
 		pos.y = 446;
 #endif
-#if _EGAMES
-		DrawText(m_pPixmap, pos, (char*)"Version 1.1", FONTLITTLE);
-#else
-		DrawText(m_pPixmap, pos, (char*)"Version 1.0", FONTLITTLE);
-#endif
+		DrawText(m_pPixmap, pos, (char*)VERSION_TEXT, FONTLITTLE);
 #if _DEMO
 		pos.x = 414;
 		pos.y = 450;

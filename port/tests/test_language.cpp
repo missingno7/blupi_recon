@@ -6,7 +6,7 @@
 // Usage: test_language <port/languages folder>
 
 #include "platform/language.h"
-#include "platform/resources.h"
+#include "rc_strings.h"
 
 #include <cstdio>
 #include <filesystem>
@@ -64,11 +64,11 @@ int main(int argc, char** argv)
 			int same = 0;
 			for (const auto& s : pack.strings)
 			{
-				const char* rc = blupi::resources::string(s.first);
+				const char* rc = blupi::rc_strings::string(s.first);
 				if (rc != nullptr && to_cp1252(s.second) == rc) same++;
 				else printf("     differs from blupi.rc: %u\n", s.first);
 			}
-			check(same == (int)pack.strings.size() && same == blupi::resources::count(),
+			check(same == (int)pack.strings.size() && same == blupi::rc_strings::count(),
 				  "US pack equals src/res/blupi.rc (" + std::to_string(same) + " strings)");
 		}
 	}

@@ -112,7 +112,8 @@ void set_system_cursor(Cursor cursor);
 void set_title(const char* title);
 void message_box(const char* title, const char* text);
 std::string base_path();   // directory of the executable, with trailing separator
-std::string pref_path();   // per-user writable directory, with trailing separator
+// Per-user writable directory of a program (SDL_GetPrefPath), with trailing separator.
+std::string pref_path(const char* org, const char* app);
 // Extra places for the game data on this platform (Android: the app storage).
 std::vector<std::string> data_dirs();
 // Asks the player for a folder: a message with "Choose folder..." and "Quit",
