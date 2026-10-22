@@ -34,6 +34,8 @@ class Target:
     game_text_end: int = 0x238B0
     accepted_overrides: dict[str, dict[str, Any]] = field(default_factory=dict)
     status: str = "active"
+    oracle_dir: Path | None = None        # own inventory (tools/derive_target.py); None: oracle/
+    address_map: dict[str, Any] | None = None
 
     @property
     def primary(self) -> bool:
@@ -48,13 +50,58 @@ class Target:
         if digest != self.sha256:
             raise RuntimeError(f"{self.exe} is not the registered build of {self.name} (SHA-256 {digest})")
 
+    def translate(self, va: int, kind: str) -> int | None:
+        """A source-target VA at this target's address (address map), or None."""
+        if not self.address_map:
+            return va
+        runs = [(int(a, 16), int(b, 16), shift) for a, b, shift in self.address_map[kind]]
+        for start, end, shift in runs:
+            if start <= va < end:
+                return va + shift
+        # between two segments with the same shift (functions not located on their own)
+        for (_, end, shift), (start, _, shift2) in zip(runs, runs[1:]):
+            if end <= va < start and shift == shift2:
+                return va + shift
+        return None
+
     def manifest(self) -> dict[str, Any]:
-        """The manifest with this target's defines and accepted-function overrides applied."""
+        """The manifest with this target's defines, address map and overrides applied."""
         manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
         if self.primary:
             return manifest
         manifest = copy.deepcopy(manifest)
         manifest["toolchain"]["defines"] = list(manifest["toolchain"].get("defines", [])) + self.defines
+        if self.address_map:
+            base = 0x400000
+
+            def code_rva(value):
+                va = self.translate(base + int(str(value), 0), "code")
+                return None if va is None else va - base
+
+            for item in manifest.get("accepted_functions", []):
+                rva = code_rva(item["rva"])
+                if rva is None:
+                    item["withdrawn"] = {"reason": f"not located in target {self.name}"}
+                else:
+                    item["rva"] = rva
+                    if item.get("into"):
+                        into = code_rva(item["into"]["rva"])
+                        if into is not None:
+                            item["into"]["rva"] = into
+            mappings = []
+            for item in manifest.get("symbol_mappings", []):
+                va = int(str(item["va"]), 0)
+                new = self.translate(va, "code") if va < base + 0x2C000 else self.translate(va, "data")
+                if new is not None:
+                    mappings.append(dict(item, va=new))
+            manifest["symbol_mappings"] = mappings
+            forced = []
+            for item in manifest.get("forced_locations", []):
+                rva = code_rva(item["rva"])
+                if rva is not None:
+                    forced.append(dict(item, rva=rva))
+            manifest["forced_locations"] = forced
+            manifest["equivalent_functions"] = []   # proofs against the primary executable
         for item in manifest.get("accepted_functions", []):
             override = self.accepted_overrides.get(item["symbol"])
             if override:
@@ -84,11 +131,15 @@ def load(name: str | None = None) -> Target:
     if spec.get("status") not in ("primary", "active"):
         raise ValueError(f"target {name} is {spec.get('status')!r}: not verifiable yet (docs/MULTI_GAME.md)")
     end = spec.get("game_text_end", "0x238b0")
+    oracle_dir = ROOT / spec["oracle"] if spec.get("oracle") else None
+    address_map = None
+    if oracle_dir is not None and (oracle_dir / "address_map.json").is_file():
+        address_map = json.loads((oracle_dir / "address_map.json").read_text(encoding="utf-8"))
     return Target(name=name, exe=ROOT / spec["exe"], sha256=spec["sha256"],
                   manifest_path=ROOT / spec["manifest"], defines=list(spec.get("defines", [])),
                   game_text_end=int(end, 0) if isinstance(end, str) else int(end),
                   accepted_overrides=dict(spec.get("accepted_overrides", {})),
-                  status=spec.get("status", "active"))
+                  status=spec.get("status", "active"), oracle_dir=oracle_dir, address_map=address_map)
 
 
 def add_argument(parser: argparse.ArgumentParser) -> None:

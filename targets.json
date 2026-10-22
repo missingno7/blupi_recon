@@ -18,7 +18,9 @@
       "linker": "LINK 5.10",
       "status": "active",
       "manifest": "recon.json",
-      "defines": ["LANGUAGE_DE=1"],
+      "defines": [
+        "LANGUAGE_DE=1"
+      ],
       "game_text_end": "0x238b0"
     },
     "sb1/blupi/fr": {
@@ -35,7 +37,13 @@
       "sha256": "c759447edb40984662c21c6ac33390618404324045e18a520afe3e964a654927",
       "built": "1999-06-24",
       "linker": "LINK 5.00 (no Rich header, separate .idata)",
-      "status": "planned"
+      "status": "active",
+      "manifest": "recon.json",
+      "oracle": "oracle/sb1-eggbert-en",
+      "defines": [
+        "EDITION_EGGBERT=1"
+      ],
+      "game_text_end": "0x23810"
     },
     "sb1/eggbert/de": {
       "exe": "assets/eggbert_variants/Deu/EGAMES.EXE",

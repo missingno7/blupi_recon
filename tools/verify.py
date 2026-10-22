@@ -195,6 +195,9 @@ def run_comparator(objects: list[Path], evidence_objects: list[Path],
                "--summary", "--json-out", str(output)]
     if TARGET is not None and not TARGET.primary:
         command.extend(["--exe", str(TARGET.exe)])
+        if TARGET.oracle_dir is not None:
+            # its own inventory, through the wrapper (cmpfunc.py is pinned by the certificates)
+            command[1:2] = [str(ROOT / "tools" / "cmpfunc_target.py"), "--oracle-dir", str(TARGET.oracle_dir)]
     for obj in evidence_objects:
         command.extend(["--evidence-object", str(obj)])
     for accepted in manifest.get("accepted_functions", []):
