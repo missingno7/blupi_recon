@@ -87,3 +87,16 @@ Testing:
   rules). Record new results in `docs/ORACLE.md`.
 - Windowed runs of the port follow the root runtime rule: bounded (`--frames N`), process closed,
   data read from the original folder (read-only), writes to a `build/` user directory.
+
+Releases (`docs/RELEASING.md`):
+- The version lives only in `VERSION.txt` (not `VERSION`: on a case-insensitive drive that
+  name shadows the C++ `<version>` header through the `port/` include path).
+- Every package is built and fully tested before it is packed: Windows with the `mingw-x64`
+  preset, Linux with `tools/linux_release.sh` in the WSL `Ubuntu-22.04` distro (glibc 2.35;
+  the default distro's newer glibc would raise the minimum), Android with `assembleRelease`.
+  Packages go to `build/release/` and are never committed.
+- The Android release key and its properties file stay in `%USERPROFILE%\.android\`, outside
+  the repository; never print, copy or commit their contents.
+- `res/icon.png` and `res/icon.ico` change only through `tools/make_icon.py`.
+- Packages carry `release/COPYING.txt` (GPLv3, inherited from the reconstructed source) and
+  the third-party notices; game data is never packaged.

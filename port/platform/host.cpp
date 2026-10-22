@@ -1,5 +1,6 @@
 #include "platform/host.h"
 
+#include "platform/icon.h"
 #include "platform/touch.h"
 
 #include <SDL3/SDL.h>
@@ -340,6 +341,14 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
         return false;
     }
     SDL_SetWindowMinimumSize(g_window, logicalWidth / 2, logicalHeight / 2);
+#if !defined(SDL_PLATFORM_WINDOWS) && !defined(SDL_PLATFORM_ANDROID)
+    // (Windows takes it from the executable's resources.)
+    if (SDL_Surface* icon = game_icon())
+    {
+        SDL_SetWindowIcon(g_window, icon);
+        SDL_DestroySurface(icon);
+    }
+#endif
     SDL_SetRenderLogicalPresentation(g_renderer, g_viewWidth, logicalHeight,
                                      options.integerScale ? SDL_LOGICAL_PRESENTATION_INTEGER_SCALE
                                                           : SDL_LOGICAL_PRESENTATION_LETTERBOX);
@@ -604,6 +613,71 @@ std::string base_path()
 {
     const char* p = SDL_GetBasePath();
     return p ? std::string(p) : std::string();
+}
+
+namespace
+{
+struct FolderChoice
+{
+    SDL_AtomicInt done;
+    std::string path;
+};
+
+void SDLCALL folder_chosen(void* userdata, const char* const* list, int)
+{
+    FolderChoice* choice = static_cast<FolderChoice*>(userdata);
+    if (list == nullptr) SDL_Log("folder dialog: %s", SDL_GetError());
+    else if (list[0] != nullptr) choice->path = list[0];
+    SDL_SetAtomicInt(&choice->done, 1);
+}
+
+SDL_EnumerationResult SDLCALL add_subdirectory(void* userdata, const char* dirname, const char* fname)
+{
+    std::string path = std::string(dirname) + fname;
+    SDL_PathInfo info;
+    if (SDL_GetPathInfo(path.c_str(), &info) && info.type == SDL_PATHTYPE_DIRECTORY)
+    {
+        static_cast<std::vector<std::string>*>(userdata)->push_back(path);
+    }
+    return SDL_ENUM_CONTINUE;
+}
+}  // namespace
+
+std::string choose_folder(const char* title, const char* text)
+{
+#ifdef SDL_PLATFORM_ANDROID
+    (void)title;
+    (void)text;
+    return std::string();
+#else
+    if (g_headless) return std::string();
+    const SDL_MessageBoxButtonData buttons[] = {
+        {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Choose folder..."},
+        {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Quit"},
+    };
+    const SDL_MessageBoxData box = {SDL_MESSAGEBOX_INFORMATION, g_window, title, text,
+                                    SDL_arraysize(buttons), buttons, nullptr};
+    int button = 0;
+    if (!SDL_ShowMessageBox(&box, &button) || button != 1) return std::string();
+    // The dialog may answer from another thread: wait for it, keeping the
+    // window responsive.
+    FolderChoice choice;
+    SDL_SetAtomicInt(&choice.done, 0);
+    SDL_ShowOpenFolderDialog(folder_chosen, &choice, g_window, nullptr, false);
+    while (SDL_GetAtomicInt(&choice.done) == 0)
+    {
+        SDL_PumpEvents();
+        SDL_Delay(10);
+    }
+    return choice.path;
+#endif
+}
+
+std::vector<std::string> subdirectories(const std::string& dir)
+{
+    std::vector<std::string> dirs;
+    SDL_EnumerateDirectory(dir.c_str(), add_subdirectory, &dirs);
+    return dirs;
 }
 
 std::vector<std::string> data_dirs()

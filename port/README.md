@@ -6,7 +6,9 @@ from the historical source in `../src` **without modifying it**. The matching re
 anything here. Rules for working in this directory: [AGENTS.md](AGENTS.md). Design and analysis:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-Current milestone: **faithful 640×480 SDL3 desktop baseline** (Windows x64 first).
+Current release: **1.0.0** for Windows x64, Linux x86-64 and Android
+([release notes](docs/RELEASE_NOTES.md); how a release is built and packed:
+[docs/RELEASING.md](docs/RELEASING.md)). Players use their own copy of the game.
 
 ## Source ownership
 
@@ -22,6 +24,9 @@ Current milestone: **faithful 640×480 SDL3 desktop baseline** (Windows x64 firs
 | `third_party/tinysoundfont/` | vendored | TinySoundFont v0.9 (MIT) and TinyMidiLoader v0.7 (zlib) headers, unchanged; provenance in its README |
 | `third_party/generaluser-gs/` | git submodule | GeneralUser GS v2.0.3 SoundFont, the author's repository at a pinned commit (shallow); provenance, licence and SHA-256 in [third_party/README.md](third_party/README.md) |
 | `tests/` | port | Unit tests, music tests, golden traces (`tests/golden/`) |
+| `res/` | port, derived from game data | The port's icon: the game's waving Blupi sprite (`icon.png`) and the Windows `icon.ico`, made by `tools/make_icon.py` |
+| `release/` | port | What the packages carry besides the program: the player's `README.txt`, `COPYING.txt` (GPLv3), `THIRD_PARTY.txt` |
+| `VERSION.txt` | port | The release version, read by CMake and the Android build |
 | `oracle/`, `tools/` | port test tooling | Frame-capture `ddraw.dll` proxy for the historical rebuild, capture and diff scripts ([docs/ORACLE.md](docs/ORACLE.md)); not part of the game build |
 
 Nothing in `src/` is copied into `port/` except the bodies inside the `game/` replacements of the
@@ -42,7 +47,8 @@ cmake --build build/port -j 4
 ctest --test-dir build/port --output-on-failure   # SDL3.dll must be on PATH or next to the tests
 ```
 
-The `msvc-x64` preset (Visual Studio 2022 + SDL3 VC package) is provided but **not yet tested**.
+The executable links the GCC runtimes statically, so it needs only `SDL3.dll` next to it. The
+`msvc-x64` preset (Visual Studio 2022 + SDL3 VC package) is provided but **not yet tested**.
 
 ## Build (Linux)
 
@@ -58,12 +64,12 @@ ctest --test-dir build/port-linux --output-on-failure
 ```
 
 From WSL with the repository on a Windows drive, run `sh port/tools/linux_check.sh` instead.
+It copies the sources and the data to a case-sensitive folder (`~/blupi-linux`) and builds and
+tests there.
 
 `port/tools/export_graphics.py <game folder> <output folder>` exports the game's images as PNG
 (16-bit set when there is one, otherwise 8-bit indexed) with an `index.md`, for reference or
 for drawing replacements.
-It copies the sources and the data to a case-sensitive folder (`~/blupi-linux`) and builds and
-tests there.
 
 ## Build (Android)
 
@@ -79,6 +85,10 @@ build\port\blupi-sdl3.exe --data "D:\Prog\blupi_recon\assets\Speedy Blupi"
 ```
 
 `--data` is the installed game folder (`DATA`, `IMAGE08`, `IMAGE16`, `SOUND`); it is only read.
+Without it the port tries `BLUPI_DATA`, the folder kept in the settings file, the executable's
+folder and the current one. When none holds the game, a desktop build asks for the folder (a
+message, then the system's folder dialog; a folder that contains the game, like the CD, works
+too) and keeps the choice as `dataFolder` in `blupi-sdl3.json`.
 Saves, player info, user missions and recorded demos go to `--user DIR` (default: the SDL pref
 path `%APPDATA%\Epsitec\Speedy Blupi SDL3\`); a file there shadows the game file of the same
 name, so a custom `data\config.def` can be placed in the user folder. `--color 8|16` overrides
@@ -116,7 +126,7 @@ Without any SoundFont the game runs without music and logs it once. Headless run
 SoundFont only when `--soundfont` is given. The music volume is the game's own option, as in
 1998: the 0–20 setting maps through the original `midiOutSetVolume` table.
 
-## Status (2026-10-21)
+## Status (2026-10-22)
 
 Verified ([EVIDENCE], reproduced by the commands above):
 
@@ -211,23 +221,23 @@ Not implemented / known gaps (each fails the way the original did when the servi
   graphic cursor, the editor or save/load ([docs/ORACLE.md](docs/ORACLE.md)).
 - **Linux**: builds and passes the whole test suite with traces identical to Windows (see
   the build section).
-- **Android**: a first playable build, checked on the Android 16 emulator. It covers the
-  import of the player's own game folder, menus by tap, and play with the touch joystick
-  ([android/README.md](android/README.md)). It has not yet been tried on a physical device.
+- **Android**: playable on the Android 16 emulator and on a physical phone (Galaxy S24 Ultra):
+  the import of the player's own game folder, menus by tap, play with the touch joystick, the
+  editor with its scroll pad ([android/README.md](android/README.md)).
+- **Release packages** (1.0.0): each is built and tested before packing; the Linux one on
+  Ubuntu 22.04 so it needs only glibc 2.35 ([docs/RELEASING.md](docs/RELEASING.md)).
 
 ## Next steps
 
-The staged plan toward native rendering, interpolation, widescreen and Android, with an
-equivalence gate per stage, is in [docs/ROADMAP.md](docs/ROADMAP.md). Immediate steps:
+The staged plan, with an equivalence gate per stage, is in [docs/ROADMAP.md](docs/ROADMAP.md).
+After 1.0.0:
 
-1. Run the windowed build by hand through several levels, saving and loading, the designer and
-   option screens (including the music volume buttons); fix what differs. Extend the scripted
-   tour and the oracle to whatever can be reached without gameplay.
-2. Try interpolation and widescreen by hand at high refresh rates. Settle the [OPEN] points in
-   the roadmap: the snap threshold, the cursor over the wide side areas, and HUD anchoring.
-3. Android (stage 6) as a separate platform track: player-supplied data imported into app
-   storage, touch controls in the presentation layer, text input only while the game asks. Stage
-   2 (GPU backend) is deferred until profiling shows a need (see `docs/ROADMAP.md`).
+1. Feedback from players of the release packages; play through more levels, saving and loading
+   and the designer by hand, and extend the oracle to what can be reached without gameplay.
+2. Android: gamepads, the name keyboard and the app in the background; a headless test runner
+   in the APK for the corpus gate on device.
+3. Custom port graphics (touch controls, icon) from a player-supplied folder; stage 2 (GPU
+   backend) only if profiling shows a need.
 
 ## Dependencies and licences
 
@@ -241,4 +251,5 @@ equivalence gate per stage, is in [docs/ROADMAP.md](docs/ROADMAP.md). Immediate 
 - No game or library code was copied from Free Eggbert (GPLv3), Free Direct or Free API (MIT);
   see the architecture notes for what was evaluated and why.
 - The reconstructed game source derives from Planet Blupi (GPLv3+) and the SB2 reconstruction
-  (GPLv3); see `src/PROVENANCE.md`. The port inherits those terms.
+  (GPLv3); see `src/PROVENANCE.md`. The port inherits those terms: its packages are GPLv3
+  (`release/COPYING.txt`) and name this repository as their source.

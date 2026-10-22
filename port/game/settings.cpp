@@ -1,5 +1,6 @@
-// Port settings file (see settings.h): a flat JSON object of booleans and
-// numbers, read leniently (unknown keys are ignored) and written whole.
+// Port settings file (see settings.h): a flat JSON object of booleans,
+// numbers and strings, read leniently (unknown keys are ignored) and written
+// whole.
 
 #include "game/settings.h"
 
@@ -45,9 +46,12 @@ bool ParseFlatObject(const std::string& text, std::map<std::string, std::string>
 		size_t start = i;
 		if (i < text.size() && text[i] == '"')
 		{
-			end = text.find('"', i + 1);
-			if (end == std::string::npos) return false;
-			i = end + 1;
+			for (i++; i < text.size() && text[i] != '"'; i++)
+			{
+				if (text[i] == '\\') i++;
+			}
+			if (i >= text.size()) return false;
+			i++;
 		}
 		else
 		{
@@ -63,6 +67,34 @@ void ReadBool(const std::map<std::string, std::string>& values, const char* key,
 	if (it == values.end()) return;
 	if (it->second == "true") value = true;
 	else if (it->second == "false") value = false;
+}
+
+// A quoted value, with the escapes Quoted writes (\\ and \"). Any other
+// backslash is kept, so a hand-written Windows path reads as written.
+void ReadString(const std::map<std::string, std::string>& values, const char* key, std::string& value)
+{
+	auto it = values.find(key);
+	if (it == values.end()) return;
+	const std::string& raw = it->second;
+	if (raw.size() < 2 || raw.front() != '"' || raw.back() != '"') return;
+	std::string out;
+	for (size_t i = 1; i + 1 < raw.size(); i++)
+	{
+		if (raw[i] == '\\' && i + 2 < raw.size() && (raw[i + 1] == '\\' || raw[i + 1] == '"')) i++;
+		out += raw[i];
+	}
+	value = out;
+}
+
+std::string Quoted(const std::string& text)
+{
+	std::string out = "\"";
+	for (char c : text)
+	{
+		if (c == '\\' || c == '"') out += '\\';
+		out += c;
+	}
+	return out + "\"";
 }
 
 void ReadInt(const std::map<std::string, std::string>& values, const char* key, int& value, int lo, int hi)
@@ -93,6 +125,7 @@ bool PortSettingsLoad(const char* path, PortSettings& settings)
 	ReadBool(values, "fullscreen", settings.fullscreen);
 	ReadBool(values, "integerScale", settings.integerScale);
 	ReadInt(values, "scale", settings.scale, 1, 8);
+	ReadString(values, "dataFolder", settings.dataFolder);
 	return true;
 }
 
@@ -108,10 +141,14 @@ bool PortSettingsSave(const char* path, const PortSettings& settings)
 			"  \"displayRate\": %s,\n"
 			"  \"fullscreen\": %s,\n"
 			"  \"integerScale\": %s,\n"
-			"  \"scale\": %d\n"
-			"}\n",
+			"  \"scale\": %d",
 			b(settings.widescreen), b(settings.interpolate), b(settings.displayRate),
 			b(settings.fullscreen), b(settings.integerScale), settings.scale);
+	if (!settings.dataFolder.empty())
+	{
+		fprintf(file, ",\n  \"dataFolder\": %s", Quoted(settings.dataFolder).c_str());
+	}
+	fprintf(file, "\n}\n");
 	bool ok = ferror(file) == 0;
 	fclose(file);
 	return ok;

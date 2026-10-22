@@ -1,0 +1,100 @@
+Speedy Blupi - SDL3 port, version @VERSION@
+============================================
+
+A native version of Speedy Blupi (Epsitec, 1998) for today's Windows and
+Linux, built from a reconstruction of the original program's source. The game
+plays exactly like the original, at its original 640x480 and timing, and adds
+optional widescreen, smooth motion and display settings.
+
+The original game's files are NOT included: you need your own copy of
+Speedy Blupi (the CD, or the game installed from it).
+
+
+Starting the game
+-----------------
+
+1. Unpack this folder anywhere.
+2. Start blupi-sdl3.exe (Windows) or ./blupi-sdl3 (Linux).
+3. On the first start the game asks for the folder where Speedy Blupi is
+   installed: the one that contains DATA, IMAGE08, IMAGE16 and SOUND. A
+   folder that contains it (for example the CD) works too. The choice is
+   remembered.
+
+You can also copy this port's files into the game's folder, or start it with
+--data "<game folder>". The game's files are only read, never changed.
+
+Windows: 64-bit Windows (tested on Windows 11). The program is not
+code-signed, so SmartScreen may warn about an unknown publisher: choose
+"More info", then "Run anyway".
+
+Linux: x86-64 with glibc 2.35 or newer (for example Ubuntu 22.04, Debian 12
+or Fedora 36 and later), under X11 or Wayland. The SDL3 library comes with
+the game (libSDL3.so.0, next to the program).
+
+
+Playing
+-------
+
+Everything works as in the original: the keyboard (arrow keys, Ctrl to jump,
+Space to fire, Escape to pause), the mouse in the menus and the editor, and
+gamepads (choose the gamepad under "Choose input device" in the game's
+settings; Start pauses). Alt+Enter switches between window and full screen.
+
+The port's own options are on the game's settings screen, under
+"Display options":
+
+- Widescreen: the view follows the window's shape, from 4:3 up to 21:9, and
+  shows more of the world. Off by default.
+- Smooth motion: movement and scrolling are interpolated between the game's
+  20 ticks per second. Off by default.
+- Frame rate: "Monitor" redraws at your display's rate, "Original" 20 times
+  per second like the 1998 game.
+- Display (window or full screen) and Scaling (fit the window, or whole
+  pixels only).
+
+None of them changes how the game plays.
+
+
+Your files
+----------
+
+Saved games, players, your own levels and the settings file
+(blupi-sdl3.json) are kept in:
+
+  Windows: %APPDATA%\Epsitec\Speedy Blupi SDL3\
+  Linux:   ~/.local/share/Epsitec/Speedy Blupi SDL3/
+
+To change the game folder later, edit or delete "dataFolder" in
+blupi-sdl3.json.
+
+
+Music
+-----
+
+The original played its MIDI music through Windows' synthesizer; the port
+plays it with the GeneralUser GS SoundFont (soundfont.sf2). Another SoundFont
+placed in your files folder as soundfont.sf2 replaces it.
+
+
+Command line
+------------
+
+blupi-sdl3 --help lists the options, for example --data DIR, --fullscreen,
+--wide auto|off|16:9, --interpolate and --version.
+
+
+Licence and source
+------------------
+
+This program is free software under the GNU General Public License,
+version 3 (COPYING.txt): its source derives from Planet Blupi (GPLv3 or later)
+and the Speedy Eggbert 2 reconstruction (GPLv3). The complete source, with
+the build scripts, is at
+
+  https://github.com/missingno7/blupi_recon  (tag port-v@VERSION@, folder port/)
+
+Third-party components and their licences: THIRD_PARTY.txt.
+
+Speedy Blupi and its data (graphics, sounds, music, levels) are (c) Epsitec
+SA and are not part of this package or of its licence. This port is a fan
+project and is not affiliated with Epsitec.

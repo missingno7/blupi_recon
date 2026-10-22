@@ -11,6 +11,17 @@ if (!file("${sdl3Dir}/CMakeLists.txt").exists()) {
     throw new GradleException("SDL3 source not found at ${sdl3Dir} (see port/android/README.md)")
 }
 
+// The port's version (port/VERSION.txt, as in the desktop builds): 1.2.3 is
+// versionName "1.2.3" and versionCode 10203.
+def portVersion = file('../../VERSION.txt').text.trim()
+def portVersionCode = portVersion.tokenize('.').collect { it as int }.inject(0) { code, part -> code * 100 + part }
+
+// Release signing: a keystore outside the repository, described by a
+// properties file (storeFile, storePassword, keyAlias, keyPassword). Default
+// ~/.android/speedy-blupi-release.properties; override with
+// -Pblupi.signing=<file>. Without it the release APK is left unsigned.
+def signingFile = file(project.findProperty('blupi.signing') ?: "${System.getProperty('user.home')}/.android/speedy-blupi-release.properties")
+
 android {
     namespace 'io.github.missingno7.speedyblupi'
     compileSdk 35
@@ -20,8 +31,8 @@ android {
         applicationId 'io.github.missingno7.speedyblupi'
         minSdk 24
         targetSdk 35
-        versionCode 1
-        versionName '0.1'
+        versionCode portVersionCode
+        versionName portVersion
         externalNativeBuild {
             cmake {
                 // At most 4 compiles and 2 links at a time (the repository's
@@ -50,6 +61,20 @@ android {
         main {
             java.srcDirs += ["${sdl3Dir}/android-project/app/src/main/java"]
             assets.srcDirs += ["${buildDir}/generated/blupiAssets"]
+            res.srcDirs += ["${buildDir}/generated/blupiRes"]
+        }
+    }
+
+    signingConfigs {
+        if (signingFile.exists()) {
+            release {
+                def p = new Properties()
+                signingFile.withInputStream { p.load(it) }
+                storeFile file(p.getProperty('storeFile'))
+                storePassword p.getProperty('storePassword')
+                keyAlias p.getProperty('keyAlias')
+                keyPassword p.getProperty('keyPassword')
+            }
         }
     }
 
@@ -66,6 +91,12 @@ android {
         }
         release {
             minifyEnabled false
+            externalNativeBuild {
+                cmake {
+                    arguments '-DCMAKE_BUILD_TYPE=RelWithDebInfo'   // as tested; the APK gets stripped libraries
+                }
+            }
+            if (signingFile.exists()) signingConfig signingConfigs.release
         }
     }
 
@@ -83,3 +114,44 @@ tasks.register('copySoundFont', Copy) {
     into "${buildDir}/generated/blupiAssets"
 }
 preBuild.dependsOn copySoundFont
+
+// The port's licence (GPLv3, port/release/COPYING.txt) and the third-party
+// notices (THIRD_PARTY.txt and the licences it names), as APK assets under
+// licenses/.
+tasks.register('copyNotices', Copy) {
+    from('../../release/COPYING.txt')
+    from('../../release/THIRD_PARTY.txt')
+    from("${sdl3Dir}/LICENSE.txt") { rename { 'LICENSE-SDL3.txt' } }
+    from('../../third_party/generaluser-gs/documentation/LICENSE.txt') { rename { 'LICENSE-GeneralUser-GS.txt' } }
+    into "${buildDir}/generated/blupiAssets/licenses"
+}
+preBuild.dependsOn copyNotices
+
+// The launcher icon, from the port's icon (port/res/icon.png: the game's
+// waving Blupi on a 64x64 canvas, tools/make_icon.py) in whole pixels: a
+// plain icon, and the foreground of the adaptive icon
+// (res/mipmap-anydpi-v26/ic_launcher.xml).
+tasks.register('launcherIcon') {
+    def png = file('../../res/icon.png')
+    def out = file("${buildDir}/generated/blupiRes")
+    inputs.file png
+    outputs.dir out
+    doLast {
+        def icon = javax.imageio.ImageIO.read(png)
+        def draw = { int canvas, int scale, String path ->
+            def image = new java.awt.image.BufferedImage(canvas, canvas, java.awt.image.BufferedImage.TYPE_INT_ARGB)
+            int x0 = (canvas - icon.width * scale).intdiv(2), y0 = (canvas - icon.height * scale).intdiv(2)
+            for (int y = 0; y < icon.height * scale; y++) {
+                for (int x = 0; x < icon.width * scale; x++) {
+                    image.setRGB(x0 + x, y0 + y, icon.getRGB(x.intdiv(scale), y.intdiv(scale)))
+                }
+            }
+            def file = new File(out, path)
+            file.parentFile.mkdirs()
+            javax.imageio.ImageIO.write(image, 'png', file)
+        }
+        draw(192, 3, 'mipmap-xxxhdpi/ic_launcher.png')              // 48 dp
+        draw(432, 4, 'mipmap-xxxhdpi/ic_launcher_foreground.png')   // 108 dp, Blupi within the 66 dp safe zone
+    }
+}
+preBuild.dependsOn launcherIcon

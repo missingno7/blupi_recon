@@ -400,9 +400,11 @@ Touch input belongs to the presentation layer, next to the Display options scree
 - [EVIDENCE] On the Android 16 x86_64 emulator: import through the picker, the title screen,
   menus by tap, and the world-1 hub played with the joystick and jump. All 85 desktop tests
   still pass on Windows and Linux.
-- [OPEN] A physical (arm64) device, audio on device, gamepads on Android, the name keyboard,
-  and background/foreground. The corpus gate on device is not run yet; a headless test runner
-  in the APK would be needed.
+- [EVIDENCE] On a physical phone (Galaxy S24 Ultra, arm64, 120 Hz): played by the user with
+  smooth motion at the display rate once the native code was optimised in debug builds too,
+  and the editor's touch scroll pad (`port/android/README.md`).
+- [OPEN] Gamepads on Android, the name keyboard, and background/foreground. The corpus gate on
+  device is not run yet; a headless test runner in the APK would be needed.
 
 ## Stage 7: interpolation (opt-in)
 
@@ -566,6 +568,35 @@ Built on stage 3's identities and stage 4's snapshots.
   settings and closes it. Its state hashes equal `golden_options16`, which is the tour plus the
   one mouse move that reaches the game, without the screen. Screen hashes are not compared,
   since the cursor follows the clicks on the port's screen.
+
+## Release 1.0.0 (2026-10-22)
+
+The first release: Windows x64, Linux x86-64 and Android packages, each built from one commit
+and tested before it is packed. Procedure, signing key and build machines:
+[RELEASING.md](RELEASING.md); notes for players: [RELEASE_NOTES.md](RELEASE_NOTES.md).
+
+- **Version** in `port/VERSION.txt`: `--version`, the start-up log, the Display options screen,
+  the Windows version resource and the Android versionName/versionCode.
+- **First run on the desktop.** Without `--data`, `BLUPI_DATA` or the game beside the program,
+  the port asks for the game's folder (`host::choose_folder`: a message, then the system's
+  folder dialog; a folder holding the game, like the CD, works too) and keeps it as
+  `dataFolder` in `blupi-sdl3.json`. Headless runs never ask.
+- **Icon.** The game's waving Blupi (sprite 47 of `BLUPI000.BLP`) on a 64x64 canvas,
+  `port/res/icon.png` and `icon.ico`, made by `tools/make_icon.py`: the Windows executable,
+  the Linux window (`SDL_LoadPNG_IO`) and the Android launcher (plain and adaptive).
+- **Self-contained desktop packages.** Windows links the GCC runtimes statically (only
+  `SDL3.dll` beside it). Linux (`BLUPI_PORTABLE`) has `libSDL3.so.0` beside the program with
+  RUNPATH `$ORIGIN`, from SDL 3.4.16 built with its backends loaded at run time, and is built
+  on Ubuntu 22.04: it needs glibc 2.35. The first Linux build, on Ubuntu 26.04, needed 2.43.
+- **Licence.** The packages carry the GPLv3 (`release/COPYING.txt`), which the reconstructed
+  source inherits from Planet Blupi and the SB2 reconstruction, name this repository as their
+  source, and include the third-party notices.
+- [EVIDENCE] Windows: 86/86 tests; the zip runs from a clean folder with a PATH of only the
+  system folders. Linux: 86/86 tests on Ubuntu 22.04 (GCC 11.4), and the tarball runs on
+  Ubuntu 26.04 with its own SDL. Android: signed release APK verified. Building with GCC 11
+  found one missing include (`size_t` in `render/surface.h`).
+- [OPEN] The first-run folder dialog has not been tried by hand on each system; on Linux it
+  needs the desktop's file chooser portal or zenity.
 
 ## Order and dependencies
 

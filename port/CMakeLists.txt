@@ -8,7 +8,9 @@ cmake_minimum_required(VERSION 3.20)
 #   game/               port-owned replacements of the historical platform TUs
 #   platform/           SDL3 host (window, input, timing, audio, file system); no Win32 names
 #   render/             software reference renderer (surfaces, blits); no SDL, no Win32 names
-project(blupi_port LANGUAGES C CXX)
+# The port's release version (port/VERSION.txt; also read by port/android).
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt BLUPI_PORT_VERSION LIMIT_COUNT 1)
+project(blupi_port VERSION ${BLUPI_PORT_VERSION} LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -102,7 +104,8 @@ add_library(blupi_platform STATIC
     platform/vfs.cpp
     platform/audio.cpp
     platform/music.cpp
-    platform/resources.cpp)
+    platform/resources.cpp
+    platform/icon.cpp)
 target_include_directories(blupi_platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(blupi_platform PUBLIC SDL3::SDL3 blupi_render)
 
@@ -115,6 +118,16 @@ add_custom_command(OUTPUT ${BLUPI_RC_INC}
     DEPENDS ${BLUPI_RC} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_bytes.cmake
     COMMENT "Embedding src/res/blupi.rc")
 target_sources(blupi_platform PRIVATE ${BLUPI_RC_INC})
+
+# The port's icon (res/icon.png, tools/make_icon.py), for the window on
+# systems without executable resources.
+set(BLUPI_ICON_INC ${CMAKE_CURRENT_BINARY_DIR}/generated/icon_png.inc)
+add_custom_command(OUTPUT ${BLUPI_ICON_INC}
+    COMMAND ${CMAKE_COMMAND} -DIN=${CMAKE_CURRENT_SOURCE_DIR}/res/icon.png -DOUT=${BLUPI_ICON_INC}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_bytes.cmake
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/res/icon.png ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_bytes.cmake
+    COMMENT "Embedding res/icon.png")
+target_sources(blupi_platform PRIVATE ${BLUPI_ICON_INC})
 target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
 
 # Port-owned replacements of the historical platform TUs, plus the shared
@@ -137,6 +150,7 @@ add_library(blupi_game STATIC
     game/settings.cpp
     $<TARGET_OBJECTS:blupi_hist>)
 target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform)
+target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
 target_include_directories(blupi_game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Entry point TU (SDL_main) without the compatibility include path. On Android
@@ -151,9 +165,27 @@ endif()
 target_link_libraries(blupi PRIVATE blupi_game SDL3::SDL3)
 if(WIN32)
     set_target_properties(blupi PROPERTIES WIN32_EXECUTABLE $<NOT:$<CONFIG:Debug>>)
+    # The port's icon (res/icon.ico, which SDL also uses for the window) and
+    # the version information.
+    configure_file(platform/blupi_win.rc.in ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_win.rc @ONLY)
+    target_sources(blupi PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_win.rc)
     if(MINGW)
-        target_link_options(blupi PRIVATE -static-libgcc -static-libstdc++)
+        # The GCC runtimes (libgcc, libstdc++, winpthread) linked in: the
+        # executable needs only SDL3.dll and the system DLLs.
+        target_link_options(blupi PRIVATE -static)
     endif()
+endif()
+
+# Release layout on Linux: libSDL3.so.0 next to the executable (RUNPATH
+# $ORIGIN) and the GCC runtimes linked in, so the folder runs on other
+# distributions (port/tools/linux_release.sh).
+option(BLUPI_PORTABLE "Linux: SDL3 next to the executable, static C++ runtime" OFF)
+if(BLUPI_PORTABLE AND UNIX AND NOT APPLE AND NOT ANDROID)
+    set_target_properties(blupi PROPERTIES BUILD_WITH_INSTALL_RPATH ON INSTALL_RPATH "$ORIGIN")
+    target_link_options(blupi PRIVATE -static-libgcc -static-libstdc++)
+    add_custom_command(TARGET blupi POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:blupi>/$<TARGET_SONAME_FILE_NAME:SDL3::SDL3-shared>)
 endif()
 
 # Windows: ship SDL3.dll next to the executable (elsewhere the system's SDL3).

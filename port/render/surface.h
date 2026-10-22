@@ -14,6 +14,7 @@
 #ifndef BLUPI_RENDER_SURFACE_H
 #define BLUPI_RENDER_SURFACE_H
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 

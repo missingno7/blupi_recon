@@ -1,0 +1,29 @@
+// Windows resources of the port's executable (configured by CMakeLists.txt):
+// the port's icon (res/icon.ico, tools/make_icon.py) and the version.
+#include <winver.h>
+
+1 ICON "@CMAKE_CURRENT_SOURCE_DIR@/res/icon.ico"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,@PROJECT_VERSION_PATCH@,0
+PRODUCTVERSION  @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,@PROJECT_VERSION_PATCH@,0
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_APP
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "Speedy Blupi (SDL3 port)"
+            VALUE "FileVersion", "@PROJECT_VERSION@"
+            VALUE "InternalName", "blupi-sdl3"
+            VALUE "OriginalFilename", "blupi-sdl3.exe"
+            VALUE "ProductName", "Speedy Blupi SDL3 port"
+            VALUE "ProductVersion", "@PROJECT_VERSION@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END

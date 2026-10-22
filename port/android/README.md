@@ -45,7 +45,16 @@ $env:JAVA_HOME = "<a JDK 17>"
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 cd port\android
 .\gradlew.bat assembleDebug    # build\port-android\app\outputs\apk\debug\app-debug.apk
+.\gradlew.bat --no-daemon assembleRelease   # ...\apk\release\app-release.apk, signed
 ```
+
+The release build is signed with the key described by
+`%USERPROFILE%\.android\speedy-blupi-release.properties` (or `-Pblupi.signing=<file>`);
+without it the release APK is unsigned. A release-signed APK does not install over a debug
+build: uninstall that first, which removes its imported game data. The version comes from
+`port/VERSION.txt`, the launcher icon from `port/res/icon.png` (the `launcherIcon` task draws
+a plain and an adaptive icon), and the licence notices go into `assets/licenses/`. Release
+steps: [../docs/RELEASING.md](../docs/RELEASING.md).
 
 Output goes to the repository's ignored `build/port-android/`. Native compiles are capped at 4
 (CMake job pools) and Gradle runs one task at a time (`gradle.properties`), per the repository's
@@ -100,5 +109,11 @@ instead of six.
 [EVIDENCE] On a physical phone (Galaxy S24 Ultra, Android 16, arm64): installed and played by
 the user. That first build showed slow presentation, which the optimised native build fixes
 (Performance, above).
+
+[EVIDENCE] Also on that phone: the editor in widescreen with the scroll pad, which stops at
+the level's borders.
+
+[EVIDENCE] Release 1.0.0 (`assembleRelease`): signed with the release key (`apksigner verify`),
+versionName 1.0.0 / versionCode 10000, stripped arm64-v8a and x86_64 libraries.
 
 Not yet checked: gamepads on Android, the name keyboard, and the app in the background.

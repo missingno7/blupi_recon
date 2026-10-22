@@ -254,6 +254,7 @@ void PortOptionsDraw()
 	Text(370, 210, "Scaling", FONTWHITE);
 	Text(420, 252, "Fit the window", FONTWHITE);
 	Text(420, 292, "Whole pixels", FONTWHITE);
+	Text(70, 440, "SDL3 port " BLUPI_PORT_VERSION, FONTLITTLE);
 
 	for (CButton& b : s_buttons) b.Draw();
 }

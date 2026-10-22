@@ -1,6 +1,7 @@
 # Writes the bytes of IN as a comma-separated C initializer list to OUT.
-# Used to embed src/res/blupi.rc verbatim (cp1252 bytes, no transcoding);
-# platform/resources.cpp parses its STRINGTABLE at start-up.
+# Used to embed src/res/blupi.rc verbatim (cp1252 bytes, no transcoding;
+# platform/resources.cpp parses its STRINGTABLE at start-up) and
+# res/icon.png (platform/icon.cpp).
 file(READ "${IN}" hex HEX)
 string(LENGTH "${hex}" len)
 string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," bytes "${hex}")

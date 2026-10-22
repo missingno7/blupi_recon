@@ -214,3 +214,9 @@ if(BLUPI_TEST_DATA AND BLUPI_TEST_SOUNDFONT)
     add_test(NAME music_volume COMMAND test_music_volume ${BLUPI_TEST_DATA} ${BLUPI_TEST_SOUNDFONT}
              ${CMAKE_CURRENT_BINARY_DIR}/music_volume_user)
 endif()
+
+# Port settings file (game/settings.cpp).
+add_executable(test_settings test_settings.cpp)
+target_link_libraries(test_settings PRIVATE blupi_hist_context blupi_game)
+target_include_directories(test_settings PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+add_test(NAME settings COMMAND test_settings ${CMAKE_CURRENT_BINARY_DIR}/settings_test.json)

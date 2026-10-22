@@ -1234,6 +1234,7 @@ struct Options
 	std::string dataRoot;
 	std::string userRoot;
 	std::string soundFont;
+	bool        version = false;      // --version: print it and exit
 	int         colorDepth = 0;       // 0 = from config.def
 	long        ticks = -1;           // stop after this many WM_UPDATE frames
 	std::string trace;                // per-frame "frame phase statehash screenhash"
@@ -1260,8 +1261,10 @@ struct Options
 void Usage()
 {
 	printf(
-		"blupi-sdl3 [options]\n"
-		"  --data DIR          game root holding DATA/, IMAGE08/, IMAGE16/, SOUND/ (read-only)\n"
+		"blupi-sdl3 " BLUPI_PORT_VERSION " [options]\n"
+		"  --data DIR          game root holding DATA/, IMAGE08/, IMAGE16/, SOUND/ (read-only);\n"
+		"                      default: BLUPI_DATA, the folder chosen on the first run (kept\n"
+		"                      in the settings), the program's folder\n"
 		"  --user DIR          writable directory for saves and user missions\n"
 		"  --fullscreen        start in desktop fullscreen (Alt+Enter toggles)\n"
 		"  --scale N           initial window scale (default 2)\n"
@@ -1281,6 +1284,7 @@ void Usage()
 		"  --soundfont FILE    SoundFont (.sf2) for the MIDI music; default: BLUPI_SOUNDFONT,\n"
 		"                      then soundfont.sf2 in the user directory or next to the program\n"
 		"  --verbose           log the game's debug output\n"
+		"  --version           print the version and exit\n"
 		"test options:\n"
 		"  --headless          no window, no audio device, frames run back to back\n"
 		"  --frames N          exit after N game frames (WM_UPDATE)\n"
@@ -1417,6 +1421,7 @@ bool ParseOptions(int argc, char** argv, Options& o)
 			if (!LoadInputScript(next(), o.inputs)) return false;
 		}
 		else if (a == "--help" || a == "-h") return false;
+		else if (a == "--version") o.version = true;
 		else if (a == "-nocd") {}  // historical switch, meaningless here
 		else
 		{
@@ -1584,6 +1589,11 @@ int BlupiMain(int argc, char** argv)
 		Usage();
 		return 2;
 	}
+	if (o.version)
+	{
+		printf("blupi-sdl3 %s\n", BLUPI_PORT_VERSION);
+		return 0;
+	}
 	// Port settings (game/settings.h): the file, then this run's options.
 	// Headless runs use defaults and options only, and save nothing.
 	g_bHeadless = o.host.headless;
@@ -1602,6 +1612,7 @@ int BlupiMain(int argc, char** argv)
 		if (!o.setFullscreen) s.fullscreen = fromFile.fullscreen;
 		if (!o.setScale) s.scale = fromFile.scale;
 		if (!o.setIntegerScale) s.integerScale = fromFile.integerScale;
+		s.dataFolder = fromFile.dataFolder;
 		g_settings = s;
 	}
 	o.host.fullscreen = g_settings.fullscreen;
@@ -1613,6 +1624,7 @@ int BlupiMain(int argc, char** argv)
 	g_presentDisplayRate = g_settings.displayRate;
 	if (!blupi::host::init(TITLE, LXIMAGE, LYIMAGE, o.host)) return 1;
 	blupi::host::set_verbose(o.verbose);
+	blupi::host::log_info("Speedy Blupi SDL3 port " BLUPI_PORT_VERSION);
 	{
 		char text[80];
 		snprintf(text, sizeof(text), "view %dx%d", blupi::host::view_width(), LYIMAGE);
@@ -1623,6 +1635,7 @@ int BlupiMain(int argc, char** argv)
 	std::vector<std::string> candidates;
 	if (!o.dataRoot.empty()) candidates.push_back(o.dataRoot);
 	if (const char* env = getenv("BLUPI_DATA")) candidates.push_back(env);
+	if (!g_settings.dataFolder.empty()) candidates.push_back(g_settings.dataFolder);
 	candidates.push_back(blupi::host::base_path());
 	for (const std::string& dir : blupi::host::data_dirs()) candidates.push_back(dir);
 	candidates.push_back(".");
@@ -1631,6 +1644,37 @@ int BlupiMain(int argc, char** argv)
 	{
 		if (LooksLikeGameRoot(c)) { root = c; break; }
 		if (!o.dataRoot.empty()) break;  // an explicit --data must be right
+	}
+	// Desktop first run: the player shows where their copy of the game is (its
+	// installed folder, or a folder holding it, like the CD's), and the choice
+	// is kept in the settings file.
+	const char* ask = "Speedy Blupi needs the files of the original game.\n\n"
+					  "Choose the folder where Speedy Blupi is installed: the one that contains "
+					  "DATA, IMAGE08, IMAGE16 and SOUND.";
+	while (root.empty() && o.dataRoot.empty() && !g_bHeadless)
+	{
+		const std::string chosen = blupi::host::choose_folder(TITLE, ask);
+		if (chosen.empty()) break;
+		std::vector<std::string> tries = {chosen};
+		for (const std::string& sub : blupi::host::subdirectories(chosen)) tries.push_back(sub);
+		for (const std::string& c : tries)
+		{
+			if (LooksLikeGameRoot(c)) { root = c; break; }
+		}
+		if (root.empty())
+		{
+			ask = "That folder does not contain the game's files (DATA, IMAGE08, IMAGE16 and SOUND).\n\n"
+				  "Choose the folder where Speedy Blupi is installed.";
+			continue;
+		}
+		PortSettings file;
+		PortSettingsLoad(g_settingsPath.c_str(), file);
+		file.dataFolder = root;
+		g_settings.dataFolder = root;
+		if (!PortSettingsSave(g_settingsPath.c_str(), file))
+		{
+			blupi::host::log_info(("cannot write " + g_settingsPath).c_str());
+		}
 	}
 	if (root.empty())
 	{

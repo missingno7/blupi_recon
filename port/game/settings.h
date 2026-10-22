@@ -2,7 +2,7 @@
 // (port/docs/ROADMAP.md stage 9). Stored as blupi-sdl3.json in the user
 // directory, changed on the "Display options" screen (game/options_screen.cpp)
 // or overridden for one run by command-line options. None of them changes the
-// simulation.
+// simulation. The file also remembers where the game's files are.
 #ifndef BLUPI_GAME_SETTINGS_H
 #define BLUPI_GAME_SETTINGS_H
 
@@ -16,6 +16,7 @@ struct PortSettings
 	bool fullscreen = false;
 	bool integerScale = false;  // scale by whole factors only
 	int  scale = 2;             // initial window size, times 640x480
+	std::string dataFolder;     // the game's files, as chosen on the first run (desktop)
 };
 
 // path is a host path (the user directory). Missing file or keys keep the
