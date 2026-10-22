@@ -16,44 +16,57 @@ Boundary with the reconstruction:
   document why in `port/docs/ARCHITECTURE.md`.
 
 Layering inside `port/`:
-- `compat/include` holds declarations only (types, SDK constant values, prototypes) for names the
-  shared TUs or the historical-derived bodies in `game/` use (e.g. `MM_MCINOTIFY` for the copied
+- `common/compat/include` holds declarations only (types, SDK constant values, prototypes) for names the
+  shared TUs or the historical-derived bodies in `games/sb1/game/` use (e.g. `MM_MCINOTIFY` for the copied
   window procedure). Do not add a Win32/DirectX name that neither needs. Do not add
   behaviour that silently pretends to work: either implement the semantics the game relies on,
   or fail the way the original did without the service, log it once, and document it.
 - Presentation never changes game state. Every state change `Build` made while drawing lives in
-  `game/end_of_tick.cpp`, in `Build`'s order. Interpolation and the wide view draw a tick's
+  `games/sb1/game/end_of_tick.cpp`, in `Build`'s order. Interpolation and the wide view draw a tick's
   scene into the back buffer or the wide target and never write the game's screen (traces must
   stay golden in every mode: `ctest -R golden`).
 - `DrawView` at alpha 1 and 640 wide must issue exactly `FlattenScene`'s commands
   (`--check-view`). Items beyond `Build`'s own set are flagged `extended` and carry `Build`'s
   visibility rule; never draw them in the faithful frame.
-- Test-only state injection goes through `--probe` (`game/probe.cpp`), never through gameplay
+- Test-only state injection goes through `--probe` (`games/sb1/game/probe.cpp`), never through gameplay
   code paths.
-- Port UI (the Display options screen, `game/options_screen.cpp`) is a presentation layer:
+- Port UI (the Display options screen, `games/sb1/game/options_screen.cpp`) is a presentation layer:
   drawn over the tick's frame when presenting, never into the game's frame or screen. It uses
   its own posted messages, handled before the window procedure. Port settings live in
-  `blupi-sdl3.json` (`game/settings.h`) and must never change the simulation.
+  `blupi-sdl3.json` (`games/sb1/game/settings.h`) and must never change the simulation.
 - Input the original cannot map (the wide editor's world, which no longer lies under its
   toolbar) may be handled only by a documented port derivative of the historical handler
-  (`game/editor_wide.cpp`, routed by `PortEditorMouse`). Everywhere else, input in UI
+  (`games/sb1/game/editor_wide.cpp`, routed by `PortEditorMouse`). Everywhere else, input in UI
   coordinates goes to the game unchanged.
-- `game/scene.cpp` is a derivative of `CDecor::Build` and its helpers and must stay
+- `games/sb1/game/scene.cpp` is a derivative of `CDecor::Build` and its helpers and must stay
   equivalent (`ctest -R scene`). It reads state only through const accessors; never make it
   write game state.
 - `CPixmap` reaches pixels only through `render::Device` commands; validity and colour keys
   are decided in `CPixmap`'s registry, never in a backend (`ctest -R commands` is the gate).
-- `render/` and `platform/` must not include compat headers or use Win32 names (key codes in
-  `platform/host.cpp` are plain integers documented as VK numbering). Game logic must not
+- `common/render/` and `common/platform/` must not include compat headers or use Win32 names (key codes in
+  `common/platform/host.cpp` are plain integers documented as VK numbering). Game logic must not
   include SDL headers.
 - Faithful mode is the default and the reference: 640x480, original timing (one logical frame
   per `Timer` interval, one `Build` per frame), original colour depths. Enhancements
   (widescreen, interpolation, high refresh rates, new renderers) must be optional and must not
   change simulation results; see the coupling table in `docs/ARCHITECTURE.md`.
 
+Games and languages (docs/MULTI_GAME.md, docs/LANGUAGES.md):
+- `common/` holds what does not depend on a game: `compat/`, `platform/`, `render/`. `games/sb1/game/` holds
+  Speedy Blupi 1's (and Speedy Eggbert 1's) port code. Both are include roots, so includes stay
+  `"platform/host.h"`, `"game/port_game.h"`. Move code into `common/` only when a second game builds with it.
+- Languages are packs (`languages/*.txt`), generated from the original executables by
+  `tools/language_pack.py` and embedded at build time. The US pack must equal `src/res/blupi.rc`
+  (`ctest -R language`); the built-in packs keep the original's bytes.
+- The language's code variant reaches the shared TUs through `LANGUAGE_DE`, defined in
+  `common/compat/include/port_forced.h` as a run-time call; the matching source writes it as arithmetic
+  (root AGENTS.md, Targets).
+- The edition is recognised from the data, the installed language from the installed executable's size
+  and hash; the port uses nothing else of an original executable and never runs one.
+
 Saves and data:
 - Keep on-disk struct sizes (static asserts in `tests/test_layout.cpp`). Never write into the
-  game data root; all writes go through `platform/vfs` to the user root.
+  game data root; all writes go through `common/platform/vfs` to the user root.
 
 Testing:
 - Build: `cmake --preset mingw-x64 -S port`, `cmake --build build/port -j 4` (keep `-j` ≤ 4).
@@ -64,7 +77,7 @@ Testing:
   APK: players import their own copy. Emulator runs are bounded; stop the emulator afterwards.
 - Code shared with Android must build with Clang as well as GCC (`-fsigned-char` and
   `-fms-extensions` stand in for MSVC semantics in the historical context).
-- Use `game/member_access.h` to reach protected members of game classes (GCC 15 rejects the
+- Use `games/sb1/game/member_access.h` to reach protected members of game classes (GCC 15 rejects the
   older same-name pointer idiom).
 - `ctest --test-dir build/port` with `SDL3.dll` on PATH. Configure with `BLUPI_DATA` set to the
   game folder to enable the demo-replay determinism and music tests (the music tests use the

@@ -27,7 +27,7 @@ the matching reconstruction's history.
 `port/res/icon.png` (the game's waving Blupi, sprite 47 of `BLUPI000.BLP`, on a 64×64 canvas)
 and `port/res/icon.ico` (Windows, 16–256 px) are made by
 `.pyenv\python.exe port\tools\make_icon.py "<game folder>"` and committed. The Linux window
-loads the PNG (`platform/icon.cpp`), the Windows executable carries the ICO, and the Android
+loads the PNG (`common/platform/icon.cpp`), the Windows executable carries the ICO, and the Android
 build draws its launcher icons from the PNG (`launcherIcon` task).
 
 ## Android signing key

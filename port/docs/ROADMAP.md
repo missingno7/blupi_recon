@@ -29,6 +29,11 @@ Direction agreed with the user (2026-10-21):
 Status markers: [EVIDENCE] verified in code or by a run, [OPEN] to be settled by the stage that
 needs it. Source paths are historical (`src/`).
 
+
+> Paths in this roadmap are those of the time each stage was written. Since step 2 of
+> `docs/MULTI_GAME.md` (2026-10-22), `compat/`, `platform/` and `render/` are under `port/common/`,
+> and `game/` is `port/games/sb1/game/`.
+
 ## Shortcuts we will not take
 
 - Drawing the existing 640×480 scene more often than once per 50 ms tick. `Build` mutates

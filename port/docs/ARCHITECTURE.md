@@ -30,9 +30,9 @@ joystick calls, and the DirectX *type names* in the class declarations (`CPixmap
 
 So the port keeps the historical class interfaces and replaces their implementations:
 
-- `compat/include` declares names only (types, SDK constant values, function prototypes). The
+- `common/compat/include` declares names only (types, SDK constant values, function prototypes). The
   DirectX interface types are opaque; the port's `CPixmap`/`CSound` define their bodies.
-- `compat/src/win32.cpp` implements the ~30 functions, each with the semantics the game relies
+- `common/compat/src/win32.cpp` implements the ~30 functions, each with the semantics the game relies
   on. This is the only Win32-shaped code. It shrinks as callers move to port services.
 - `port_forced.h` (forced include) maps `fopen` to the port file system and `rand`/`srand` to the
   MS LIBC generator. It includes `<cstdio>`/`<cstdlib>` first, because libstdc++'s `<cstdio>`
@@ -97,7 +97,7 @@ compiler produced in practice.
 
 ### The device seam (implemented, roadmap stage 1)
 
-`CPixmap` (`game/pixmap.cpp`) does not touch pixels. A surface handle (`IDirectDrawSurface`) is a
+`CPixmap` (`games/sb1/game/pixmap.cpp`) does not touch pixels. A surface handle (`IDirectDrawSurface`) is a
 registry entry holding:
 - the surface id: image channels 0–99, back buffer 100, screen 101, saved mouse background 102;
 - the size and format;
@@ -152,7 +152,7 @@ port always uses the exclusive-mode formats, which is what full-screen players s
 
 ## 4. Timing and simulation coupling
 
-[EVIDENCE] Historical loop (kept exactly in `game/main.cpp`):
+[EVIDENCE] Historical loop (kept exactly in `games/sb1/game/main.cpp`):
 
 - `timeSetEvent(Timer)` (50 ms) fires `TimerStep`. `TimerStep` posts a single `WM_UPDATE`
   while none is pending (`g_timer` gate), so missed ticks are dropped rather than queued.
@@ -194,8 +194,8 @@ button/jauge flags) and the camera dependence of the pickup "voyages", is in
 
 **Implemented (2026-10-21; [ROADMAP.md](ROADMAP.md) stages 4, 5 and 7).** The outline holds,
 with one change: `decblock.cpp` stays shared and unmodified.
-- `game/scene.cpp` builds the scene from const state.
-- `game/end_of_tick.cpp` makes `Build`'s state changes at `Build`'s point and in its
+- `games/sb1/game/scene.cpp` builds the scene from const state.
+- `games/sb1/game/end_of_tick.cpp` makes `Build`'s state changes at `Build`'s point and in its
   order.
 - `DrawButtons` still runs once per tick, its drawing captured.
 
@@ -271,7 +271,7 @@ needs a hook outside `src/` (for example in the cnc-ddraw `Blt` path, or a debug
 ## 7. Portability notes
 
 - Paths: historical code uses relative `data\…`, `image08\…`, `\User\…` with backslashes and
-  lower case; the data is upper case. `platform/vfs.cpp`:
+  lower case; the data is upper case. `common/platform/vfs.cpp`:
   - splits on both separators;
   - resolves case-insensitively;
   - drops drive letters;
@@ -284,15 +284,15 @@ needs a hook outside `src/` (for example in the cnc-ddraw `Blt` path, or a debug
   big-endian target would need explicit serialization; none is planned.
 - Text: strings and fonts are cp1252 byte codes; the string table is the historical `.rc`
   embedded verbatim. Text input converts UTF-8 to cp1252.
-- Input: SDL keycodes map to VK codes in `platform/host.cpp`. Messages are synthesized in Win32
+- Input: SDL keycodes map to VK codes in `common/platform/host.cpp`. Messages are synthesized in Win32
   order (`WM_KEYDOWN`, then `WM_CHAR` for Backspace/Enter/Escape/Tab; `WM_NCMOUSEMOVE` over the
   letterbox).
 - Stdio in the shared TUs: `fopen/fread/fwrite/fclose` on `BlupiFile`
-  (`compat/include/port_hist_stdio.h`, forced only for those TUs). It carries the VC5
+  (`common/compat/include/port_hist_stdio.h`, forced only for those TUs). It carries the VC5
   `_flag`/`_IOERR` bits that `CEvent::CopyMission` reads, so the historical code compiles
   against any C library. The port's own TUs keep the real `FILE`.
 - Reads outside static tables made by the original are reproduced with BLUPI.EXE's neighbouring
-  values (`game/pixmap.cpp`, `docs/ORACLE.md`), so they do not depend on a compiler's data
+  values (`games/sb1/game/pixmap.cpp`, `docs/ORACLE.md`), so they do not depend on a compiler's data
   layout.
 - Android (later):
   - storage: SDL pref path for the user root; the game data, supplied by the player, imported
@@ -321,7 +321,7 @@ needs a hook outside `src/` (for example in the cnc-ddraw `Blt` path, or a debug
   - options volume buttons: suspend, then `AdaptVolumeMusic` on return;
   - the first demo start (`DemoPlayStart`).
 
-Port (`game/sound.cpp` + `platform/music.cpp`):
+Port (`games/sb1/game/sound.cpp` + `common/platform/music.cpp`):
 
 - The historical method bodies are kept. MCI open+play becomes `music::play`, which returns a
   non-zero "device id" per song. MCI close becomes `music::stop`.

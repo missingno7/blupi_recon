@@ -7,12 +7,12 @@ add_test(NAME render COMMAND test_render)
 
 # Historical-source context: layout of the structures written to disk and the
 # C runtime generator the original linked.
-add_executable(test_layout test_layout.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../compat/src/win32.cpp)
+add_executable(test_layout test_layout.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../common/compat/src/win32.cpp)
 target_link_libraries(test_layout PRIVATE blupi_hist_context blupi_platform)
 add_test(NAME layout COMMAND test_layout)
 
 # Joystick (winmm) calls of the game answered from an SDL virtual gamepad.
-add_executable(test_gamepad test_gamepad.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../compat/src/win32.cpp)
+add_executable(test_gamepad test_gamepad.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../common/compat/src/win32.cpp)
 target_link_libraries(test_gamepad PRIVATE blupi_hist_context blupi_platform)
 add_test(NAME gamepad COMMAND test_gamepad)
 
@@ -212,7 +212,7 @@ endif()
 # Options-screen music volume through the historical CSound calls.
 add_executable(test_music_volume test_music_volume.cpp)
 target_link_libraries(test_music_volume PRIVATE blupi_hist_context blupi_game)
-target_include_directories(test_music_volume PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_include_directories(test_music_volume PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../games/sb1)
 if(BLUPI_TEST_DATA AND BLUPI_TEST_SOUNDFONT)
     add_test(NAME music_volume COMMAND test_music_volume ${BLUPI_TEST_DATA} ${BLUPI_TEST_SOUNDFONT}
              ${CMAKE_CURRENT_BINARY_DIR}/music_volume_user)
@@ -221,7 +221,7 @@ endif()
 # Port settings file (game/settings.cpp).
 add_executable(test_settings test_settings.cpp)
 target_link_libraries(test_settings PRIVATE blupi_hist_context blupi_game)
-target_include_directories(test_settings PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_include_directories(test_settings PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../games/sb1)
 add_test(NAME settings COMMAND test_settings ${CMAKE_CURRENT_BINARY_DIR}/settings_test.json)
 
 # Language packs (platform/language.cpp, the built-in packs in languages/).

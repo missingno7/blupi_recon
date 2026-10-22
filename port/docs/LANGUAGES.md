@@ -126,11 +126,11 @@ fall back to base letters.
 
 ## Implementation
 
-- `platform/language.cpp`: the format, UTF-8 and Windows-1252. No game types, so every game
+- `common/platform/language.cpp`: the format, UTF-8 and Windows-1252. No game types, so every game
   can use it.
-- `game/language.cpp`: recognising the edition and the installed build, the packs, applying a
+- `games/sb1/game/language.cpp`: recognising the edition and the installed build, the packs, applying a
   pack. Its strings answer `LoadString`, and its `[chars]` entries go into `table_char`, the
   font table, which is restored before each pack. A letter outside Windows-1252 gets a code
   the font leaves blank.
-- `game/options_screen.cpp`: the Language row. A change enters the current phase again, since
+- `games/sb1/game/options_screen.cpp`: the Language row. A change enters the current phase again, since
   the original draws a screen's texts when the phase starts.

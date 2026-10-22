@@ -3,11 +3,12 @@ cmake_minimum_required(VERSION 3.20)
 # Speedy Blupi 1 native SDL3 port. See port/README.md.
 #
 # Ownership:
-#   ../src/*            historical reconstruction (read-only from here; never patched for the port)
-#   compat/             declaration-only Win32/DirectX names + their small SDL-free implementations
-#   game/               port-owned replacements of the historical platform TUs
-#   platform/           SDL3 host (window, input, timing, audio, file system); no Win32 names
-#   render/             software reference renderer (surfaces, blits); no SDL, no Win32 names
+#   ../src/*                historical reconstruction (read-only from here; never patched for the port)
+#   common/compat/          declaration-only Win32/DirectX names + their small SDL-free implementations
+#   common/platform/        SDL3 host (window, input, timing, audio, file system, languages); no Win32 names
+#   common/render/          software reference renderer (surfaces, blits); no SDL, no Win32 names
+#   games/sb1/game/         Speedy Blupi 1's port-owned replacements of the historical platform TUs
+#
 # The port's release version (port/VERSION.txt; also read by port/android).
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt BLUPI_PORT_VERSION LIMIT_COUNT 1)
 project(blupi_port VERSION ${BLUPI_PORT_VERSION} LANGUAGES C CXX)
@@ -32,6 +33,11 @@ else()
 endif()
 
 set(BLUPI_HIST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/../src)
+# The port's game-independent layers (compat/, platform/, render/) and the
+# game's own code (game/); each is an include root, so includes read
+# "platform/host.h", "game/port_game.h" (docs/MULTI_GAME.md).
+set(BLUPI_COMMON ${CMAKE_CURRENT_SOURCE_DIR}/common)
+set(BLUPI_GAME_DIR ${CMAKE_CURRENT_SOURCE_DIR}/games/sb1)
 
 # Historical TUs compiled unchanged. The other seven historical TUs (blupi, ddutil,
 # misc, movie, network, pixmap, sound) talk to Windows/DirectX/MCI and are replaced
@@ -48,19 +54,19 @@ list(TRANSFORM BLUPI_SHARED_TUS PREPEND ${BLUPI_HIST_SRC}/)
 set(BLUPI_CASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/compat_case)
 file(MAKE_DIRECTORY ${BLUPI_CASE_DIR})
 if(NOT CMAKE_HOST_WIN32)
-    file(WRITE ${BLUPI_CASE_DIR}/Windows.h "#include \"${CMAKE_CURRENT_SOURCE_DIR}/compat/include/windows.h\"\n")
+    file(WRITE ${BLUPI_CASE_DIR}/Windows.h "#include \"${BLUPI_COMMON}/compat/include/windows.h\"\n")
     file(WRITE ${BLUPI_CASE_DIR}/DEF.H "#include \"${BLUPI_HIST_SRC}/def.h\"\n")
 endif()
 
 # Interface carrying the historical-source compile context.
 add_library(blupi_hist_context INTERFACE)
 target_include_directories(blupi_hist_context BEFORE INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/compat/include
+    ${BLUPI_COMMON}/compat/include
     ${BLUPI_CASE_DIR}
     ${BLUPI_HIST_SRC})
 if(MSVC)
     target_compile_options(blupi_hist_context INTERFACE
-        /FI${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_forced.h
+        /FI${BLUPI_COMMON}/compat/include/port_forced.h
         /permissive /Zc:forScope- /W0)
 else()
     # -fsigned-char: char is signed in MSVC (and on x86) but unsigned on ARM;
@@ -69,7 +75,7 @@ else()
     # leniencies (e.g. CEvent::LoadState's (int) cast of a pointer variable
     # used as int storage).
     target_compile_options(blupi_hist_context INTERFACE
-        -include ${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_forced.h
+        -include ${BLUPI_COMMON}/compat/include/port_forced.h
         -fno-strict-aliasing -fwrapv -fsigned-char -w
         $<$<CXX_COMPILER_ID:GNU>:-fpermissive>
         $<$<CXX_COMPILER_ID:Clang>:-fms-extensions>)
@@ -82,32 +88,33 @@ target_link_libraries(blupi_hist PRIVATE blupi_hist_context)
 # Their file I/O goes through BlupiFile (compat/include/port_hist_stdio.h).
 if(MSVC)
     target_compile_options(blupi_hist PRIVATE /source-charset:.1252 /execution-charset:.1252
-        /FI${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_hist_stdio.h)
+        /FI${BLUPI_COMMON}/compat/include/port_hist_stdio.h)
 else()
     target_compile_options(blupi_hist PRIVATE
         $<$<CXX_COMPILER_ID:GNU>:-finput-charset=CP1252>
         $<$<CXX_COMPILER_ID:GNU>:-fexec-charset=CP1252>
-        "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/compat/include/port_hist_stdio.h")
+        "SHELL:-include ${BLUPI_COMMON}/compat/include/port_hist_stdio.h")
 endif()
 
 # Software reference renderer: plain C++, no SDL and no Win32 names.
 add_library(blupi_render STATIC
-    render/bmp.cpp
-    render/device.cpp
-    render/surface.cpp)
-target_include_directories(blupi_render PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+    common/render/bmp.cpp
+    common/render/device.cpp
+    common/render/surface.cpp)
+target_include_directories(blupi_render PUBLIC ${BLUPI_COMMON})
 
 # SDL3 host. Must not see compat/include.
 add_library(blupi_platform STATIC
-    platform/host.cpp
-    platform/touch.cpp
-    platform/vfs.cpp
-    platform/audio.cpp
-    platform/music.cpp
-    platform/resources.cpp
-    platform/language.cpp
-    platform/icon.cpp)
-target_include_directories(blupi_platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+    common/platform/host.cpp
+    common/platform/touch.cpp
+    common/platform/vfs.cpp
+    common/platform/audio.cpp
+    common/platform/music.cpp
+    common/platform/resources.cpp
+    common/platform/language.cpp
+    common/platform/icon.cpp)
+target_include_directories(blupi_platform PUBLIC ${BLUPI_COMMON})
+target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})   # third_party/
 target_link_libraries(blupi_platform PUBLIC SDL3::SDL3 blupi_render)
 
 # The historical string table, embedded verbatim and parsed at start-up.
@@ -134,26 +141,26 @@ target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/ge
 # Port-owned replacements of the historical platform TUs, plus the shared
 # historical objects: everything that sees the Win32 compatibility names.
 add_library(blupi_game STATIC
-    compat/src/win32.cpp
-    compat/src/hist_stdio.cpp
-    game/main.cpp
-    game/misc.cpp
-    game/pixmap.cpp
-    game/sound.cpp
-    game/movie.cpp
-    game/network.cpp
-    game/state_hash.cpp
-    game/scene.cpp
-    game/probe.cpp
-    game/end_of_tick.cpp
-    game/editor_wide.cpp
-    game/options_screen.cpp
-    game/settings.cpp
-    game/language.cpp
+    common/compat/src/win32.cpp
+    common/compat/src/hist_stdio.cpp
+    games/sb1/game/main.cpp
+    games/sb1/game/misc.cpp
+    games/sb1/game/pixmap.cpp
+    games/sb1/game/sound.cpp
+    games/sb1/game/movie.cpp
+    games/sb1/game/network.cpp
+    games/sb1/game/state_hash.cpp
+    games/sb1/game/scene.cpp
+    games/sb1/game/probe.cpp
+    games/sb1/game/end_of_tick.cpp
+    games/sb1/game/editor_wide.cpp
+    games/sb1/game/options_screen.cpp
+    games/sb1/game/settings.cpp
+    games/sb1/game/language.cpp
     $<TARGET_OBJECTS:blupi_hist>)
 target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform)
 target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
-target_include_directories(blupi_game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(blupi_game PRIVATE ${BLUPI_GAME_DIR})
 
 # The built-in language packs (languages/*.txt, port/docs/LANGUAGES.md),
 # embedded for game/language.cpp.
@@ -173,10 +180,10 @@ target_include_directories(blupi_game PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/genera
 # Entry point TU (SDL_main) without the compatibility include path. On Android
 # the game is libmain.so, which SDL's Java activity loads.
 if(ANDROID)
-    add_library(blupi SHARED platform/entry.cpp)
+    add_library(blupi SHARED common/platform/entry.cpp)
     set_target_properties(blupi PROPERTIES OUTPUT_NAME main)
 else()
-    add_executable(blupi platform/entry.cpp)
+    add_executable(blupi common/platform/entry.cpp)
     set_target_properties(blupi PROPERTIES OUTPUT_NAME blupi-sdl3)
 endif()
 target_link_libraries(blupi PRIVATE blupi_game SDL3::SDL3)
@@ -184,7 +191,7 @@ if(WIN32)
     set_target_properties(blupi PROPERTIES WIN32_EXECUTABLE $<NOT:$<CONFIG:Debug>>)
     # The port's icon (res/icon.ico, which SDL also uses for the window) and
     # the version information.
-    configure_file(platform/blupi_win.rc.in ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_win.rc @ONLY)
+    configure_file(common/platform/blupi_win.rc.in ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_win.rc @ONLY)
     target_sources(blupi PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_win.rc)
     if(MINGW)
         # The GCC runtimes (libgcc, libstdc++, winpthread) linked in: the

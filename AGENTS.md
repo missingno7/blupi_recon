@@ -5,10 +5,26 @@ no modernization, no renderer changes in matching source.
 The native SDL3 port lives only in `port/` and has its own rules in `port/AGENTS.md`. It compiles `src/` unchanged; never edit `src/` for the port, and never let
 port work change the matching build or its acceptance status.
 
+Targets (`targets.json`, `tools/targets.py`, docs/MULTI_GAME.md): every build of the game is a matching
+target `game/edition/language`. `sb1/blupi/us` (BLUPI.EXE) is the primary one; every acceptance number
+refers to it, and tools default to it. Other targets are verified with `tools/verify.py --target` on the
+same `src/`:
+- A target's differences are build-wide defines (`LANGUAGE_DE`, `EDITION_EGGBERT`), set by its entry and
+  defaulted to 0 in `def.h`; never per-TU defines. A switch surrounds only code or data that differs in that
+  target's executable and says so in a comment.
+- Write a switch as arithmetic on the constant (`140 - 20 * LANGUAGE_DE`), so the port can bind it at run
+  time. [EVIDENCE] An `if (LANGUAGE_DE)` block changed TreatEventBase's code in the US build; the arithmetic
+  form did not. Keep a form only when the primary report stays byte-identical; otherwise use `#if`.
+- Every change to `src/` for a secondary target keeps the primary report byte-identical, and the relinked
+  image hash unchanged.
+- `tools/cmpfunc.py` and `tools/equivalence.py` are pinned by the certificates: targets with their own
+  inventory (`oracle/<target>/`, from `tools/derive_target.py`) go through `tools/cmpfunc_target.py`.
+
 Hard rules:
 - `assets/` is immutable original material; `external/` holds read-only reference repos
   (planetblupi, sb2-decomp, free-eggbert). Never modify, clean or commit either.
-- Never execute the original BLUPI.EXE or programs from the ISO. Per the user's
+- Never execute any original executable: BLUPI.EXE, EGAMES.EXE, Eggbert2.exe and every language build,
+  installers and launchers (UNWISE.EXE, gbrowser.exe, setup), or programs from the ISOs. Per the user's
   2026-10-19 runtime authorization, rebuilt game executables may be smoke-tested
   with cnc-ddraw, in an isolated build/ copy of the data. Bound each run, close its
   process, and keep runtime evidence separate from strict/equivalence proofs.
@@ -31,6 +47,8 @@ Hard rules:
   rules are hypotheses until confirmed on SB1. Record verified compiler findings and negatives in the catalog.
 - sound.cpp compiles as its historical path `F:\Profil\sound.cpp` (temporary drive mapping, docs/BUILD_PATH.md).
   Inside the Codex sandbox the mapping is denied: "gate INCOMPLETE" for sound.cpp is expected there. Never add
-  `#line` or other source changes for build-path strings, and never map drives yourself.
+  `#line` or other source changes for build-path strings, and never map drives yourself. The SB2 builds record
+  `D:\Blupi\Profil\` and `D:\Blupi\Profil egames 2\`; the user allowed creating those folders on D: for one
+  compile at a time (2026-10-22), through tools/buildpath.py only, removing what it created.
 - Python: use `.pyenv\python.exe` (repo-local, ignored PyPy 3.11 with pefile + capstone 5.0.3).
   Prefer a few focused scripts over frameworks.

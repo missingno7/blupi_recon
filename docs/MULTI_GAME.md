@@ -1,6 +1,37 @@
 # Multi-game layout plan: every Speedy Blupi and Speedy Eggbert build in one repository
 
-Status: **proposal for review** (2026-10-22, branch `multi-game`). No file has moved yet.
+Status (2026-10-22, branch `multi-game`): **steps 1 and 2 in progress**, see Progress below.
+
+## Progress
+
+Step 1, port:
+- [EVIDENCE] Language packs (`port/docs/LANGUAGES.md`): nine built-in packs generated from the
+  executables. The US pack equals `src/res/blupi.rc` (`ctest -R language`).
+- [EVIDENCE] Run-time switching works on the Display options screen; the German help layout follows
+  the language (screenshots of the German and US help screens).
+- [EVIDENCE] Recognition: the edition from the title image, the installed language from the
+  installed executable. CDs work (a CD extracted from the SB1 ISO: SOUND from `US`).
+- [EVIDENCE] Gates: `ctest` 94/94, including the German tour and SB1/eggbert's attract mode as
+  golden traces.
+
+Step 1, matching:
+- [EVIDENCE] `targets.json` registers every build; `verify.py --target`. Without `--target` the report
+  is byte-identical to before, and so is the relinked image (SHA-256 `557ca92e…`).
+- [EVIDENCE] `sb1/blupi/fr` verifies exactly like US: 127,456 / 141,488 bytes, with no source change.
+- [EVIDENCE] `sb1/blupi/de`: 127,456 / 141,488 bytes once `DrawButtons` has the German help layout
+  (`LANGUAGE_DE`, arithmetic form).
+- `sb1/eggbert/en`: inventory and address map derived (`tools/derive_target.py`; 416/421 game functions
+  located); first report 101,920 / 141,328 strict bytes.
+  - [OPEN] Its linker puts uninitialised data inside `.data`'s raw bytes and lays out exception
+    tables differently, which `cmpfunc.py`'s rules reject (as RELOC-UNVERIFIED or MISMATCH).
+  - [OPEN] The three edition functions (`ReadConfig`, `CheckWorld1`, `ChangePhase`) are not switched
+    yet, and its linker build is not identified.
+- The Eggbert language targets (de, es, fr, it, pt; `.rsrc` and five `table_char` entries) wait for
+  `sb1/eggbert/en`.
+
+Step 2:
+- [EVIDENCE] `port/` is split into `common/` (compat, platform, render) and `games/sb1/game/`; the
+  includes are unchanged and `ctest` passes 94/94.
 
 ## Goal
 
@@ -298,13 +329,15 @@ layout   = help-stacked           # language layout switches the port knows (her
   language folder (identical in all of them).
 - **Layout switches** (German help screen). These are code in `event.cpp`, which the port
   compiles from `src/` as it is. To switch them at run time, the matching source writes each
-  language or edition switch as an ordinary `if` on a target constant (`if (LANGUAGE_DE)`) rather
-  than `#if`. The matching build defines the constant per target; the port defines it as its
-  run-time language.
-  - This form is allowed only where the verifier proves the matching bytes identical to the
-    `#if` form; otherwise the switch stays `#if`, and the port shows the US variant there.
-  - It is a source form chosen with the port in mind, so `AGENTS.md` must allow it explicitly:
-    only for switches the matching needs anyway, and only when byte-neutral.
+  language or edition switch as arithmetic on a target constant (`140 - 20 * LANGUAGE_DE`)
+  rather than `#if`. The matching build defines the constant per target; the port defines it as
+  its run-time language.
+  - [EVIDENCE] An `if (LANGUAGE_DE)` form gave the right bytes in both builds' `DrawButtons`, but
+    changed `TreatEventBase`'s code in the US build: the dead branch still shifts the 1997
+    compiler's choices later in the file. The arithmetic form left the US report byte-identical.
+  - A form is allowed only where the verifier proves the primary report byte-identical;
+    otherwise the switch stays `#if`, and the port shows the US variant there. `AGENTS.md`
+    allows this explicitly, only for switches the matching needs anyway.
 - **Edition switches** (Eggbert 1's three functions) follow the same rule. The CD and path checks
   among them are already replaced by the port's own `main.cpp`.
 - **Matching** keeps `sb1/blupi/us` as the primary target, the one every acceptance number
@@ -343,7 +376,7 @@ layout   = help-stacked           # language layout switches the port knows (her
 
 | Step | Work | Gate |
 |---|---|---|
-| 1 | `targets.json`, `tools/targets.py`, `--target`; oracles and per-language `.rc` for SB1's other targets; edition and language switches (`if` form where byte-neutral); LINK 5.00 found. Port: language packs (format, built-in, user), `table_char` entries, Language option, build recognition, CD layouts | `sb1/blupi/us` verifier report identical (411 STRICT, 6 FOLDED, 127,456 / 141,488 B; same per-TU counts); new targets' reports recorded; port `ctest` on Windows and Linux with golden traces unchanged in US; SB1/eggbert golden attract trace |
+| 1 | `targets.json`, `tools/targets.py`, `--target`; oracles and per-language `.rc` for SB1's other targets; edition and language switches (run-time-bindable form where byte-neutral); LINK 5.00 found. Port: language packs (format, built-in, user), `table_char` entries, Language option, build recognition, CD layouts | `sb1/blupi/us` verifier report identical (411 STRICT, 6 FOLDED, 127,456 / 141,488 B; same per-TU counts); new targets' reports recorded; port `ctest` on Windows and Linux with golden traces unchanged in US; SB1/eggbert golden attract trace |
 | 2 | Port split into `common` and `games/sb1` | Port gates unchanged; matching untouched |
 | 3a | `git mv` SB1 into `games/sb1/`; manifest paths rewritten by a script; port paths | Every SB1 target's verifier, relink and equivalence results identical; port gates |
 | 3b | SB2 bring-up: registry, Ghidra inventory, `games/sb2/src`, `buildpath.py` D: mode; Eggbert 2 first | SB2 report; SB1 gates unchanged |
@@ -360,8 +393,8 @@ Taken (2026-10-22):
 
 - The SB2 assets are in `assets/` (`blupi2`, `eggbert2`, `blupi2_variants`).
 - Languages are switchable in the port and extensible by language packs. Language and edition
-  switches in the source use the `if` form where it is byte-neutral, so the port can bind them
-  at run time.
+  switches in the source use a form the port can bind at run time (arithmetic on the constant)
+  where it is byte-neutral.
 - `sb1/blupi/us` stays the primary matching target.
 - First start: the installed language, recognised from the installed executable's size and hash.
 - Each edition offers its own languages plus custom packs.

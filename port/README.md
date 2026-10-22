@@ -15,21 +15,22 @@ Current release: **1.0.0** for Windows x64, Linux x86-64 and Android
 | Path | Owner | Contents |
 |---|---|---|
 | `../src/*.cpp, *.h, res/` | historical reconstruction | Compiled unchanged. 12 TUs are shared as-is: `button decblock decblupi decdesign decmove decnet decor dectables event jauge menu text` |
-| `compat/include/` | port | Declaration-only Win32/DirectX/winmm names the shared TUs need, with SDK values; `port_forced.h` (forced include: `fopen`→port file system, `rand`→MS LIBC generator) |
-| `compat/src/win32.cpp` | port | Behaviour behind those names: posted-message queue, cursor, rectangles, file APIs, winmm joystick on SDL gamepads, MS `rand` |
-| `compat/src/hist_stdio.cpp` | port | `BlupiFile` streams for the shared TUs' file I/O (`compat/include/port_hist_stdio.h`) |
-| `game/` | port, derived from historical TUs | Replacements of the 7 platform TUs: `main.cpp`←`blupi.cpp`, `pixmap.cpp`, `sound.cpp`, `misc.cpp`, `movie.cpp`, `network.cpp`; `ddutil.cpp` is not needed. Each file header names its historical origin; copied method bodies are kept verbatim where possible |
-| `render/` | port | Rendering device interface and commands (`device.h`), software reference renderer (8 bpp palettized and RGB565 surfaces, DirectDraw blit rules), BMP reader. No SDL, no Win32 names |
-| `platform/` | port | SDL3 host: window/presentation, input, timing, audio mixer, MIDI synthesizer, file system roots, embedded string table, `SDL_main` entry |
+| `common/compat/include/` | port | Declaration-only Win32/DirectX/winmm names the shared TUs need, with SDK values; `port_forced.h` (forced include: `fopen`→port file system, `rand`→MS LIBC generator) |
+| `common/compat/src/win32.cpp` | port | Behaviour behind those names: posted-message queue, cursor, rectangles, file APIs, winmm joystick on SDL gamepads, MS `rand` |
+| `common/compat/src/hist_stdio.cpp` | port | `BlupiFile` streams for the shared TUs' file I/O (`common/compat/include/port_hist_stdio.h`) |
+| `games/sb1/game/` | port, derived from historical TUs | Replacements of the 7 platform TUs: `main.cpp`←`blupi.cpp`, `pixmap.cpp`, `sound.cpp`, `misc.cpp`, `movie.cpp`, `network.cpp`; `ddutil.cpp` is not needed. Each file header names its historical origin; copied method bodies are kept verbatim where possible |
+| `common/render/` | port | Rendering device interface and commands (`device.h`), software reference renderer (8 bpp palettized and RGB565 surfaces, DirectDraw blit rules), BMP reader. No SDL, no Win32 names |
+| `common/platform/` | port | SDL3 host: window/presentation, input, timing, audio mixer, MIDI synthesizer, file system roots, embedded string table, `SDL_main` entry |
 | `third_party/tinysoundfont/` | vendored | TinySoundFont v0.9 (MIT) and TinyMidiLoader v0.7 (zlib) headers, unchanged; provenance in its README |
 | `third_party/generaluser-gs/` | git submodule | GeneralUser GS v2.0.3 SoundFont, the author's repository at a pinned commit (shallow); provenance, licence and SHA-256 in [third_party/README.md](third_party/README.md) |
 | `tests/` | port | Unit tests, music tests, golden traces (`tests/golden/`) |
+| `languages/` | port, generated from the original executables | The built-in language packs (`tools/language_pack.py`; [docs/LANGUAGES.md](docs/LANGUAGES.md)) |
 | `res/` | port, derived from game data | The port's icon: the game's waving Blupi sprite (`icon.png`) and the Windows `icon.ico`, made by `tools/make_icon.py` |
 | `release/` | port | What the packages carry besides the program: the player's `README.txt`, `COPYING.txt` (GPLv3), `THIRD_PARTY.txt` |
 | `VERSION.txt` | port | The release version, read by CMake and the Android build |
 | `oracle/`, `tools/` | port test tooling | Frame-capture `ddraw.dll` proxy for the historical rebuild, capture and diff scripts ([docs/ORACLE.md](docs/ORACLE.md)); not part of the game build |
 
-Nothing in `src/` is copied into `port/` except the bodies inside the `game/` replacements of the
+Nothing in `src/` is copied into `port/` except the bodies inside the `games/sb1/game/` replacements of the
 platform TUs, which are marked as such.
 
 ## Build (Windows x64, MinGW-w64 GCC)
@@ -108,9 +109,17 @@ does not have are on the game's settings screen, under **Display options**. They
   once per tick like the 1998 game.
 - **Display** (window or full screen; Alt+Enter also toggles) and **Scaling** (fit the window,
   or whole pixels only).
+- **Language**: every language pack of the edition (Speedy Blupi: US, German, French; Speedy
+  Eggbert: English, German, Spanish, French, Italian, Portuguese) and the player's own packs.
+  It starts as the installed game's language. See [docs/LANGUAGES.md](docs/LANGUAGES.md).
 
 The same options exist for one run on the command line: `--wide auto|off|16:9|854`,
-`--interpolate`, `--present display|tick`, `--fullscreen`, `--integer-scale`, `--scale N`.
+`--interpolate`, `--present display|tick`, `--fullscreen`, `--integer-scale`, `--scale N`,
+`--language CODE`.
+
+**Speedy Eggbert 1** (the eGames edition) is the same game: point the port at its folder.
+A **CD** (Speedy Blupi 1) works too: the port uses the data at its root and the `SOUND` folder of
+a language folder.
 
 **Music** plays the game's MIDI files through a SoundFont synthesizer. The GeneralUser GS
 SoundFont (the one Free Eggbert ships) is the git submodule `third_party/generaluser-gs/`: the
