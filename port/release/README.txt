@@ -7,7 +7,8 @@ plays exactly like the original, at its original 640x480 and timing, and adds
 optional widescreen, smooth motion and display settings.
 
 The original game's files are NOT included: you need your own copy of
-Speedy Blupi (the CD, or the game installed from it).
+Speedy Blupi (the CD, or the game installed from it). Speedy Eggbert, the
+eGames edition (version 1.1 of the same game), works too.
 
 
 Starting the game
@@ -51,8 +52,20 @@ The port's own options are on the game's settings screen, under
   per second like the 1998 game.
 - Display (window or full screen) and Scaling (fit the window, or whole
   pixels only).
+- Language: the game's languages (Speedy Blupi: English, German, French;
+  Speedy Eggbert: English, German, Spanish, French, Italian, Portuguese),
+  switched at once. It starts in the language of your installed game.
 
 None of them changes how the game plays.
+
+
+Your own language
+-----------------
+
+blupi-sdl3 --export-language us mylanguage.txt writes the English texts to a
+file. Translate it (UTF-8), set "name" and "code" at the top, and put it in a
+"languages" folder in your files folder (below). It appears under Language.
+Letters the game's font lacks are drawn as their base letter (c for č).
 
 
 Your files

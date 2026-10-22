@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 3.20)
 #
 # The port's release version (port/VERSION.txt; also read by port/android).
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt BLUPI_PORT_VERSION LIMIT_COUNT 1)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt)
 project(blupi_port VERSION ${BLUPI_PORT_VERSION} LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)

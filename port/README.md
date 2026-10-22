@@ -6,7 +6,7 @@ from the historical source in `../src` **without modifying it**. The matching re
 anything here. Rules for working in this directory: [AGENTS.md](AGENTS.md). Design and analysis:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-Current release: **1.0.0** for Windows x64, Linux x86-64 and Android
+Current release: **1.1.0** for Windows x64, Linux x86-64 and Android
 ([release notes](docs/RELEASE_NOTES.md); how a release is built and packed:
 [docs/RELEASING.md](docs/RELEASING.md)). Players use their own copy of the game.
 
@@ -235,13 +235,13 @@ Not implemented / known gaps (each fails the way the original did when the servi
 - **Android**: playable on the Android 16 emulator and on a physical phone (Galaxy S24 Ultra):
   the import of the player's own game folder, menus by tap, play with the touch joystick, the
   editor with its scroll pad ([android/README.md](android/README.md)).
-- **Release packages** (1.0.0): each is built and tested before packing; the Linux one on
+- **Release packages** (1.1.0): each is built and tested before packing; the Linux one on
   Ubuntu 22.04 so it needs only glibc 2.35 ([docs/RELEASING.md](docs/RELEASING.md)).
 
 ## Next steps
 
 The staged plan, with an equivalence gate per stage, is in [docs/ROADMAP.md](docs/ROADMAP.md).
-After 1.0.0:
+After 1.1.0:
 
 1. Feedback from players of the release packages; play through more levels, saving and loading
    and the designer by hand, and extend the oracle to what can be reached without gameplay.

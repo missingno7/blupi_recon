@@ -6,9 +6,13 @@ first. Rules for contributors and agents: [AGENTS.md](AGENTS.md).
 
 **Native SDL3 port (separate from the matching work):** [port/README.md](port/README.md) builds this same
 `src/` unchanged with a modern compiler and SDL3: the faithful 640×480 game with sound and MIDI music, plus
-optional widescreen and smooth motion, on Windows, Linux and Android (release 1.0.0:
-[notes](port/docs/RELEASE_NOTES.md)). Players use their own copy of the game. The port never modifies the
-historical source.
+optional widescreen and smooth motion, in every original language and for Speedy Eggbert too, on Windows,
+Linux and Android (release 1.1.0: [notes](port/docs/RELEASE_NOTES.md)). Players use their own copy of the game.
+The port never modifies the historical source.
+
+**Other builds** of the game are verified on the same `src/` as further targets: the German and French
+Speedy Blupi, and Speedy Eggbert 1 (version 1.1) in six languages (`targets.json`,
+[docs/MULTI_GAME.md](docs/MULTI_GAME.md), [docs/EGGBERT.md](docs/EGGBERT.md)).
 
 ## Status (verified with `tools/verify.py`)
 
