@@ -44,6 +44,17 @@ Static reads of the executables (no execution), 2026-10-22. Measures:
 - [EVIDENCE] SB2/blupi against SB2/eggbert: 94% of windows shared. Not yet measured per function.
 - [EVIDENCE] The 1.0.0 port runs SB1/eggbert's data unchanged (headless attract demo, English
   "Demo" caption).
+- [EVIDENCE] **The editions' data differ in a few files** (SB1/blupi against SB1/eggbert
+  installations):
+  - `IMAGE08` and `IMAGE16` `INIT.BLP` (the title image), `IMAGE08/TEXT.BLP` (the font) and
+    `IMAGE08/BUTTON00.BLP`, and `DATA/Config.def`, differ;
+  - every level, demo and sound is identical.
+
+  So the port can tell the editions apart from the data alone, and a language pack depends on
+  its edition's title image and font.
+- [EVIDENCE] The port reads nothing from the original executable today. It compiles `src/`, embeds
+  the reconstructed `src/res/blupi.rc`, and reads only `DATA`, `IMAGE08`, `IMAGE16` and `SOUND`.
+  The few values the original read past the ends of its tables are constants in the port's source.
 
 ### Languages
 
@@ -104,7 +115,7 @@ Static reads of the executables (no execution), 2026-10-22. Measures:
 
 **SB1 first, in every edition and language; SB2 prepared, not started.**
 
-1. **Language packs and SB1's other targets, together** (release 1.1). Both start from the same
+1. **Language packs and SB1's other targets, together.** Both start from the same
    per-language `.rc` files and the same switches.
    - Matching:
      - Eggbert 1 English: 358 of 361 functions already identical; three edition switches.
@@ -113,7 +124,8 @@ Static reads of the executables (no execution), 2026-10-22. Measures:
      - These are cheap targets on today's source, and they add evidence for `ChangePhase`.
    - Port: the language-pack format, built-in packs from the `.rc` files, user packs, the
      Language option, build recognition and CD layouts.
-2. **Port structure for several games:** split `port/` into `common` and `games/sb1`.
+2. **Port structure for several games:** split `port/` into `common` and `games/sb1`. Steps 1
+   and 2 are then merged into main together and released as 1.1.
 3. **SB2**, once 1 and 2 are done:
    - move SB1 into `games/sb1/`;
    - seed `games/sb2/` from the SB1 engine TUs and `external/sb2-decomp`;
@@ -252,10 +264,36 @@ layout   = help-stacked           # language layout switches the port knows (her
   game's own `table_char` mechanism). The port applies a pack's character entries to
   `table_char` when the language is loaded; this is font data, not simulation state. Letters
   needing an accent the font lacks wait for custom graphics.
-- **Choosing.** The language follows the installed executable at first (recognised by a table of
-  known builds), with the US pack as the fallback. The Display options screen gets a Language
-  entry listing every available pack, kept in `blupi-sdl3.json`. Changing it restarts the game's
-  screens, since the original loads strings when a screen opens.
+- **Which packs an edition offers.** Each edition offers its own languages (SB1/blupi: US,
+  German, French; SB1/eggbert: English, German, Spanish, French, Italian, Portuguese) plus every
+  custom pack, so texts always match the title image and font. The port recognises the edition
+  from its data (`INIT.BLP`).
+- **First start.** The port picks the installed language by recognising the installed executable
+  from its size and hash, against a table of known builds. This is the only thing it reads from
+  the executable, and the executable stays optional: without a known one, the edition's English
+  pack is used.
+
+### For players: changing and adding a language
+
+- **Changing.** On the game's settings screen, Display options gets a **Language** entry with the
+  same arrow buttons as the other options. The change applies at once (the game's screen reopens
+  in the new language) and is kept in `blupi-sdl3.json`. `--language <code>` sets it for one run.
+  Android uses the same screen.
+- **Adding.**
+  1. `blupi-sdl3 --export-language us cs.txt` writes a built-in pack as a template, so a
+     translator needs no other tools.
+  2. Translate it in any text editor (UTF-8): name and code at the top, then the text of each line.
+  3. Put it in the `languages` folder next to the saves (`%APPDATA%\Epsitec\Speedy Blupi SDL3\
+     languages\`, `~/.local/share/Epsitec/Speedy Blupi SDL3/languages/`). On Android, the import
+     screen gets an "Add language file" button using the system file picker.
+  4. It appears in the Language list the next time Display options opens. A file with a built-in
+     language's code replaces that language.
+- **Forgiving.** A missing line falls back to the edition's English text, so a half-finished
+  translation is playable. Problems (unknown ids, malformed lines, letters the font cannot draw,
+  texts wider than their place on screen) go to a log, not into the game.
+- **Letters.** A letter the font cannot draw falls back to its base letter (`č` shows as `c`), or
+  the pack composes it from accents the font has. Custom accent glyphs (háček, ring) come later,
+  with the custom-graphics work.
 - **CDs.** Pointed at an SB1 or SB2 CD, the port uses the root's data and the `SOUND` folder of a
   language folder (identical in all of them).
 - **Layout switches** (German help screen). These are code in `event.cpp`, which the port
@@ -325,10 +363,14 @@ Taken (2026-10-22):
   switches in the source use the `if` form where it is byte-neutral, so the port can bind them
   at run time.
 - `sb1/blupi/us` stays the primary matching target.
+- First start: the installed language, recognised from the installed executable's size and hash.
+- Each edition offers its own languages plus custom packs.
+- Custom accent glyphs come later, with custom graphics; 1.1 uses the font as it is.
+- The work stays on `multi-game` until steps 1 and 2 are both done; then it is merged into main
+  and released as 1.1.
 
-For review:
-1. The language-pack format above (one text file per language: header, `[chars]`, `[strings]`).
-2. Release 1.1 after step 1?
+For review: the language-pack format above (one text file per language: header, `[chars]`,
+`[strings]`).
 
 ## Risks
 
