@@ -54,6 +54,16 @@ android {
     }
 
     buildTypes {
+        // The native code is optimised in every build: the software renderer
+        // redraws each presented frame (up to 120 per second), which an -O0
+        // build cannot do on a phone (port/android/README.md, Status).
+        debug {
+            externalNativeBuild {
+                cmake {
+                    arguments '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
+                }
+            }
+        }
         release {
             minifyEnabled false
         }

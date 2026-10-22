@@ -178,7 +178,10 @@ public class SetupActivity extends Activity {
     }
 
     private void startGame() {
-        startActivity(new Intent(this, BlupiActivity.class));
+        Intent game = new Intent(this, BlupiActivity.class);
+        String args = getIntent() != null ? getIntent().getStringExtra("args") : null;
+        if (args != null) game.putExtra("args", args);   // development: the game's options
+        startActivity(game);
         finish();
     }
 }

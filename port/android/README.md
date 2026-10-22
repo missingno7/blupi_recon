@@ -63,6 +63,30 @@ adb shell rm -rf /data/local/tmp/blupi-game
 A folder pushed by adb into the app's external files directory belongs to the shell user, and
 the app cannot read it on current Android versions.
 
+The game's command-line options can be passed with an `args` extra. For example, `--verbose`
+logs a presentation timing line every 5 s (`adb logcat | grep perf:`):
+
+```powershell
+adb shell am start -n io.github.missingno7.speedyblupi/.SetupActivity --es args "--verbose"
+```
+
+## Performance
+
+The game's native code is optimised in debug builds too (`RelWithDebInfo`). Every presented
+frame is redrawn in software at the game's resolution (640×480, or the widescreen width × 480);
+SDL_Renderer then scales it to the screen on the GPU.
+
+[EVIDENCE] Galaxy S24 Ultra (SM-S928B, 3120×1440, 120 Hz), widescreen (1040×480) and smooth
+motion on, attract demo:
+
+| Native build | Presents/s | Render | Present (incl. vsync wait) |
+|---|---|---|---|
+| `-O0` (first debug APK) | 20–37, falling | 11–22 ms | 15–27 ms |
+| `RelWithDebInfo` | 120 (the display rate) | 0.2–0.9 ms | ~8 ms (one 120 Hz period) |
+
+With the unoptimised build smooth motion could not work: a 50 ms tick got one or two presents
+instead of six.
+
 ## Status (2026-10-22)
 
 [EVIDENCE] Checked on the Android 16 (API 36) x86_64 emulator, 2340×1080:
@@ -71,5 +95,8 @@ the app cannot read it on current Android versions.
 - **Rendering:** the title screen, menus and the world-1 hub, landscape and full screen.
 - **Input:** menus by tapping; walking both ways with the joystick; jumping; no native crash.
 
-Not yet checked: a physical device and arm64, audio output (the emulator ran with `-no-audio`),
-gamepads on Android, the name keyboard, and the app in the background.
+[EVIDENCE] On a physical phone (Galaxy S24 Ultra, Android 16, arm64): installed and played by
+the user. That first build showed slow presentation, which the optimised native build fixes
+(Performance, above).
+
+Not yet checked: gamepads on Android, the name keyboard, and the app in the background.
