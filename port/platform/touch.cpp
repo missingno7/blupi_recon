@@ -33,7 +33,7 @@ struct Layout
     float  stickZoneRight;      // a finger down left of this (and low enough) takes the joystick
 };
 
-bool g_active = false;
+Mode g_mode = Mode::Off;
 SDL_FRect g_frame = {};         // the game frame, from the last draw
 bool g_overlay = true;          // no room beside the frame
 
@@ -43,6 +43,14 @@ SDL_FingerID g_stickFinger = 0;
 bool g_stickHeld = false;
 float g_knobX = 0, g_knobY = 0; // knob offset from the centre, in base radii (clamped to 1)
 bool g_dirHeld[DIRS] = {};
+
+// Editor pad: one finger per arrow button; a finger may slide to another.
+std::map<SDL_FingerID, int> g_padFingers;   // finger -> Dir
+int g_padHeld[DIRS] = {};
+std::vector<uint32_t> g_padImages[2][DIRS]; // [pressed][dir]
+int g_padImageSize = 0;
+SDL_Texture* g_padTextures[2][DIRS] = {};
+bool g_padTexturesStale = false;
 
 // With bars beside the frame wide enough, the joystick fills the left bar and
 // jump, fire and pause the right one. Otherwise (widescreen, a 4:3 screen)
@@ -82,6 +90,65 @@ Button hit_button(const Layout& l, float x, float y)
         if (d <= 1.3f && (best == NONE || d < bestD)) { best = (Button)i; bestD = d; }
     }
     return best;
+}
+
+// Editor pad: a cross of four buttons, bottom right (the right bar, or the
+// frame's corner). Button sides are whole multiples of the 40-pixel sprite
+// where they fit, so the game's pixels stay sharp.
+struct Pad
+{
+    SDL_FRect rects[DIRS];
+};
+
+Pad pad_layout(int w, int h)
+{
+    const float m = h * 0.04f;
+    const float right = g_frame.w > 0 ? w - (g_frame.x + g_frame.w) : 0;
+    float unit = (right - 2 * m) / 3.1f;                 // cross: 3 buttons wide (and a little gap)
+    const bool overlay = unit < h * 0.08f;
+    if (overlay) unit = h * 0.12f;
+    if (unit > h * 0.2f) unit = h * 0.2f;
+    float b = unit >= 80 ? 40.0f * SDL_floorf(unit / 40.0f) : unit;   // button side
+    const float gap = b * 0.05f;
+    const float cx = overlay ? w - m - 1.5f * b - gap : w - right / 2;
+    const float cy = h - m - 1.5f * b - gap;
+    Pad p;
+    p.rects[LEFT]  = { cx - 1.5f * b - gap, cy - 0.5f * b, b, b };
+    p.rects[RIGHT] = { cx + 0.5f * b + gap, cy - 0.5f * b, b, b };
+    p.rects[UP]    = { cx - 0.5f * b, cy - 1.5f * b - gap, b, b };
+    p.rects[DOWN]  = { cx - 0.5f * b, cy + 0.5f * b + gap, b, b };
+    return p;
+}
+
+int hit_pad(const Pad& p, float x, float y)
+{
+    for (int d = 0; d < DIRS; d++)
+    {
+        const SDL_FRect& r = p.rects[d];
+        const float g = r.w * 0.1f;   // a little beyond the edge counts
+        if (x >= r.x - g && x < r.x + r.w + g && y >= r.y - g && y < r.y + r.h + g) return d;
+    }
+    return -1;
+}
+
+void pad_press(int d, std::vector<KeyChange>& keys)
+{
+    if (d >= 0 && g_padHeld[d]++ == 0) keys.push_back({ kDirKeys[d], true });
+}
+
+void pad_release(int d, std::vector<KeyChange>& keys)
+{
+    if (d >= 0 && g_padHeld[d] > 0 && --g_padHeld[d] == 0) keys.push_back({ kDirKeys[d], false });
+}
+
+void release_pad(std::vector<KeyChange>& keys)
+{
+    for (int d = 0; d < DIRS; d++)
+    {
+        if (g_padHeld[d] > 0) keys.push_back({ kDirKeys[d], false });
+        g_padHeld[d] = 0;
+    }
+    g_padFingers.clear();
 }
 
 bool in_stick_zone(const Layout& l, float x, float y, int h)
@@ -150,11 +217,10 @@ void arrow(SDL_Renderer* r, float x, float y, float size, float dx, float dy, SD
 }
 }  // namespace
 
-void set_active(bool on, std::vector<KeyChange>& keys)
+void set_mode(Mode mode, std::vector<KeyChange>& keys)
 {
-    if (on == g_active) return;
-    g_active = on;
-    if (on) return;
+    if (mode == g_mode) return;
+    g_mode = mode;
     release_stick(keys);
     for (int i = 0; i < BUTTONS; i++)
     {
@@ -162,19 +228,60 @@ void set_active(bool on, std::vector<KeyChange>& keys)
         g_buttonHeld[i] = 0;
     }
     g_buttonFingers.clear();
+    release_pad(keys);
 }
 
-bool active()
+Mode mode()
 {
-    return g_active;
+    return g_mode;
+}
+
+void set_editor_images(const std::vector<uint32_t> released[4], const std::vector<uint32_t> pressed[4], int size)
+{
+    for (int d = 0; d < DIRS; d++)
+    {
+        g_padImages[0][d] = released[d];
+        g_padImages[1][d] = pressed[d];
+    }
+    g_padImageSize = size;
+    g_padTexturesStale = true;   // made into textures at the next draw
 }
 
 bool finger(int type, SDL_FingerID id, float x, float y, int w, int h, std::vector<KeyChange>& keys)
 {
+    if (g_mode == Mode::Editor)
+    {
+        const Pad p = pad_layout(w, h);
+        auto it = g_padFingers.find(id);
+        if (type == 0)
+        {
+            const int d = hit_pad(p, x, y);
+            if (d < 0) return false;
+            g_padFingers[id] = d;
+            pad_press(d, keys);
+            return true;
+        }
+        if (it == g_padFingers.end()) return false;
+        if (type == 2)
+        {
+            pad_release(it->second, keys);
+            g_padFingers.erase(it);
+            return true;
+        }
+        const int d = hit_pad(p, x, y);
+        if (d >= 0 && d != it->second)
+        {
+            pad_release(it->second, keys);
+            pad_press(d, keys);
+            it->second = d;
+        }
+        return true;
+    }
+
     const Layout l = layout(w, h);
     if (type == 0)
     {
-        if (!g_active) return false;
+        if (g_mode != Mode::Play) return false;
         Button b = hit_button(l, x, y);
         if (b != NONE)
         {
@@ -208,10 +315,58 @@ bool finger(int type, SDL_FingerID id, float x, float y, int w, int h, std::vect
     return true;
 }
 
+namespace
+{
+void draw_pad(SDL_Renderer* renderer, int w, int h)
+{
+    if (g_padTexturesStale)
+    {
+        for (int s = 0; s < 2; s++)
+        {
+            for (int d = 0; d < DIRS; d++)
+            {
+                if (g_padTextures[s][d]) SDL_DestroyTexture(g_padTextures[s][d]);
+                g_padTextures[s][d] = nullptr;
+                const std::vector<uint32_t>& img = g_padImages[s][d];
+                if (g_padImageSize <= 0 || img.size() != (size_t)g_padImageSize * g_padImageSize) continue;
+                SDL_Texture* t = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC,
+                                                   g_padImageSize, g_padImageSize);
+                if (t == nullptr) continue;
+                SDL_UpdateTexture(t, nullptr, img.data(), g_padImageSize * 4);
+                SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND);
+                SDL_SetTextureScaleMode(t, SDL_SCALEMODE_NEAREST);
+                g_padTextures[s][d] = t;
+            }
+        }
+        g_padTexturesStale = false;
+    }
+
+    const Pad p = pad_layout(w, h);
+    for (int d = 0; d < DIRS; d++)
+    {
+        const bool down = g_padHeld[d] > 0;
+        SDL_Texture* t = g_padTextures[down ? 1 : 0][d];
+        if (t)
+        {
+            SDL_RenderTexture(renderer, t, nullptr, &p.rects[d]);
+            continue;
+        }
+        // No game images: a plain button.
+        const SDL_FRect& r = p.rects[d];
+        fill_circle(renderer, Circle{ r.x + r.w / 2, r.y + r.h / 2, r.w / 2 },
+                    SDL_FColor{ 1, 1, 1, down ? 0.45f : 0.22f });
+        const float dx = d == LEFT ? -1.0f : d == RIGHT ? 1.0f : 0.0f;
+        const float dy = d == UP ? -1.0f : d == DOWN ? 1.0f : 0.0f;
+        arrow(renderer, r.x + r.w / 2, r.y + r.h / 2, r.w * 0.25f, dx, dy, SDL_FColor{ 1, 1, 1, 0.8f });
+    }
+}
+}  // namespace
+
 void draw(SDL_Renderer* renderer, int w, int h, const SDL_FRect& frame)
 {
     g_frame = frame;
-    if (!g_active) return;
+    if (g_mode == Mode::Editor) { draw_pad(renderer, w, h); return; }
+    if (g_mode != Mode::Play) return;
     const Layout l = layout(w, h);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     const float dim = g_overlay ? 0.6f : 1.0f;   // lighter over the game itself

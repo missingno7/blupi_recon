@@ -58,6 +58,10 @@ ctest --test-dir build/port-linux --output-on-failure
 ```
 
 From WSL with the repository on a Windows drive, run `sh port/tools/linux_check.sh` instead.
+
+`port/tools/export_graphics.py <game folder> <output folder>` exports the game's images as PNG
+(16-bit set when there is one, otherwise 8-bit indexed) with an `index.md`, for reference or
+for drawing replacements.
 It copies the sources and the data to a case-sensitive folder (`~/blupi-linux`) and builds and
 tests there.
 
@@ -86,8 +90,8 @@ does not have are on the game's settings screen, under **Display options**. They
 `blupi-sdl3.json` in the user folder, and none of them changes the simulation:
 - **Widescreen** (off by default): the view follows the window's shape, from 4:3 up to 21:9,
   and shows more of the world around the 640×480 frame, in play and in the editor. In play the
-  HUD stays in the centred 640×480 frame; menus are centred too. In the editor the toolbar sits
-  at the left edge and the extra world is shown to the right.
+  HUD stays in the centred 640×480 frame; menus are centred too. The editor shows the world
+  the same way, with its toolbar at the screen's left edge.
 - **Smooth motion** (off by default): movement and scrolling are interpolated between ticks.
   The world is shown up to one tick (50 ms) late; the cursor is not delayed.
 - **Frame rate**: *Monitor* (the default) redraws at the display's rate; *Original* presents

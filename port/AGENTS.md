@@ -34,9 +34,10 @@ Layering inside `port/`:
   drawn over the tick's frame when presenting, never into the game's frame or screen. It uses
   its own posted messages, handled before the window procedure. Port settings live in
   `blupi-sdl3.json` (`game/settings.h`) and must never change the simulation.
-- Input the original rejects (e.g. editor clicks over the side areas of a wide view) may be
-  handled only by a documented port derivative of the historical handler
-  (`game/editor_wide.cpp`); input inside the original frame always goes to the game unchanged.
+- Input the original cannot map (the wide editor's world, which no longer lies under its
+  toolbar) may be handled only by a documented port derivative of the historical handler
+  (`game/editor_wide.cpp`, routed by `PortEditorMouse`). Everywhere else, input in UI
+  coordinates goes to the game unchanged.
 - `game/scene.cpp` is a derivative of `CDecor::Build` and its helpers and must stay
   equivalent (`ctest -R scene`). It reads state only through const accessors; never make it
   write game state.

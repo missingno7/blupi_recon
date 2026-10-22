@@ -1879,3 +1879,45 @@ bool PortPixmapWideRegionEqualsBack(int x)
 	}
 	return true;
 }
+
+
+// Touch screens (port/platform/touch.h): a game button as an image for the
+// on-screen controls. The button background (CHBUTTON icon 0 released, 1
+// pressed) with an icon on it (the phase table's icon number + 6, as
+// CButton::Draw draws it), from the sheet as loaded; the sheet's colour key
+// becomes transparency. 40x40, 0xAARRGGBB.
+bool PortPixmapButtonImage(CPixmap* pixmap, int iconMenu, bool pressed, std::vector<uint32_t>& argb)
+{
+	IDirectDrawSurface* sheet = (pixmap->*PixmapAccess::m_lpDDSurface)[CHBUTTON];
+	if ( sheet == NULL || sheet->image == NULL )  return false;
+	const Surface& img = *sheet->image;
+	const int size = DIMBUTTONX, perRow = img.width() / size;
+	if ( perRow <= 0 )  return false;
+
+	std::vector<uint32_t> all((size_t)img.width() * img.height());
+	blupi::render::to_argb8888(img, s_reference.palette(), all.data(), img.width());
+	auto keyed = [&](int x, int y)
+	{
+		if ( !sheet->key.enabled )  return false;
+		const uint8_t* row = img.row(y);
+		uint32_t v = img.bpp() == 8 ? row[x] : (uint32_t)(row[x*2] | (row[x*2+1] << 8));
+		return v >= sheet->key.low && v <= sheet->key.high;
+	};
+
+	argb.assign((size_t)size * size, 0);
+	const int layers[2] = { pressed ? 1 : 0, iconMenu + 6 };
+	for ( int icon : layers )
+	{
+		const int ox = (icon % perRow) * size, oy = (icon / perRow) * size;
+		if ( oy + size > img.height() )  return false;
+		for ( int y=0 ; y<size ; y++ )
+		{
+			for ( int x=0 ; x<size ; x++ )
+			{
+				if ( keyed(ox + x, oy + y) )  continue;
+				argb[(size_t)y * size + x] = all[(size_t)(oy + y) * img.width() + ox + x] | 0xFF000000u;
+			}
+		}
+	}
+	return true;
+}

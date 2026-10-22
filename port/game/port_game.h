@@ -39,6 +39,9 @@ void     PortPixmapPresentBack();
 
 // Touch screens: the game's cursor sprite is not drawn (a tap is the click).
 void     PortPixmapHideCursor(bool hidden);
+// Touch screens: a game button (released or pressed) with an icon of the
+// button sheet on it, as a 40x40 0xAARRGGBB image (transparent outside).
+bool     PortPixmapButtonImage(CPixmap* pixmap, int iconMenu, bool pressed, std::vector<uint32_t>& argb);
 
 // Widescreen view (ROADMAP.md stage 8). With a view width set, the host shows
 // a target of that width instead of the 640x480 screen; the game's own back

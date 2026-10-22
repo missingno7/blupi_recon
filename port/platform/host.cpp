@@ -410,7 +410,7 @@ void present(const uint32_t* argb, int width)
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
     SDL_RenderTexture(g_renderer, g_texture, nullptr, nullptr);
-    if (touch::active())
+    if (touch::mode() != touch::Mode::Off)
     {
         // The controls in output pixels, also over the bars beside the frame.
         SDL_FRect frame{};
@@ -476,16 +476,25 @@ bool touch_screen()
     return g_touchControls;
 }
 
-void set_touch_controls(bool on)
+void set_touch_mode(TouchMode mode)
 {
     std::vector<touch::KeyChange> keys;
-    touch::set_active(on && g_touchControls && !g_headless, keys);
+    touch::Mode m = mode == TouchMode::Play ? touch::Mode::Play
+                  : mode == TouchMode::Editor ? touch::Mode::Editor : touch::Mode::Off;
+    if (!g_touchControls || g_headless) m = touch::Mode::Off;
+    touch::set_mode(m, keys);
     for (const touch::KeyChange& k : keys)
     {
         Event e{k.down ? EventType::KeyDown : EventType::KeyUp};
         e.key = k.vk;
         g_pending.push_back(e);
     }
+}
+
+void set_touch_editor_images(const std::vector<uint32_t> released[4], const std::vector<uint32_t> pressed[4],
+                             int size)
+{
+    touch::set_editor_images(released, pressed, size);
 }
 
 int gamepad_count()

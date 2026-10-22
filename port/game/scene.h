@@ -153,22 +153,22 @@ void PairScenes(const Scene& prev, const Scene& curr, Motion& out);
 // voyage icon travels from the object's place in the view to its HUD counter.
 // The parallax background is placed by the view camera.
 //
-// The editor anchors its frame, with its toolbar, to the view's left edge
-// instead: the view starts at the frame and shows more world to its right,
-// never clamped, so the game's own mouse mapping (buttons and cells alike)
-// holds in the frame unchanged.
+// The editor places its world the same way and puts its screen layer (the
+// toolbar, the caption) at the view's left edge instead (uiLeft); the port
+// routes the mouse between the two (game/main.cpp, editor_wide.cpp).
 struct ViewSpec
 {
 	int  width = LXIMAGE;        // view width (the target is width x LYIMAGE)
 	bool cullAtFrame = false;    // test: Build's rules at the frame (--check-wide)
-	bool frameLeft = false;      // the frame and its screen layer at the view's left edge
+	bool uiAtFrame = false;      // test: the screen layer with the frame (--check-wide)
+	bool uiLeft = false;         // the screen layer at the view's left edge (the editor)
 };
 
-// Screen x of the frame in a view of that width (centred, or 0 when anchored
-// left): where the HUD, the UI and the mouse's frame coordinates start.
-inline int FrameOffset(int width, bool frameLeft)
+// Screen x of the screen layer in a view of that width: the centred frame, or
+// the left edge (uiLeft). The mouse's coordinates are relative to it.
+inline int FrameOffset(int width, bool uiLeft)
 {
-	return frameLeft ? 0 : (width - LXIMAGE) / 2;
+	return uiLeft ? 0 : (width - LXIMAGE) / 2;
 }
 
 // Where the simulation frame lies in a view: the view camera and the frame's
@@ -179,7 +179,7 @@ struct ViewPlacement
 	int   frameX;   // screen x of the frame's left edge
 	int   left, right;  // screen columns that show the world
 };
-ViewPlacement PlaceView(const Scene& scene, POINT view, int width, bool frameLeft = false);
+ViewPlacement PlaceView(const Scene& scene, POINT view, int width);
 
 void DrawView(const Scene& scene, const Motion* motion, double alpha, CPixmap* pixmap,
 			  const ViewSpec& spec = ViewSpec());

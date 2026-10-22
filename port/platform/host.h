@@ -86,9 +86,14 @@ int  gamepad_count();
 bool gamepad_name(int index, char* name, int size);   // in the game's code page
 bool gamepad_state(int index, int& x, int& y, unsigned& buttons);
 
-// On-screen touch controls (touch screens: Android), shown and used while on;
-// the port turns them on while the game is being played.
-void set_touch_controls(bool on);
+// On-screen touch controls (touch screens: Android, platform/touch.h): the
+// play controls while the game is played, the scroll pad in the editor.
+enum class TouchMode { Off, Play, Editor };
+void set_touch_mode(TouchMode mode);
+// The editor pad's buttons (left, right, up, down), released and pressed:
+// size x size 0xAARRGGBB images.
+void set_touch_editor_images(const std::vector<uint32_t> released[4], const std::vector<uint32_t> pressed[4],
+                             int size);
 // A touch-screen platform (Android): always full screen, controls on screen,
 // no cursor sprite.
 bool touch_screen();

@@ -1152,17 +1152,13 @@ void PairScenes(const Scene& prev, const Scene& curr, Motion& out)
 	}
 }
 
-ViewPlacement PlaceView(const Scene& scene, POINT view, int width, bool frameLeft)
+ViewPlacement PlaceView(const Scene& scene, POINT view, int width)
 {
 	ViewPlacement place;
 	const int worldWidth = scene.maxView.x + LXIMAGE;
-	const int frameX = FrameOffset(width, frameLeft);
+	const int frameX = FrameOffset(width, false);
 	place.camera.y = view.y;
-	if (frameLeft)
-	{
-		place.camera.x = view.x;   // the frame at the left edge, never clamped
-	}
-	else if (worldWidth >= width)
+	if (worldWidth >= width)
 	{
 		// Centred on the frame, clamped to the world.
 		place.camera.x = view.x - frameX;
@@ -1202,8 +1198,12 @@ void DrawView(const Scene& scene, const Motion* motion, double alpha, CPixmap* p
 	}
 
 	// The view around the frame (at the faithful size: the frame itself).
-	const ViewPlacement place = wide ? PlaceView(scene, view, spec.width, spec.frameLeft) : ViewPlacement{view, 0, 0, LXIMAGE};
-	const int hudX = FrameOffset(spec.width, spec.frameLeft);
+	const ViewPlacement place = wide ? PlaceView(scene, view, spec.width) : ViewPlacement{view, 0, 0, LXIMAGE};
+	// The screen layer: the centred frame, or the view's left edge (the
+	// editor's toolbar). The parallax background is placed by the view camera,
+	// relative to where the centred frame is.
+	const int anchorX = FrameOffset(spec.width, false);
+	const int hudX = spec.uiAtFrame ? place.frameX : FrameOffset(spec.width, spec.uiLeft);
 	const POINT cullView = spec.cullAtFrame ? view : place.camera;
 	const int cullWidth = spec.cullAtFrame ? LXIMAGE : spec.width;
 
@@ -1234,7 +1234,7 @@ void DrawView(const Scene& scene, const Motion* motion, double alpha, CPixmap* p
 			// sideways. Where the view is centred on the frame this is Build's
 			// own position; where the view is clamped at a world edge, the
 			// background stays still with the world.
-			POINT image = {(place.camera.x + hudX) * 2 / 3 - hudX, view.y * 2 / 3};
+			POINT image = {(place.camera.x + anchorX) * 2 / 3 - anchorX, view.y * 2 / 3};
 			int   parts = ParallaxParts(image, spec.width, dest, src, kMaxParallaxParts);
 			for (int i = 0; i < parts; i++) pixmap->DrawPart(item.chDst, item.channel, dest[i], src[i], item.mode, item.mask);
 			continue;

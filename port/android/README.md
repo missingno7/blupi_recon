@@ -21,6 +21,8 @@ The SDL3 port (`port/`) as an Android app: the same CMake project builds `libmai
     button).
   - The controls sit in the bars beside the frame, or lie lightly over the frame's corners
     when there are no bars.
+  - In the editor, a scroll pad at the bottom right (the game's own button and arrow
+    graphics) scrolls while held; tap tools and cells directly.
 - **Gamepads** work as on the desktop: choose the gamepad under "Choose input device" in the
   game's settings, and Start pauses.
 - **The keyboard** appears only while the game asks for a name.

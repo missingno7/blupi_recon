@@ -498,22 +498,27 @@ Built on stage 3's identities and stage 4's snapshots.
 - **Screen layer.** HUD, texts, jauges and the captured UI stay in the centred 640×480 frame. A
   voyage icon starts at the object's place in the view (the frame offset) and ends at the HUD
   counter (centred offset), blended by its own phase.
-- **The editor** (`WM_PHASE_BUILD`) also shows the wide world, with its frame anchored to the
-  view's left edge (`ViewSpec::frameLeft`).
-  - The toolbar, buttons, tooltips and caption sit at the screen's left edge as in the
-    original, and the extra world is shown to the right.
-  - The view starts at the simulation camera and is never clamped (black beyond the world).
-    Every position inside the frame, on a button or on the map, therefore reaches the game
-    unchanged with the original mapping. The host reports mouse positions relative to wherever
-    the frame lies now (`host::set_frame_x`, updated at every present).
-  - Shifting only the toolbar was rejected. The game uses one coordinate for its buttons and
-    its map, so a moved toolbar would need every click split between two mappings, with hidden
-    buttons left at their old place.
-  - Positions right of the frame, which the original rejects as outside its window, go to
-    `game/editor_wide.cpp`. That is a derivative of `CEvent::BuildDown`/`BuildMove` and
-    `ScreenPosToCelPos`, without the frame bounds test. It places, deletes and highlights
-    cells with the selected tool exactly as a click inside the frame would. Cells outside the
-    world are ignored, like positions outside the original window.
+- **The editor** (`WM_PHASE_BUILD`) places its world exactly like play: the frame centred in
+  the view, clamped at the world's edges (`PlaceView`). Only its screen layer, the toolbar,
+  buttons, tooltips and caption, sits at the view's left edge (`ViewSpec::uiLeft`), as in the
+  original window.
+  - The first version anchored the whole frame to the left edge and never clamped the view.
+    At the world's right end the view then showed black beyond the border (reported by the
+    user, replaced).
+  - The mouse is routed (`PortEditorMouse` in `game/main.cpp`). A press decides its target
+    for the whole drag: on a visible button of the toolbar (`CButton::Detect`'s geometry)
+    it goes to the game unchanged, in UI coordinates. Anywhere else it goes to the world: the
+    game gets a position outside its window (so no button stays highlighted) and the cell
+    under the mouse is handled by `game/editor_wide.cpp`. That is a derivative of
+    `CEvent::BuildDown`/`BuildMove` and `ScreenPosToCelPos`, taking positions relative to the
+    centred frame and without the frame bounds test. It places, deletes and highlights cells
+    with the selected tool exactly as the original click would. Cells outside the world are
+    ignored, like positions outside the original window.
+  - Scrolling: the editor moves its camera by key, without clamping. In a wide view the port
+    stops the arrow keys (and the touch pad) where the clamped view would stop moving, on both
+    sides (`PortEditorScrollBlocked`). So the camera never runs ahead of the view and a
+    reverse press moves the view at once.
+  - The game's cursor sprite is drawn at the host mouse position in the wide editor.
 - **Menus** show the 640×480 frame centred in the wide view.
 - **Mouse.** Positions are reported in frame coordinates (the host subtracts the frame offset).
   The game's cursor sprite is drawn into the wide view. Over the side areas it follows the mouse
@@ -525,9 +530,10 @@ Built on stage 3's identities and stage 4's snapshots.
     640×480 region equals the faithful frame pixel for pixel. The comparison uses `Build`'s rules
     at the frame, since a wider view legitimately draws objects the original culls. That is
     5980 frames per depth, with 529 clamped frames skipped.
-  - `wide_editor16/8`: the same at 21:9 on the editor session, comparing the frame region at
-    the view's left edge on every editor frame (131 compared; the 69 skipped frames are its
-    test play).
+  - `wide_editor16/8`: the same at 21:9 on the editor session (screen layer drawn with the
+    frame for the comparison, `ViewSpec::uiAtFrame`): 97 frames compared, 103 clamped frames
+    skipped. Each run starts from a fresh user directory (`tests/run_fresh.cmake`), since a
+    saved design would change the session.
   - A mutation test (parallax placed without the frame offset) fails all 5980.
 - [EVIDENCE] Windowed runs: `--wide 16:9 --interpolate`, then automatic widescreen from a
   settings file. Each made about 1200 presents in 5.0 s (240 per second) over 100 game frames,

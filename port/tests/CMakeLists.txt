@@ -142,8 +142,11 @@ if(BLUPI_TEST_DATA)
         # The editor's wide view is always centred on its frame (its mouse
         # mapping goes through the frame), so every editor frame is compared.
         add_test(NAME wide_editor${depth}
-            COMMAND blupi --headless --data ${BLUPI_TEST_DATA} --user ${CMAKE_CURRENT_BINARY_DIR}/wide_e${depth}
-                    --color ${depth} --frames 360 --input ${golden}/editor.input --wide 21:9 --check-wide)
+            COMMAND ${CMAKE_COMMAND}
+                -DEXE=$<TARGET_FILE:blupi> -DDATA=${BLUPI_TEST_DATA}
+                -DWORK=${CMAKE_CURRENT_BINARY_DIR}/wide_e${depth}
+                "-DARGS=--color ${depth} --frames 360 --input ${golden}/editor.input --wide 21:9 --check-wide"
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/run_fresh.cmake)
     endforeach()
     # Display options screen (stage 9): opening it on the settings screen,
     # changing settings and closing it changes no game state (the cursor, part

@@ -436,7 +436,12 @@ static bool PortWideWorld(const PortFrame& frame)
 	return frame.world;
 }
 
-static bool PortFrameLeft(const PortFrame& frame)
+#define PORT_EVENT_MEMBERS(X) X(m_index) X(SearchPhase) X(m_buttons)
+BLUPI_MEMBER_ACCESS(PortEventAccess, CEvent, PORT_EVENT_MEMBERS)
+
+// The editor in a wide view: its world is placed like the play view, its
+// screen layer (toolbar, caption) sits at the view's left edge.
+static bool PortUiLeft(const PortFrame& frame)
 {
 	return frame.world && frame.scene.phase == WM_PHASE_BUILD;
 }
@@ -445,17 +450,89 @@ static blupi::scene::ViewSpec PortWideSpec(const PortFrame& frame, int width)
 {
 	blupi::scene::ViewSpec spec;
 	spec.width = width;
-	spec.frameLeft = PortFrameLeft(frame);
+	spec.uiLeft = PortUiLeft(frame);
 	return spec;
 }
 
-// Where the frame lies in the presented view now; the host reports mouse
-// positions relative to it.
+// Where the screen layer lies in the presented view now; the host reports
+// mouse positions relative to it.
 static int PortFrameX(int width)
 {
 	if (width <= LXIMAGE) return 0;
-	const bool left = g_frameValid && !g_bReference && PortFrameLeft(g_frame);
+	const bool left = g_frameValid && !g_bReference && PortUiLeft(g_frame);
 	return blupi::scene::FrameOffset(width, left);
+}
+
+static bool PortWideEditor()
+{
+	return PortViewWidth() > LXIMAGE && g_frameValid && !g_bReference && PortUiLeft(g_frame) &&
+		   g_pEvent != NULL && g_pEvent->GetPhase() == WM_PHASE_BUILD;
+}
+
+// The wide editor's scrolling stops where its view reaches a world edge (the
+// view is clamped there like the play view), so the arrow keys never move the
+// editor's camera without moving the view. Input only: the arrow key is
+// released, and not passed on again, while the camera is past that point;
+// CDecor::MoveStep is unchanged.
+#define PORT_DECOR_MEMBERS(X) X(m_posDecor) X(m_dimDecor)
+BLUPI_MEMBER_ACCESS(PortDecorAccess, CDecor, PORT_DECOR_MEMBERS)
+static bool g_portArrowHeld[2] = {};   // left, right arrow keys as passed to the game
+
+static bool PortEditorScrollBlocked(bool right)
+{
+	if (!PortWideEditor() || g_pDecor == NULL) return false;
+	const int width = PortViewWidth(), centre = (width - LXIMAGE) / 2;
+	const POINT& pos = g_pDecor->*PortDecorAccess::m_posDecor;
+	const POINT& dim = g_pDecor->*PortDecorAccess::m_dimDecor;
+	const int worldWidth = dim.x != 0 ? MAXCELX * DIMOBJX : LXIMAGE;
+	if (worldWidth < width) return false;   // one screen wide: the game does not scroll
+	return right ? pos.x >= worldWidth - width + centre : pos.x <= centre;
+}
+
+// The wide editor's mouse: a press that starts on one of the game's buttons
+// (or an open button menu) goes to the game as it is; elsewhere the position
+// is a place in the world, handed to the editor's tools in the frame's
+// coordinates (game/editor_wide.cpp), while the game sees the mouse leave its
+// buttons. The world frame's place in the view: PlaceView.
+#define PORT_BUTTON_MEMBERS(X) X(m_pos) X(m_dim) X(m_bHide) X(m_nbMenu) X(m_bMouseDown)
+BLUPI_MEMBER_ACCESS(PortButtonAccess, CButton, PORT_BUTTON_MEMBERS)
+static int g_editorPress = 0;          // 0 none, 1 the game's buttons, 2 the world
+
+static bool PortEditorOnButton(int x, int y)
+{
+	CButton (&buttons)[40] = g_pEvent->*PortEventAccess::m_buttons;
+	for (CButton& b : buttons)
+	{
+		if (b.*PortButtonAccess::m_bHide) continue;
+		const POINT& pos = b.*PortButtonAccess::m_pos;
+		const POINT& dim = b.*PortButtonAccess::m_dim;
+		if (dim.x <= 0) continue;   // not created in this phase
+		int width = dim.x;
+		if (b.*PortButtonAccess::m_nbMenu > 1 && b.*PortButtonAccess::m_bMouseDown)
+			width += 2 + (dim.x - 1) * b.*PortButtonAccess::m_nbMenu;   // CButton::Detect
+		if (x >= pos.x && x <= pos.x + width && y >= pos.y && y <= pos.y + dim.y) return true;
+	}
+	return false;
+}
+
+static void PortEditorMouse(UINT message, int keys, int x, int y)
+{
+	const bool down = message == WM_LBUTTONDOWN || message == WM_RBUTTONDOWN;
+	const bool up = message == WM_LBUTTONUP || message == WM_RBUTTONUP;
+	if (down && g_editorPress == 0) g_editorPress = PortEditorOnButton(x, y) ? 1 : 2;
+	const bool buttons = g_editorPress == 1 || (g_editorPress == 0 && PortEditorOnButton(x, y));
+	if (buttons)
+	{
+		WindowProc(message, (WPARAM)keys, MAKELPARAM(x, y));
+	}
+	else
+	{
+		// The game's buttons lose the mouse (hover, a press ending elsewhere).
+		if (!down) WindowProc(up ? message : WM_MOUSEMOVE, 0, MAKELPARAM(-1, -1));
+		const int worldX = blupi::scene::PlaceView(g_frame.scene, g_frame.scene.view, PortViewWidth()).frameX;
+		PortEditorSideMouse(g_pEvent, g_pDecor, message, keys, POINT{x - worldX, y});
+	}
+	if (up) g_editorPress = 0;
 }
 
 // The mouse over a side area of a wide view (frame coordinates, outside the
@@ -484,13 +561,14 @@ static void PortPresentWide(double alpha, int width)
 	{
 		PortPixmapWideBlitBack(frameX);
 	}
-	// The cursor follows the mouse over the side areas too.
+	// The cursor follows the mouse over the side areas too, and everywhere in
+	// the wide editor (whose mouse the game sees only over its buttons).
 	POINT mouse;
 	int mx = 0, my = 0;
 	blupi::host::get_mouse(mx, my);
 	mouse.x = mx;
 	mouse.y = my;
-	const bool side = !g_bHeadless && PortMouseInSideArea(width, mx, my);
+	const bool side = !g_bHeadless && (PortMouseInSideArea(width, mx, my) || (world && PortUiLeft(g_frame)));
 	PortPixmapWideCursor(g_pPixmap, frameX, side ? &mouse : NULL);
 	PortPixmapWideEnd(g_pPixmap);
 	PortPixmapWidePresent();
@@ -548,6 +626,21 @@ static void PortUpdateCoverage()
 	g_sceneCoverage = blupi::scene::Coverage{m + w, m + w, m, m};
 }
 
+// The editor scroll pad of touch screens (platform/touch.h): game buttons with
+// the button sheet's arrows, as the game's own screens use them: 0x32 and 0x33
+// (left, right: the settings' volume buttons), 0x48 and 0x49 (up, down).
+static void PortTouchEditorImages()
+{
+	static const int icons[4] = { 0x32, 0x33, 0x48, 0x49 };
+	std::vector<uint32_t> released[4], pressed[4];
+	for (int d = 0; d < 4; d++)
+	{
+		if (!PortPixmapButtonImage(g_pPixmap, icons[d], false, released[d]) ||
+			!PortPixmapButtonImage(g_pPixmap, icons[d], true, pressed[d])) return;
+	}
+	blupi::host::set_touch_editor_images(released, pressed, DIMBUTTONX);
+}
+
 static void PortSaveSettings()
 {
 	if (g_settingsPath.empty()) return;
@@ -582,8 +675,9 @@ static void PortCheckWide(const PortFrame& frame)
 	if (!PortWideWorld(frame)) return;
 	blupi::scene::ViewSpec spec = PortWideSpec(frame, g_wideWidth);
 	spec.cullAtFrame = true;
-	const int frameX = blupi::scene::FrameOffset(g_wideWidth, spec.frameLeft);
-	if (blupi::scene::PlaceView(frame.scene, frame.scene.view, g_wideWidth, spec.frameLeft).frameX != frameX)
+	spec.uiAtFrame = true;   // the editor's toolbar compared at the frame, too
+	const int frameX = blupi::scene::FrameOffset(g_wideWidth, false);
+	if (blupi::scene::PlaceView(frame.scene, frame.scene.view, g_wideWidth).frameX != frameX)
 	{
 		g_wideSkipped++;
 		return;
@@ -957,9 +1051,7 @@ int Benchmark()
 // memory before the table is not mapped. Setting m_index to the phase being
 // entered first changes nothing observable: ChangePhase sets the same value
 // right after, and the cursor sprite chosen in between is replaced at once by
-// the wait cursor (WaitMouse).
-#define PORT_EVENT_MEMBERS(X) X(m_index) X(SearchPhase)
-BLUPI_MEMBER_ACCESS(PortEventAccess, CEvent, PORT_EVENT_MEMBERS)
+// the wait cursor (WaitMouse). (PortEventAccess: see the top of the file.)
 
 static void PortFirstPhaseIndex(CEvent* event, UINT phase)
 {
@@ -1375,6 +1467,12 @@ void TranslateHostEvent(const blupi::host::Event& e)
 		break;
 	case EventType::KeyDown:
 		if (PortOptionsKey(WM_KEYDOWN, (WPARAM)e.key)) break;
+		if (e.key == VK_LEFT || e.key == VK_RIGHT)
+		{
+			const bool right = e.key == VK_RIGHT;
+			if (PortEditorScrollBlocked(right)) break;
+			g_portArrowHeld[right] = true;
+		}
 		WindowProc(WM_KEYDOWN, (WPARAM)e.key, (LPARAM)(1 | (e.repeat ? (1 << 30) : 0)));
 		// TranslateMessage: control characters that become WM_CHAR.
 		if (e.key == VK_BACK || e.key == VK_RETURN || e.key == VK_ESCAPE || e.key == VK_TAB)
@@ -1382,6 +1480,12 @@ void TranslateHostEvent(const blupi::host::Event& e)
 		break;
 	case EventType::KeyUp:
 		if (PortOptionsKey(WM_KEYUP, (WPARAM)e.key)) break;
+		if (e.key == VK_LEFT || e.key == VK_RIGHT)
+		{
+			const bool right = e.key == VK_RIGHT;
+			if (!g_portArrowHeld[right]) break;   // already released at the editor's edge
+			g_portArrowHeld[right] = false;
+		}
 		WindowProc(WM_KEYUP, (WPARAM)e.key, (LPARAM)(1 | (1 << 30) | (1u << 31)));
 		break;
 	case EventType::Text:
@@ -1395,18 +1499,16 @@ void TranslateHostEvent(const blupi::host::Event& e)
 		UINT message = WM_MOUSEMOVE;
 		if (e.type == EventType::MouseDown) message = e.button == 1 ? WM_LBUTTONDOWN : WM_RBUTTONDOWN;
 		if (e.type == EventType::MouseUp) message = e.button == 1 ? WM_LBUTTONUP : WM_RBUTTONUP;
+		if (PortWideEditor() && !PortOptionsOpen() && e.x >= 0 && e.x < PortViewWidth() && e.y >= 0 && e.y < LYIMAGE)
+		{
+			PortEditorMouse(message, (int)MouseKeys(e), e.x, e.y);
+			break;
+		}
 		if (!e.inside)
 		{
-			// Over the side areas of a wide view: the editor maps them to cells
-			// (game/editor_wide.cpp); elsewhere they are outside the game's
-			// window, as before.
-			const bool side = PortMouseInSideArea(PortViewWidth(), e.x, e.y);
-			if (side && !PortOptionsOpen() && g_frameValid && g_frame.world && g_pEvent != NULL &&
-				g_pEvent->GetPhase() == WM_PHASE_BUILD)
-			{
-				PortEditorSideMouse(g_pEvent, g_pDecor, message, (int)MouseKeys(e), POINT{e.x, e.y});
-			}
-			else if (!side && message == WM_MOUSEMOVE)
+			// Outside the game's window (the side areas of a wide view in play,
+			// the letterbox): as before.
+			if (!PortMouseInSideArea(PortViewWidth(), e.x, e.y) && message == WM_MOUSEMOVE)
 			{
 				WindowProc(WM_NCMOUSEMOVE, 0, 0);
 			}
@@ -1610,6 +1712,16 @@ int BlupiMain(int argc, char** argv)
 		while (!g_bQuit && blupi::host::poll_event(e)) TranslateHostEvent(e);
 		if (g_bQuit) break;
 
+		// The wide editor at a world edge: stop scrolling that way.
+		for (int right = 0; right < 2; right++)
+		{
+			if (g_portArrowHeld[right] && PortEditorScrollBlocked(right != 0))
+			{
+				g_portArrowHeld[right] = false;
+				WindowProc(WM_KEYUP, right ? VK_RIGHT : VK_LEFT, (LPARAM)(1 | (1 << 30) | (1u << 31)));
+			}
+		}
+
 		uint64_t now = blupi::host::now_ns();
 		// Messages already queued (and those they post, e.g. a button's command
 		// after WM_LBUTTONUP) are handled before the timer's WM_UPDATE, as in
@@ -1690,8 +1802,18 @@ int BlupiMain(int argc, char** argv)
 		{
 			const UINT phase = g_pEvent->GetPhase();
 			PortOptionsPhase(phase);
-			// Touch screens: the on-screen controls while the game is played.
-			blupi::host::set_touch_controls(phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST);
+			// Touch screens: the play controls while the game is played; the
+			// scroll pad in the editor, its buttons made from the game's own
+			// sprites when the editor is entered (the palette in force then).
+			if (blupi::host::touch_screen())
+			{
+				static UINT touchPhase = 0;
+				if (phase == WM_PHASE_BUILD && touchPhase != WM_PHASE_BUILD) PortTouchEditorImages();
+				touchPhase = phase;
+			}
+			blupi::host::set_touch_mode(phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST ? blupi::host::TouchMode::Play
+										: phase == WM_PHASE_BUILD ? blupi::host::TouchMode::Editor
+																  : blupi::host::TouchMode::Off);
 			// Android: the on-screen keyboard only while the game asks for text
 			// (the phases whose WM_CHAR handling edits a name, src/event.cpp).
 			if (blupi::host::text_input_on_demand())
