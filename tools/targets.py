@@ -36,6 +36,7 @@ class Target:
     status: str = "active"
     oracle_dir: Path | None = None        # own inventory (tools/derive_target.py); None: oracle/
     address_map: dict[str, Any] | None = None
+    toolchain_tree: str | None = None     # compiler release, if not the manifest's
 
     @property
     def primary(self) -> bool:
@@ -54,6 +55,15 @@ class Target:
         """A source-target VA at this target's address (address map), or None."""
         if not self.address_map:
             return va
+        if kind == "code":
+            for src, dst, size in self.address_map.get("functions", []):
+                start = int(src, 16)
+                if start <= va < start + max(size, 1):
+                    return int(dst, 16) + (va - start)
+        else:
+            for src, dst in self.address_map.get("data_points", []):
+                if int(src, 16) == va:
+                    return int(dst, 16)
         runs = [(int(a, 16), int(b, 16), shift) for a, b, shift in self.address_map[kind]]
         for start, end, shift in runs:
             if start <= va < end:
@@ -71,6 +81,8 @@ class Target:
             return manifest
         manifest = copy.deepcopy(manifest)
         manifest["toolchain"]["defines"] = list(manifest["toolchain"].get("defines", [])) + self.defines
+        if self.toolchain_tree:
+            manifest["toolchain"]["tree"] = self.toolchain_tree
         if self.address_map:
             base = 0x400000
 
@@ -78,16 +90,18 @@ class Target:
                 va = self.translate(base + int(str(value), 0), "code")
                 return None if va is None else va - base
 
+            located = []
             for item in manifest.get("accepted_functions", []):
+                # a function not located in the target is no expectation for it
                 rva = code_rva(item["rva"])
-                if rva is None:
-                    item["withdrawn"] = {"reason": f"not located in target {self.name}"}
-                else:
-                    item["rva"] = rva
-                    if item.get("into"):
-                        into = code_rva(item["into"]["rva"])
-                        if into is not None:
-                            item["into"]["rva"] = into
+                into = code_rva(item["into"]["rva"]) if item.get("into") else None
+                if rva is None or (item.get("into") and into is None):
+                    continue
+                item["rva"] = rva
+                if into is not None:
+                    item["into"]["rva"] = into
+                located.append(item)
+            manifest["accepted_functions"] = located
             mappings = []
             for item in manifest.get("symbol_mappings", []):
                 va = int(str(item["va"]), 0)
@@ -105,11 +119,16 @@ class Target:
         for item in manifest.get("accepted_functions", []):
             override = self.accepted_overrides.get(item["symbol"])
             if override:
-                for key in ("rva", "size", "status"):
+                for key in ("rva", "size", "status", "into"):
                     if key in override:
                         item[key] = override[key]
+                if override.get("status") == "strict":
+                    item.pop("status", None)
+                    item.pop("into", None)
                 if override.get("exclude"):
-                    item["withdrawn"] = {"reason": f"not part of target {self.name}"}
+                    item["exclude"] = True
+        manifest["accepted_functions"] = [item for item in manifest.get("accepted_functions", [])
+                                          if not item.get("exclude")]
         return manifest
 
 
@@ -139,7 +158,8 @@ def load(name: str | None = None) -> Target:
                   manifest_path=ROOT / spec["manifest"], defines=list(spec.get("defines", [])),
                   game_text_end=int(end, 0) if isinstance(end, str) else int(end),
                   accepted_overrides=dict(spec.get("accepted_overrides", {})),
-                  status=spec.get("status", "active"), oracle_dir=oracle_dir, address_map=address_map)
+                  status=spec.get("status", "active"), oracle_dir=oracle_dir, address_map=address_map,
+                  toolchain_tree=spec.get("toolchain_tree"))
 
 
 def add_argument(parser: argparse.ArgumentParser) -> None:

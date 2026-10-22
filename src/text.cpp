@@ -45,7 +45,11 @@ int GetCharWidth(char c, int font)
 {
 	static unsigned char table_width[128] =
 	{
+#if LANGUAGE_ES	// Speedy Eggbert 1, Spanish: glyph 5 (¡) narrower
+		9,10,10,10,10,5,10,10,10,10,10,10,10,10,10,8,
+#else
 		9,10,10,10,10,10,10,10,10,10,10,10,10,10,10,8,
+#endif
 		9,9,8,8,8,8,5,5,8,8,8,9,8,8,10,10,
 		5,6,9,13,11,12,12,6,6,6,12,12,5,9,6,9,
 		8,8,9,9,8,9,8,8,9,9,6,6,8,9,8,11,

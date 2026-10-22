@@ -186,17 +186,7 @@ void AddUserPath(char *pFilename)
 
 	if ( g_CDPath[0] != 0 )  return;
 
-#if _EGAMES
-	strcpy(temp, "c:\\Planet Blupi Full\\");
-#if _DEMO
-	strcpy(temp, "c:\\Planet Blupi Demo\\");
-#endif
-#if _SE
-	strcpy(temp, "c:\\Planet Blupi SE\\");
-#endif
-#else
 	strcpy(temp, "c:\\Speedy Blupi\\");
-#endif
 
 	att.nLength = sizeof(SECURITY_ATTRIBUTES);
 	att.lpSecurityDescriptor = NULL;

@@ -27,11 +27,7 @@
 // Define Globals
 
 #define NAME        "Blupi"
-#if _EGAMES
-#define TITLE       "Eggbert"
-#else
 #define TITLE		"Blupi"
-#endif
 
 // If FALSE, use the primitive SetTimer method for frame time (like Planet Blupi)
 // If TRUE, use the more accurate (yet still deprecated) timeSetEvent method from Windows Multimedia.
@@ -110,7 +106,7 @@ BOOL ReadConfig(LPSTR lpCmdLine)
 	pText = strstr(buffer, "CD-Rom=");
 	if (pText == NULL)
 	{
-#if _DEMO
+#if _DEMO || _EGAMES
 		GetCurrentDirectory(MAX_PATH, g_CDPath);
 		i = strlen(g_CDPath);
 		if (i > 0 && g_CDPath[i - 1] != '\\')

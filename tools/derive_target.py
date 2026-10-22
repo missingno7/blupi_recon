@@ -40,7 +40,7 @@ def sections(pe):
     return {s.Name.rstrip(b"\0").decode(): s for s in pe.sections}
 
 
-def masked_regex(code: bytes, va: int) -> re.Pattern:
+def masked_regex(code: bytes, va: int, prefix: bool = False) -> re.Pattern:
     md = Cs(CS_ARCH_X86, CS_MODE_32)
     parts, wild, pos = [], 0, 0
     for ins in md.disasm(code, va):
@@ -62,7 +62,7 @@ def masked_regex(code: bytes, va: int) -> re.Pattern:
         pos += len(b)
     if wild:
         parts.append(b".{%d}" % wild)
-    if pos < len(code) * 0.9:
+    if pos == 0 or (not prefix and pos < len(code) * 0.9):
         return None
     return re.compile(b"".join(parts), re.S)
 
@@ -124,13 +124,53 @@ def locate_functions(src_pe, dst_pe, rows):
         if d1 == d2:
             mapped[rva] = rva + d1
             continue
-        start = rva + d1
-        if not (mapped[prev] < start < mapped[nxt]):
-            continue
-        before_byte = d_data[start - d_base - 1] if start - d_base >= 1 else 0
-        if before_byte in (0xCC, 0x90, 0xC3) or d_data[start - d_base - 3] == 0xC2:
-            mapped[rva] = start
+        # either neighbour's shift, where the function's first bytes (masked) are found
+        size = next(int(r["size"]) for r in rows if int(r["rva"], 16) == rva)
+        code = s_data[rva - s_text.VirtualAddress:rva - s_text.VirtualAddress + min(size, 24)]
+        rx = masked_regex(code, BASE + rva, prefix=True)
+        for shift in (d1, d2):
+            start = rva + shift
+            if not (mapped[prev] < start < mapped[nxt]):
+                continue
+            at = start - d_base
+            if rx is not None and rx.match(d_data, at):
+                mapped[rva] = start
+                break
     return mapped
+
+
+def xref_pairs(src_pe, dst_pe, mapped, rows):
+    """Address pairs read from functions located in both builds: at the same
+    instruction of the same code, a call target or an image address in one
+    build corresponds to the one in the other. Returns {src_va: {dst_va: votes}}."""
+    s_text, d_text = sections(src_pe)[".text"], sections(dst_pe)[".text"]
+    s_data, d_data = s_text.get_data(), d_text.get_data()
+    sizes = {int(r["rva"], 16): int(r["size"]) for r in rows}
+    md = Cs(CS_ARCH_X86, CS_MODE_32)
+    votes = {}
+    for s_rva, d_rva in mapped.items():
+        size = sizes.get(s_rva, 0)
+        a = s_data[s_rva - s_text.VirtualAddress:s_rva - s_text.VirtualAddress + size]
+        b = d_data[d_rva - d_text.VirtualAddress:d_rva - d_text.VirtualAddress + size]
+        ia = list(md.disasm(a, BASE + s_rva))
+        ib = list(md.disasm(b, BASE + d_rva))
+        for x, y in zip(ia, ib):
+            if x.mnemonic != y.mnemonic or x.size != y.size:
+                break
+            xb, yb = bytes(x.bytes), bytes(y.bytes)
+            if xb[0] in (0xE8, 0xE9) and x.size == 5:
+                src = x.address + 5 + int.from_bytes(xb[1:5], "little", signed=True)
+                dst = y.address + 5 + int.from_bytes(yb[1:5], "little", signed=True)
+                votes.setdefault(src, {}).setdefault(dst, 0)
+                votes[src][dst] += 1
+                continue
+            for i in range(x.size - 3):
+                sv = int.from_bytes(xb[i:i + 4], "little")
+                dv = int.from_bytes(yb[i:i + 4], "little")
+                if BASE <= sv < BASE + 0x100000 and BASE <= dv < BASE + 0x100000:
+                    votes.setdefault(sv, {}).setdefault(dv, 0)
+                    votes[sv][dv] += 1
+    return votes
 
 
 def segments(pairs, gap_ok=0x1000):
@@ -195,6 +235,28 @@ def main() -> int:
     tu_rows = list(csv.DictReader(open(src_oracle / "tu_map.csv", encoding="utf-8-sig")))
 
     mapped = locate_functions(src_pe, dst_pe, rows)
+    # Functions the search could not place (bodies too short to be unique, or
+    # shared by identical-code folding, which the linkers resolve differently)
+    # take the address the located code calls them at, by majority.
+    votes = xref_pairs(src_pe, dst_pe, mapped, rows)
+    starts = {int(r["rva"], 16) for r in rows}
+    taken = set(mapped.values())
+    for va, choices in votes.items():
+        rva = va - BASE
+        if rva in starts and rva not in mapped:
+            dst, n = max(choices.items(), key=lambda kv: kv[1])
+            if n >= 2 * (sum(choices.values()) - n) and dst - BASE not in taken:
+                mapped[rva] = dst - BASE
+                taken.add(dst - BASE)
+    # Exact data pairs (image addresses in data sections, read the same way).
+    text_end = BASE + sections(src_pe)[".text"].VirtualAddress + sections(src_pe)[".text"].Misc_VirtualSize
+    data_points = []
+    for va, choices in sorted(votes.items()):
+        if va < text_end:
+            continue
+        dst, n = max(choices.items(), key=lambda kv: kv[1])
+        if n >= 2 * (sum(choices.values()) - n):
+            data_points.append(["0x%x" % va, "0x%x" % dst])
     out = ROOT / "oracle" / args.target.replace("/", "-")
     out.mkdir(parents=True, exist_ok=True)
 
@@ -217,7 +279,10 @@ def main() -> int:
     write("tu_map.csv", tu_rows)
     code = segments([(BASE + s, BASE + d) for s, d in mapped.items()])
     data = align_data(src_pe, dst_pe)
+    sizes = {int(r["rva"], 16): int(r["size"]) for r in rows}
     amap = {"from": src_name, "to": args.target,
+            "functions": [["0x%x" % (BASE + s), "0x%x" % (BASE + d), sizes[s]] for s, d in sorted(mapped.items())],
+            "data_points": data_points,
             "code": [["0x%x" % a, "0x%x" % b, s] for a, b, s in code],
             "data": [["0x%x" % a, "0x%x" % b, s] for a, b, s in data]}
     (out / "address_map.json").write_text(json.dumps(amap, indent=1) + "\n", encoding="utf-8")

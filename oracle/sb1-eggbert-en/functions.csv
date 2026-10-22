@@ -234,6 +234,8 @@ rva,size,end,name,kind
 0x191e0,71,0x19227,FUN_00419200,game
 0x19230,59,0x1926b,FUN_00419250,game
 0x19270,113,0x192e1,FUN_00419290,game
+0x19280,6919,0x1ad87,FUN_00419310,game
+0x1ad90,7,0x1ad97,FUN_0041ae20,game
 0x1ada0,59,0x1addb,FUN_0041ae30,game
 0x1ade0,77,0x1ae2d,FUN_0041ae70,game
 0x1ae30,146,0x1aec2,FUN_0041aec0,game
@@ -279,8 +281,10 @@ rva,size,end,name,kind
 0x1eee0,38,0x1ef06,FUN_0041ef60,game
 0x1ef10,4,0x1ef14,FUN_0041ef90,game
 0x1ef20,24,0x1ef38,FUN_0041efa0,game
+0x20be0,4,0x20be4,FUN_0041efc0,game
 0x1ef40,24,0x1ef58,FUN_0041efd0,game
 0x1ef60,20,0x1ef74,FUN_0041eff0,game
+0x1ed60,1,0x1ed61,FUN_0041f010,game
 0x1ef80,18,0x1ef92,FUN_0041f020,game
 0x1efa0,117,0x1f015,FUN_0041f040,game
 0x1f030,107,0x1f09b,FUN_0041f0d0,game
@@ -542,7 +546,6 @@ rva,size,end,name,kind
 0x2a7e0,27,0x2a7fb,FUN_0042aad0,crt/library
 0x2a800,664,0x2aa98,FUN_0042aaf0,crt/library
 0x2ab40,27,0x2ab5b,_abort,crt/library
-0x2ab60,312,0x2ac98,FUN_0042ae50,crt/library
 0x2ac90,30,0x2acae,FUN_0042af90,crt/library
 0x2acb0,143,0x2ad3f,FUN_0042afb0,crt/library
 0x2ad40,152,0x2add8,FUN_0042b040,crt/library

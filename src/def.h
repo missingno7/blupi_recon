@@ -10,7 +10,9 @@
 
 #define _DEMO			FALSE	// TRUE=demo, FALSE=complet
 #define _INTRO			FALSE	// TRUE si images d'introduction
+#ifndef _EGAMES			// set by the eGames targets (targets.json)
 #define _EGAMES			FALSE	// TRUE version pour eGames
+#endif
 #define _SE				FALSE	// TRUE eGames Special Edition
 
 
@@ -1298,6 +1300,17 @@ Term;
 // (targets.json, docs/MULTI_GAME.md): 1 in the German builds.
 #ifndef LANGUAGE_DE
 #define LANGUAGE_DE 0
+#endif
+// Speedy Eggbert 1's language data (texttables.h, text.cpp): its German,
+// Spanish, Italian and Portuguese builds compose more letters.
+#ifndef LANGUAGE_ACCENTS
+#define LANGUAGE_ACCENTS 0
+#endif
+#ifndef LANGUAGE_ES
+#define LANGUAGE_ES 0
+#endif
+#ifndef LANGUAGE_PT
+#define LANGUAGE_PT 0
 #endif
 
 #endif /* DEF_H */

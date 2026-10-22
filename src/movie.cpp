@@ -230,10 +230,6 @@ CMovie::~CMovie()
 
 BOOL CMovie::Create()
 {
-#if _EGAMES
-	m_bEnable = FALSE;
-	return FALSE;
-#else
 	if ( initAVI() )
 	{
 		m_bEnable = TRUE;
@@ -244,7 +240,6 @@ BOOL CMovie::Create()
 		m_bEnable = FALSE;
 		return FALSE;
 	}
-#endif
 }
 
 // Retourne l'état de DirectMovie.

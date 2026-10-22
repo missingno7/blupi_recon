@@ -631,14 +631,17 @@ def verify_data_target(pe: pefile.PE, coff: Coff, symbol: Symbol, addend: int,
         # MSVC's uninitialized globals share the image's writable .data output
         # section. PE file alignment can put the start of that zero-fill area in
         # the last file-alignment unit of raw .data, before VirtualSize exceeds
-        # SizeOfRawData. Accept only the virtual tail or an all-zero aligned tail.
+        # SizeOfRawData. Accept only the virtual tail or an all-zero aligned tail;
+        # an object may straddle the end of the raw bytes into the virtual tail
+        # (LINK 5.00, Speedy Eggbert 1: g_CDPath), all zero either way.
         file_alignment = max(1, int(pe.OPTIONAL_HEADER.FileAlignment))
         aligned_tail = max(0, oracle_section.SizeOfRawData - file_alignment) if oracle_section else 0
         in_virtual_bss = (oracle_section is not None and oracle_name == ".data"
                           and oracle_offset >= oracle_section.SizeOfRawData)
         in_zero_file_tail = (oracle_section is not None and oracle_name == ".data"
                              and oracle_offset >= aligned_tail
-                             and oracle_offset + len(expected) <= oracle_section.SizeOfRawData
+                             and oracle_offset + len(expected) <= max(oracle_section.SizeOfRawData,
+                                                                      oracle_section.Misc_VirtualSize)
                              and actual is not None and not any(actual))
         kind_ok = in_virtual_bss or in_zero_file_tail
         if kind_ok:

@@ -234,6 +234,8 @@ rva,size,tu,confidence,best_source,status,evidence
 0x191e0,71,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x19230,59,event.cpp,anchored,sb2:event.cpp:CEvent::SetMission,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (64 bytes, STRICT); CEvent::SetMission"
 0x19270,113,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
+0x19280,6919,event.cpp,bracketed,sb2:event.cpp:CEvent::ChangePhase,none,"[EVIDENCE] references literal ""CEvent::ChangePhase [LoadImages]""; movie path; sound path; imports: WINMM.dll,USER32.dll"
+0x1ad90,7,event.cpp,anchored,sb2:event.cpp:CEvent::GetPhase,strict,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (16 bytes, STRICT); CEvent::GetPhase"
 0x1ada0,59,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
 0x1ade0,77,event.cpp,anchored,sb2:event.cpp:CEvent::MovieToStart,similar,"[EVIDENCE] unique cmpfunc location from sb2:event.cpp (80 bytes, RELOC-UNVERIFIED); CEvent::MovieToStart; calls: 0x18db0,0x1c0b0,0x19310"
 0x1ae30,146,event.cpp,bracketed,sb2:event.cpp,none,[EVIDENCE] bracketed by unique source anchors in TU block
@@ -279,8 +281,10 @@ rva,size,tu,confidence,best_source,status,evidence
 0x1eee0,38,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::SetLevel,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (48 bytes, STRICT); CJauge::SetLevel"
 0x1ef10,4,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::GetType,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (16 bytes, STRICT); CJauge::GetType"
 0x1ef20,24,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::SetType,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (32 bytes, STRICT); CJauge::SetType"
+0x20be0,4,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::GetHide,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (16 bytes, STRICT); CJauge::GetHide"
 0x1ef40,24,jauge.cpp,anchored,sb2:jauge.cpp:CJauge::SetHide,strict,"[EVIDENCE] unique cmpfunc location from sb2:jauge.cpp (32 bytes, STRICT); CJauge::SetHide"
 0x1ef60,20,menu.cpp,anchored,sb2:menu.cpp:CMenu::CMenu,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (32 bytes, STRICT); CMenu::CMenu"
+0x1ed60,1,menu.cpp,bracketed,sb2:menu.cpp,strict,[EVIDENCE] comparator has masked/ambiguous candidate(s); location/function identity is not unique; [EVIDENCE] integrated STRICT code and relocation match for ??1CMenu@@QAE@XZ in src/menu.cpp object.
 0x1ef80,18,menu.cpp,anchored,sb2:menu.cpp:CMenu::Delete,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (32 bytes, STRICT); CMenu::Delete"
 0x1efa0,117,menu.cpp,anchored,sb2:menu.cpp:CMenu::TreatEvent,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (144 bytes, RELOC-UNVERIFIED); CMenu::TreatEvent; calls: 0x1f330,0x1f140,0x1f150; [EVIDENCE] integrated STRICT code and relocation match for ?TreatEvent@CMenu@@QAEHIIJ@Z in src/menu.cpp object."
 0x1f030,107,menu.cpp,anchored,sb2:menu.cpp:CMenu::Detect,strict,"[EVIDENCE] unique cmpfunc location from sb2:menu.cpp (112 bytes, STRICT); CMenu::Detect"

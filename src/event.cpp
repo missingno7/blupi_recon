@@ -1178,7 +1178,7 @@ BOOL CEvent::DrawButtons()
 		pos.y = 446;
 #endif
 #if _EGAMES
-		DrawText(m_pPixmap, pos, (char*)"Version 1.0", FONTLITTLE);
+		DrawText(m_pPixmap, pos, (char*)"Version 1.1", FONTLITTLE);
 #else
 		DrawText(m_pPixmap, pos, (char*)"Version 1.0", FONTLITTLE);
 #endif
@@ -1198,11 +1198,6 @@ BOOL CEvent::DrawButtons()
 
 	if (m_phase == WM_PHASE_GAMER)
 	{
-#if _EGAMES && !(_DEMO || _VALUE)
-		pos.x = 510;
-		pos.y = 465;
-		DrawText(m_pPixmap, pos, (char*)"by www.epsitec.com", FONTLITTLE);
-#endif
 		LoadString(TX_CHOOSEGAMER, res, 100);
 		pos.x = LXIMAGE / 2 - GetTextWidth(res) / 2;
 		pos.y = 26;
@@ -2012,7 +2007,7 @@ void CEvent::SetMission(int index)
 
 BOOL CEvent::CheckWorld1()
 {
-#if REQUIRE_CD
+#if REQUIRE_CD && !_EGAMES
 	FILE* file;
 	char buf[260];
 
@@ -2041,7 +2036,11 @@ BOOL CEvent::ChangePhase(UINT phase)
 
 	sprintf(str, "CEvent::ChangePhase [Begin] --- %d\r\n", phase - WM_USER);
 	OutputNetDebug(str);
+#if _EGAMES
+	if (phase == WM_PHASE_BYE)
+#else
 	if (phase == WM_PHASE_DOQUIT)
+#endif
 	{
 		PostMessage(m_hWnd, WM_CLOSE, 0, 0);
 		return TRUE;
@@ -2275,8 +2274,10 @@ BOOL CEvent::ChangePhase(UINT phase)
 			}
 			if (!bEnable)
 			{
+#if !_EGAMES
 				OutputNetDebug("CEvent::ChangePhase [Cache error]\r\n");
 				WaitMouse(FALSE);
+#endif
 				m_tryInsertCount = 40;
 				m_tryPhase = m_phase;
 				return ChangePhase(WM_PHASE_INSERT);
