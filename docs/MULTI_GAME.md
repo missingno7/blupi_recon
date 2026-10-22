@@ -1,6 +1,7 @@
 # Multi-game layout plan: every Speedy Blupi and Speedy Eggbert build in one repository
 
-Status (2026-10-22, branch `multi-game`): **steps 1 and 2 in progress**, see Progress below.
+Status (2026-10-22, branch `multi-game`): **steps 1 and 2 done** (open items below); step 3 (SB2)
+not started.
 
 ## Progress
 
@@ -20,14 +21,12 @@ Step 1, matching:
 - [EVIDENCE] `sb1/blupi/fr` verifies exactly like US: 127,456 / 141,488 bytes, with no source change.
 - [EVIDENCE] `sb1/blupi/de`: 127,456 / 141,488 bytes once `DrawButtons` has the German help layout
   (`LANGUAGE_DE`, arithmetic form).
-- `sb1/eggbert/en`: inventory and address map derived (`tools/derive_target.py`; 416/421 game functions
-  located); first report 101,920 / 141,328 strict bytes.
-  - [OPEN] Its linker puts uninitialised data inside `.data`'s raw bytes and lays out exception
-    tables differently, which `cmpfunc.py`'s rules reject (as RELOC-UNVERIFIED or MISMATCH).
-  - [OPEN] The three edition functions (`ReadConfig`, `CheckWorld1`, `ChangePhase`) are not switched
-    yet, and its linker build is not identified.
-- The Eggbert language targets (de, es, fr, it, pt; `.rsrc` and five `table_char` entries) wait for
-  `sb1/eggbert/en`.
+- [EVIDENCE] Speedy Eggbert 1 is version 1.1 of the game, and all six of its targets (en, de, es, fr,
+  it, pt) verify at 123,120 / 141,328 strict bytes. It was linked with VC5 RTM's LINK 5.00.7022;
+  it has no gameplay changes. Differences, matching details and what they mean for the port:
+  [docs/EGGBERT.md](EGGBERT.md).
+- [OPEN] For Eggbert: `WindowProc`'s three padding bytes (and `DoInit`, which depends on it),
+  `ChangePhase` (the primary target's residue), and a whole-image relink.
 
 Step 2:
 - [EVIDENCE] `port/` is split into `common/` (compat, platform, render) and `games/sb1/game/`; the

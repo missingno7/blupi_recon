@@ -117,7 +117,9 @@ The same options exist for one run on the command line: `--wide auto|off|16:9|85
 `--interpolate`, `--present display|tick`, `--fullscreen`, `--integer-scale`, `--scale N`,
 `--language CODE`.
 
-**Speedy Eggbert 1** (the eGames edition) is the same game: point the port at its folder.
+**Speedy Eggbert 1** (the eGames edition, version 1.1 of the game) is the same game: point the
+port at its folder. Version 1.1 changes no gameplay. Like 1.1, the port then quits without the goodbye
+screen; it still shows "Version 1.0" on the title screen ([../docs/EGGBERT.md](../docs/EGGBERT.md)).
 A **CD** (Speedy Blupi 1) works too: the port uses the data at its root and the `SOUND` folder of
 a language folder.
 

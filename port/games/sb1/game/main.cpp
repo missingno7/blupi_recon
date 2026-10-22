@@ -1568,6 +1568,10 @@ void DispatchPosted()
 		if ((msg.message == WM_MOUSEMOVE || msg.message == WM_LBUTTONDOWN || msg.message == WM_LBUTTONUP ||
 			 msg.message == WM_RBUTTONDOWN || msg.message == WM_RBUTTONUP) &&
 			PortOptionsMouse(msg.message, msg.wParam, msg.lParam)) continue;
+		// Speedy Eggbert 1 (version 1.1) closes the program where Speedy Blupi
+		// 1.0 shows its goodbye screen: its ChangePhase quits on WM_PHASE_BYE
+		// (src/event.cpp, _EGAMES), as 1.0's does on WM_PHASE_DOQUIT.
+		if (msg.message == WM_PHASE_BYE && PortEdition() == "eggbert") msg.message = WM_PHASE_DOQUIT;
 		WindowProc(msg.message, msg.wParam, msg.lParam);
 		int ch = msg.message == WM_KEYDOWN ? TranslatedChar(msg.wParam) : 0;
 		if (ch != 0 && !g_bQuit) WindowProc(WM_CHAR, (WPARAM)ch, msg.lParam);

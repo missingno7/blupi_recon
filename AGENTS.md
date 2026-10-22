@@ -9,9 +9,14 @@ Targets (`targets.json`, `tools/targets.py`, docs/MULTI_GAME.md): every build of
 target `game/edition/language`. `sb1/blupi/us` (BLUPI.EXE) is the primary one; every acceptance number
 refers to it, and tools default to it. Other targets are verified with `tools/verify.py --target` on the
 same `src/`:
-- A target's differences are build-wide defines (`LANGUAGE_DE`, `EDITION_EGGBERT`), set by its entry and
-  defaulted to 0 in `def.h`; never per-TU defines. A switch surrounds only code or data that differs in that
-  target's executable and says so in a comment.
+- A target's differences are build-wide defines, set by its entry and defaulted in `def.h`; never per-TU
+  defines. The eGames edition (Speedy Eggbert 1, version 1.1) is the original's own `_EGAMES`; languages are
+  `LANGUAGE_DE` (code) and `LANGUAGE_ACCENTS`, `LANGUAGE_ES`, `LANGUAGE_PT` (data tables). A switch surrounds
+  only code or data that differs in that target's executable and says so in a comment. Branches inherited
+  from the SB2 or Planet Blupi sources that no SB1 executable shows are removed, not kept behind a switch
+  (docs/EGGBERT.md).
+- Only `LANGUAGE_DE` may appear outside `#if`: the port defines it as a run-time call. The other switches
+  are used in `#if` only, and the port leaves them 0.
 - Write a switch as arithmetic on the constant (`140 - 20 * LANGUAGE_DE`), so the port can bind it at run
   time. [EVIDENCE] An `if (LANGUAGE_DE)` block changed TreatEventBase's code in the US build; the arithmetic
   form did not. Keep a form only when the primary report stays byte-identical; otherwise use `#if`.

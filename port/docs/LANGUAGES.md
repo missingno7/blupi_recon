@@ -124,6 +124,10 @@ The built-in packs keep the original's bytes exactly, including the few letters 
 draw (Eggbert's Italian `È`, shown as the font's blank glyph, as in 1999). Only players' packs
 fall back to base letters.
 
+One language difference is not in the packs: Eggbert's Spanish build draws `¡` 5 pixels wide
+instead of 10, through the font's width table, which a pack cannot change. The port draws it 10
+pixels wide in every language ([../../docs/EGGBERT.md](../../docs/EGGBERT.md)).
+
 ## Implementation
 
 - `common/platform/language.cpp`: the format, UTF-8 and Windows-1252. No game types, so every game
