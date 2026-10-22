@@ -6,3 +6,4 @@ android/gradlew.bat text eol=crlf
 *.jar binary
 *.ico binary
 *.png binary
+languages/*.txt text eol=lf
