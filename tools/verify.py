@@ -41,6 +41,11 @@ def load_manifest() -> dict[str, Any]:
     return json.loads(MANIFEST.read_text(encoding="utf-8"))
 
 
+def source_root(manifest: dict[str, Any]) -> Path:
+    """The game's source tree: src/ (SB1), or the manifest's "source_root" (games/sb2/src)."""
+    return ROOT / manifest.get("source_root", "src")
+
+
 def safe_clean_build() -> None:
     build_root = (ROOT / "build").resolve()
     target = BUILD.resolve()
@@ -126,8 +131,8 @@ def compile_units(manifest: dict[str, Any], substitutions: dict[str, Path]) -> l
                    "--log-dir", str(BUILD / "logs")]
         if unit.get("build_path"):
             command.extend(["--build-path", unit["build_path"]])
-        includes = [ROOT / "src"] + [Path(p) for p in tool.get("include_dirs", [])]
-        if source.parent != ROOT / "src":
+        includes = [source_root(manifest)] + [Path(p) for p in tool.get("include_dirs", [])]
+        if source.parent != source_root(manifest):
             includes.insert(0, source.parent)
         for include in includes:
             command.extend(["--include", str(include)])
@@ -359,6 +364,15 @@ def accepted_regressions(manifest: dict[str, Any], by_unit: dict[str, list[dict[
     return errors
 
 
+def owner_record(owner: dict[str, Any], units: dict[str, Any]) -> dict[str, Any]:
+    """A folded body's owner; cmpfunc.py names it src/<stem>.cpp, so another game's tree takes its own unit."""
+    record = {key: owner[key] for key in ("symbol", "rva", "tu")}
+    if record["tu"] not in units:
+        name = Path(record["tu"]).name.lower()
+        record["tu"] = next((unit for unit in units if Path(unit).name.lower() == name), record["tu"])
+    return record
+
+
 def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) -> int:
     accepted = manifest.get("accepted_functions", [])
     known = {(item["symbol"], parse_number(item["rva"]), item["tu"])
@@ -388,7 +402,7 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
                 if func["status"] == "FOLDED":
                     owner = func["folded_into"]
                     withdrawn_item["status"] = "folded"
-                    withdrawn_item["into"] = {name: owner[name] for name in ("symbol", "rva", "tu")}
+                    withdrawn_item["into"] = owner_record(owner, by_unit)
                 else:
                     withdrawn_item.pop("status", None)
                     withdrawn_item.pop("into", None)
@@ -403,7 +417,7 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
             if func["status"] == "FOLDED":
                 owner = func["folded_into"]
                 item["status"] = "folded"
-                item["into"] = {key: owner[key] for key in ("symbol", "rva", "tu")}
+                item["into"] = owner_record(owner, by_unit)
             additions.append(item)
     manifest.setdefault("accepted_functions", []).extend(additions)
     for item in manifest["accepted_functions"]:
@@ -421,9 +435,9 @@ def promote(manifest: dict[str, Any], by_unit: dict[str, list[dict[str, Any]]]) 
     return len(additions) + len(reactivated)
 
 
-def warn_line_endings() -> None:
+def warn_line_endings(root: Path) -> None:
     """src/ is byte-exact (git -text) and CRLF like the original sources; flag accidental LF copies."""
-    for path in sorted((ROOT / "src").iterdir()):
+    for path in sorted(root.iterdir()):
         if path.suffix.lower() in (".cpp", ".h") and b"\n" in path.read_bytes().replace(b"\r\n", b""):
             print(f"warning: {path.relative_to(ROOT)} has non-CRLF line endings")
 
@@ -438,14 +452,16 @@ def main() -> int:
     import targets
     targets.add_argument(parser)
     args = parser.parse_args()
-    global TARGET, BUILD, GAME_TEXT_END, GAME_TEXT_SIZE
+    global TARGET, BUILD, GAME_TEXT_END, GAME_TEXT_SIZE, MANIFEST
     if args.target:
         TARGET = targets.load(args.target)
         if not TARGET.primary:
             TARGET.check_exe()
             print(f"target {TARGET.name}: {TARGET.exe.relative_to(ROOT)}"
                   + (f", defines {' '.join(TARGET.defines)}" if TARGET.defines else ""))
-            if args.accept:
+            if TARGET.manifest_path.resolve() != MANIFEST.resolve():
+                MANIFEST = TARGET.manifest_path  # a game with its own manifest (games/sb2/recon.json)
+            elif args.accept:
                 print("error: --accept promotes into recon.json, the primary target's manifest")
                 return 2
             BUILD = ROOT / "build" / f"verify-{TARGET.slug}"
@@ -466,7 +482,7 @@ def main() -> int:
         print("compiler SHA-256:")
         for name, path in zip(("cl.exe", "c1xx.dll", "c2.exe"), clean_hashes):
             print(f"  {name}: {hash_file(path)}")
-        warn_line_endings()
+        warn_line_endings(source_root(manifest))
         safe_clean_build()
         units = compile_units(manifest, substitutions)
         evidence_objects = compile_crt_evidence(manifest)

@@ -1,8 +1,9 @@
 # Multi-game layout: every Speedy Blupi and Speedy Eggbert build in one repository
 
 Status (2026-10-22): **Speedy Blupi 1 and Speedy Eggbert 1 are done in every language**, in matching
-(nine targets) and in the port (release 1.1.0). The consolidation pass before SB2 is done. **SB2 is
-not started**; its first step is at the end of this file.
+(nine targets) and in the port (release 1.1.0). **SB2 matching has started** with Speedy Eggbert 2
+(`sb2/eggbert/en`): its own oracle, tree `games/sb2/src/` and manifest `games/sb2/recon.json`;
+[SB2.md](SB2.md). The SB2 port is not started.
 
 ## Model
 
@@ -11,7 +12,7 @@ not started**; its first step is at the end of this file.
 | `sb1` Speedy Blupi | `blupi` | 1998-10-14, Epsitec, version 1.0, LINK 5.10 | US (= ENGLISH), DEUTSCH, FRANCAIS | `sb1/blupi/us` (primary), `de`, `fr` |
 | `sb1` | `eggbert` | 1999-06-24, eGames, version 1.1, LINK 5.00.7022 | English, Deu, Esp, Fra, Ita, Por | `sb1/eggbert/en`, `de`, `es`, `fr`, `it`, `pt` |
 | `sb2` Speedy Blupi 2 | `blupi` | 2001-05-03, Epsitec, "LINK 5.00" | english, deutsch, francais | planned |
-| `sb2` | `eggbert` | 2004-05-03, eGames, LINK 5.10 | English | planned |
+| `sb2` | `eggbert` | 2004-05-03, eGames, LINK 5.10 | English | `sb2/eggbert/en` (own tree and manifest) |
 
 - A **game** is one body of C++ source.
 - An **edition** is one product built from it (Blupi or Eggbert).
@@ -37,6 +38,7 @@ Two goals, kept apart:
 | `sb1/blupi/fr` | 127,456 / 141,488 | strings only |
 | `sb1/eggbert/en`, `fr` | 123,120 / 141,328 | `_EGAMES`; WindowProc and DoInit excluded ([EGGBERT.md](EGGBERT.md)) |
 | `sb1/eggbert/de`, `es`, `it`, `pt` | 123,120 / 141,328 | also `LANGUAGE_DE` (de), `LANGUAGE_ACCENTS`, `LANGUAGE_ES` (es), `LANGUAGE_PT` (pt) |
+| `sb2/eggbert/en` | 130,064 / 172,992 | own tree `games/sb2/src/`; 441 STRICT, 11 FOLDED; engine, application and game logic ([SB2.md](SB2.md)) |
 
 `tools/verify.py` without `--target` is the primary target, byte-identical to its report before the
 registry existed. `--target <id>` verifies another one on the same `src/`; targets with their own
@@ -180,24 +182,28 @@ port/games/sb1/       the SB1 program: game/, with its golden traces in port/tes
 port/languages/       built-in language packs
 ```
 
-**`src/` stays where it is until SB2 starts.** Moving it to `games/sb1/src/` now would touch 8
+**`src/` stays where it is** (decided at the SB2 bring-up, [SB2.md](SB2.md) section 9: SB2 fits
+beside it with `games/sb2/src/` and a `source_root` in its manifest). Moving it to `games/sb1/src/` would touch 8
 tools, 468 entries of `recon.json`, 18 of `targets.json`, the port's build and 49 research docs,
 and `tools/cmpfunc.py` (which names `src/`) is pinned by the equivalence certificates, so it
 would also need re-certification. Nothing gains from the move while there is one game. It is the
 first, separate commit of the SB2 bring-up (below), or it is skipped if SB2 fits as well beside
 `src/`.
 
-When SB2 starts:
+With SB2:
 
 ```
-games/sb1/src/        today's src/ (moved in one commit, reports identical)
+src/                  SB1 source (unchanged)
 games/sb2/src/        SB2 source, verified function by function against its own oracle
-oracle/<target>/      one inventory per oracle executable
-port/games/sb2/       the SB2 program, once its source compiles: its own executable,
-                      linking port/common/; no launcher and no combined binary
+games/sb2/recon.json  SB2's manifest ("source_root": "games/sb2/src")
+oracle/sb2-eggbert-en/ SB2's own inventory (tools/target_oracle.py, tools/crossmap.py)
+port/games/sb2/       later: the SB2 program, its own executable linking port/common/
 ```
 
-## SB2: the minimal first step
+## SB2: the first step (done 2026-10-22, [SB2.md](SB2.md))
+
+The plan below was carried out, with the tree kept beside `src/` (step 2) and several engine TUs
+seeded (step 3).
 
 1. **Registry and inventory only.** Activate `sb2/eggbert/en` in `targets.json` (asset, SHA-256,
    LINK 5.10, build path `D:\Blupi\Profil egames 2\`) and derive its inventory with Ghidra into
@@ -234,7 +240,9 @@ Taken (2026-10-22):
 - Custom accent glyphs come later, with custom graphics.
 - One port program per game, sharing `port/common/`; no launcher until two games exist and the
   need is shown.
-- `src/` stays in place until SB2 starts (above).
+- `src/` stays in place; SB2 has its own tree `games/sb2/src/` and manifest (SB2 bring-up, 2026-10-22).
+- SB2 source starts as a copy of SB1's and changes only from SB2 binary evidence; no shared source
+  files between the games until the SB2 game logic shows which files stay identical.
 
 ## Risks
 

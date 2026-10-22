@@ -27,20 +27,28 @@ import cmpfunc  # noqa: E402
 import pefile  # noqa: E402
 
 EXE = ROOT / "assets" / "Speedy Blupi" / "BLUPI.EXE"
+TARGET = None  # tools/targets.Target (--target); None: the primary target
+
+
+def load_manifest() -> dict:
+    if TARGET is not None and not TARGET.primary:
+        return TARGET.manifest()
+    return json.loads((ROOT / "recon.json").read_text(encoding="utf-8"))
 
 
 def compile_unit(canonical: str, source: Path, out_dir: Path, extra_flags: list[str] | None = None,
                  tree: str | None = None) -> Path:
-    manifest = json.loads((ROOT / "recon.json").read_text(encoding="utf-8"))
+    manifest = load_manifest()
     tool = manifest["toolchain"]
+    source_root = ROOT / manifest.get("source_root", "src")
     unit = next((u for u in manifest["translation_units"] if u["source"] == canonical), {"source": canonical})
     obj = out_dir / (Path(canonical).stem + ".obj")
     command = [sys.executable, str(ROOT / "tools" / "msvc.py"), str(source), "--tree", tree or tool["tree"],
                "--out", str(obj), "--log-dir", str(out_dir / "logs"), "--cwd", str(ROOT)]
     if unit.get("build_path"):
         command += ["--build-path", unit["build_path"]]
-    includes = [ROOT / "src"] + [Path(p) for p in tool.get("include_dirs", [])]
-    if source.parent != ROOT / "src":
+    includes = [source_root] + [Path(p) for p in tool.get("include_dirs", [])]
+    if source.parent != source_root:
         includes.insert(0, source.parent)
     for include in includes:
         command += ["--include", str(include)]
@@ -71,7 +79,13 @@ def main() -> int:
     parser.add_argument("--nostack", action="store_true", help="with --aligned: mask [esp+N] offsets and frame size")
     parser.add_argument("--tree", help="compiler tree override (experiments only)")
     parser.add_argument("--extra-flag", action="append", default=[], help="additional cl flag for experiments only")
+    import targets
+    targets.add_argument(parser)
     args = parser.parse_args()
+    global TARGET, EXE
+    if args.target:
+        TARGET = targets.load(args.target)
+        EXE = TARGET.exe
 
     canonical, _, candidate = args.unit.partition("=")
     source = (ROOT / (candidate or canonical)).resolve()

@@ -4808,6 +4808,47 @@
         "doc_ref": "docs/CONTEXT_REVISIT.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SB2-01",
+      "section": "context",
+      "tier": "PROVEN",
+      "scope": "Speedy Eggbert 2 (sb2/eggbert/en), VC5 SP3 /O2 /GX /Gy; DirectX SDK headers dx5sdk, dx6sdk, dx61sdk, dx7sdk",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Switching DirectX SDK headers shifts every front-end symbol ID; register/operand residues it causes are context windows, not SDK semantics",
+      "symptoms": {
+        "any": [
+          "regalloc_only"
+        ]
+      },
+      "symptom": "SB2 CPixmap::BltFast(int,int,POINT,RECT,int) uses ebp instead of edi and moves one add/sub; two other pixmap functions miss the same way; source unchanged.",
+      "construct": "Compile the same pixmap.cpp/button.cpp with only the SDK include directory changed (dx5sdk/INCLUDE, dx6sdk, dx61sdk, dx7sdk/include).",
+      "explanation": "With dx7 headers pixmap.cpp falls from 36 to 33 STRICT and decblupi.cpp/button.cpp functions with no DirectX code also flip (register/operand order only); dx6/dx61 flip one button.cpp function. ctxpredict shows the cause: the SDK switch moves the next front-end ID by +690 (pixmap.cpp) and +1,229 (decblupi.cpp), far beyond the windows of the flipped key-order decisions (QuickIcon tolerates +46 under dx5; IsLave +45), i.e. BLUPI-CTX-03. So the dx5 'best fit' only reflects today's header entity counts. The one semantic SDK fact is CSound::CreateSoundBuffer's DSBUFFERDESC of 0x24 bytes (guid3DAlgorithm), declared only by DirectX 7's dsound.h (DIRECTSOUND_VERSION >= 0x0700); with it the function differs only in its __LINE__ immediate (64 vs 63).",
+      "experiment": "tools/verify.py --target sb2/eggbert/en --build-dir sdkprobe with games/sb2/recon.json include_dirs set to each SDK, and a scratch include folder of dx5sdk/INCLUDE with dx7sdk dsound.h; tools/fnprobe.py --target sb2/eggbert/en for CreateSoundBuffer (0x2a270) and BltFast (0x28dc0)",
+      "not_when": "Untested: DirectX 8 headers. The historical include set is [OPEN]; the simplest consistent hypothesis is DX7 headers for every TU with source/headers whose entity counts differ from the current reconstruction.",
+      "matching_effect": "Do not read SDK choice from register-only residues. Keep the SB2 manifest's dx5sdk as a reproducing configuration for the current header approximation, and treat the DX7 dsound.h requirement as historical evidence.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:docs/SB2.md",
+          "tier": "PROVEN",
+          "counts": "5 full SB2 verify runs (dx5, dx6, dx61, dx7, dx5+dx7 dsound.h), 3 fnprobe compiles"
+        }
+      ],
+      "keywords": "DirectX SDK header version include path dsound.h ddraw.h DSBUFFERDESC guid3DAlgorithm register allocation context SB2 Eggbert",
+      "blupi_status": "validated",
+      "blupi_evidence": {
+        "function": "CPixmap::BltFast, CSound::CreateSoundBuffer",
+        "tu": "games/sb2/src/pixmap.cpp, games/sb2/src/sound.cpp",
+        "flags": "/W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": "5 verify runs (11 TUs each) + 3 probes",
+        "outcome": "dx5sdk headers are the best fit for every SB2 TU but sound's DSBUFFERDESC size; no strict gain from changing SDKs",
+        "doc_ref": "docs/SB2.md"
+      },
+      "legacy_ids": []
     }
   ]
 }

@@ -400,7 +400,11 @@
       "built": "2004-05-03",
       "linker": "LINK 5.10",
       "build_path": "D:\\Blupi\\Profil egames 2\\sound.cpp",
-      "status": "planned"
+      "status": "active",
+      "manifest": "games/sb2/recon.json",
+      "oracle": "oracle/sb2-eggbert-en",
+      "defines": [],
+      "game_text_end": "0x2b3c0"
     }
   }
 }

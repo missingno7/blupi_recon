@@ -14,6 +14,11 @@ with DefineDosDeviceW, which only affects the current logon session and is never
   * a machine-wide lock (build/locks/drive-<X>.lock) serializes all users of the same drive letter;
   * the mapping is removed in `finally`, including on compile failure or KeyboardInterrupt.
 
+Builds whose path lies on a drive in use (the SB2 builds' D:\\Blupi\\Profil\\ and D:\\Blupi\\Profil egames 2\\,
+FOLDER_PATHS) use a folder instead, as the user allowed on 2026-10-22: the missing folders of the path are created for
+one compile, under the same drive lock, and exactly what was created (the file and those folders) is removed again;
+an existing file at the path is never overwritten.
+
 Inspection / self-test:  .pyenv\\python.exe tools\\buildpath.py status F:
                          .pyenv\\python.exe tools\\buildpath.py selftest F:\\Profil\\sound.cpp
 """
@@ -44,6 +49,10 @@ _kernel32.DefineDosDeviceW.restype = wintypes.BOOL
 _kernel32.QueryDosDeviceW.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
 _kernel32.QueryDosDeviceW.restype = wintypes.DWORD
 _kernel32.GetLogicalDrives.restype = wintypes.DWORD
+
+
+# Historical folders on a drive in use that may be created for one compile (user permission, 2026-10-22).
+FOLDER_PATHS = (r"D:\Blupi\Profil", r"D:\Blupi\Profil egames 2")
 
 
 class DriveInUse(RuntimeError):
@@ -107,9 +116,52 @@ def _remove(drive: str, target: str) -> None:
 
 
 @contextlib.contextmanager
+def _historical_folder(source: Path, build_path: str):
+    """Create the missing folders of `build_path` and a copy of `source` there; remove exactly those afterwards."""
+    path = Path(build_path)
+    if path.exists():
+        raise DriveInUse(f"{build_path} already exists; refusing to overwrite it")
+    created: list[Path] = []
+    folder = path.parent
+    missing = []
+    while not folder.exists():
+        missing.append(folder)
+        folder = folder.parent
+    data = source.read_bytes()
+    try:
+        try:
+            for item in reversed(missing):
+                item.mkdir()
+                created.append(item)
+            with open(path, "xb") as stream:
+                stream.write(data)
+        except PermissionError as exc:
+            raise MappingDenied(f"this process may not create {build_path} (sandboxed?): {exc}") from exc
+        try:
+            if path.read_bytes() != data:
+                raise RuntimeError(f"{build_path} is not the copy of {source}")
+            yield build_path
+        finally:
+            if path.read_bytes() == data:
+                path.unlink()
+    finally:
+        for item in reversed(created):
+            with contextlib.suppress(OSError):
+                item.rmdir()   # only when empty: never removes anything we did not create
+        left = [str(item) for item in created if item.exists()]
+        if left:
+            raise RuntimeError(f"temporary build folders left behind: {left}")
+
+
+@contextlib.contextmanager
 def historical_path(source: Path, build_path: str):
     """Yield `build_path` (a str) while it temporarily resolves to a byte-identical copy of `source`."""
     drive, relative = split_build_path(build_path)
+    if str(PureWindowsPath(build_path).parent).lower() in (item.lower() for item in FOLDER_PATHS):
+        with _drive_lock(drive):
+            with _historical_folder(source, build_path) as path:
+                yield path
+        return
     staging = ROOT / "build" / "histpath" / drive[0]
     target = "\\??\\" + str(staging.resolve())
     with _drive_lock(drive):

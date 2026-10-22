@@ -5,3 +5,4 @@ tools/fixtures/*.patch -text -whitespace
 # Equivalence certificates pin these files' raw hashes; preserve their bytes.
 tools/equivalence.py -text
 tools/cmpfunc.py -text
+games/sb2/src/** -text

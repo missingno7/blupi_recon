@@ -1,0 +1,23 @@
+{
+ "target": "sb2/eggbert/en",
+ "exe_sha256": "e6b2ac0ca8624d2b2fb483c8d96c9aadfa4ab5ccea4d39aa8f75ef7f465d7d8d",
+ "source": "Ghidra headless analysis of the target executable alone (tools/target_oracle.py)",
+ "function_count": 627,
+ "function_kind_counts": {
+  "game": 449,
+  "thunk": 8,
+  "crt/library": 170
+ },
+ "function_body_bytes_by_kind": {
+  "game": 167139,
+  "thunk": 45,
+  "crt/library": 30660
+ },
+ "crt_split_rva": "0x2b3c0",
+ "game_text_end": "0x2b3c0",
+ "entry_rva": "0x2c850",
+ "text_rva_range": [
+  "0x1000",
+  "0x33aa3"
+ ]
+}
