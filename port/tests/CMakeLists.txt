@@ -220,3 +220,8 @@ add_executable(test_settings test_settings.cpp)
 target_link_libraries(test_settings PRIVATE blupi_hist_context blupi_game)
 target_include_directories(test_settings PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 add_test(NAME settings COMMAND test_settings ${CMAKE_CURRENT_BINARY_DIR}/settings_test.json)
+
+# Language packs (platform/language.cpp, the built-in packs in languages/).
+add_executable(test_language test_language.cpp)
+target_link_libraries(test_language PRIVATE blupi_platform)
+add_test(NAME language COMMAND test_language ${CMAKE_CURRENT_SOURCE_DIR}/../languages)

@@ -126,6 +126,7 @@ bool PortSettingsLoad(const char* path, PortSettings& settings)
 	ReadBool(values, "integerScale", settings.integerScale);
 	ReadInt(values, "scale", settings.scale, 1, 8);
 	ReadString(values, "dataFolder", settings.dataFolder);
+	ReadString(values, "language", settings.language);
 	return true;
 }
 
@@ -147,6 +148,10 @@ bool PortSettingsSave(const char* path, const PortSettings& settings)
 	if (!settings.dataFolder.empty())
 	{
 		fprintf(file, ",\n  \"dataFolder\": %s", Quoted(settings.dataFolder).c_str());
+	}
+	if (!settings.language.empty())
+	{
+		fprintf(file, ",\n  \"language\": %s", Quoted(settings.language).c_str());
 	}
 	fprintf(file, "\n}\n");
 	bool ok = ferror(file) == 0;

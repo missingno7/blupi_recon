@@ -5,6 +5,8 @@
 //              up case-insensitively so the original upper-case CD names work.
 //   user root  every write lands here (saves, user missions, recorded demos);
 //              reads look here first, so a user file shadows the game file.
+//   language root  optional, read-only, between the two: a CD's language
+//              folder, which holds the SOUND folder the CD root lacks.
 //
 // This keeps assets/ immutable and gives Android/Linux a single place for
 // writable data later (SDL_GetPrefPath).
@@ -18,10 +20,12 @@
 namespace blupi::vfs
 {
     void set_roots(const std::string& gameRoot, const std::string& userRoot);
+    void set_language_root(const std::string& languageRoot);   // empty: none
     const std::string& game_root();
     const std::string& user_root();
+    const std::string& language_root();
 
-    // Existing file for reading: user root first, then game root. Empty if absent.
+    // Existing file for reading: user root, language root, game root. Empty if absent.
     std::string resolve_read(const char* gamePath);
     // Destination in the user root; parent directories are created.
     std::string resolve_write(const char* gamePath);

@@ -15,6 +15,7 @@ namespace
 {
 std::string g_gameRoot;
 std::string g_userRoot;
+std::string g_languageRoot;
 
 // "data\\World001.blp", "\\User\\a.xch", "c:\\x\\y" -> {"data","World001.blp"} ...
 std::vector<std::string> split(const char* gamePath)
@@ -109,14 +110,21 @@ void set_roots(const std::string& gameRoot, const std::string& userRoot)
     fs::create_directories(fs::u8path(g_userRoot), ec);
 }
 
+void set_language_root(const std::string& languageRoot)
+{
+    g_languageRoot = languageRoot;
+}
+
 const std::string& game_root() { return g_gameRoot; }
 const std::string& user_root() { return g_userRoot; }
+const std::string& language_root() { return g_languageRoot; }
 
 std::string resolve_read(const char* gamePath)
 {
     std::vector<std::string> parts = split(gamePath);
     fs::path found;
-    if (lookup(g_userRoot, parts, found) || lookup(g_gameRoot, parts, found))
+    if (lookup(g_userRoot, parts, found) || lookup(g_languageRoot, parts, found) ||
+        lookup(g_gameRoot, parts, found))
         return found.u8string();
     return std::string();
 }
@@ -141,7 +149,8 @@ FILE* open(const char* gamePath, const char* mode)
     if (std::strpbrk(mode, "a+") && !fs::exists(target, ec))
     {
         fs::path original;
-        if (lookup(g_gameRoot, parts, original)) fs::copy_file(original, target, ec);
+        if (lookup(g_languageRoot, parts, original) || lookup(g_gameRoot, parts, original))
+            fs::copy_file(original, target, ec);
     }
     return std::fopen(target.u8string().c_str(), mode);
 }
@@ -169,7 +178,7 @@ std::vector<std::string> list(const char* gamePattern)
     if (parts.empty()) return names;
     std::string pattern = parts.back();
     parts.pop_back();
-    for (const std::string& root : {g_userRoot, g_gameRoot})
+    for (const std::string& root : {g_userRoot, g_languageRoot, g_gameRoot})
     {
         fs::path dir;
         if (!lookup(root, parts, dir)) continue;

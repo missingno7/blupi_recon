@@ -105,6 +105,7 @@ add_library(blupi_platform STATIC
     platform/audio.cpp
     platform/music.cpp
     platform/resources.cpp
+    platform/language.cpp
     platform/icon.cpp)
 target_include_directories(blupi_platform PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(blupi_platform PUBLIC SDL3::SDL3 blupi_render)
@@ -148,10 +149,26 @@ add_library(blupi_game STATIC
     game/editor_wide.cpp
     game/options_screen.cpp
     game/settings.cpp
+    game/language.cpp
     $<TARGET_OBJECTS:blupi_hist>)
 target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform)
 target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
 target_include_directories(blupi_game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+# The built-in language packs (languages/*.txt, port/docs/LANGUAGES.md),
+# embedded for game/language.cpp.
+file(GLOB BLUPI_LANGUAGE_PACKS CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/languages/*.txt)
+list(SORT BLUPI_LANGUAGE_PACKS)
+string(REPLACE ";" "|" BLUPI_LANGUAGE_PACK_ARG "${BLUPI_LANGUAGE_PACKS}")
+set(BLUPI_LANGUAGE_INC ${CMAKE_CURRENT_BINARY_DIR}/generated/language_packs.inc)
+add_custom_command(OUTPUT ${BLUPI_LANGUAGE_INC}
+    COMMAND ${CMAKE_COMMAND} "-DFILES=${BLUPI_LANGUAGE_PACK_ARG}" -DOUT=${BLUPI_LANGUAGE_INC}
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_packs.cmake
+    DEPENDS ${BLUPI_LANGUAGE_PACKS} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/embed_packs.cmake
+    COMMENT "Embedding the language packs"
+    VERBATIM)
+target_sources(blupi_game PRIVATE ${BLUPI_LANGUAGE_INC})
+target_include_directories(blupi_game PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
 
 # Entry point TU (SDL_main) without the compatibility include path. On Android
 # the game is libmain.so, which SDL's Java activity loads.

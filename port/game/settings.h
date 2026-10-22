@@ -17,6 +17,7 @@ struct PortSettings
 	bool integerScale = false;  // scale by whole factors only
 	int  scale = 2;             // initial window size, times 640x480
 	std::string dataFolder;     // the game's files, as chosen on the first run (desktop)
+	std::string language;       // language pack code; empty: the installed language
 };
 
 // path is a host path (the user directory). Missing file or keys keep the

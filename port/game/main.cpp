@@ -651,8 +651,16 @@ static void PortSaveSettings()
 }
 
 // After a change on the "Display options" screen: applied at once and saved.
+// A new language redraws the game's screen underneath: the original draws its
+// texts when a phase starts, so the phase is entered again.
+static std::string g_appliedLanguage;
 static void PortApplySettings()
 {
+	if (g_settings.language != g_appliedLanguage)
+	{
+		g_appliedLanguage = g_settings.language;
+		if (g_pEvent != NULL) g_pEvent->ChangePhase(g_pEvent->GetPhase());
+	}
 	g_presentDisplayRate = g_settings.displayRate;
 	g_bInterpolate = g_settings.interpolate && g_settings.displayRate;
 	if (!g_bHeadless)
@@ -1248,6 +1256,8 @@ struct Options
 	PortSettings settings;                   // file values, then the options below
 	bool        setWide = false, setInterpolate = false, setPresent = false;
 	bool        setFullscreen = false, setScale = false, setIntegerScale = false;
+	bool        setLanguage = false;
+	std::string exportLanguage, exportPath;   // --export-language
 	bool        checkView = false;
 	bool        checkWide = false;
 	int         presentRepeat = 0;           // --present-repeat (test)
@@ -1285,6 +1295,10 @@ void Usage()
 		"                      then soundfont.sf2 in the user directory or next to the program\n"
 		"  --verbose           log the game's debug output\n"
 		"  --version           print the version and exit\n"
+		"  --language CODE     language pack for this run (us, de, fr; Eggbert: en, de, es,\n"
+		"                      fr, it, pt; or a pack in languages/ of the user folder)\n"
+		"  --export-language WHICH FILE  write a built-in language pack (\"de\", \"eggbert-es\")\n"
+		"                      to FILE as a start for a translation, and exit\n"
 		"test options:\n"
 		"  --headless          no window, no audio device, frames run back to back\n"
 		"  --frames N          exit after N game frames (WM_UPDATE)\n"
@@ -1422,6 +1436,12 @@ bool ParseOptions(int argc, char** argv, Options& o)
 		}
 		else if (a == "--help" || a == "-h") return false;
 		else if (a == "--version") o.version = true;
+		else if (a == "--language") { o.settings.language = next(); o.setLanguage = true; }
+		else if (a == "--export-language")
+		{
+			o.exportLanguage = next();
+			o.exportPath = next();
+		}
 		else if (a == "-nocd") {}  // historical switch, meaningless here
 		else
 		{
@@ -1594,6 +1614,13 @@ int BlupiMain(int argc, char** argv)
 		printf("blupi-sdl3 %s\n", BLUPI_PORT_VERSION);
 		return 0;
 	}
+	if (!o.exportLanguage.empty())
+	{
+		bool ok = !o.exportPath.empty() && PortLanguageExport(o.exportLanguage, o.exportPath);
+		printf(ok ? "wrote %s\n" : "no built-in language pack \"%s\" (or cannot write the file)\n",
+			   ok ? o.exportPath.c_str() : o.exportLanguage.c_str());
+		return ok ? 0 : 1;
+	}
 	// Port settings (game/settings.h): the file, then this run's options.
 	// Headless runs use defaults and options only, and save nothing.
 	g_bHeadless = o.host.headless;
@@ -1613,6 +1640,7 @@ int BlupiMain(int argc, char** argv)
 		if (!o.setScale) s.scale = fromFile.scale;
 		if (!o.setIntegerScale) s.integerScale = fromFile.integerScale;
 		s.dataFolder = fromFile.dataFolder;
+		if (!o.setLanguage) s.language = fromFile.language;
 		g_settings = s;
 	}
 	o.host.fullscreen = g_settings.fullscreen;
@@ -1685,6 +1713,26 @@ int BlupiMain(int argc, char** argv)
 	}
 	std::string user = o.userRoot.empty() ? blupi::host::pref_path() : o.userRoot;
 	blupi::vfs::set_roots(root, user);
+	// A CD (Speedy Blupi 1 and 2): the data at its root, SOUND in each language
+	// folder (identical in all of them). The English one is preferred.
+	if (blupi::vfs::resolve_read("sound").empty())
+	{
+		std::string chosen;
+		for (const std::string& sub : blupi::host::subdirectories(root))
+		{
+			blupi::vfs::set_language_root(sub);
+			bool has = !blupi::vfs::resolve_read("sound").empty();
+			blupi::vfs::set_language_root("");
+			if (!has) continue;
+			std::string name = sub.substr(sub.find_last_of("/\\") + 1);
+			for (char& c : name) c = (char)tolower((unsigned char)c);
+			if (chosen.empty() || name == "us" || name == "english") chosen = sub;
+		}
+		blupi::vfs::set_language_root(chosen);
+		if (!chosen.empty()) blupi::host::log_info(("CD layout: language folder " + chosen).c_str());
+	}
+	PortLanguageInit(g_settings.language);
+	g_appliedLanguage = g_settings.language;
 	blupi::audio::init(!o.host.headless);
 
 	// SoundFont for the MIDI music. Headless runs load one only on request, so

@@ -32,6 +32,7 @@ enum : UINT
 	MSG_RATE_PREV, MSG_RATE_NEXT,
 	MSG_WINDOW, MSG_FULLSCREEN,
 	MSG_FIT, MSG_WHOLE,
+	MSG_LANG_PREV, MSG_LANG_NEXT,
 	MSG_LAST,
 };
 
@@ -55,6 +56,7 @@ const Control kControls[] =
 	{ MSG_RATE_PREV,   kIconLeft,  70, 330 }, { MSG_RATE_NEXT,   kIconRight, 110, 330 },
 	{ MSG_WINDOW,      -1,        370, 110 }, { MSG_FULLSCREEN,  -1,         370, 150 },
 	{ MSG_FIT,         -1,        370, 240 }, { MSG_WHOLE,       -1,         370, 280 },
+	{ MSG_LANG_PREV,   kIconLeft, 370, 350 }, { MSG_LANG_NEXT,   kIconRight, 410, 350 },
 	{ MSG_CLOSE,       kIconOk,   541, 411 },
 };
 constexpr int kControlCount = sizeof(kControls) / sizeof(kControls[0]);
@@ -88,6 +90,12 @@ void Text(int x, int y, const char* text, int font)
 	DrawTextLeft(s_pixmap, POINT{x, y}, buffer, font);
 }
 
+// A port text in the current language (ids from 9000, port/docs/LANGUAGES.md).
+void Text(int x, int y, unsigned id, const char* english, int font)
+{
+	Text(x, y, PortLanguageText(id, english).c_str(), font);
+}
+
 // Enables and selects the buttons for the current settings.
 void Refresh()
 {
@@ -104,6 +112,8 @@ void Refresh()
 	Find(MSG_FULLSCREEN)->SetHide(!s_windowChoice);
 	Find(MSG_FIT)->SetState(s.integerScale ? 0 : 1);
 	Find(MSG_WHOLE)->SetState(s.integerScale ? 1 : 0);
+	Find(MSG_LANG_PREV)->SetEnable(PortLanguageCount() > 1);
+	Find(MSG_LANG_NEXT)->SetEnable(PortLanguageCount() > 1);
 }
 
 // The game's cursor rule (CEvent::MousePosToSprite): the pointer over a
@@ -219,6 +229,16 @@ bool PortOptionsCommand(UINT message)
 	case MSG_FULLSCREEN:  s.fullscreen = true; break;
 	case MSG_FIT:         s.integerScale = false; break;
 	case MSG_WHOLE:       s.integerScale = true; break;
+	case MSG_LANG_PREV:
+	case MSG_LANG_NEXT:
+	{
+		const int n = PortLanguageCount();
+		if (n < 2) return true;
+		const int i = (PortLanguageCurrent() + (message == MSG_LANG_NEXT ? 1 : n - 1)) % n;
+		PortLanguageSelect(i);
+		s.language = PortLanguageCode(i);
+		break;
+	}
 	}
 	Changed();
 	return true;
@@ -230,30 +250,36 @@ void PortOptionsDraw()
 	if (!s_open)
 	{
 		s_entry.Draw();
-		Text(kEntryX + 50, kEntryY + 12, "Display options", FONTWHITE);
+		Text(kEntryX + 50, kEntryY + 12, 9000, "Display options", FONTWHITE);
 		return;
 	}
 
 	const PortSettings& s = *s_settings;
-	char title[] = "Display options";
-	Text(LXIMAGE / 2 - GetTextWidth(title, 0) / 2, 36, title, FONTGOLD);
+	std::string title = PortLanguageText(9000, "Display options");
+	Text(LXIMAGE / 2 - GetTextWidth(&title[0], 0) / 2, 36, title.c_str(), FONTGOLD);
 
-	Text(70, 80, "Widescreen", FONTWHITE);
-	Text(160, 122, s.widescreen ? "Window shape" : "Off (4:3)", FONTWHITE);
-	Text(70, 190, "Smooth motion", FONTWHITE);
-	Text(160, 232, !s.displayRate ? "-" : s.interpolate ? "On" : "Off", FONTWHITE);
-	Text(70, 300, "Frame rate", FONTWHITE);
-	Text(160, 342, s.displayRate ? "Monitor" : "Original", FONTWHITE);
+	Text(70, 80, 9001, "Widescreen", FONTWHITE);
+	if (s.widescreen) Text(160, 122, 9002, "Window shape", FONTWHITE);
+	else Text(160, 122, 9003, "Off (4:3)", FONTWHITE);
+	Text(70, 190, 9004, "Smooth motion", FONTWHITE);
+	if (!s.displayRate) Text(160, 232, "-", FONTWHITE);
+	else if (s.interpolate) Text(160, 232, 9005, "On", FONTWHITE);
+	else Text(160, 232, 9006, "Off", FONTWHITE);
+	Text(70, 300, 9007, "Frame rate", FONTWHITE);
+	if (s.displayRate) Text(160, 342, 9008, "Monitor", FONTWHITE);
+	else Text(160, 342, 9009, "Original", FONTWHITE);
 
 	if (s_windowChoice)
 	{
-		Text(370, 80, "Display", FONTWHITE);
-		Text(420, 122, "Window", FONTWHITE);
-		Text(420, 162, "Full screen", FONTWHITE);
+		Text(370, 80, 9010, "Display", FONTWHITE);
+		Text(420, 122, 9011, "Window", FONTWHITE);
+		Text(420, 162, 9012, "Full screen", FONTWHITE);
 	}
-	Text(370, 210, "Scaling", FONTWHITE);
-	Text(420, 252, "Fit the window", FONTWHITE);
-	Text(420, 292, "Whole pixels", FONTWHITE);
+	Text(370, 210, 9013, "Scaling", FONTWHITE);
+	Text(420, 252, 9014, "Fit the window", FONTWHITE);
+	Text(420, 292, 9015, "Whole pixels", FONTWHITE);
+	Text(370, 320, 9016, "Language", FONTWHITE);
+	Text(460, 362, PortLanguageName(PortLanguageCurrent()).c_str(), FONTWHITE);
 	Text(70, 440, "SDL3 port " BLUPI_PORT_VERSION, FONTLITTLE);
 
 	for (CButton& b : s_buttons) b.Draw();

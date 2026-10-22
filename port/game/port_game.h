@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <string>
 #include <vector>
 
 #include "render/device.h"
@@ -104,5 +105,24 @@ void     PortOptionsSync();      // settings changed elsewhere (Alt+Enter)
 // Editor input over the side areas of a wide view (editor_wide.cpp); pos in
 // frame coordinates, outside the frame.
 void     PortEditorSideMouse(CEvent* event, CDecor* decor, unsigned int message, int fwKeys, struct tagPOINT pos);
+
+// Languages (language.cpp, port/docs/LANGUAGES.md). Init after the game roots
+// are set: recognises the edition and the installed language, loads the packs
+// and selects wanted (a pack code; empty: the installed language).
+void        PortLanguageInit(const std::string& wanted);
+bool        PortLanguageSelect(int index);
+int         PortLanguageCount();
+int         PortLanguageCurrent();
+std::string PortLanguageCode(int index);
+std::string PortLanguageName(int index);   // in the game's code page, for its font
+// The current pack's string (Windows-1252), the edition's English one, or NULL.
+const char* PortLanguageString(unsigned id);
+// A port text (ids from 9000, see LANGUAGES.md): the pack's, or english.
+std::string PortLanguageText(unsigned id, const char* english);
+const std::string& PortEdition();          // "blupi" or "eggbert"
+// --export-language: a built-in pack ("de", "eggbert-de") written to path.
+bool        PortLanguageExport(const std::string& which, const std::string& path);
+// The current pack's language variant of the game's code ("de": German layouts).
+extern std::string g_portLanguageVariant;
 
 #endif

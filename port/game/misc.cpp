@@ -2,7 +2,8 @@
 // TU). InitRandom/Random/ConvLongToPos/AddCDPath keep their historical bodies
 // (rand/srand resolve to the Microsoft LIBC generator via port_forced.h).
 // The Windows-resource and path helpers are re-implemented:
-//   LoadString   -> the STRINGTABLE embedded from src/res/blupi.rc
+//   LoadString   -> the current language pack (language.cpp), else the
+//                   STRINGTABLE embedded from src/res/blupi.rc
 //   ChangeSprite -> SDL system cursors (only for MouseType 2/3; the default
 //                   MouseType 1 draws the cursor sprite in CPixmap)
 //   AddUserPath  -> path left relative; the port file system writes it to
@@ -13,6 +14,7 @@
 #include "def.h"
 #include "misc.h"
 
+#include "game/port_game.h"
 #include "platform/host.h"
 #include "platform/resources.h"
 #include "platform/vfs.h"
@@ -51,7 +53,8 @@ void LoadString(UINT nID, char *pBuffer, int lgBuffer)
 	const char*	pText;
 
 	if ( lgBuffer <= 0 )  return;
-	pText = blupi::resources::string(nID);
+	pText = PortLanguageString(nID);
+	if ( pText == NULL ) pText = blupi::resources::string(nID);
 	if ( pText == NULL )
 	{
 		pBuffer[0] = 0;
