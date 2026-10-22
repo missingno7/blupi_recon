@@ -1294,5 +1294,11 @@ Term;
 #undef WM_PHASE_INTRO2
 #define WM_PHASE_INTRO2 1590
 
+// The language of the build, set for the whole build by its target
+// (targets.json, docs/MULTI_GAME.md): 1 in the German builds.
+#ifndef LANGUAGE_DE
+#define LANGUAGE_DE 0
+#endif
+
 #endif /* DEF_H */
 

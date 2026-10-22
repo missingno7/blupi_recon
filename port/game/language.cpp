@@ -29,6 +29,11 @@ extern char table_char[];
 
 std::string g_portLanguageVariant = "us";
 
+extern "C" int blupi_language_de(void)
+{
+	return g_portLanguageVariant == "de";
+}
+
 // Host paths: the forced include maps fopen to the game file system.
 #pragma push_macro("fopen")
 #undef fopen

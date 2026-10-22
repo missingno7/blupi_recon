@@ -26,6 +26,10 @@ extern "C" {
 FILE* blupi_fopen(const char* path, const char* mode);
 int   blupi_rand(void);
 void  blupi_srand(unsigned int seed);
+// The language variant of the game's code (def.h LANGUAGE_DE): the matching
+// builds set it per target; the port answers from the chosen language pack
+// at run time (game/language.cpp, port/docs/LANGUAGES.md).
+int   blupi_language_de(void);
 #ifdef __cplusplus
 }
 #endif
@@ -33,5 +37,6 @@ void  blupi_srand(unsigned int seed);
 #define fopen  blupi_fopen
 #define rand   blupi_rand
 #define srand  blupi_srand
+#define LANGUAGE_DE (blupi_language_de())
 
 #endif

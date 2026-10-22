@@ -32,7 +32,12 @@ def parse_number(value: int | str) -> int:
     return int(value, 0) if isinstance(value, str) else int(value)
 
 
+TARGET = None  # tools/targets.Target of this run; None: the primary target (recon.json, BLUPI.EXE)
+
+
 def load_manifest() -> dict[str, Any]:
+    if TARGET is not None and not TARGET.primary:
+        return TARGET.manifest()
     return json.loads(MANIFEST.read_text(encoding="utf-8"))
 
 
@@ -188,6 +193,8 @@ def run_comparator(objects: list[Path], evidence_objects: list[Path],
     output = BUILD / "results.json"
     command = [sys.executable, str(ROOT / "tools" / "cmpfunc.py"), *map(str, objects),
                "--summary", "--json-out", str(output)]
+    if TARGET is not None and not TARGET.primary:
+        command.extend(["--exe", str(TARGET.exe)])
     for obj in evidence_objects:
         command.extend(["--evidence-object", str(obj)])
     for accepted in manifest.get("accepted_functions", []):
@@ -425,7 +432,22 @@ def main() -> int:
     parser.add_argument("--accept", action="store_true", help="promote newly STRICT functions into recon.json")
     parser.add_argument("--build-dir", metavar="NAME",
                         help="private build/verify-NAME directory, so parallel candidate runs do not collide")
+    import targets
+    targets.add_argument(parser)
     args = parser.parse_args()
+    global TARGET, BUILD, GAME_TEXT_END, GAME_TEXT_SIZE
+    if args.target:
+        TARGET = targets.load(args.target)
+        if not TARGET.primary:
+            TARGET.check_exe()
+            print(f"target {TARGET.name}: {TARGET.exe.relative_to(ROOT)}"
+                  + (f", defines {' '.join(TARGET.defines)}" if TARGET.defines else ""))
+            if args.accept:
+                print("error: --accept promotes into recon.json, the primary target's manifest")
+                return 2
+            BUILD = ROOT / "build" / f"verify-{TARGET.slug}"
+            GAME_TEXT_END = TARGET.game_text_end
+            GAME_TEXT_SIZE = GAME_TEXT_END - ORACLE_TEXT_START
     manifest = load_manifest()
     try:
         if args.build_dir:
@@ -433,7 +455,6 @@ def main() -> int:
                 raise ValueError("--build-dir must be a plain name")
             if args.accept:
                 raise ValueError("--accept uses the canonical build/verify directory")
-            global BUILD
             BUILD = ROOT / "build" / f"verify-{args.build_dir}"
         substitutions = parse_substitutions(args.tu, manifest)
         if args.accept and substitutions:
@@ -451,8 +472,10 @@ def main() -> int:
         by_unit, _ = report(comparison, by_unit_order)
         report_withdrawn(manifest, by_unit)
         regressions = accepted_regressions(manifest, by_unit)
-        import equivalence
-        equivalence.check(manifest, comparison, evidence_objects, BUILD)
+        if TARGET is None or TARGET.primary:
+            # the certificates are proofs against the primary target's executable
+            import equivalence
+            equivalence.check(manifest, comparison, evidence_objects, BUILD)
         if regressions:
             print("\nAccepted-function regression(s):")
             for error in regressions:

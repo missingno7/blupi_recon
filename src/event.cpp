@@ -1410,7 +1410,9 @@ BOOL CEvent::DrawButtons()
 		pos.x = LXIMAGE / 2 - lg / 2;
 		pos.y = 65;
 		DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
-		int y = 140;
+		// German builds: each description on its own line under its key
+		// (LANGUAGE_DE, def.h); arithmetic keeps the other builds' code unchanged.
+		int y = 140 - 20 * LANGUAGE_DE;
 		for (int j = 601; j < 625; j += 3)
 		{
 			pos.x = 110;
@@ -1424,10 +1426,12 @@ BOOL CEvent::DrawButtons()
 				LoadString(j, res, 100);
 			}
 			DrawTextLeft(m_pPixmap, pos, res, FONTGOLD);
-			pos.x = 230;
+			pos.x = 230 - 70 * LANGUAGE_DE;
+			y += 13 * LANGUAGE_DE;
+			pos.y = y;
 			LoadString(j + 1, res, 100);
 			DrawTextLeft(m_pPixmap, pos, res, FONTWHITE);
-			y += 20;
+			y += 20 - 2 * LANGUAGE_DE;
 		}
 	}
 	if (m_phase == WM_PHASE_MUSIC)
