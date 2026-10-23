@@ -3529,29 +3529,6 @@ BOOL CEvent::CurrentRead(int rank)
 	}
 }
 
-// Passe les images d'introduction.
-
-#if _EGAMES // Only Eggbert 2 advances timed introduction screens.
-void CEvent::IntroStep()
-{
-	m_introTime++;
-
-	if (m_introTime > 20 * 3)
-	{
-		if (m_phase == WM_PHASE_INTRO1)
-		{
-			ChangePhase(WM_PHASE_INTRO2);
-			return;
-		}
-
-		if (m_phase == WM_PHASE_INTRO2)
-		{
-			ChangePhase(WM_PHASE_INIT);
-			return;
-		}
-	}
-}
-#endif
 BOOL CEvent::CurrentWrite(int rank)
 {
 	char str[100];
@@ -4508,6 +4485,30 @@ void CEvent::DemoRecEvent()
 		}
 	}
 }
+
+// Passe les images d'introduction.
+
+#if _EGAMES // Only Eggbert 2 advances timed introduction screens.
+void CEvent::IntroStep()
+{
+	m_introTime++;
+
+	if (m_introTime > 20 * 3)
+	{
+		if (m_phase == WM_PHASE_INTRO1)
+		{
+			ChangePhase(WM_PHASE_INTRO2);
+			return;
+		}
+
+		if (m_phase == WM_PHASE_INTRO2)
+		{
+			ChangePhase(WM_PHASE_INIT);
+			return;
+		}
+	}
+}
+#endif
 
 void CEvent::ChatFlush()
 {

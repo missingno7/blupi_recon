@@ -28,7 +28,9 @@ same `src/`:
   inventory (`oracle/<target>/`, from `tools/derive_target.py`) go through `tools/cmpfunc_target.py`.
 - SB2 (`sb2/eggbert/en`) is a separate game: its own tree `games/sb2/src/`, manifest `games/sb2/recon.json`
   and inventory `oracle/sb2-eggbert-en/` (docs/SB2.md). Speedy Blupi 2 (`sb2/blupi/en`) builds the same tree with
-  `_EGAMES=0`; its changes keep Eggbert 2's results identical (`scratch/sb2/samestatus.py`). Never edit `src/` for SB2; SB2 source changes only
+  `_EGAMES=0`; its changes keep Eggbert 2's results identical (`scratch/sb2/samestatus.py`). Eggbert 2 is the
+  primary STRICT target: a change may cost a Blupi 2 STRICT function only if Eggbert 2 gains and that Blupi 2
+  function keeps a re-proven EQUIVALENT certificate (docs/SB2.md "Edition policy"); never the reverse. Never edit `src/` for SB2; SB2 source changes only
   from SB2 binary evidence. Run `tools/crossmap.py --target sb2/eggbert/en --audit` before `--accept`.
 
 Hard rules:

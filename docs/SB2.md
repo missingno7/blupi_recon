@@ -96,6 +96,19 @@ need no source switch. They are active with the English target's settings and ov
 inventories (`oracle/sb2-blupi-de`, `oracle/sb2-blupi-fr`): 449 STRICT + 5 FOLDED, 121,712 bytes each,
 identical function results (`scratch/w-b2lang/REPORT.md`).
 
+### Edition policy (2026-10-23)
+
+[EVIDENCE] Every structural fix so far that helped one SB2 edition hurt the other (pixmap.cpp's `CacheAll`
+order: Blupi 2 +512 STRICT bytes, Eggbert 2 −512; the decblupi predicates and GetBlupiInfo/MoveObjectSort
+need opposite contexts per edition): the 2001 and 2004 originals were compiled from different source
+revisions (round 6-13 notes). The large residues (BlupiStep, ChangePhase, the decblupi context gaps) fail on
+each edition alone.
+
+Policy: **Speedy Eggbert 2 is the primary STRICT target; Speedy Blupi 2 is a protected secondary.** A change
+may cost a Blupi 2 STRICT function only when Eggbert 2 gains and the Blupi 2 function keeps a re-proven
+EQUIVALENT certificate in its target tier; the reverse is not allowed. Edition-specific source (`#if _EGAMES`)
+still needs both executables to show the difference. EQUIVALENT never counts as STRICT.
+
 ## 2. Oracle, inventory and identifications
 
 `oracle/sb2-eggbert-en/` (Ghidra 12.1 on Eggbert2.exe alone): 627 functions (449 game, 167,139 body
