@@ -2,7 +2,7 @@
 
 Status (2026-10-23, round 3): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
 target with its own oracle, source tree `games/sb2/src/` and manifest `games/sb2/recon.json`.
-Accepted: **445 STRICT + 11 FOLDED functions, 135,648 / 172,992 game `.text` bytes (78.4%)**: engine 25,344, application 5,408, game logic 104,896 (round 1: 23,408 bytes, 13.5%). The SB1 targets, certificates and relinked image are unchanged.
+Accepted: **445 STRICT + 11 FOLDED functions, 135,648 / 172,992 game `.text` bytes (78.4%)**: engine 25,344, application 5,408, game logic 104,896 (round 1: 23,408 bytes, 13.5%). The same tree also verifies **Speedy Blupi 2** (`sb2/blupi/en`, `_EGAMES=0`): 452 STRICT + 6 FOLDED, 121,296 / 173,072 bytes (70.1%). The SB1 targets, certificates and relinked image are unchanged.
 
 ```powershell
 .\.pyenv\python.exe tools\verify.py --target sb2/eggbert/en             # clean build + strict report
@@ -42,6 +42,46 @@ unique or proven placement) **and** the cross-map audit finds no identity confli
   `BLUPI-CTX-03`). [HYPOTHESIS] SB2 was compiled with DX7 headers throughout, with headers whose entity
   counts differ from today's reconstruction. [OPEN] the extra line before line 64 of sound.cpp.
 - No per-TU include environment is used: nothing in the binary requires one.
+
+### Speedy Blupi 2 (`sb2/blupi/en`)
+
+[EVIDENCE] `assets/blupi2/BLUPI.EXE` (2001-05-03, "Version 2.2") is the Epsitec edition of the same
+source. Its toolchain differs from Eggbert 2's: **VC5 RTM compiler** (c1xx/c2 11.00.7022; SP2 and SP3
+give the same wrong register allocation in `DDCopyBitmap`/`DDColorMatch`, RTM gives 0 differing bytes)
+and LINK 5.00 (no Rich header, separate `.idata`), i.e. the complete VC5 RTM toolchain, like SB1's
+Speedy Eggbert 1. targets.json sets `toolchain_tree: rtm`, `_EGAMES=0` and the build path
+`D:\Blupi\Profil\sound.cpp` (`tools/targets.py` now applies a target's `build_path`). Its inventory is
+derived from Eggbert 2's (`oracle/sb2-blupi-en`, 446/449 game functions located; game code
+0x1000-0x2b410). The unchanged SB2 tree verifies 106,512 / 173,072 of its bytes STRICT before any
+edition switch.
+
+[EVIDENCE] With the edition switches below, `verify.py --target sb2/blupi/en` passes (exit 0):
+**452 STRICT + 6 FOLDED functions, 121,296 / 173,072 game `.text` bytes (70.1%)**, and Speedy Eggbert 2's
+results stay identical function by function (`scratch/sb2/samestatus.py`: 0 differing). Real differences
+found in Blupi 2's code and data, each under `#if _EGAMES` (worker reports `scratch/w-b2app`,
+`scratch/w-b2event`):
+- No timed publisher intro: `CEvent::m_introTime` is absent (`new CEvent` pushes 0x9be0, Eggbert 2
+  0x9be4; the chat members sit 4 bytes lower), `IntroStep` is not compiled, and `UpdateFrame`,
+  `DrawButtons`, `MousePosToSprite`, `ChangePhase` and `TreatEventBase` have no INTRO1/INTRO2 cases.
+- Its own phase table: 38 phases (no 0x635/0x636), generated from BLUPI.EXE at VA 0x43f000.
+- `ChangePhase`: ends on `WM_PHASE_DOQUIT`; cache and read errors set the CD retry state and go to
+  INSERT (`CEvent::ChangePhase [Read error]`); the TESTCD retry stores count before phase. No
+  "by www.epsitec.com" line on the gamer screen.
+- `ReadConfig`: a missing `CD-Rom=` returns FALSE and `-nocd` skips the `DRIVE_CDROM` test; `AddCDPath`
+  keeps SB1's folder-prefix test (data, image, image08, image16, movie).
+
+targets.json records what the Eggbert 2 manifest cannot: sizes of Blupi 2's own bodies
+(`_DDColorMatch` 240, `MousePosToSprite` 128, `TreatEventBase` 8368, `ReadConfig` 912, `AddCDPath` 336),
+`UpdateFrame` at 0x13c0 (the derived address map had 0x13a0; inventory corrected from the binary), and
+six symbols that LINK 5.00 keeps as the STRICT owner of a body Eggbert 2's linker folds (`~CButton`,
+`~CMenu`, `OutputDebug`, `GetNbSessions`, `GetBenchmarkSuccess`, `CSound::GetEnable`).
+
+[OPEN] Nine accepted Eggbert 2 functions differ on Blupi 2 only in operand or register order and are
+excluded there: `GetBlupiInfo`, `IsBridge`, `IsDoor`, `IsTeleporte`, `IsOutWater` (and the already
+withdrawn `IsDeepWater`, `SetMoveTraj`), `BltFast(int,int,POINT,RECT,int)`, `MouseBackDraw`,
+`DrawButtons`, `ChangePhase`. Diagnostic extra declarations make each of the decblupi/pixmap ones equal,
+so they are declaration-context residues of the RTM compiler on the same source, not code differences
+(section 8); the c2trace tools are calibrated for SP3's c2.exe, so their windows are not yet measured.
 
 ## 2. Oracle, inventory and identifications
 
@@ -255,4 +295,5 @@ shared engine source file would need per-game headers anyway. Revisit when SB2's
    bodies (0x28100, 0x28cf0, 0x28d00), `GetDoors(short*)` → `BYTE*`.
 4. [HYPOTHESIS] SB2's ChangePhase/TreatEventBase became STRICT with SB2's authentic forms where SB1's
    stayed EQUIVALENT; SB1's two residues may deserve a look with the same approach (SB1 work, not SB2).
-5. Later: register `sb2/blupi/en` (2001; an edition of this source) once the SB2 tree is stable.
+5. `sb2/blupi/en`: the nine RTM context residues above (about 15 KB with `DrawButtons` and
+   `ChangePhase`); a c2trace calibration for VC5 RTM's c2.exe would let `ctxwindows.py` measure them.

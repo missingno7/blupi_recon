@@ -11,7 +11,7 @@ Status (2026-10-22): **Speedy Blupi 1 and Speedy Eggbert 1 are done in every lan
 |---|---|---|---|---|
 | `sb1` Speedy Blupi | `blupi` | 1998-10-14, Epsitec, version 1.0, LINK 5.10 | US (= ENGLISH), DEUTSCH, FRANCAIS | `sb1/blupi/us` (primary), `de`, `fr` |
 | `sb1` | `eggbert` | 1999-06-24, eGames, version 1.1, LINK 5.00.7022 | English, Deu, Esp, Fra, Ita, Por | `sb1/eggbert/en`, `de`, `es`, `fr`, `it`, `pt` |
-| `sb2` Speedy Blupi 2 | `blupi` | 2001-05-03, Epsitec, "LINK 5.00" | english, deutsch, francais | planned |
+| `sb2` Speedy Blupi 2 | `blupi` | 2001-05-03, Epsitec, "LINK 5.00" | english, deutsch, francais | `sb2/blupi/en` (same tree and manifest, `_EGAMES=0`) |
 | `sb2` | `eggbert` | 2004-05-03, eGames, LINK 5.10 | English | `sb2/eggbert/en` (own tree and manifest) |
 
 - A **game** is one body of C++ source.
@@ -39,6 +39,7 @@ Two goals, kept apart:
 | `sb1/eggbert/en`, `fr` | 123,120 / 141,328 | `_EGAMES`; WindowProc and DoInit excluded ([EGGBERT.md](EGGBERT.md)) |
 | `sb1/eggbert/de`, `es`, `it`, `pt` | 123,120 / 141,328 | also `LANGUAGE_DE` (de), `LANGUAGE_ACCENTS`, `LANGUAGE_ES` (es), `LANGUAGE_PT` (pt) |
 | `sb2/eggbert/en` | 135,648 / 172,992 | own tree `games/sb2/src/`; 445 STRICT, 11 FOLDED; engine, application and game logic ([SB2.md](SB2.md)) |
+| `sb2/blupi/en` | 121,296 / 173,072 | same tree, `_EGAMES=0`, VC5 RTM + LINK 5.00; 452 STRICT, 6 FOLDED; nine RTM context residues excluded ([SB2.md](SB2.md)) |
 
 `tools/verify.py` without `--target` is the primary target, byte-identical to its report before the
 registry existed. `--target <id>` verifies another one on the same `src/`; targets with their own

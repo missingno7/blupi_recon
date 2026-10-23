@@ -1,0 +1,616 @@
+rva,size,tu,confidence,best_source,status,evidence
+0x1000,37,blupi.cpp,anchored,sb1/blupi/us:blupi.cpp:?GetNum@@YAHPAD@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1000 (?GetNum@@YAHPAD@Z)
+0x1030,877,blupi.cpp,bracketed,sb1/blupi/us:blupi.cpp,strict,[EVIDENCE] between blupi.cpp anchors 0x1000 and 0x15d0
+0x13c0,555,blupi.cpp,bracketed,sb1/blupi/us:blupi.cpp,strict,[EVIDENCE] between blupi.cpp anchors 0x1000 and 0x15d0
+0x15d0,203,blupi.cpp,anchored,sb1/blupi/us:blupi.cpp:?SetDecor@@YAXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x14f0 (?SetDecor@@YAXXZ)
+0x16a0,34,blupi.cpp,anchored,sb1/blupi/us:blupi.cpp:?RestoreGame@@YAHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x15c0 (?RestoreGame@@YAHXZ)
+0x16d0,18,blupi.cpp,anchored,sb1/blupi/us:blupi.cpp:?FlushGame@@YAHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x15f0 (?FlushGame@@YAHXZ)
+0x1c40,234,blupi.cpp,anchored,sb1/blupi/us:blupi.cpp:?FinishObjects@@YAXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1b60 (?FinishObjects@@YAXXZ)
+0x1d70,197,blupi.cpp,anchored,sb1/blupi/us:blupi.cpp:?InitFail@@YAHPBDH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1c90 (?InitFail@@YAHPBDH@Z)
+0x1e40,215,blupi.cpp,bracketed,sb1/blupi/us:blupi.cpp,strict,[EVIDENCE] between blupi.cpp anchors 0x1d70 and 0x1f20
+0x1f20,191,blupi.cpp,anchored,sb1/blupi/us:blupi.cpp:_WinMain@16,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1e30 (_WinMain@16)
+0x1fe0,1340,,unplaced,,strict,
+0x2560,161,button.cpp,anchored,sb1/blupi/us:button.cpp:?Create@CButton@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HHI@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2a30 (?Create@CButton@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HHI@Z)
+0x2610,45,button.cpp,anchored,sb1/blupi/us:button.cpp:?SetIconMenu@CButton@@QAEXPAHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2ae0 (?SetIconMenu@CButton@@QAEXPAHH@Z)
+0x2640,48,button.cpp,anchored,sb1/blupi/us:button.cpp:?SetToolTips@CButton@@QAEXPAHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2b10 (?SetToolTips@CButton@@QAEXPAHH@Z)
+0x2670,335,button.cpp,bracketed,sb1/blupi/us:button.cpp,strict,[EVIDENCE] between button.cpp anchors 0x2640 and 0x27d0
+0x27c0,4,button.cpp,bracketed,sb1/blupi/us:button.cpp,strict,[EVIDENCE] between button.cpp anchors 0x2640 and 0x27d0
+0x27d0,35,button.cpp,anchored,sb1/blupi/us:button.cpp:?SetState@CButton@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2ca0 (?SetState@CButton@@QAEXH@Z)
+0x2800,7,button.cpp,bracketed,sb1/blupi/us:button.cpp,strict,[EVIDENCE] between button.cpp anchors 0x27d0 and 0x2810
+0x2810,33,button.cpp,anchored,sb1/blupi/us:button.cpp:?SetMenu@CButton@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2ce0 (?SetMenu@CButton@@QAEXH@Z)
+0x2840,38,button.cpp,anchored,sb1/blupi/us:button.cpp:?SetEnable@CButton@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2d10 (?SetEnable@CButton@@QAEXH@Z)
+0x2870,27,button.cpp,anchored,sb1/blupi/us:button.cpp:?SetHide@CButton@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2d40 (?SetHide@CButton@@QAEXH@Z)
+0x2890,111,button.cpp,anchored,sb1/blupi/us:button.cpp:?TreatEvent@CButton@@QAEHIIJ@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2d60 (?TreatEvent@CButton@@QAEHIIJ@Z)
+0x2920,18,button.cpp,anchored,sb1/blupi/us:button.cpp:?MouseOnButton@CButton@@QAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2df0 (?MouseOnButton@CButton@@QAEHUtagPOINT@@@Z)
+0x2940,237,button.cpp,anchored,sb1/blupi/us:button.cpp:?GetToolTips@CButton@@QAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2e10 (?GetToolTips@CButton@@QAEHUtagPOINT@@@Z)
+0x2a30,101,button.cpp,anchored,sb1/blupi/us:button.cpp:?Detect@CButton@@IAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2f00 (?Detect@CButton@@IAEHUtagPOINT@@@Z)
+0x2aa0,84,button.cpp,anchored,sb1/blupi/us:button.cpp:?MouseDown@CButton@@IAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x2f70 (?MouseDown@CButton@@IAEHUtagPOINT@@@Z)
+0x2b00,201,button.cpp,anchored,sb1/blupi/us:button.cpp:?MouseMove@CButton@@IAEHUtagPOINT@@@Z,none,[EVIDENCE] exact match to sb1/blupi/us 0x2fd0 (?MouseMove@CButton@@IAEHUtagPOINT@@@Z)
+0x2bd0,85,button.cpp,anchored,sb1/blupi/us:button.cpp:?MouseUp@CButton@@IAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x30a0 (?MouseUp@CButton@@IAEHUtagPOINT@@@Z)
+0x2c30,10,,unplaced,,strict,
+0x2c40,397,ddutil.cpp,anchored,sb1/blupi/us:ddutil.cpp:_DDLoadBitmap,strict,[EVIDENCE] exact match to sb1/blupi/us 0x3110 (_DDLoadBitmap)
+0x2dd0,154,ddutil.cpp,anchored,sb1/blupi/us:ddutil.cpp:_DDReLoadBitmap,strict,[EVIDENCE] exact match to sb1/blupi/us 0x32a0 (_DDReLoadBitmap)
+0x2e70,499,ddutil.cpp,anchored,sb1/blupi/us:ddutil.cpp:_DDCopyBitmap,strict,[EVIDENCE] exact match to sb1/blupi/us 0x3340 (_DDCopyBitmap)
+0x3070,608,ddutil.cpp,anchored,sb1/blupi/us:ddutil.cpp:_DDLoadPalette,strict,[EVIDENCE] exact match to sb1/blupi/us 0x3540 (_DDLoadPalette)
+0x32d0,255,ddutil.cpp,anchored,sb1/blupi/us:ddutil.cpp:_DDColorMatch,strict,[EVIDENCE] exact match to sb1/blupi/us 0x37a0 (_DDColorMatch)
+0x33c0,48,ddutil.cpp,anchored,sb1/blupi/us:ddutil.cpp:_DDSetColorKey,strict,[EVIDENCE] exact match to sb1/blupi/us 0x38a0 (_DDSetColorKey)
+0x33f0,62,ddutil.cpp,anchored,sb1/blupi/us:ddutil.cpp:_DDSetColorKey2,strict,[EVIDENCE] exact match to sb1/blupi/us 0x38d0 (_DDSetColorKey2)
+0x3430,164,,unplaced,,strict,
+0x34e0,22,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:??1CDecor@@QAE@XZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x39b0 (??1CDecor@@QAE@XZ)
+0x3500,196,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?Create@CDecor@@QAEXPAXPAVCSound@@PAVCPixmap@@PAVCNetwork@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x39d0 (?Create@CDecor@@QAEXPAXPAVCSound@@PAVCPixmap@@PAVCNetwork@@@Z)
+0x35d0,109,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3510 and 0x3650
+0x3640,31,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?InitGamer@CDecor@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x3b60 (?InitGamer@CDecor@@QAEXXZ)
+0x3660,790,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3650 and 0x3cb0
+0x3980,13,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3650 and 0x3cb0
+0x3990,7,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3650 and 0x3cb0
+0x39a0,763,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3650 and 0x3cb0
+0x3ca0,109,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?BuildPrepare@CDecor@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x4150 (?BuildPrepare@CDecor@@QAEXXZ)
+0x3d10,7,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3cb0 and 0x3d30
+0x3d20,261,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?MoveStep@CDecor@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x41d0 (?MoveStep@CDecor@@QAEXH@Z)
+0x3e30,40,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?GetBlupiChannelActual@CDecor@@QAEHXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x42e0 (?GetBlupiChannelActual@CDecor@@QAEHXZ)
+0x3e60,30,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?GetBlupiChannelStandard@CDecor@@QAEHXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x4310 (?GetBlupiChannelStandard@CDecor@@QAEHXZ)
+0x3e80,26,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?GetIconPerso@CDecor@@QAEHXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x4330 (?GetIconPerso@CDecor@@QAEHXZ)
+0x3ea0,252,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3e90 and 0x5970
+0x3fa0,5018,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,none,[EVIDENCE] between decblock.cpp anchors 0x3e90 and 0x5970
+0x5340,1156,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3e90 and 0x5970
+0x57d0,290,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3e90 and 0x5970
+0x5900,61,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3e90 and 0x5970
+0x5940,13,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3e90 and 0x5970
+0x5950,13,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x3e90 and 0x5970
+0x5960,67,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?GetBlupiInfo@CDecor@@QAEXPAH000@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x57b0 (?GetBlupiInfo@CDecor@@QAEXPAH000@Z)
+0x59b0,376,decblock.cpp,bracketed,sb1/blupi/us:decblock.cpp,strict,[EVIDENCE] between decblock.cpp anchors 0x5970 and 0x5b40
+0x5b30,124,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?PlaySoundA@CDecor@@QAEXHUtagPOINT@@H@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x5800 (?PlaySoundA@CDecor@@QAEXHUtagPOINT@@H@Z)
+0x5bb0,68,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?StopSound@CDecor@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x5880 (?StopSound@CDecor@@QAEXH@Z)
+0x5c00,123,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?AdaptMotorVehicleSound@CDecor@@QAEXUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x58d0 (?AdaptMotorVehicleSound@CDecor@@QAEXUtagPOINT@@@Z)
+0x5c80,208,decblock.cpp,anchored,sb1/blupi/us:decblock.cpp:?ChangePhase@CDecor@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x5950 (?ChangePhase@CDecor@@QAEXH@Z)
+0x5d50,133,decdesign.cpp,anchored,sb1/blupi/us:decdesign.cpp:?ScreenPosToCelPos@CDecor@@QAE?AUtagPOINT@@U2@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x5a20 (?ScreenPosToCelPos@CDecor@@QAE?AUtagPOINT@@U2@@Z)
+0x5de0,46,decdesign.cpp,anchored,sb1/blupi/us:decdesign.cpp:?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x5ab0 (?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z)
+0x5e10,115,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5df0 and 0x5ea0
+0x5e90,90,decdesign.cpp,anchored,sb1/blupi/us:decdesign.cpp:?DeleteCel@CDecor@@QAEXUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x5b40 (?DeleteCel@CDecor@@QAEXUtagPOINT@@@Z)
+0x5ef0,125,decdesign.cpp,anchored,sb1/blupi/us:decdesign.cpp:?PlaceDecor@@YAXPAH00HHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x5ba0 (?PlaceDecor@@YAXPAH00HHH@Z)
+0x5f70,920,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x6310,664,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x65b0,643,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x6840,802,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x6b70,1330,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x70b0,3719,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x7f40,2073,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x8760,1320,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x8c90,1107,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x90f0,925,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x9490,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x5f00 and 0x94b0
+0x94a0,46,decdesign.cpp,anchored,sb1/blupi/us:decdesign.cpp:?SetMissionTitle@CDecor@@QAEXPAD@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x8530 (?SetMissionTitle@CDecor@@QAEXPAD@Z)
+0x94d0,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x94b0 and 0x9540
+0x94e0,13,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x94b0 and 0x9540
+0x94f0,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x94b0 and 0x9540
+0x9500,13,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x94b0 and 0x9540
+0x9510,24,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x94b0 and 0x9540
+0x9530,23,decdesign.cpp,anchored,sb1/blupi/us:decdesign.cpp:?SetDim@CDecor@@QAEXUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x85c0 (?SetDim@CDecor@@QAEXUtagPOINT@@@Z)
+0x9550,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x9540 and 0x95e0
+0x9560,13,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x9540 and 0x95e0
+0x9570,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x9540 and 0x95e0
+0x9580,13,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x9540 and 0x95e0
+0x9590,29,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x9540 and 0x95e0
+0x95b0,29,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x9540 and 0x95e0
+0x95d0,32,decdesign.cpp,anchored,sb1/blupi/us:decdesign.cpp:?SetAllMissions@CDecor@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x8680 (?SetAllMissions@CDecor@@QAEXH@Z)
+0x95f0,1998,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9dc0,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9dd0,13,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9de0,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9df0,13,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9e00,13,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9e10,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9e20,13,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9e30,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9e40,13,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9e50,7,decdesign.cpp,bracketed,sb1/blupi/us:decdesign.cpp,strict,[EVIDENCE] between decdesign.cpp anchors 0x95e0 and 0x9e70
+0x9e60,30,decdesign.cpp,anchored,sb1/blupi/us:decdesign.cpp:?SetNetDebug@CDecor@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x8dd0 (?SetNetDebug@CDecor@@QAEXH@Z)
+0x9e80,112,decdesign.cpp,anchored,sb1/blupi/us:decdesign.cpp:?OutputNetDebug@CDecor@@QAEXPAD@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x8df0 (?OutputNetDebug@CDecor@@QAEXPAD@Z)
+0x9ef0,13,,unplaced,,strict,
+0x9f00,13,,unplaced,,strict,
+0x9f10,1197,,unplaced,,strict,
+0xa3c0,113,,unplaced,,strict,
+0xa440,272,,unplaced,,strict,
+0xa550,639,,unplaced,,strict,
+0xa7d0,103,,unplaced,,strict,
+0xa840,35449,,unplaced,,none,
+0x132c0,517,,unplaced,,strict,
+0x134d0,108,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?GetPosDecor@CDecor@@QAE?AUtagPOINT@@U2@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0xf540 (?GetPosDecor@CDecor@@QAE?AUtagPOINT@@U2@@Z)
+0x13540,142,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?BlupiAddFifo@CDecor@@QAEXUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0xf5b0 (?BlupiAddFifo@CDecor@@QAEXUtagPOINT@@@Z)
+0x135d0,804,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x13550 and 0x13910
+0x13900,833,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?TestPath@CDecor@@QAEHUtagRECT@@UtagPOINT@@PAU3@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0xf8c0 (?TestPath@CDecor@@QAEHUtagRECT@@UtagPOINT@@PAU3@@Z)
+0x13c50,609,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x13910 and 0x13ed0
+0x13ec0,75,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?MoveObjectPlouf@CDecor@@QAEXUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0xfdd0 (?MoveObjectPlouf@CDecor@@QAEXUtagPOINT@@@Z)
+0x13f10,94,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?MoveObjectTiplouf@CDecor@@QAEXUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0xfe20 (?MoveObjectTiplouf@CDecor@@QAEXUtagPOINT@@@Z)
+0x13f70,261,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?MoveObjectBlup@CDecor@@QAEXUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0xfe80 (?MoveObjectBlup@CDecor@@QAEXUtagPOINT@@@Z)
+0x14080,264,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x13f80 and 0x14390
+0x14190,188,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x13f80 and 0x14390
+0x14250,296,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x13f80 and 0x14390
+0x14380,88,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?IsLave@CDecor@@QAEHUtagPOINT@@@Z,none,[EVIDENCE] exact match to sb1/blupi/us 0x10150 (?IsLave@CDecor@@QAEHUtagPOINT@@@Z)
+0x143e0,121,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14390 and 0x14710
+0x14460,153,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14390 and 0x14710
+0x14500,118,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14390 and 0x14710
+0x14580,133,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14390 and 0x14710
+0x14610,122,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14390 and 0x14710
+0x14690,111,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14390 and 0x14710
+0x14700,94,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?IsRessort@CDecor@@QAEHUtagPOINT@@@Z,none,[EVIDENCE] exact match to sb1/blupi/us 0x101b0 (?IsRessort@CDecor@@QAEHUtagPOINT@@@Z)
+0x14760,94,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14710 and 0x14a90
+0x147c0,200,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14710 and 0x14a90
+0x14890,195,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14710 and 0x14a90
+0x14960,123,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14710 and 0x14a90
+0x149e0,160,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14710 and 0x14a90
+0x14a80,115,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?IsSurfWater@CDecor@@QAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x10210 (?IsSurfWater@CDecor@@QAEHUtagPOINT@@@Z)
+0x14b00,69,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14a90 and 0x14b60
+0x14b50,75,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x102e0 (?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z)
+0x14ba0,105,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14b60 and 0x14f40
+0x14c10,105,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14b60 and 0x14f40
+0x14c80,18,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14b60 and 0x14f40
+0x14ca0,68,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14b60 and 0x14f40
+0x14cf0,112,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,none,[EVIDENCE] between decblupi.cpp anchors 0x14b60 and 0x14f40
+0x14d60,18,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14b60 and 0x14f40
+0x14d80,77,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14b60 and 0x14f40
+0x14dd0,110,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14b60 and 0x14f40
+0x14e40,239,decblupi.cpp,bracketed,sb1/blupi/us:decblupi.cpp,strict,[EVIDENCE] between decblupi.cpp anchors 0x14b60 and 0x14f40
+0x14f30,486,decblupi.cpp,anchored,sb1/blupi/us:decblupi.cpp:?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x10480 (?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z)
+0x15120,50,decnet.cpp,anchored,sb1/blupi/us:decnet.cpp:?NetStopCloud@CDecor@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x10670 (?NetStopCloud@CDecor@@QAEXH@Z)
+0x15160,206,decnet.cpp,bracketed,sb1/blupi/us:decnet.cpp,strict,[EVIDENCE] between decnet.cpp anchors 0x15130 and 0x15240
+0x15230,489,decnet.cpp,anchored,sb1/blupi/us:decnet.cpp:?ObjectStart@CDecor@@QAEHUtagPOINT@@HHH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x106b0 (?ObjectStart@CDecor@@QAEHUtagPOINT@@HHH@Z)
+0x15420,112,decnet.cpp,anchored,sb1/blupi/us:decnet.cpp:?ObjectDelete@CDecor@@QAEHUtagPOINT@@HH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x108a0 (?ObjectDelete@CDecor@@QAEHUtagPOINT@@HH@Z)
+0x15490,102,decnet.cpp,bracketed,sb1/blupi/us:decnet.cpp,strict,[EVIDENCE] between decnet.cpp anchors 0x15430 and 0x15510
+0x15500,59,decnet.cpp,anchored,sb1/blupi/us:decnet.cpp:?NetPlaySound@CDecor@@QAEXFUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x10980 (?NetPlaySound@CDecor@@QAEXFUtagPOINT@@@Z)
+0x15540,50,decnet.cpp,anchored,sb1/blupi/us:decnet.cpp:?NetStopSound@CDecor@@QAEXF@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x109c0 (?NetStopSound@CDecor@@QAEXF@Z)
+0x15580,86,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NetDataFlush@CDecor@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x10a00 (?NetDataFlush@CDecor@@QAEXXZ)
+0x155e0,45,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NetSendBarePacket@CDecor@@QAEXEH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x10a60 (?NetSendBarePacket@CDecor@@QAEXEH@Z)
+0x15610,1656,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x155f0 and 0x15ca0
+0x15c90,187,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?DoNetSmooth@CDecor@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x110a0 (?DoNetSmooth@CDecor@@QAEXH@Z)
+0x15d50,72,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NetAdjustToLift@CDecor@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x11160 (?NetAdjustToLift@CDecor@@QAEXXZ)
+0x15da0,278,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x15d60 and 0x15ed0
+0x15ec0,217,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NetPlayerCollide@CDecor@@QAEXUtagPOINT@@PAH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x112c0 (?NetPlayerCollide@CDecor@@QAEXUtagPOINT@@PAH@Z)
+0x15fa0,21,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NetMessageIndexFlush@CDecor@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x113a0 (?NetMessageIndexFlush@CDecor@@QAEXXZ)
+0x15fc0,96,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NetMessagePush@CDecor@@QAEHPAUNetMessage@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x113c0 (?NetMessagePush@CDecor@@QAEHPAUNetMessage@@@Z)
+0x16020,97,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NetMessagePop@CDecor@@QAEHPAUNetMessage@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x11420 (?NetMessagePop@CDecor@@QAEHPAUNetMessage@@@Z)
+0x16090,31,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NotifFlush@CDecor@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x11490 (?NotifFlush@CDecor@@QAEXXZ)
+0x160b0,86,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NotifPop@CDecor@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x114b0 (?NotifPop@CDecor@@QAEXXZ)
+0x16110,130,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NotifPush@CDecor@@QAEXPAD@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x11510 (?NotifPush@CDecor@@QAEXPAD@Z)
+0x161a0,23,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?NotifStep@CDecor@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x115a0 (?NotifStep@CDecor@@QAEXXZ)
+0x161c0,537,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x161b0 and 0x18990
+0x163e0,1402,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x161b0 and 0x18990
+0x16960,6779,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x161b0 and 0x18990
+0x183e0,836,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x161b0 and 0x18990
+0x18730,366,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x161b0 and 0x18990
+0x188a0,173,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x161b0 and 0x18990
+0x18950,48,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x161b0 and 0x18990
+0x18980,54,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?AscenseurSynchro@CDecor@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x12dd0 (?AscenseurSynchro@CDecor@@QAEXH@Z)
+0x189c0,60,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?UpdateCaisse@CDecor@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x12e10 (?UpdateCaisse@CDecor@@QAEXXZ)
+0x18a00,215,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?TestPushCaisse@CDecor@@QAEHHUtagPOINT@@H@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x12e50 (?TestPushCaisse@CDecor@@QAEHHUtagPOINT@@H@Z)
+0x18ae0,229,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?TestPushOneCaisse@CDecor@@QAEHHUtagPOINT@@H@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x12f30 (?TestPushOneCaisse@CDecor@@QAEHHUtagPOINT@@H@Z)
+0x18bd0,453,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?SearchLinkCaisse@CDecor@@QAEXHH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x13020 (?SearchLinkCaisse@CDecor@@QAEXHH@Z)
+0x18da0,73,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?AddLinkCaisse@CDecor@@QAEHH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x131f0 (?AddLinkCaisse@CDecor@@QAEHH@Z)
+0x18df0,119,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?CaisseInFront@CDecor@@QAEHXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x13240 (?CaisseInFront@CDecor@@QAEHXZ)
+0x18e70,89,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?CaisseGetMove@CDecor@@QAEHH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x132c0 (?CaisseGetMove@CDecor@@QAEHH@Z)
+0x18ed0,588,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x18e80 and 0x19130
+0x19120,151,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?BlupiElectro@CDecor@@QAEHUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x13540 (?BlupiElectro@CDecor@@QAEHUtagPOINT@@@Z)
+0x191c0,208,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x19130 and 0x195e0
+0x19290,629,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x19130 and 0x195e0
+0x19510,192,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x19130 and 0x195e0
+0x195d0,159,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?MoveChargeDetect@CDecor@@QAEHUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x13800 (?MoveChargeDetect@CDecor@@QAEHUtagPOINT@@@Z)
+0x19670,190,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?MovePersoDetect@CDecor@@QAEHUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x138a0 (?MovePersoDetect@CDecor@@QAEHUtagPOINT@@@Z)
+0x19730,214,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x19680 and 0x198b0
+0x19810,134,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x19680 and 0x198b0
+0x198a0,63,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?MoveObjectFree@CDecor@@QAEHXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x13ab0 (?MoveObjectFree@CDecor@@QAEHXZ)
+0x198e0,44,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,strict,[EVIDENCE] between decmove.cpp anchors 0x198b0 and 0x19a10
+0x19910,234,decmove.cpp,bracketed,sb1/blupi/us:decmove.cpp,none,[EVIDENCE] between decmove.cpp anchors 0x198b0 and 0x19a10
+0x19a00,160,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?MoveObjectPriority@CDecor@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x13c10 (?MoveObjectPriority@CDecor@@QAEXH@Z)
+0x19aa0,153,decmove.cpp,anchored,sb1/blupi/us:decmove.cpp:?MoveObjectSearch@CDecor@@QAEHUtagPOINT@@H@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x13cb0 (?MoveObjectSearch@CDecor@@QAEHUtagPOINT@@H@Z)
+0x19b40,31,decor.cpp,anchored,sb1/blupi/us:decor.cpp:?VoyageGetPosVie@CDecor@@QAE?AUtagPOINT@@H@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x13d50 (?VoyageGetPosVie@CDecor@@QAE?AUtagPOINT@@H@Z)
+0x19b60,587,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x19b50 and 0x1af00
+0x19db0,724,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x19b50 and 0x1af00
+0x1a090,270,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x19b50 and 0x1af00
+0x1a1a0,1105,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x19b50 and 0x1af00
+0x1a600,82,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x19b50 and 0x1af00
+0x1a660,82,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x19b50 and 0x1af00
+0x1a6c0,1050,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x19b50 and 0x1af00
+0x1aae0,217,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x19b50 and 0x1af00
+0x1abc0,805,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x19b50 and 0x1af00
+0x1aef0,86,decor.cpp,anchored,sb1/blupi/us:decor.cpp:?GetMissionPath@CDecor@@QAEXPADHHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x14880 (?GetMissionPath@CDecor@@QAEXPADHHH@Z)
+0x1af50,526,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x1af00 and 0x1b400
+0x1b160,643,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x1af00 and 0x1b400
+0x1b3f0,61,decor.cpp,anchored,sb1/blupi/us:decor.cpp:?DeleteMission@CDecor@@QAEHHHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x14d60 (?DeleteMission@CDecor@@QAEHHHH@Z)
+0x1b430,1695,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x1b400 and 0x1c3c0
+0x1bad0,1725,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x1b400 and 0x1c3c0
+0x1c190,538,decor.cpp,bracketed,sb1/blupi/us:decor.cpp,strict,[EVIDENCE] between decor.cpp anchors 0x1b400 and 0x1c3c0
+0x1c3b0,451,decor.cpp,anchored,sb1/blupi/us:decor.cpp:?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x15c10 (?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z)
+0x1c580,69,decor.cpp,anchored,sb1/blupi/us:decor.cpp:?SearchDoor@CDecor@@QAEHHPAUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x15de0 (?SearchDoor@CDecor@@QAEHHPAUtagPOINT@@@Z)
+0x1c5d0,688,,unplaced,,strict,
+0x1c880,68,,unplaced,,strict,
+0x1c8d0,232,,unplaced,,strict,
+0x1c9c0,15,,unplaced,,strict,
+0x1c9d0,32,,unplaced,,strict,
+0x1c9f0,78,,unplaced,,strict,
+0x1ca40,342,,unplaced,,none,
+0x1cba0,113,event.cpp,anchored,sb1/blupi/us:event.cpp:??1CEvent@@QAE@XZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16360 (??1CEvent@@QAE@XZ)
+0x1cc20,84,event.cpp,anchored,sb1/blupi/us:event.cpp:?OutputNetDebug@CEvent@@QAEXPBD@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x163e0 (?OutputNetDebug@CEvent@@QAEXPBD@Z)
+0x1cc80,59,event.cpp,anchored,sb1/blupi/us:event.cpp:?GetMousePos@CEvent@@QAE?AUtagPOINT@@XZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16440 (?GetMousePos@CEvent@@QAE?AUtagPOINT@@XZ)
+0x1ccc0,13,event.cpp,anchored,sb1/blupi/us:event.cpp:?SetFullScreen@CEvent@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16480 (?SetFullScreen@CEvent@@QAEXH@Z)
+0x1ccd0,13,event.cpp,anchored,sb1/blupi/us:event.cpp:?SetMouseType@CEvent@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16490 (?SetMouseType@CEvent@@QAEXH@Z)
+0x1cce0,90,event.cpp,anchored,sb1/blupi/us:event.cpp:?Create@CEvent@@QAEXPAX0PAVCPixmap@@PAVCDecor@@PAVCSound@@PAVCNetwork@@PAVCMovie@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x164a0 (?Create@CEvent@@QAEXPAX0PAVCPixmap@@PAVCDecor@@PAVCSound@@PAVCNetwork@@PAVCMovie@@@Z)
+0x1cd40,80,event.cpp,anchored,sb1/blupi/us:event.cpp:?GetButtonIndex@CEvent@@QAEHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16500 (?GetButtonIndex@CEvent@@QAEHH@Z)
+0x1cd90,48,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1cd50 and 0x1cec0
+0x1cdc0,47,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1cd50 and 0x1cec0
+0x1cdf0,47,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1cd50 and 0x1cec0
+0x1ce20,47,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1cd50 and 0x1cec0
+0x1ce50,48,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1cd50 and 0x1cec0
+0x1ce80,47,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1cd50 and 0x1cec0
+0x1ceb0,52,event.cpp,anchored,sb1/blupi/us:event.cpp:?SetIconMenu@CEvent@@QAEXHPAHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16670 (?SetIconMenu@CEvent@@QAEXHPAHH@Z)
+0x1cef0,61,event.cpp,anchored,sb1/blupi/us:event.cpp:?RestoreGame@CEvent@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x166b0 (?RestoreGame@CEvent@@QAEXXZ)
+0x1cf30,24,event.cpp,anchored,sb1/blupi/us:event.cpp:?FlushInput@CEvent@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x166f0 (?FlushInput@CEvent@@QAEXXZ)
+0x1cf50,479,event.cpp,anchored,sb1/blupi/us:event.cpp:?ReadInput@CEvent@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x16710 (?ReadInput@CEvent@@QAEXXZ)
+0x1d130,41,event.cpp,anchored,sb1/blupi/us:event.cpp:?NetCreate@CEvent@@IAEHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x168f0 (?NetCreate@CEvent@@IAEHH@Z)
+0x1d160,34,event.cpp,anchored,sb1/blupi/us:event.cpp:?NetEnumSessions@CEvent@@IAEHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16920 (?NetEnumSessions@CEvent@@IAEHXZ)
+0x1d190,317,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1d170 and 0x1d2e0
+0x1d2d0,494,event.cpp,anchored,sb1/blupi/us:event.cpp:?NetAdjustLobbyButtons@CEvent@@IAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x16a70 (?NetAdjustLobbyButtons@CEvent@@IAEXXZ)
+0x1d4c0,119,event.cpp,anchored,sb1/blupi/us:event.cpp:?ChangePause@CEvent@@QAEXHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16c60 (?ChangePause@CEvent@@QAEXHH@Z)
+0x1d540,78,event.cpp,anchored,sb1/blupi/us:event.cpp:?NetSendLobby@CEvent@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16ce0 (?NetSendLobby@CEvent@@QAEXXZ)
+0x1d590,43,event.cpp,anchored,sb1/blupi/us:event.cpp:?NetSearchPlayer@CEvent@@IAEHK@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16d30 (?NetSearchPlayer@CEvent@@IAEHK@Z)
+0x1d5c0,230,event.cpp,anchored,sb1/blupi/us:event.cpp:?NetStartPlay@CEvent@@IAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16d60 (?NetStartPlay@CEvent@@IAEXXZ)
+0x1d6b0,48,event.cpp,anchored,sb1/blupi/us:event.cpp:?NetSendBarePacket@CEvent@@IAEXHF@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16e50 (?NetSendBarePacket@CEvent@@IAEXHF@Z)
+0x1d6e0,36,event.cpp,anchored,sb1/blupi/us:event.cpp:?NetDraw@CEvent@@IAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16e80 (?NetDraw@CEvent@@IAEXXZ)
+0x1d710,109,event.cpp,anchored,sb1/blupi/us:event.cpp:?AddCheatCode@@YAXPAD0@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16eb0 (?AddCheatCode@@YAXPAD0@Z)
+0x1d780,74,event.cpp,anchored,sb1/blupi/us:event.cpp:?DrawTextCenter@CEvent@@IAEXHHHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x16f20 (?DrawTextCenter@CEvent@@IAEXHHHH@Z)
+0x1d7d0,7694,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1d790 and 0x1f680
+0x1f5b0,142,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1d790 and 0x1f680
+0x1f630,68,event.cpp,anchored,sb1/blupi/us:event.cpp:?MouseSprite@CEvent@@QAEXUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x18cf0 (?MouseSprite@CEvent@@QAEXUtagPOINT@@@Z)
+0x1f680,111,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1f680 and 0x1f740
+0x1f6f0,121,event.cpp,anchored,sb1/blupi/us:event.cpp:?HideMouse@CEvent@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x18db0 (?HideMouse@CEvent@@QAEXH@Z)
+0x1f770,111,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1f740 and 0x1f830
+0x1f7e0,547,event.cpp,anchored,sb1/blupi/us:event.cpp:?EventButtons@CEvent@@IAEHIIJ@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x18ea0 (?EventButtons@CEvent@@IAEHIIJ@Z)
+0x1fa10,153,event.cpp,anchored,sb1/blupi/us:event.cpp:?MouseOnButton@CEvent@@IAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x190d0 (?MouseOnButton@CEvent@@IAEHUtagPOINT@@@Z)
+0x1fab0,50,event.cpp,anchored,sb1/blupi/us:event.cpp:?SearchPhase@CEvent@@IAEHI@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x19170 (?SearchPhase@CEvent@@IAEHI@Z)
+0x1faf0,46,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1fb00 and 0x1fb90
+0x1fb20,7,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1fb00 and 0x1fb90
+0x1fb30,7,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1fb00 and 0x1fb90
+0x1fb40,71,event.cpp,anchored,sb1/blupi/us:event.cpp:?GetWorldGroup@CEvent@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x19200 (?GetWorldGroup@CEvent@@QAEXXZ)
+0x1fb90,59,event.cpp,anchored,sb1/blupi/us:event.cpp:?SetMission@CEvent@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x19250 (?SetMission@CEvent@@QAEXH@Z)
+0x1fc50,6934,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1fbe0 and 0x21750
+0x21750,7,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x1fbe0 and 0x21750
+0x21760,59,event.cpp,anchored,sb1/blupi/us:event.cpp:?TryInsert@CEvent@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1ae30 (?TryInsert@CEvent@@QAEXXZ)
+0x217a0,77,event.cpp,anchored,sb1/blupi/us:event.cpp:?MovieToStart@CEvent@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1ae70 (?MovieToStart@CEvent@@QAEXXZ)
+0x217f0,146,event.cpp,anchored,sb1/blupi/us:event.cpp:?ReadAll@CEvent@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1aec0 (?ReadAll@CEvent@@QAEXXZ)
+0x21890,87,event.cpp,anchored,sb1/blupi/us:event.cpp:?CurrentRead@CEvent@@IAEHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1af60 (?CurrentRead@CEvent@@IAEHH@Z)
+0x218f0,97,event.cpp,anchored,sb1/blupi/us:event.cpp:?CurrentWrite@CEvent@@IAEHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1afc0 (?CurrentWrite@CEvent@@IAEHH@Z)
+0x21960,19,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x218e0 and 0x219a0
+0x21980,19,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x218e0 and 0x219a0
+0x219a0,7,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x218e0 and 0x219a0
+0x219b0,181,event.cpp,anchored,sb1/blupi/us:event.cpp:?AddUserExportPath@CEvent@@SAXPAD0@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1b090 (?AddUserExportPath@CEvent@@SAXPAD0@Z)
+0x21a70,195,event.cpp,anchored,sb1/blupi/us:event.cpp:?CopyMission@CEvent@@SAHPAD0@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1b150 (?CopyMission@CEvent@@SAHPAD0@Z)
+0x21b40,3056,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x21a60 and 0x22bf0
+0x22730,157,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x21a60 and 0x22bf0
+0x227d0,1063,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x21a60 and 0x22bf0
+0x22c00,55,event.cpp,anchored,sb1/blupi/us:event.cpp:?BuildMove@CEvent@@IAEHUtagPOINT@@H@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1c070 (?BuildMove@CEvent@@IAEHUtagPOINT@@H@Z)
+0x22c40,8,event.cpp,anchored,sb1/blupi/us:event.cpp:?BuildUp@CEvent@@IAEHUtagPOINT@@H@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1b030 (?BuildUp@CEvent@@IAEHUtagPOINT@@H@Z)
+0x22c50,349,event.cpp,anchored,sb1/blupi/us:event.cpp:?StartMovie@CEvent@@QAEHPAD@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1c0b0 (?StartMovie@CEvent@@QAEHPAD@Z)
+0x22db0,82,event.cpp,anchored,sb1/blupi/us:event.cpp:?StopMovie@CEvent@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1c210 (?StopMovie@CEvent@@QAEXXZ)
+0x22e10,7,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x22da0 and 0x22e10
+0x22e20,413,event.cpp,anchored,sb1/blupi/us:event.cpp:?WriteInfo@CEvent@@IAEHH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1c280 (?WriteInfo@CEvent@@IAEHH@Z)
+0x22fc0,487,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x22e10 and 0x231a0
+0x231b0,79,event.cpp,anchored,sb1/blupi/us:event.cpp:?ClearGamer@CEvent@@QAEHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1c600 (?ClearGamer@CEvent@@QAEHH@Z)
+0x23200,13,event.cpp,anchored,sb1/blupi/us:event.cpp:?SetNbVies@CEvent@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1c650 (?SetNbVies@CEvent@@QAEXH@Z)
+0x23210,7,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x231f0 and 0x23210
+0x23220,23,event.cpp,anchored,sb1/blupi/us:event.cpp:?SetSpeed@CEvent@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1c670 (?SetSpeed@CEvent@@QAEXH@Z)
+0x23240,94,event.cpp,anchored,sb1/blupi/us:event.cpp:?DemoRecStart@CEvent@@IAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1c690 (?DemoRecStart@CEvent@@IAEXXZ)
+0x232a0,230,event.cpp,anchored,sb1/blupi/us:event.cpp:?DemoRecStop@CEvent@@IAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1c6f0 (?DemoRecStop@CEvent@@IAEXXZ)
+0x23390,423,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x23290 and 0x23530
+0x23540,92,event.cpp,anchored,sb1/blupi/us:event.cpp:?DemoPlayStop@CEvent@@IAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1c9a0 (?DemoPlayStop@CEvent@@IAEXXZ)
+0x235a0,188,event.cpp,anchored,sb1/blupi/us:event.cpp:?DemoStep@CEvent@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1ca00 (?DemoStep@CEvent@@QAEXXZ)
+0x23660,87,event.cpp,anchored,sb1/blupi/us:event.cpp:?DemoRecEvent@CEvent@@IAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1cac0 (?DemoRecEvent@CEvent@@IAEXXZ)
+0x23730,123,event.cpp,anchored,sb1/blupi/us:event.cpp:?ChatPush@CEvent@@IAEXPAD@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1cb90 (?ChatPush@CEvent@@IAEXPAD@Z)
+0x237b0,343,event.cpp,anchored,sb1/blupi/us:event.cpp:?ChatSend@CEvent@@IAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1cc10 (?ChatSend@CEvent@@IAEXXZ)
+0x23910,389,event.cpp,anchored,sb1/blupi/us:event.cpp:?PutTextInputBox@CEvent@@IAEXUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1cd70 (?PutTextInputBox@CEvent@@IAEXUtagPOINT@@@Z)
+0x23aa0,83,event.cpp,anchored,sb1/blupi/us:event.cpp:?TextInputDelete@CEvent@@IAEHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1cf00 (?TextInputDelete@CEvent@@IAEHXZ)
+0x23b00,586,event.cpp,anchored,sb1/blupi/us:event.cpp:?TreatTextInput@CEvent@@IAEHIIJ@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1cf60 (?TreatTextInput@CEvent@@IAEHIIJ@Z)
+0x23d50,24,event.cpp,bracketed,sb1/blupi/us:event.cpp,strict,[EVIDENCE] between event.cpp anchors 0x23b30 and 0x23da0
+0x23d70,89,event.cpp,anchored,sb1/blupi/us:event.cpp:?TreatEvent@CEvent@@QAEHIIJ@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x1d1d0 (?TreatEvent@CEvent@@QAEHIIJ@Z)
+0x23dd0,7937,,unplaced,,strict,
+0x26290,1,,unplaced,,folded,
+0x25ea0,83,jauge.cpp,anchored,sb1/blupi/us:jauge.cpp:?Create@CJauge@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1edf0 (?Create@CJauge@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HH@Z)
+0x25f00,255,jauge.cpp,anchored,sb1/blupi/us:jauge.cpp:?Draw@CJauge@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1ee50 (?Draw@CJauge@@QAEXXZ)
+0x26000,4,jauge.cpp,bracketed,sb1/blupi/us:jauge.cpp,strict,[EVIDENCE] between jauge.cpp anchors 0x25f70 and 0x26080
+0x26010,38,jauge.cpp,anchored,sb1/blupi/us:jauge.cpp:?SetLevel@CJauge@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1ef60 (?SetLevel@CJauge@@QAEXH@Z)
+0x26040,4,jauge.cpp,bracketed,sb1/blupi/us:jauge.cpp,strict,[EVIDENCE] between jauge.cpp anchors 0x26080 and 0x260c0
+0x26050,24,jauge.cpp,anchored,sb1/blupi/us:jauge.cpp:?SetType@CJauge@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1efa0 (?SetType@CJauge@@QAEXH@Z)
+0x26070,4,jauge.cpp,bracketed,sb1/blupi/us:jauge.cpp,folded,[EVIDENCE] between jauge.cpp anchors 0x260c0 and 0x260f0
+0x26080,24,jauge.cpp,anchored,sb1/blupi/us:jauge.cpp:?SetHide@CJauge@@QAEXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1efd0 (?SetHide@CJauge@@QAEXH@Z)
+0x260a0,20,menu.cpp,anchored,sb1/blupi/us:menu.cpp:??0CMenu@@QAE@XZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1eff0 (??0CMenu@@QAE@XZ)
+0x260c0,18,menu.cpp,anchored,sb1/blupi/us:menu.cpp:?Delete@CMenu@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f020 (?Delete@CMenu@@QAEXXZ)
+0x260e0,117,menu.cpp,anchored,sb1/blupi/us:menu.cpp:?TreatEvent@CMenu@@QAEHIIJ@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f040 (?TreatEvent@CMenu@@QAEHIIJ@Z)
+0x26170,107,menu.cpp,anchored,sb1/blupi/us:menu.cpp:?Detect@CMenu@@IAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f0d0 (?Detect@CMenu@@IAEHUtagPOINT@@@Z)
+0x261e0,5,menu.cpp,bracketed,sb1/blupi/us:menu.cpp,strict,[EVIDENCE] between menu.cpp anchors 0x261e0 and 0x26260
+0x261f0,95,menu.cpp,anchored,sb1/blupi/us:menu.cpp:?MouseMove@CMenu@@IAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f150 (?MouseMove@CMenu@@IAEHUtagPOINT@@@Z)
+0x26250,44,menu.cpp,anchored,sb1/blupi/us:menu.cpp:?MouseUp@CMenu@@IAEHUtagPOINT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f1b0 (?MouseUp@CMenu@@IAEHUtagPOINT@@@Z)
+0x26280,10,,unplaced,,strict,
+0x262a0,28,misc.cpp,anchored,sb1/blupi/us:misc.cpp:?LoadStringA@@YAXIPADH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f1f0 (?LoadStringA@@YAXIPADH@Z)
+0x262c0,285,misc.cpp,anchored,sb1/blupi/us:misc.cpp:?ChangeSprite@@YAXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f210 (?ChangeSprite@@YAXH@Z)
+0x263e0,17,misc.cpp,anchored,sb1/blupi/us:misc.cpp:?ConvLongToPos@@YA?AUtagPOINT@@J@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f330 (?ConvLongToPos@@YA?AUtagPOINT@@J@Z)
+0x26400,11,misc.cpp,anchored,sb1/blupi/us:misc.cpp:?InitRandom@@YAXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f350 (?InitRandom@@YAXXZ)
+0x26410,26,misc.cpp,bracketed,sb1/blupi/us:misc.cpp,strict,[EVIDENCE] between misc.cpp anchors 0x26460 and 0x26620
+0x26430,239,misc.cpp,bracketed,sb1/blupi/us:misc.cpp,strict,[EVIDENCE] between misc.cpp anchors 0x26460 and 0x26620
+0x26520,149,misc.cpp,bracketed,sb1/blupi/us:misc.cpp,strict,[EVIDENCE] between misc.cpp anchors 0x26460 and 0x26620
+0x26670,300,misc.cpp,anchored,sb1/blupi/us:misc.cpp:?AddUserPath@@YAXPAD@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f560 (?AddUserPath@@YAXPAD@Z)
+0x267a0,2075,misc.cpp,anchored,sb1/blupi/us:misc.cpp:?TraceErrorDD@@YAXJPADH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1f690 (?TraceErrorDD@@YAXJPADH@Z)
+0x270b0,423,misc.cpp,anchored,sb1/blupi/us:misc.cpp:?TraceErrorDS@@YAXJPADH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x1ffa0 (?TraceErrorDS@@YAXJPADH@Z)
+0x27260,68,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?initAVI@CMovie@@IAEHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20150 (?initAVI@CMovie@@IAEHXZ)
+0x272b0,33,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?termAVI@CMovie@@IAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x201a0 (?termAVI@CMovie@@IAEXXZ)
+0x272e0,35,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?positionMovie@CMovie@@IAEXPAXUtagRECT@@@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x201d0 (?positionMovie@CMovie@@IAEXPAXUtagRECT@@@Z)
+0x27310,67,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?fileCloseMovie@CMovie@@IAEXPAX@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20200 (?fileCloseMovie@CMovie@@IAEXPAX@Z)
+0x27360,357,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?fileOpenMovie@CMovie@@IAEHPAXUtagRECT@@PAD@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20250 (?fileOpenMovie@CMovie@@IAEHPAXUtagRECT@@PAD@Z)
+0x274d0,128,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?playMovie@CMovie@@IAEXPAXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x203c0 (?playMovie@CMovie@@IAEXPAXH@Z)
+0x27550,16,movie.cpp,anchored,sb1/blupi/us:movie.cpp:??0CMovie@@QAE@XZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20440 (??0CMovie@@QAE@XZ)
+0x27570,35,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?Create@CMovie@@QAEHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20460 (?Create@CMovie@@QAEHXZ)
+0x275a0,3,movie.cpp,bracketed,sb1/blupi/us:movie.cpp,strict,[EVIDENCE] between movie.cpp anchors 0x27520 and 0x27560
+0x275b0,171,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?IsExist@CMovie@@QAEHPAD@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x204a0 (?IsExist@CMovie@@QAEHPAD@Z)
+0x27660,94,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?Play@CMovie@@QAEHPAXUtagRECT@@PAD@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20550 (?Play@CMovie@@QAEHPAXUtagRECT@@PAD@Z)
+0x276c0,18,movie.cpp,anchored,sb1/blupi/us:movie.cpp:?Stop@CMovie@@QAEXPAX@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x205b0 (?Stop@CMovie@@QAEXPAX@Z)
+0x276e0,916,network.cpp,anchored,sb1/blupi/us:network.cpp:?TraceErrorDP@@YAXJ@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x205d0 (?TraceErrorDP@@YAXJ@Z)
+0x27a80,31,network.cpp,anchored,sb1/blupi/us:network.cpp:??0CNetwork@@QAE@XZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20970 (??0CNetwork@@QAE@XZ)
+0x27aa0,36,network.cpp,anchored,sb1/blupi/us:network.cpp:??1CNetwork@@QAE@XZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20990 (??1CNetwork@@QAE@XZ)
+0x27b40,76,network.cpp,anchored,sb1/blupi/us:network.cpp:?EnumProviders@CNetwork@@QAEHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20a30 (?EnumProviders@CNetwork@@QAEHXZ)
+0x27b90,4,network.cpp,bracketed,sb1/blupi/us:network.cpp,folded,[EVIDENCE] between network.cpp anchors 0x27af0 and 0x27b50
+0x27ba0,36,network.cpp,anchored,sb1/blupi/us:network.cpp:?GetProviderName@CNetwork@@QAEPADH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20a80 (?GetProviderName@CNetwork@@QAEPADH@Z)
+0x27bd0,111,network.cpp,anchored,sb1/blupi/us:network.cpp:?CreateProvider@CNetwork@@QAEHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20ab0 (?CreateProvider@CNetwork@@QAEHH@Z)
+0x27c40,35,network.cpp,anchored,sb1/blupi/us:network.cpp:?FreeProviderList@CNetwork@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20b20 (?FreeProviderList@CNetwork@@QAEXXZ)
+0x27cf0,163,network.cpp,anchored,sb1/blupi/us:network.cpp:?EnumSessions@CNetwork@@QAEHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20bd0 (?EnumSessions@CNetwork@@QAEHXZ)
+0x27da0,36,network.cpp,anchored,sb1/blupi/us:network.cpp:?GetSessionName@CNetwork@@QAEPADH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20c80 (?GetSessionName@CNetwork@@QAEPADH@Z)
+0x27dd0,237,network.cpp,anchored,sb1/blupi/us:network.cpp:?JoinSession@CNetwork@@QAEHHPAD@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20cb0 (?JoinSession@CNetwork@@QAEHHPAD@Z)
+0x27ec0,35,network.cpp,anchored,sb1/blupi/us:network.cpp:?FreeSessionList@CNetwork@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20da0 (?FreeSessionList@CNetwork@@QAEXXZ)
+0x27ef0,234,network.cpp,anchored,sb1/blupi/us:network.cpp:?CreateSession@CNetwork@@QAEHPAD0@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20dd0 (?CreateSession@CNetwork@@QAEHPAD0@Z)
+0x27fe0,77,network.cpp,anchored,sb1/blupi/us:network.cpp:?Send@CNetwork@@QAEHPAXKK@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20ec0 (?Send@CNetwork@@QAEHPAXKK@Z)
+0x28030,207,network.cpp,anchored,sb1/blupi/us:network.cpp:?Receive@CNetwork@@QAEHPAXKPAK@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20f10 (?Receive@CNetwork@@QAEHPAXKPAK@Z)
+0x28100,18,network.cpp,anchored,sb1/blupi/us:network.cpp:?Close@CNetwork@@QAEHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20fe0 (?Close@CNetwork@@QAEHXZ)
+0x28120,35,network.cpp,anchored,sb1/blupi/us:network.cpp:?FreeUnknownList@CNetwork@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x21000 (?FreeUnknownList@CNetwork@@QAEXXZ)
+0x28150,4,,unplaced,,none,
+0x28160,139,,unplaced,,strict,
+0x28200,148,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:??1CPixmap@@QAE@XZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x210d0 (??1CPixmap@@QAE@XZ)
+0x282a0,1272,pixmap.cpp,bracketed,sb1/blupi/us:pixmap.cpp,strict,[EVIDENCE] between pixmap.cpp anchors 0x281b0 and 0x28870
+0x287a0,283,pixmap.cpp,bracketed,sb1/blupi/us:pixmap.cpp,strict,[EVIDENCE] between pixmap.cpp anchors 0x281b0 and 0x28870
+0x288c0,19,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?SetDebug@CPixmap@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21170 (?SetDebug@CPixmap@@QAEXH@Z)
+0x288e0,957,pixmap.cpp,bracketed,sb1/blupi/us:pixmap.cpp,strict,[EVIDENCE] between pixmap.cpp anchors 0x28870 and 0x28c60
+0x28ca0,6,pixmap.cpp,bracketed,sb1/blupi/us:pixmap.cpp,strict,[EVIDENCE] between pixmap.cpp anchors 0x28870 and 0x28c60
+0x28cb0,11,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?Restore@CPixmap@@QAEHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x21530 (?Restore@CPixmap@@QAEHXZ)
+0x28cc0,87,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?InitSysPalette@CPixmap@@QAEHXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21540 (?InitSysPalette@CPixmap@@QAEHXZ)
+0x28d20,4,,unplaced,,strict,
+0x28d30,10,,unplaced,,strict,
+0x28d40,10,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?SetState@CSound@@QAEXH@Z,folded,[EVIDENCE] exact match to sb1/blupi/us 0x22dd0 (?SetState@CSound@@QAEXH@Z)
+0x28d50,10,,unplaced,,folded,
+0x28d60,172,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?RestoreAll@CPixmap@@IAEJXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x215a0 (?RestoreAll@CPixmap@@IAEJXZ)
+0x28e10,228,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z,none,[EVIDENCE] sequence match to sb1/blupi/us 0x21650 (?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z)
+0x28f00,88,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?BltFast@CPixmap@@IAEJPAUIDirectDrawSurface@@HUtagPOINT@@UtagRECT@@H@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21740 (?BltFast@CPixmap@@IAEJPAUIDirectDrawSurface@@HUtagPOINT@@UtagRECT@@H@Z)
+0x28f60,98,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?DrawMap@CPixmap@@QAEHHUtagRECT@@0@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x217a0 (?DrawMap@CPixmap@@QAEHHUtagRECT@@0@Z)
+0x28fd0,40,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?SavePalette@CPixmap@@QAEHXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21810 (?SavePalette@CPixmap@@QAEHXZ)
+0x29000,35,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?RestorePalette@CPixmap@@QAEHXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21840 (?RestorePalette@CPixmap@@QAEHXZ)
+0x29030,443,pixmap.cpp,bracketed,sb1/blupi/us:pixmap.cpp,strict,[EVIDENCE] between pixmap.cpp anchors 0x28fb0 and 0x29330
+0x291f0,390,pixmap.cpp,bracketed,sb1/blupi/us:pixmap.cpp,strict,[EVIDENCE] between pixmap.cpp anchors 0x28fb0 and 0x29330
+0x29380,44,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?Flush@CPixmap@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21a00 (?Flush@CPixmap@@QAEXH@Z)
+0x293b0,60,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?SetTransparent@CPixmap@@QAEXHK@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21a30 (?SetTransparent@CPixmap@@QAEXHK@Z)
+0x293f0,67,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?SetTransparent2@CPixmap@@QAEXHKK@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21a70 (?SetTransparent2@CPixmap@@QAEXHKK@Z)
+0x29440,33,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?SetClipping@CPixmap@@QAEXUtagRECT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21ac0 (?SetClipping@CPixmap@@QAEXUtagRECT@@@Z)
+0x29470,36,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?GetClipping@CPixmap@@QAE?AUtagRECT@@XZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21af0 (?GetClipping@CPixmap@@QAE?AUtagRECT@@XZ)
+0x294a0,770,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?QuickIcon@CPixmap@@QAEXHHUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21b20 (?QuickIcon@CPixmap@@QAEXHHUtagPOINT@@@Z)
+0x297b0,719,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?DrawIcon@CPixmap@@QAEHHHHUtagPOINT@@HH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x21e30 (?DrawIcon@CPixmap@@QAEHHHHUtagPOINT@@HH@Z)
+0x29a80,185,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?DrawPart@CPixmap@@QAEHHHUtagPOINT@@UtagRECT@@HH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22100 (?DrawPart@CPixmap@@QAEHHHUtagPOINT@@UtagRECT@@HH@Z)
+0x29b40,115,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?DrawImage@CPixmap@@QAEHHHUtagRECT@@H@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x221c0 (?DrawImage@CPixmap@@QAEHHHUtagRECT@@H@Z)
+0x29bc0,145,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?Display@CPixmap@@QAEHXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22240 (?Display@CPixmap@@QAEHXZ)
+0x29c60,67,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?SetMousePosSprite@CPixmap@@QAEXUtagPOINT@@HH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x222e0 (?SetMousePosSprite@CPixmap@@QAEXUtagPOINT@@HH@Z)
+0x29cb0,41,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?SetMouseSprite@CPixmap@@QAEXHH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22330 (?SetMouseSprite@CPixmap@@QAEXHH@Z)
+0x29ce0,10,pixmap.cpp,bracketed,sb1/blupi/us:pixmap.cpp,strict,[EVIDENCE] between pixmap.cpp anchors 0x29c60 and 0x29ca0
+0x29cf0,326,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?MouseUpdate@CPixmap@@IAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22370 (?MouseUpdate@CPixmap@@IAEXXZ)
+0x29e40,186,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?MouseQuickDraw@CPixmap@@IAEHUtagRECT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x224c0 (?MouseQuickDraw@CPixmap@@IAEHUtagRECT@@@Z)
+0x29f00,8,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?MouseInvalidate@CPixmap@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x22580 (?MouseInvalidate@CPixmap@@QAEXXZ)
+0x29f10,18,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?MouseBackClear@CPixmap@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22590 (?MouseBackClear@CPixmap@@QAEXXZ)
+0x29f30,268,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?MouseBackDraw@CPixmap@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x225b0 (?MouseBackDraw@CPixmap@@QAEXXZ)
+0x2a040,241,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?MouseBackSave@CPixmap@@IAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x226c0 (?MouseBackSave@CPixmap@@IAEXXZ)
+0x2a140,193,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?MouseBackRestore@CPixmap@@IAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x227c0 (?MouseBackRestore@CPixmap@@IAEXXZ)
+0x2a210,123,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?MouseRectSprite@CPixmap@@IAEXPAUtagRECT@@PAUtagPOINT@@@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22890 (?MouseRectSprite@CPixmap@@IAEXPAUtagRECT@@PAUtagPOINT@@@Z)
+0x2a290,43,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:?MouseHotSpot@CPixmap@@IAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22910 (?MouseHotSpot@CPixmap@@IAEXXZ)
+0x2a2c0,202,,unplaced,,none,
+0x2a390,290,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?ReadData@CSound@@QAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x22a10 (?ReadData@CSound@@QAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z)
+0x2a4c0,236,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?CreateBufferFromWaveFile@CSound@@QAEHHPAD@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22b40 (?CreateBufferFromWaveFile@CSound@@QAEHHPAD@Z)
+0x2a5b0,124,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?InitMidiVolume@@YAXH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x22c30 (?InitMidiVolume@@YAXH@Z)
+0x2a630,95,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2a560 and 0x2a640
+0x2a690,67,sound.cpp,anchored,sb1/blupi/us:sound.cpp:??1CSound@@QAE@XZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22d10 (??1CSound@@QAE@XZ)
+0x2a6e0,82,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?Create@CSound@@QAEHPAX@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22d60 (?Create@CSound@@QAEHPAX@Z)
+0x2a740,13,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2a690 and 0x2a750
+0x2a750,17,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2a690 and 0x2a750
+0x2a770,13,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2a690 and 0x2a750
+0x2a780,17,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2a690 and 0x2a750
+0x2a7a0,64,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?CacheAll@CSound@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x22e40 (?CacheAll@CSound@@QAEXXZ)
+0x2a7e0,63,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?Cache@CSound@@QAEHHPAD@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22e80 (?Cache@CSound@@QAEHHPAD@Z)
+0x2a820,51,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?Flush@CSound@@QAEXH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22ec0 (?Flush@CSound@@QAEXH@Z)
+0x2a860,189,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?PlaySoundDS@CSound@@QAEHHHHH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22f00 (?PlaySoundDS@CSound@@QAEHHHHH@Z)
+0x2a920,131,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?PlaySoundDS@CSound@@QAEHHHH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x22fc0 (?PlaySoundDS@CSound@@QAEHHHH@Z)
+0x2a9b0,99,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?StopSound@CSound@@QAEHH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x23050 (?StopSound@CSound@@QAEHH@Z)
+0x2aa20,351,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?PlayImage@CSound@@QAEHHUtagPOINT@@HH@Z,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x230c0 (?PlayImage@CSound@@QAEHHUtagPOINT@@HH@Z)
+0x2ab80,278,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?Play@CSound@@QAEHHHH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x23220 (?Play@CSound@@QAEHHHH@Z)
+0x2aca0,433,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2ab30 and 0x2b0d0
+0x2ae60,438,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2ab30 and 0x2b0d0
+0x2b020,72,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2ab30 and 0x2b0d0
+0x2b070,114,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2ab30 and 0x2b0d0
+0x2b0f0,20,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2ab30 and 0x2b0d0
+0x2b110,14,sound.cpp,bracketed,sb1/blupi/us:sound.cpp,strict,[EVIDENCE] between sound.cpp anchors 0x2ab30 and 0x2b0d0
+0x2b120,49,sound.cpp,anchored,sb1/blupi/us:sound.cpp:?AdaptVolumeMusic@CSound@@QAEXXZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x235c0 (?AdaptVolumeMusic@CSound@@QAEXXZ)
+0x2b160,13,,unplaced,,strict,
+0x2b170,66,text.cpp,anchored,sb1/blupi/us:text.cpp:?GetCharWidthA@@YAHDH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x23610 (?GetCharWidthA@@YAHDH@Z)
+0x2b1c0,76,text.cpp,anchored,sb1/blupi/us:text.cpp:?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x23660 (?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z)
+0x2b210,144,text.cpp,anchored,sb1/blupi/us:text.cpp:?DrawChar@@YAXPAVCPixmap@@PAUtagPOINT@@EH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x236b0 (?DrawChar@@YAXPAVCPixmap@@PAUtagPOINT@@EH@Z)
+0x2b2a0,34,text.cpp,anchored,sb1/blupi/us:text.cpp:?DrawTextLeft@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x23740 (?DrawTextLeft@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z)
+0x2b2d0,48,text.cpp,anchored,sb1/blupi/us:text.cpp:?DrawTextA@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x23770 (?DrawTextA@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z)
+0x2b300,177,text.cpp,anchored,sb1/blupi/us:text.cpp:?DrawTextCenter@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x237a0 (?DrawTextCenter@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z)
+0x2b3c0,44,text.cpp,anchored,sb1/blupi/us:text.cpp:?GetTextWidth@@YAHPADH@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x23860 (?GetTextWidth@@YAHPADH@Z)
+0x2b410,133,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b490,119,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b510,316,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b650,35,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b680,21,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b6a0,104,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b710,14,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b720,326,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b870,187,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b930,16,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b940,45,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b980,7,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b990,86,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2b9f0,60,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2ba30,91,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2ba90,42,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bac0,202,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bb90,124,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bc20,127,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bca0,32,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bce2,104,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bd4a,35,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bd6d,9,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bd76,24,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bd90,111,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2be08,20,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2be30,115,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bea9,23,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bee0,90,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bf70,10,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bf80,42,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bfb0,45,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2bfe0,74,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c030,20,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c050,68,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c0a0,56,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c0e0,254,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c1f0,188,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c2b0,254,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c3b0,254,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c4e0,246,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c600,140,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c690,47,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c6c0,48,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c6f0,18,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c710,18,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c730,164,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c7e0,32,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c800,150,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2c8a0,372,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2ca40,38,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2ca70,210,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2cb50,51,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2cbe0,110,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2cce0,236,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2cdd0,596,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2d030,347,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2d200,132,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2d290,301,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2d3c0,2172,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2dd50,66,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2dda0,57,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2dde0,61,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2de20,17,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2de40,18,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2de60,18,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2de80,542,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2e0a0,16,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2e0b0,572,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2e2f0,21,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2e310,683,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2e5c0,617,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2e830,412,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2e9d0,205,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2eaa0,688,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2ed50,206,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2ee20,138,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2eee0,137,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2ef70,169,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f05a,74,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f0f0,499,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f300,98,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f380,37,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f3b0,76,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f400,84,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f46e,5,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f490,101,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f4fe,6,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f5e5,27,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f600,103,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f670,55,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f6b0,354,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f820,91,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f880,205,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f950,89,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2f9b0,83,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2fa10,563,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2fc50,370,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2fdd0,196,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2fea0,32,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x2fec0,549,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x300e0,149,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30180,226,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30270,189,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30330,417,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30670,18,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30690,58,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x306d0,238,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x307c0,158,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30860,527,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30a70,342,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30bd0,528,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30dc0,77,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30e10,56,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30e70,50,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30ea0,11,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x30eb0,504,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x310b0,61,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x310f0,470,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x312d0,188,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31390,163,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31440,148,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x314e0,68,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31670,93,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x316d0,876,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31a90,40,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31ac0,113,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31b40,104,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31bb0,117,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31c30,347,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31d90,486,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x31f80,153,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32020,489,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32210,50,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32250,142,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32370,32,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32390,32,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x323b0,27,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x323d0,664,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32710,27,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32860,30,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32880,143,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32910,152,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32a20,378,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32ba0,11,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32bf0,59,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32c30,122,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32cb0,320,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32e30,71,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32e80,126,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32f00,47,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x32f30,709,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x33200,47,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x33230,515,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x33440,116,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x334c0,111,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x33530,410,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x336d0,171,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x33780,80,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x337d0,6,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x337e0,11,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x337eb,11,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x337f6,11,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x33801,11,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x3380c,11,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x33817,11,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x33830,27,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x33860,27,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects
+0x3387b,14,crt,inventory,,none,[EVIDENCE] after the import thunks that end the game objects

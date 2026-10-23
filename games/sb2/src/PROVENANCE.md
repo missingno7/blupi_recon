@@ -41,3 +41,9 @@ Unchanged copies of SB1 files: `ddutil.cpp`, `jauge.cpp`, `menu.cpp`, `movie.cpp
   SB2 layout, plus SB2 functions written from the binary with sb2-decomp candidates (reports:
   `scratch/w-decmove`, `scratch/w-decor`, `scratch/w-decdesign`), including SB2 data tables from the
   binary (`table_blitz`, the decor placement tables).
+
+## Speedy Blupi 2 edition
+
+- `#if _EGAMES` blocks (event.h, event.cpp, blupi.cpp, misc.cpp, def.h) from `assets/blupi2/BLUPI.EXE`
+  (`sb2/blupi/en`): Blupi 2's phase table (generated from its `.data`), no timed intro, its CD retry
+  paths, `ReadConfig` and SB1's `AddCDPath` (reports `scratch/w-b2app`, `scratch/w-b2event`).

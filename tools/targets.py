@@ -37,6 +37,7 @@ class Target:
     oracle_dir: Path | None = None        # own inventory (tools/derive_target.py); None: oracle/
     address_map: dict[str, Any] | None = None
     toolchain_tree: str | None = None     # compiler release, if not the manifest's
+    build_path: str | None = None         # the historical __FILE__ path of the TU that has one, if not the manifest's
 
     @property
     def primary(self) -> bool:
@@ -83,6 +84,10 @@ class Target:
         manifest["toolchain"]["defines"] = list(manifest["toolchain"].get("defines", [])) + self.defines
         if self.toolchain_tree:
             manifest["toolchain"]["tree"] = self.toolchain_tree
+        if self.build_path:
+            for unit in manifest["translation_units"]:
+                if unit.get("build_path"):
+                    unit["build_path"] = self.build_path
         if self.address_map:
             base = 0x400000
 
@@ -159,7 +164,7 @@ def load(name: str | None = None) -> Target:
                   game_text_end=int(end, 0) if isinstance(end, str) else int(end),
                   accepted_overrides=dict(spec.get("accepted_overrides", {})),
                   status=spec.get("status", "active"), oracle_dir=oracle_dir, address_map=address_map,
-                  toolchain_tree=spec.get("toolchain_tree"))
+                  toolchain_tree=spec.get("toolchain_tree"), build_path=spec.get("build_path"))
 
 
 def add_argument(parser: argparse.ArgumentParser) -> None:

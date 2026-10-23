@@ -10,8 +10,8 @@
 
 #define _DEMO			FALSE	// TRUE=demo, FALSE=complet
 #define _INTRO			FALSE	// TRUE si images d'introduction
-#ifndef _EGAMES			// set by the eGames targets (targets.json)
-#define _EGAMES			FALSE	// TRUE version pour eGames
+#ifndef _EGAMES			// SB2: TRUE for Speedy Eggbert 2 (eGames), 0 for Speedy Blupi 2 (targets.json)
+#define _EGAMES			TRUE
 #endif
 #define _SE				FALSE	// TRUE eGames Special Edition
 
@@ -1312,13 +1312,13 @@ Term;
 #ifndef LANGUAGE_PT
 #define LANGUAGE_PT 0
 #endif
-// The title screen's version (event.cpp): Speedy Eggbert 1 is version 1.1
-// (docs/EGGBERT.md). The port gives it the recognised edition's.
+// The title screen's version (event.cpp): Speedy Eggbert 2 shows 1.0, Speedy Blupi 2 shows 2.2
+// (the strings in each executable; docs/SB2.md).
 #ifndef VERSION_TEXT
 #if _EGAMES
-#define VERSION_TEXT "Version 1.1"
-#else
 #define VERSION_TEXT "Version 1.0"
+#else
+#define VERSION_TEXT "Version 2.2"
 #endif
 #endif
 

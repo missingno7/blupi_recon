@@ -151,6 +151,7 @@ void GetCurrentDir(char *pName, int lg)
 // Ajoute le chemin permettant de lire un fichier
 // sur le CD-Rom.
 
+#if _EGAMES  // Eggbert 2 uses paths directly below the configured directory.
 void AddCDPath(char *pFilename)
 {
 	char	temp[MAX_PATH];
@@ -161,6 +162,36 @@ void AddCDPath(char *pFilename)
 	strcat(temp, pFilename);
 	strcpy(pFilename, temp);
 }
+
+#else  // Blupi 2 retains the parent-directory test for shared CD folders.
+void AddCDPath(char *pFilename)
+{
+	char	temp[MAX_PATH];
+	BOOL	bDaniel = FALSE;
+
+	if ( g_CDPath[0] == 0 )  return;
+
+	if ( !bDaniel &&
+		 (strstr(pFilename, "data\\")    == pFilename ||
+		  strstr(pFilename, "image\\")   == pFilename ||
+		  strstr(pFilename, "image08\\") == pFilename ||
+		  strstr(pFilename, "image16\\") == pFilename ||
+		  strstr(pFilename, "movie\\")   == pFilename) )
+	{
+		strcpy(temp, g_CDPath);
+		strcat(temp, "..\\");
+		strcat(temp, pFilename);
+	}
+	else
+	{
+		strcpy(temp, g_CDPath);
+		strcat(temp, pFilename);
+	}
+
+	strcpy(pFilename, temp);
+}
+
+#endif
 
 // Ajoute le chemin permettant de lire un fichier
 // utilisateur.

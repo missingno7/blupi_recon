@@ -256,7 +256,9 @@ protected:
 	int m_demoIndex;
 	int m_demoEnd;
 	int m_demoNumber;
+#if _EGAMES // Only Eggbert 2 has a timed introduction (Blupi chat zone is at +0x9988).
 	int m_introTime;
+#endif
 	int m_9984;
 	BOOL m_bInfoHelp;
 	char m_chatZone[6][100];

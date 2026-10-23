@@ -459,7 +459,7 @@ def main() -> int:
             TARGET.check_exe()
             print(f"target {TARGET.name}: {TARGET.exe.relative_to(ROOT)}"
                   + (f", defines {' '.join(TARGET.defines)}" if TARGET.defines else ""))
-            if TARGET.manifest_path.resolve() != MANIFEST.resolve():
+            if TARGET.manifest_path.resolve() != MANIFEST.resolve() and TARGET.address_map is None:
                 MANIFEST = TARGET.manifest_path  # a game with its own manifest (games/sb2/recon.json)
             elif args.accept:
                 print("error: --accept promotes into recon.json, the primary target's manifest")

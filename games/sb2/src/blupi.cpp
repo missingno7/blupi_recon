@@ -112,6 +112,7 @@ BOOL ReadConfig(LPSTR lpCmdLine)
 	if (pText == NULL)
 	{
 
+#if _EGAMES  // Eggbert 2 falls back to the installation directory.
 		GetCurrentDirectory(MAX_PATH, g_CDPath);
 		i = strlen(g_CDPath);
 		if (i > 0 && g_CDPath[i - 1] != '\\')
@@ -120,6 +121,9 @@ BOOL ReadConfig(LPSTR lpCmdLine)
 			g_CDPath[i] = 0;
 		}
 
+#else
+		return FALSE;
+#endif
 	}
 	else
 	{
@@ -136,6 +140,19 @@ BOOL ReadConfig(LPSTR lpCmdLine)
 		}
 		g_CDPath[i] = 0;  // met le terminateur
 	}
+
+#if !_EGAMES  // Blupi 2 checks the configured CD drive unless -nocd is given.
+	if (strstr(lpCmdLine, "-nocd") == NULL)
+	{
+		char drive[10];
+		drive[0] = g_CDPath[0];
+		drive[1] = ':';
+		drive[2] = '\\';
+		drive[3] = 0;
+		nb = GetDriveType(drive);
+		if (nb != DRIVE_CDROM) return FALSE;
+	}
+#endif
 
 	pText = strstr(buffer, "SpeedRate=");
 	if (pText != NULL)
@@ -248,10 +265,12 @@ void UpdateFrame(void)
 		}
 	}
 
+#if _EGAMES  // Only Eggbert 2 has the publisher intro screens.
 	if (phase == WM_PHASE_INTRO1 || phase == WM_PHASE_INTRO2)
 	{
 		g_pEvent->IntroStep();
 	}
+#endif
 
 	if (phase == WM_PHASE_INIT)
 	{
