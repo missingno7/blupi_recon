@@ -370,6 +370,15 @@ Port (`games/sb1/game/sound.cpp` + `common/platform/music.cpp`):
 
 ## 9. Games, editions and languages
 
+[EVIDENCE] SB2 bring-up (2026-10-23): `games/sb2/` builds the separate desktop executable
+`blupi2`, using its own historical include context and the twelve unchanged SB2 shared TUs.
+It links the existing `common/` libraries; no SB1 source or common behaviour changed.
+SB2 uses its historical `SetDecor`/`CDecor::Build` once per logical tick, including Build's
+state changes. The coupling table in section 4 describes SB1's extracted rendering; SB2
+has no scene extraction, interpolation, widescreen or display-rate redraw yet. Those need
+their own equivalence gates before they can be offered. [SB2_PORT.md](SB2_PORT.md) records
+the milestone evidence and the remaining services.
+
 - **Layout.** `common/` (`compat/`, `platform/`, `render/`) holds what does not depend on a
   game; it names no game. `games/sb1/` holds Speedy Blupi 1's port code, which also serves
   Speedy Eggbert 1. A second game gets `games/sb2/` and its own executable linking the same

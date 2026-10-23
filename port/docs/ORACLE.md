@@ -117,3 +117,16 @@ identical at all 750 checkpoints. The Speedy Blupi traces did not change.
   and load; later demos (DEMO202–206: the runs stop at frame 2200, while the golden traces
   cover them on the port side only).
 - **Multiplayer.**
+
+## SB2 bring-up: local regression evidence (2026-10-23)
+
+[EVIDENCE] The four `sb2_{eggbert,blupi}_attract{8,16}.trace` files are new port
+regression baselines, not historical cross-build comparisons. Each records 800 checkpoints
+(every 10 frames of 8,000). The game's own attract system visits `DEMO300..309` and wraps
+back to 300; `sb2_golden.cmake` checks that sequence independently of the hashes. Each run
+also replays every rendering command on a second software device and requires equal
+pixels (8,011 displays including startup). SB1's golden files were not regenerated.
+
+[OPEN] No SB2 historical rebuild was run or captured in this task. SB1's pixel-oracle
+results above do not establish SB2 historical pixel equality. SB2 screenshots are local
+runtime evidence under `build/`, listed in [SB2_PORT.md](SB2_PORT.md).

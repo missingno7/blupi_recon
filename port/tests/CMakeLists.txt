@@ -262,3 +262,30 @@ if(BLUPI_TEST_DATA_EGGBERT)
             -DUPDATE=${BLUPI_UPDATE_GOLDEN}
             -P ${CMAKE_CURRENT_SOURCE_DIR}/golden_check.cmake)
 endif()
+
+# A second, isolated historical include context and a separate golden-update
+# option: SB2 bring-up must never regenerate SB1's accepted traces.
+add_executable(test_sb2_layout test_sb2_layout.cpp)
+target_link_libraries(test_sb2_layout PRIVATE blupi2_hist_context)
+add_test(NAME sb2_layout COMMAND test_sb2_layout)
+set(BLUPI2_TEST_DATA "$ENV{BLUPI2_DATA}" CACHE PATH "Eggbert 2 data root for SB2 golden tests")
+set(BLUPI2_TEST_DATA_BLUPI "" CACHE PATH "Blupi 2 data root for SB2 golden tests")
+option(BLUPI2_UPDATE_GOLDEN "Rewrite only the SB2 golden traces" OFF)
+foreach(edition eggbert blupi)
+    if(edition STREQUAL "eggbert")
+        set(sb2_data "${BLUPI2_TEST_DATA}")
+    else()
+        set(sb2_data "${BLUPI2_TEST_DATA_BLUPI}")
+    endif()
+    if(sb2_data)
+        foreach(depth 8 16)
+            set(name sb2_${edition}_attract${depth})
+            add_test(NAME golden_${name}
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                    -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}
+                    -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/${name}.trace -DEVERY=10
+                    "-DARGS=--color ${depth} --frames 8000" -DUPDATE=${BLUPI2_UPDATE_GOLDEN}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_golden.cmake)
+        endforeach()
+    endif()
+endforeach()

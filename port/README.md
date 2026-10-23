@@ -15,10 +15,12 @@ Current release: **1.1.0** for Windows x64, Linux x86-64 and Android
 | Path | Owner | Contents |
 |---|---|---|
 | `../src/*.cpp, *.h, res/` | historical reconstruction | Compiled unchanged. 12 TUs are shared as-is: `button decblock decblupi decdesign decmove decnet decor dectables event jauge menu text` |
+| `../games/sb2/src/*.cpp, *.h` | SB2 historical reconstruction | The same 12 TU names, compiled unchanged with SB2's own headers and compile context; never included through SB1's context |
 | `common/compat/include/` | port | Declaration-only Win32/DirectX/winmm names the shared TUs need, with SDK values; `port_forced.h` (forced include: `fopen`→port file system, `rand`→MS LIBC generator; no game names) |
 | `common/compat/src/win32.cpp` | port | Behaviour behind those names: posted-message queue, cursor, rectangles, file APIs, winmm joystick on SDL gamepads, MS `rand` |
 | `common/compat/src/hist_stdio.cpp` | port | `BlupiFile` streams for the shared TUs' file I/O (`common/compat/include/port_hist_stdio.h`) |
 | `games/sb1/game/` | port, partly derived from historical TUs | Speedy Blupi 1's and Speedy Eggbert 1's port code. Replacements of the 7 platform TUs: `main.cpp`←`blupi.cpp`, `pixmap.cpp`, `sound.cpp`, `misc.cpp`, `movie.cpp`, `network.cpp`; `ddutil.cpp` is not needed. Each file header names its historical origin; copied method bodies are kept verbatim where possible. Port-owned: scene builder and end of tick (`scene.cpp`, `end_of_tick.cpp`), wide editor, Display options, settings, languages and edition recognition (`language.cpp`), the build switches' port values (`port_switches.h`, second forced include), state hash and test probes |
+| `games/sb2/` | port, partly derived from historical TUs | `blupi2`: six platform adapters in `game/` (`main`←`blupi`, pixmap, sound, misc, movie, network), derived from SB1's adapters and SB2's reconstructed bodies; `ddutil` is replaced by the render device. SB2 state hash, edition/language service, forced switches, and original resource strings in `languages/`. Faithful 640×480 tick rendering; status and limits: [SB2_PORT.md](docs/SB2_PORT.md) |
 | `common/render/` | port | Rendering device interface and commands (`device.h`), software reference renderer (8 bpp palettized and RGB565 surfaces, DirectDraw blit rules), BMP reader. No SDL, no Win32 names |
 | `common/platform/` | port | SDL3 host: window/presentation, input, touch controls, timing, audio mixer, MIDI synthesizer, file system roots, the language-pack format, icon, `SDL_main` entry (calls the game's `BlupiMain`). No game names: the game passes its own (e.g. its user folder's) |
 | `third_party/tinysoundfont/` | vendored | TinySoundFont v0.9 (MIT) and TinyMidiLoader v0.7 (zlib) headers, unchanged; provenance in its README |
@@ -30,8 +32,8 @@ Current release: **1.1.0** for Windows x64, Linux x86-64 and Android
 | `VERSION.txt` | port | The release version, read by CMake and the Android build |
 | `oracle/`, `tools/` | port test tooling | Frame-capture `ddraw.dll` proxy for the historical rebuild, capture and diff scripts ([docs/ORACLE.md](docs/ORACLE.md)); not part of the game build |
 
-Nothing in `src/` is copied into `port/` except the bodies inside the `games/sb1/game/` replacements of the
-platform TUs, which are marked as such.
+Historical bodies copied into the two games' port adapters name their source in the file headers.
+Both historical source trees remain unchanged.
 
 ## Build (Windows x64, MinGW-w64 GCC)
 
@@ -80,6 +82,17 @@ of the game; the app imports it on first run. Controls are a touch joystick and 
 gamepad. See [android/README.md](android/README.md).
 
 ## Run
+
+The SB2 desktop bring-up builds `blupi2` beside `blupi-sdl3`. For example:
+
+```powershell
+build\port\blupi2.exe --headless --data assets\eggbert2 --user build\sb2-user --frames 8000
+```
+
+It also accepts Blupi 2 data (`assets\blupi2`), `--color 8|16`, `--trace`, `--screenshot`, and
+`--demo-log` (attract-demo transitions). Configure `BLUPI2_TEST_DATA` (or `BLUPI2_DATA` in the
+environment) for Eggbert 2's golden tests and `BLUPI2_TEST_DATA_BLUPI` for Blupi 2's. Only
+`BLUPI2_UPDATE_GOLDEN` updates SB2 traces. See [the bring-up report](docs/SB2_PORT.md) for current limits.
 
 ```powershell
 build\port\blupi-sdl3.exe --data "D:\Prog\blupi_recon\assets\Speedy Blupi"

@@ -228,6 +228,7 @@ if(BLUPI_BUNDLE_SOUNDFONT AND BLUPI_SOUNDFONT_FILE AND NOT ANDROID)
 endif()
 
 if(NOT ANDROID)
+    add_subdirectory(games/sb2)
     enable_testing()
     add_subdirectory(tests)
 endif()
