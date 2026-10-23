@@ -1857,8 +1857,12 @@
           "note": "[EVIDENCE] STRICT at 0x14080 (272 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
         },
         "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
-          "withdrawn": null,
-          "note": "[EVIDENCE] STRICT at 0x14dd0 (112 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
+          "withdrawn": {
+            "reason": "Policy transition: this candidate loses the 112-byte STRICT body and passes the target-local static EQUIVALENT proof.",
+            "evidence": "evidence/equivalence/sb2-blupi-en/IsMoveTraj.json; docs/SB2.md \"Edition policy\"",
+            "date": "2026-10-23"
+          },
+          "note": "[EVIDENCE] Edition policy: the Eggbert 2 primary form of IsMoveTraj (POINT cel) costs Blupi 2 this STRICT body; it is certified EQUIVALENT in the target tier."
         },
         "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z": {
           "withdrawn": null,
@@ -2014,8 +2018,12 @@
           "note": "[EVIDENCE] STRICT at 0x14080 (272 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
         },
         "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
-          "withdrawn": null,
-          "note": "[EVIDENCE] STRICT at 0x14dd0 (112 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
+          "withdrawn": {
+            "reason": "Policy transition: this candidate loses the 112-byte STRICT body and passes the target-local static EQUIVALENT proof.",
+            "evidence": "evidence/equivalence/sb2-blupi-de/IsMoveTraj.json; docs/SB2.md \"Edition policy\"",
+            "date": "2026-10-23"
+          },
+          "note": "[EVIDENCE] Edition policy: the Eggbert 2 primary form of IsMoveTraj (POINT cel) costs Blupi 2 this STRICT body; it is certified EQUIVALENT in the target tier."
         },
         "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z": {
           "withdrawn": null,
@@ -2171,8 +2179,12 @@
           "note": "[EVIDENCE] STRICT at 0x14080 (272 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
         },
         "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
-          "withdrawn": null,
-          "note": "[EVIDENCE] STRICT at 0x14dd0 (112 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
+          "withdrawn": {
+            "reason": "Policy transition: this candidate loses the 112-byte STRICT body and passes the target-local static EQUIVALENT proof.",
+            "evidence": "evidence/equivalence/sb2-blupi-fr/IsMoveTraj.json; docs/SB2.md \"Edition policy\"",
+            "date": "2026-10-23"
+          },
+          "note": "[EVIDENCE] Edition policy: the Eggbert 2 primary form of IsMoveTraj (POINT cel) costs Blupi 2 this STRICT body; it is certified EQUIVALENT in the target tier."
         },
         "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z": {
           "withdrawn": null,

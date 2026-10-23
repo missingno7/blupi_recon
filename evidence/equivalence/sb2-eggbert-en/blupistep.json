@@ -10755,7 +10755,7 @@
     "difference_values_sha256": "cc19dfabdee422c6eaa0141254a2c68a7fb2a7aebd02afc3549eee63cf94d83b",
     "differing_bytes": 32189,
     "verified_relocations": 499,
-    "relocations_sha256": "7c55eab3fd0100653d1fac36154199f9a527ca6b49f9cf14e11d4f6a7bb55cef",
+    "relocations_sha256": "b4f7b768ca1d2160d9814fdd9e9253ef2ef473a352fb3e6d104cc057c8631d18",
     "previously_proved_equivalent_callee_entries": {
       "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z": {
         "rva": "0x14b10",
@@ -10771,11 +10771,6 @@
         "rva": "0x14090",
         "certificate": "evidence/equivalence/sb2-eggbert-en/IsWorld.json",
         "payload_sha256": "8ff3d183c4c440ef45c57155120cd19685d3ec4c60081d8888a138adf7fede25"
-      },
-      "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
-        "rva": "0x14de0",
-        "certificate": "evidence/equivalence/sb2-eggbert-en/IsMoveTraj.json",
-        "payload_sha256": "a057313b35b362c4dc675a51f7c7b29405b702536306e19f2c483cdd737e83a6"
       }
     }
   }

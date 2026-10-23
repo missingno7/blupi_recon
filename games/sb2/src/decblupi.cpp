@@ -5189,13 +5189,14 @@ void CDecor::SetMoveTraj(POINT cel)
 
 BOOL CDecor::IsMoveTraj(POINT pos)
 {
-	pos.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
-	pos.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
-	if (IsValidCel(pos))
+	POINT cel;
+	cel.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
+	cel.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
+	if (IsValidCel(cel))
 	{
-		int num = pos.y * (TRAJBYTEX);
-		num += pos.x / 8;
-		int num2 = pos.x & 7;
+		int num = cel.y * (TRAJBYTEX);
+		num += cel.x / 8;
+		int num2 = cel.x & 7;
 		return m_moveTraj[num] & (1 << num2);
 	}
 	return FALSE;

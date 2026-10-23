@@ -109,6 +109,12 @@ may cost a Blupi 2 STRICT function only when Eggbert 2 gains and the Blupi 2 fun
 EQUIVALENT certificate in its target tier; the reverse is not allowed. Edition-specific source (`#if _EGAMES`)
 still needs both executables to show the difference. EQUIVALENT never counts as STRICT.
 
+[EVIDENCE] First policy application (`scratch/w-eggprimary/REPORT.md`): `IsMoveTraj` computes its cell in a used
+`POINT cel` (the form that matches Eggbert 2), making it STRICT on Eggbert 2 (+112 bytes, no loss). Blupi 2
+en/de/fr lose that 112-byte STRICT body; it is certified EQUIVALENT in their target tier (static proof, negative
+control) and withdrawn there with that certificate as evidence. Eggbert 2: 448 STRICT + 12 FOLDED, 136,192
+bytes; Blupi 2: 448 STRICT + 5 FOLDED, 121,600 bytes, 12 EQUIVALENT.
+
 ## 2. Oracle, inventory and identifications
 
 `oracle/sb2-eggbert-en/` (Ghidra 12.1 on Eggbert2.exe alone): 627 functions (449 game, 167,139 body

@@ -37,7 +37,7 @@ class TargetAcceptanceTests(unittest.TestCase):
         self.assertEqual(eggbert['into']['symbol'], '?Flush@CPixmap@@QAEHXZ')
 
     def test_reactivated_bodies_are_enforced_only_on_blupi(self):
-        for name in ('IsWorld', 'IsMoveTraj', 'IsVentillo'):
+        for name in ('IsWorld', 'IsVentillo'):
             symbol = f'?{name}@CDecor@@QAEHUtagPOINT@@@Z'
             with self.subTest(function=name):
                 blupi = self.accepted(self.blupi, symbol)
@@ -143,7 +143,7 @@ class TargetEquivalenceTests(unittest.TestCase):
             if name.startswith('sb1/'):
                 expected = 0 if target.primary else 3 if '/eggbert/' in name else 2
             else:
-                expected = 6 if name == 'sb2/eggbert/en' else 11
+                expected = 5 if name == 'sb2/eggbert/en' else 12
             self.assertEqual(len(entries), expected)
             self.assertTrue(all(target.slug in e['certificate'] for e in entries))
             # Translation never applies to the namespaced target records.
@@ -174,8 +174,8 @@ class TargetEquivalenceTests(unittest.TestCase):
                 self.assertEqual(target_coverage.main(), 0)
             lines.append(output.getvalue().splitlines())
         self.assertEqual(lines[0], lines[1][:-1])
-        self.assertIn('11 functions', lines[1][-1])
-        self.assertIn('51,312 bytes', lines[1][-1])
+        self.assertIn('12 functions', lines[1][-1])
+        self.assertIn('51,424 bytes', lines[1][-1])
 
     @staticmethod
     def function(payload):
