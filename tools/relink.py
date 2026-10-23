@@ -397,10 +397,13 @@ def main(argv=None):
                "/fixed", "/incremental:no", *([] if args.default_libs else ["/nodefaultlib"]),
                *["/opt:" + s for s in args.opt.split(",")],
                f"/out:{image_path}", f"/map:{map_path}"]
-    resource_script = ROOT / manifest.get("source_root", "src") / "res" / "blupi.rc"
+    resource_candidates = [ROOT / manifest.get("source_root", "src") / "res" / "blupi.rc"]
+    if not target.primary:
+        resource_candidates.insert(0, ROOT / "games/sb2/res" / f"{target.slug}.rc")
+    resource_script = next((candidate for candidate in resource_candidates if candidate.is_file()), None)
     if args.no_res:
         res_files, resource_status = [], "omitted by --no-res"
-    elif resource_script.is_file():
+    elif resource_script is not None:
         res_files = [build_resources(out, resource_script, vc_root)]
         resource_status = f"{resource_script.relative_to(ROOT)} via target RC + CVTRES"
     else:

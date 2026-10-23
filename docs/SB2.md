@@ -461,6 +461,14 @@ seven DLLs, order and symbol sets. Accepted functions at their original RVA: Egg
 Eggbert 2's second Rich entry matches CVTRES 5.00.1668, [HYPOTHESIS]). SB1's default relink is unchanged
 (`557ca92e…`).
 
+[EVIDENCE] Resources (`scratch/w-rsrc/REPORT.md`): `tools/make_rc.py --target` generates
+`games/sb2/res/sb2-{eggbert-en,blupi-en,blupi-de,blupi-fr}.rc` the way docs/RESOURCES.md built SB1's (cursors and
+icon are SB1's Planet Blupi files, byte-identical to the SB2 payloads; strings, dialogs and version blocks
+as script text from each original), and `tools/relink.py` links them. After normalising data-entry RVAs
+(the section sits 8–12 KiB low behind the `.data` shortfall), Eggbert 2's `.rsrc` equals all 25,088 bytes;
+Blupi 2 en/de/fr equal all bytes except 73 resource-directory timestamp fields each. SB1's `blupi.rc` and
+relinked image are unchanged.
+
 [NEGATIVE] Context solvers over natural, byte-neutral respellings (`scratch/w-solve-decblupi`,
 `w-solve-pixmap`): our compiles of decblupi.cpp and pixmap.cpp are byte-identical under SP3 and RTM and every
 respelling shifts both compilers equally, but the two ORIGINALS differ in operand/register order for seven

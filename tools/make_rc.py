@@ -1,13 +1,14 @@
-"""Generate src/res/blupi.rc (Speedy Blupi 1 resources) and copy the original Planet Blupi cursor/icon files.
+"""Generate resource scripts for the matching targets.
 
 Provenance (docs/RESOURCES.md): the 14 cursors and the icon are Planet Blupi's original 1997 resource files
 (external/planetblupi commit b0270ab), byte-identical to the oracle's RT_CURSOR/RT_ICON payloads. The string table and
-the one dialog are reconstructed as resource-script text from the oracle's RT_STRING/RT_DIALOG resources; the version
-block follows Planet Blupi's script with the oracle's Speedy Blupi values. Statement order follows Planet Blupi's script
-(icon, version, cursors) plus the dialog and string table, matching the oracle's resource data order.
+dialogs are reconstructed as resource-script text from the oracle's RT_STRING/RT_DIALOG resources; the version block
+uses the values read from the oracle's RT_VERSION resource. Statement order follows the resource data order.
 
   .pyenv\\python.exe tools\\make_rc.py
+  .pyenv\\python.exe tools\\make_rc.py --target sb2/eggbert/en
 """
+import argparse
 import struct, subprocess
 from pathlib import Path
 import pefile
@@ -54,7 +55,7 @@ def rcstr(s):
     return '"' + "".join(r) + '"'
 
 
-def main():
+def make_sb1():
     OUT.mkdir(parents=True, exist_ok=True)
     for f in PB_FILES:
         data = subprocess.run(["git", "-C", str(ROOT / "external/planetblupi"), "show", "b0270ab:" + f],
@@ -91,6 +92,166 @@ def main():
     text = "\r\n".join(L)
     (OUT / "blupi.rc").write_bytes(text.encode("cp1252"))
     print("wrote", OUT / "blupi.rc")
+
+
+def wide_field(blob, offset):
+    first = struct.unpack_from("<H", blob, offset)[0]
+    offset += 2
+    if first == 0:
+        return "", offset
+    if first == 0xFFFF:
+        value = struct.unpack_from("<H", blob, offset)[0]
+        return f"#{value}", offset + 2
+    chars = [first]
+    while chars[-1]:
+        chars.append(struct.unpack_from("<H", blob, offset)[0])
+        offset += 2
+    return bytes().join(struct.pack("<H", c) for c in chars[:-1]).decode("utf-16-le"), offset
+
+
+def dialog_text(pe):
+    # Decode the standard RT_DIALOG template into RC controls; no binary template is embedded.
+    entries = []
+    for typ in pe.DIRECTORY_ENTRY_RESOURCE.entries:
+        if typ.id == 5:
+            entries.extend(typ.directory.entries)
+    if len(entries) != 1 or entries[0].id != 111:
+        raise ValueError("expected the single oracle dialog 111")
+    langs = entries[0].directory.entries
+    if len(langs) != 1 or langs[0].id != 0x100c:
+        raise ValueError("expected dialog 111 in French-Swiss (0x100c)")
+    ds = langs[0].data.struct
+    blob = pe.get_data(ds.OffsetToData, ds.Size)
+    pos = 0
+    style, exstyle, count = struct.unpack_from("<IIH", blob, pos)
+    pos += 10
+    x, y, cx, cy = struct.unpack_from("<hhhh", blob, pos)
+    pos += 8
+    menu, pos = wide_field(blob, pos)
+    cls, pos = wide_field(blob, pos)
+    title, pos = wide_field(blob, pos)
+    if style & 0x40:
+        point_size = struct.unpack_from("<H", blob, pos)[0]
+        pos += 2
+        font, pos = wide_field(blob, pos)
+    else:
+        raise ValueError("dialog has no explicit font")
+    if (style & 0x80C800C0) != 0x80C800C0 or exstyle or menu or cls:
+        raise ValueError("dialog style/menu/class differs from the evidenced template")
+    controls = []
+    for _ in range(count):
+        pos = (pos + 3) & ~3
+        cstyle, cexstyle = struct.unpack_from("<II", blob, pos)
+        pos += 8
+        x0, y0, cx0, cy0, cid = struct.unpack_from("<hhhhH", blob, pos)
+        pos += 10
+        cclass, pos = wide_field(blob, pos)
+        caption, pos = wide_field(blob, pos)
+        extra = struct.unpack_from("<H", blob, pos)[0]
+        pos += 2 + extra
+        if cexstyle or extra:
+            raise ValueError("dialog control has an unsupported extended field")
+        controls.append((cstyle, x0, y0, cx0, cy0, cid, cclass, caption))
+    if pos != len(blob) or len(controls) != 4:
+        raise ValueError("dialog template did not parse completely")
+    # These symbolic forms reproduce the decoded standard controls, including their styles.
+    expected = [(0x50810080, 1000, "#129"), (0x50010001, 1, "#128"),
+                (0x50010000, 2, "#128"), (0x50020000, 0xFFFF, "#130")]
+    if [(s, cid, cls) for s, _x, _y, _cx, _cy, cid, cls, _cap in controls] != expected:
+        raise ValueError("dialog control styles or IDs differ from the evidenced template")
+    lines = [f"111 DIALOG DISCARDABLE  {x}, {y}, {cx}, {cy}",
+             "STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU", f'CAPTION {rcstr(title)}',
+             f'FONT {point_size}, {rcstr(font)}', "BEGIN",
+             f"    EDITTEXT        1000,{controls[0][1]},{controls[0][2]},{controls[0][3]},{controls[0][4]},ES_AUTOHSCROLL",
+             f'    DEFPUSHBUTTON   {rcstr(controls[1][7])},IDOK,{controls[1][1]},{controls[1][2]},{controls[1][3]},{controls[1][4]}',
+             f'    PUSHBUTTON      {rcstr(controls[2][7])},IDCANCEL,{controls[2][1]},{controls[2][2]},{controls[2][3]},{controls[2][4]}',
+             f'    LTEXT           {rcstr(controls[3][7])},IDC_STATIC,{controls[3][1]},{controls[3][2]},{controls[3][3]},{controls[3][4]}',
+             "END"]
+    return lines
+
+
+def version_values(pe):
+    table = None
+    translation = None
+    for info in getattr(pe, "FileInfo", []):
+        for entry in info:
+            if hasattr(entry, "StringTable"):
+                if len(entry.StringTable) != 1:
+                    raise ValueError("expected one version StringTable")
+                table = entry.StringTable[0]
+            elif hasattr(entry, "Var"):
+                if len(entry.Var) != 1:
+                    raise ValueError("expected one version Translation")
+                raw = entry.Var[0].entry[b"Translation"]
+                translation = tuple(int(v, 16) for v in raw.split())
+    if table is None or translation is None:
+        raise ValueError("oracle has no readable version strings or translation")
+    fixed = pe.VS_FIXEDFILEINFO[0]
+
+    def version(ms, ls):
+        return ((ms >> 16) & 0xffff, ms & 0xffff, (ls >> 16) & 0xffff, ls & 0xffff)
+
+    values = {key.decode("ascii"): val.decode("utf-8") for key, val in table.entries.items()}
+    return fixed, version(fixed.FileVersionMS, fixed.FileVersionLS), \
+        version(fixed.ProductVersionMS, fixed.ProductVersionLS), table.LangID.decode("ascii"), translation, values
+
+
+def sb2_resource_text(target_name, exe):
+    pe = pefile.PE(str(exe))
+    fixed, filever, productver, langcode, translation, values = version_values(pe)
+    if fixed.FileOS != 0x00040004 or fixed.FileType != 1 or fixed.FileSubtype != 0:
+        raise ValueError("unexpected fixed version metadata")
+    if translation != (0x100c, 1200) or langcode != "100c04b0":
+        raise ValueError("unexpected version translation")
+    expected_keys = ("CompanyName", "FileDescription", "FileVersion", "InternalName", "LegalCopyright",
+                     "OriginalFilename", "ProductName", "ProductVersion")
+    if tuple(values) != expected_keys:
+        values = {key: values[key] for key in expected_keys}
+    L = [f"// {target_name} resources. Generated by tools/make_rc.py from its static oracle PE.",
+         "// Icon and cursor source images match the existing Planet Blupi assets in src/res/.", "",
+         '#include "afxres.h"', "", "LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL", "#pragma code_page(1252)", "",
+         'IDR_MAINFRAME           ICON    DISCARDABLE     "../../../src/res/blupi.ico"', "", "1 VERSIONINFO",
+         f" FILEVERSION {filever[0]},{filever[1]},{filever[2]},{filever[3]}",
+         f" PRODUCTVERSION {productver[0]},{productver[1]},{productver[2]},{productver[3]}",
+         f" FILEFLAGSMASK 0x{fixed.FileFlagsMask:x}L", f" FILEFLAGS 0x{fixed.FileFlags:x}L",
+         f" FILEOS 0x{fixed.FileOS:x}L", f" FILETYPE 0x{fixed.FileType:x}L",
+         f" FILESUBTYPE 0x{fixed.FileSubtype:x}L", "BEGIN", '    BLOCK "StringFileInfo"', "    BEGIN",
+         f'        BLOCK "{langcode}"', "        BEGIN"]
+    for key in expected_keys:
+        value = rcstr(values[key])[:-1] + "\\0\""
+        L.append(f'            VALUE "{key}", {value}')
+    L += ["        END", "    END", '    BLOCK "VarFileInfo"', "    BEGIN",
+          f"        VALUE \"Translation\", 0x{translation[0]:04x}, {translation[1]}", "    END", "END", ""]
+    for name, filename in CURSORS:
+        L.append(f'{name:<23} CURSOR  DISCARDABLE     "../../../src/res/{filename}"')
+    L += ["", "LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_SWISS", ""]
+    L.extend(dialog_text(pe))
+    L += ["", "LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL", "", "STRINGTABLE DISCARDABLE", "BEGIN"]
+    for sid, value in strings(pe):
+        L.append(f"    {sid:<5} {rcstr(value)}")
+    L += ["END", ""]
+    return "\r\n".join(L).encode("cp1252")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--target", default="sb1/blupi/us", metavar="GAME/EDITION/LANGUAGE")
+    args = parser.parse_args()
+    if args.target == "sb1/blupi/us":
+        make_sb1()
+        return
+    import sys
+    sys.path.insert(0, str(ROOT / "tools"))
+    import targets
+    target = targets.load(args.target)
+    if not args.target.startswith("sb2/"):
+        parser.error("resource generation is implemented for sb1/blupi/us and the four SB2 targets")
+    target.check_exe()
+    out = ROOT / "games/sb2/res"
+    out.mkdir(parents=True, exist_ok=True)
+    path = out / f"{target.slug}.rc"
+    path.write_bytes(sb2_resource_text(args.target, target.exe))
+    print("wrote", path.relative_to(ROOT))
 
 
 if __name__ == "__main__":
