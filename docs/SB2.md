@@ -413,6 +413,22 @@ With the current tree, DX7 `dsound.h` over DX5 still loses GetBlupiInfo and SetM
 nothing on Eggbert 2.
 [OPEN] The entities by which Eggbert 2's 2004 context differs before these functions.
 
+### Round 8: c2 allocator rules (`tools/c2trace/{pool,split,cost}_trace.py`, KB BLUPI-ALLOC-18)
+
+[EVIDENCE] VC5 SP3 c2's constant-pooling eligibility is a pure tuple-shape predicate (0x4156b6): a literal
+call argument such as `HideMouse(FALSE)` always pools, so the four-late-zero diagnostic for Blupi 2's
+ChangePhase is not a respelling recipe. Splitting is an endpoint union over dataflow masks with a
+cut/kill bit; queue priority is loop weight × pressure-set cardinality × block benefit, minus carrying
+charges (validated: 6,462 eligibility decisions, 234 partitions, 141,443 priority deltas, zero errors).
+
+[EVIDENCE] Upstream (`scratch/w-cuts/REPORT.md`): in our Blupi 2 ChangePhase the zero range is
+selected first, late pressure (7/7) cuts PLAY, and zero/22 keeps EBX. The original needs an early zero
+component of 18 reads with no path to the four late zero reads. Eggbert 2's STRICT ChangePhase has
+the same orientation as our Blupi 2 build (zero/23 in EBX; its intro blocks move the gap from 13 to 17),
+so it is not a template for Blupi 2's. SB1's canonical reordered guards give Blupi 2's orientation but
+not its instruction order. [OPEN] The genuine source or C1 input behind the original's cut history;
+two output-identical internal histories exist and the bytes do not choose between them.
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten

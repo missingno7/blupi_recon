@@ -616,6 +616,14 @@ Every run had zero model errors and equal native payloads. These SP3 observation
 they do not establish SB1 transfer or the upstream cut/adoption decisions. Observer outputs are in
 `build/c2trace/alloc-observers/`.
 
+[EVIDENCE] `cut_trace.py` checks SP3 `439619` adoption, `45a444` rematerialization and
+selected-read pre-scan order, singleton cut members, instruction pressure, and `4380cf` masks;
+weighted costs and downstream partitions stay in `cost_trace.py` and `split_trace.py`.
+Four native captures plus the PLAY-first diagnostic had zero model errors, with counts recorded
+in BLUPI-ALLOC-01/08/09/14. Only the forced diagnostic inserts late zero kills in BB89/BB91.
+Native Blupi 2 and STRICT Eggbert 2 share zero/EBX and PLAY/EDI, so Eggbert is negative
+evidence for the desired reversal. The diagnostic does not identify original compiler history.
+
 [EVIDENCE] Surveys now include both direct-swap and merge-sort comparator callers, general tuple
 hashes consume cached child keys, and keyforce gates on per-function processing through the current
 frame. `--legacy-model` on the prediction/window tools retains the earlier direct-swap/recursive-child

@@ -1,7 +1,7 @@
 """Observe SP3 pressure-weighted priority updates and independent read counts.
 
 Usage (capture names live under build/c2trace/cap):
-  .pyenv\\python.exe tools/c2trace/cost_trace.py CAPTURE FUNCTION [--target GAME/EDITION/LANGUAGE] [--passes N[,N]|all]
+  .pyenv\\python.exe tools/c2trace/cost_trace.py CAPTURE FUNCTION [--target GAME/EDITION/LANGUAGE] [--passes N[,N]|all] [--prioflip]
 
 The observer checks the native pressure multiplier and each priority delta,
 counts IR reads independently of descriptor reference counts, and compares
@@ -23,6 +23,7 @@ def arguments():
  parser.add_argument('capture',help='capture name under build/c2trace/cap')
  parser.add_argument('function',help='decorated-name substring, or * for every function')
  parser.add_argument('--passes',help='comma-separated cost-pass numbers, or all')
+ parser.add_argument('--prioflip',action='store_true',help='diagnostic: force zero22 priority to -79 and compare with cut_trace.py control replay')
  profiles.add_arguments(parser)
  args=parser.parse_args()
  if args.compiler not in (None,'sp3'):
@@ -42,7 +43,8 @@ def arguments():
  return args,cap
 
 args,cap=arguments()
-name,needle=args.capture,args.function
+name,needle,diagnostic=args.capture,args.function,args.prioflip
+label=name+('-prioflip' if diagnostic else '')
 cost_filter=None if not args.passes or args.passes.lower()=='all' else {int(x) for x in args.passes.split(',')}
 OUT.mkdir(parents=True,exist_ok=True)
 import colour_trace as ct,cmpfunc
@@ -63,7 +65,7 @@ def desc(p,a):
   if p.rd(u+8,1)[0]==7:val=ct.signed(p.u32(u+0x18))
  return dict(ptr=hex(a),lr=p.u32(a+0x1c),kind=kind,value=val,refs=p.u32(a+0x24),
   priority=ct.signed(p.u32(a+0xc)),benefit=ct.signed(p.u32(a+0x3c)))
-dest=OUT/(name+'-cost-replay');dest.mkdir(exist_ok=True)
+dest=OUT/(label+'-cost-replay');dest.mkdir(exist_ok=True)
 for f in cap.iterdir():
  if f.is_file() and f.name not in ('trace.obj','index.json'):shutil.copyfile(f,dest/f.name)
 st=dict(active=False,fn='',cost=0,ret=None);events=[];errors=[];pressure_checks=0;formula_checks=0;read_checks=0;started=time.monotonic()
@@ -75,10 +77,16 @@ def hit(p,c,a):
  if a==0x414a64:
   root=p.u32(0x48fb48);sy=p.u32(root);fn=p.rd(p.u32(sy+24),180).split(b'\0')[0].decode('ascii','replace')
   st.update(active=needle=='*' or needle in fn,fn=fn,root=root,cost=0)
-  if st['active']:p.arm(0x40ee1d)
+  if st['active']:
+   p.arm(0x40ee1d)
+   if diagnostic:p.arm(0x41b6fa)
  elif a==0x42a8aa:
-  for bp in (0x40ee1d,)+DETAIL:disarm(p,bp)
+  for bp in (0x40ee1d,)+DETAIL+(0x41b6fa,):disarm(p,bp)
   st['active']=False
+ elif a==0x41b6fa and diagnostic and st['active']:
+  q=Snap(p);n=desc(q,c.Ecx)
+  if (n['value'],q.u32(c.Ecx+0x24))==(0,22) and not st.get('forced'):
+   p.wr(c.Ecx+0xc,(-79&0xffffffff).to_bytes(4,'little'));st['forced']=True
  elif not st['active']:return
  elif a==0x40ee1d:
   st['cost']+=1;st['ret']=p.u32(c.Esp);p.arm(st['ret'])
@@ -136,14 +144,18 @@ obj=ct.owned_run(dest,[0x414a64,0x42a8aa],hit)
 def payload(obj):
  cf=cmpfunc.Coff(obj)
  return {f.name:(f.data,[(r.offset-f.start,cf.sym_by_index[r.symbol_index].name,r.typ) for r in f.relocs]) for f in cf.functions()}
-native=OUT/(name+'-cost-native');native.mkdir(exist_ok=True)
+native=OUT/(label+'-cost-native');native.mkdir(exist_ok=True)
 if not (native/'trace.obj').exists():
  for f in cap.iterdir():
   if f.is_file() and f.name not in ('trace.obj','index.json'):shutil.copyfile(f,native/f.name)
  native_obj=ct.owned_run(native,[],lambda *args:None)
 else:native_obj=native/'trace.obj'
 eq=payload(obj)==payload(native_obj)
+control_equal=None
+if diagnostic:
+ control_obj=OUT/(label+'-control')/'trace.obj'
+ control_equal=control_obj.is_file() and payload(obj)==payload(control_obj)
 suffix='-cost'+('-'+(args.passes.replace(',','-') if cost_filter else 'all') if args.passes is not None else '')+'.json'
-(OUT/(name+suffix)).write_text(json.dumps(dict(events=events,pressure_checks=pressure_checks,formula_checks=formula_checks,read_checks=read_checks,errors=errors,payload_equal=eq,elapsed=time.monotonic()-started),indent=1))
-print(name,'pressure',pressure_checks,'deltas',formula_checks,'readcounts',read_checks,'errors',len(errors),'payload',eq,'seconds',round(time.monotonic()-started,2))
+(OUT/(label+suffix)).write_text(json.dumps(dict(events=events,pressure_checks=pressure_checks,formula_checks=formula_checks,read_checks=read_checks,errors=errors,payload_equal=eq,diagnostic_only=diagnostic,control_payload_equal=control_equal,elapsed=time.monotonic()-started),indent=1))
+print(label,'pressure',pressure_checks,'deltas',formula_checks,'readcounts',read_checks,'errors',len(errors),'payload',eq,'control',control_equal,'seconds',round(time.monotonic()-started,2))
 for e in errors[:5]:print(e)

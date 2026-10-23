@@ -1,7 +1,7 @@
 """Verify SP3 liveness masks and connected-component splitting independently.
 
 Usage (capture names live under build/c2trace/cap):
-  .pyenv\\python.exe tools/c2trace/split_trace.py CAPTURE FUNCTION [--target GAME/EDITION/LANGUAGE]
+  .pyenv\\python.exe tools/c2trace/split_trace.py CAPTURE FUNCTION [--target GAME/EDITION/LANGUAGE] [--prioflip]
 
 The observer checks the 0x43837a fixed-point masks and compares endpoint
 partitions predicted from 0x438544 inputs with native component membership.
@@ -21,6 +21,7 @@ def arguments():
  parser=argparse.ArgumentParser(description=__doc__)
  parser.add_argument('capture',help='capture name under build/c2trace/cap')
  parser.add_argument('function',help='decorated-name substring, or * for every function')
+ parser.add_argument('--prioflip',action='store_true',help='diagnostic: force zero22 priority to -79 and compare with cut_trace.py control replay')
  profiles.add_arguments(parser)
  args=parser.parse_args()
  if args.compiler not in (None,'sp3'):
@@ -34,7 +35,8 @@ def arguments():
  return args,cap
 
 args,cap=arguments()
-name,needle=args.capture,args.function
+name,needle,diagnostic=args.capture,args.function,args.prioflip
+label=name+('-prioflip' if diagnostic else '')
 OUT.mkdir(parents=True,exist_ok=True)
 import colour_trace as ct, cmpfunc
 # Keep the small cache implementation independent of the command-line pool observer.
@@ -129,7 +131,7 @@ def flow(p,head,root,extra):
    d=data[b];d[0x50]=d[0x3c];d[0x38]=d[0x3c]=0
  return {b:{off:data[b][off] for off in (0x24,0x28,0x50)} for b in active},rounds
 
-dest=OUT/(name+'-split-replay');dest.mkdir(exist_ok=True)
+dest=OUT/(label+'-split-replay');dest.mkdir(exist_ok=True)
 for f in cap.iterdir():
  if f.is_file() and f.name not in ('trace.obj','index.json'):shutil.copyfile(f,dest/f.name)
 st=dict(active=False,fn='',pending=None);events=[];checks=0;errors=[];flow_checks=0;flow_errors=[];started=time.monotonic()
@@ -142,9 +144,15 @@ def hit(p,c,a):
   st.update(active=needle=='*' or needle in fn,fn=fn,root=root)
   if st['active']:
    for bp in (0x43837a,0x438544,0x437f2e):p.arm(bp)
+   if diagnostic:p.arm(0x41b6fa)
  elif a==0x42a8aa:
   for bp in (0x43837a,0x438544,0x437f2e):disarm(p,bp)
+  if diagnostic:disarm(p,0x41b6fa)
   st['active']=False
+ elif a==0x41b6fa and diagnostic and st['active']:
+  q=Snap(p);d=desc(q,c.Ecx)
+  if (d['value'],q.u32(c.Ecx+0x24))==(0,22) and not st.get('forced'):
+   p.wr(c.Ecx+0xc,(-79&0xffffffff).to_bytes(4,'little'));st['forced']=True
  elif not st['active']:return
  elif a==0x43837a:
   q=Snap(p);st['flow'],st['rounds']=flow(q,c.Ecx,st['root'],q.u32(c.Esp+4)!=0)
@@ -184,7 +192,11 @@ if not (native/'trace.obj').exists():
  native_obj=ct.owned_run(native,[],lambda *args:None)
 else:native_obj=native/'trace.obj'
 eq=payload(obj)==payload(native_obj)
-(OUT/(name+'-split.json')).write_text(json.dumps(dict(events=events,checks=checks,errors=errors,flow_checks=flow_checks,flow_errors=flow_errors,payload_equal=eq,elapsed=time.monotonic()-started),indent=1))
-print(name,'split checks',checks-len(errors),'/',checks,'flow',flow_checks-len(flow_errors),'/',flow_checks,'errors',len(errors)+len(flow_errors),'payload',eq,'seconds',round(time.monotonic()-started,2))
+control_equal=None
+if diagnostic:
+ control_obj=OUT/(label+'-control')/'trace.obj'
+ control_equal=control_obj.is_file() and payload(obj)==payload(control_obj)
+(OUT/(label+'-split.json')).write_text(json.dumps(dict(events=events,checks=checks,errors=errors,flow_checks=flow_checks,flow_errors=flow_errors,payload_equal=eq,diagnostic_only=diagnostic,control_payload_equal=control_equal,elapsed=time.monotonic()-started),indent=1))
+print(label,'split checks',checks-len(errors),'/',checks,'flow',flow_checks-len(flow_errors),'/',flow_checks,'errors',len(errors)+len(flow_errors),'payload',eq,'control',control_equal,'seconds',round(time.monotonic()-started,2))
 for e in errors[:3]:print(e)
 for e in flow_errors[:3]:print('flow',e)
