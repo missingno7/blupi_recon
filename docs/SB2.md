@@ -115,6 +115,45 @@ en/de/fr lose that 112-byte STRICT body; it is certified EQUIVALENT in their tar
 control) and withdrawn there with that certificate as evidence. Eggbert 2: 448 STRICT + 12 FOLDED, 136,192
 bytes; Blupi 2: 448 STRICT + 5 FOLDED, 121,600 bytes, 12 EQUIVALENT.
 
+### Structural-recovery experiment: decision (2026-10-23)
+
+Isolated arms, all compiled serially in scratch (about 500 compilations in total): `scratch/w-struct` (decblupi:
+inline helpers, stripped functions, class order), `w-island` (decblupi with the 2013 C# port's structure,
+external/mobile-eggbert-legacy), `w-pixstruct` (pixmap.cpp original order), `w-tables` (20 editor tables),
+`w-sb1struct` + `w-sb1island` (SB1 event.cpp), `w-invsearch` (TreatEventBase inverse search), `w-eggprimary`,
+`w-audit` (dependency map, authenticity annotations).
+
+**A. Islands.** [EVIDENCE] c2 resets its per-function state; other code reaches a function only through
+front-end/label ID counts in the same TU (`w-sb1island`). Independent islands: decblupi.cpp, decblock.cpp,
+pixmap.cpp, event.cpp. Coupling: shared headers (decor.h → sound.h, pixmap.h, network.h; event.h; def.h; the
+DirectX headers), and data definitions placed before code in the same TU (decblock's tables before
+GetBlupiInfo). Function-local residues: BlupiStep's allocator/scheduling groups, ChangePhase (zero/PLAY
+priority), TreatEventBase (rank-0 temp).
+
+**B. Authenticity.** [EVIDENCE] Most remaining functions are STRUCTURE_SUPPORTED (logic confirmed by several
+binaries); exact forms are STRUCTURE_OPEN or MATCH_AMBIGUOUS. COMPILER_STEERED forms exist (IsOutWater's POINT
+cel, the trajectory flusher loops, CEvent's constructor loop, SB1's DrawButtons edits and ChangePhase guard
+order), but none was shown to lock another function. One local optimum is demonstrated: both originals emit
+pixmap.cpp in one order, and Eggbert 2's BltFast, MouseBackDraw and QuickIcon match only with our non-original
+order. [OPEN] Unknowable from the binaries: the 2001 vs 2004 declaration contexts and the allocators' internal
+histories (two different histories give the same bytes).
+
+**C. Experiment results.** No structural change improved a region on the primary edition without losses.
+Inline helpers renumber back-end IDs only (`MAKE_POINT`: Eggbert 2 +112 −592 bytes); the attested uncalled
+`IsNormalJump` is inert (+16 entities, 44/44 payloads unchanged); the C# port's method order equals ours;
+`decor.h` reordering is inert; pixmap's original order nets Eggbert 2 −1,296 and Blupi 2 −272 bytes; editor
+tables in address order +123 `.data` bytes but lose Eggbert 2's GetBlupiInfo; SB1 event.cpp has no locking
+form; TreatEventBase: 10 natural forms, no change. The experiments explain the pattern (two source revisions,
+local optima) but not the missing source.
+
+**D. Editions.** Eggbert 2 primary, Blupi 2 a protected secondary (policy above) works; its first use gave
++112 STRICT bytes. A source split per edition is not justified: the evidenced edition differences are
+invisible declaration context, so a split would have to invent it.
+
+**E. Recommendation: preserve the STRICT/EQUIVALENT reconstruction and prioritise the SB2 SDL3 port.**
+Continue byte work only from new evidence (an original source or symbol witness) or for already-known natural
+forms under the edition policy. The C# port is a strong behaviour and naming reference for the port.
+
 ## 2. Oracle, inventory and identifications
 
 `oracle/sb2-eggbert-en/` (Ghidra 12.1 on Eggbert2.exe alone): 627 functions (449 game, 167,139 body
