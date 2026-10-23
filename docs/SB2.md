@@ -89,6 +89,13 @@ so they are declaration-context residues of the RTM compiler on the same source,
 (section 8). RTM expression tracing is now calibrated; measured windows and the remaining allocation
 boundary are recorded there.
 
+[EVIDENCE] German and French Speedy Blupi 2 (`sb2/blupi/de`, `sb2/blupi/fr`;
+`assets/blupi2_variants/{deutsch,francais}/Blupi.exe`; the `english` copy is BLUPI.EXE itself) have
+`.text` and `.data` byte-identical to the English build; only `.rsrc` (string tables) differs, so they
+need no source switch. They are active with the English target's settings and overrides and their own
+inventories (`oracle/sb2-blupi-de`, `oracle/sb2-blupi-fr`): 449 STRICT + 5 FOLDED, 121,712 bytes each,
+identical function results (`scratch/w-b2lang/REPORT.md`).
+
 ## 2. Oracle, inventory and identifications
 
 `oracle/sb2-eggbert-en/` (Ghidra 12.1 on Eggbert2.exe alone): 627 functions (449 game, 167,139 body

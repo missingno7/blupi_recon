@@ -536,12 +536,316 @@
     "sb2/blupi/de": {
       "exe": "assets/blupi2_variants/deutsch/Blupi.exe",
       "sha256": "6e5f7867a606d9581e7c9b710648a3b91b7d2c71c290148bb2eceaefe66d5442",
-      "status": "planned"
+      "built": "2001-05-03",
+      "linker": "LINK 5.00 (no Rich header, separate .idata); compiler VC5 RTM 11.00.7022",
+      "build_path": "D:\\Blupi\\Profil\\sound.cpp",
+      "status": "active",
+      "manifest": "games/sb2/recon.json",
+      "oracle": "oracle/sb2-blupi-de",
+      "defines": [
+        "_EGAMES=0"
+      ],
+      "game_text_end": "0x2b410",
+      "toolchain_tree": "rtm",
+      "accepted_functions": [
+        {
+          "symbol": "??0CJauge@@QAE@XZ",
+          "rva": "0x25e80",
+          "size": 32,
+          "tu": "games/sb2/src/jauge.cpp",
+          "note": "[EVIDENCE] STRICT in Blupi 2; its address-only constructor is missing from the derived map. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?ChatFlush@CEvent@@IAEXXZ",
+          "rva": "0x236c0",
+          "size": 32,
+          "tu": "games/sb2/src/event.cpp",
+          "note": "[EVIDENCE] STRICT in Blupi 2; omitted from the derived map near Eggbert 2's absent IntroStep. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?ChatPop@CEvent@@IAEXXZ",
+          "rva": "0x236e0",
+          "size": 80,
+          "tu": "games/sb2/src/event.cpp",
+          "note": "[EVIDENCE] STRICT in Blupi 2; omitted from the derived map near Eggbert 2's absent IntroStep. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?CreateSoundBuffer@CSound@@QAEHHKKKKH@Z",
+          "rva": "0x2a2c0",
+          "size": 208,
+          "tu": "games/sb2/src/sound.cpp",
+          "note": "[EVIDENCE] STRICT with Blupi 2's historical sound path, including __FILE__ and line 63. Eggbert 2's different descriptor size and line remain open. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+          "rva": "0x19910",
+          "size": 240,
+          "tu": "games/sb2/src/decmove.cpp",
+          "note": "[EVIDENCE] STRICT in Blupi 2 with every relocation verified; Eggbert 2's operand-order residue remains open. docs/SB2.md, blocker repair."
+        }
+      ],
+      "accepted_overrides": {
+        "?CheckWorld1@CEvent@@IAEHXZ": {
+          "status": "strict",
+          "rva": "0x1fbd0",
+          "size": 128,
+          "note": "[EVIDENCE] Blupi 2 checks data\\world001.blp at 0x1fbd0; Eggbert 2 folds its constant TRUE body into CPixmap::Flush. Do not translate that folded owner to Blupi 2."
+        },
+        "?IsWorld@CDecor@@QAEHUtagPOINT@@@Z": {
+          "withdrawn": null,
+          "note": "[EVIDENCE] STRICT at 0x14080 (272 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
+        },
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
+          "withdrawn": null,
+          "note": "[EVIDENCE] STRICT at 0x14dd0 (112 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
+        },
+        "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z": {
+          "withdrawn": null,
+          "note": "[EVIDENCE] STRICT at 0x14f30 (496 bytes), both ModifDecor calls verified, in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
+        },
+        "?ReadConfig@@YAHPAD@Z": {
+          "size": 912,
+          "note": "Speedy Blupi 2's ReadConfig (static read: 0x1030..0x13b8)"
+        },
+        "?UpdateFrame@@YAXXZ": {
+          "rva": "0x13c0",
+          "size": 528,
+          "note": "no publisher intro step (_EGAMES); starts after the longer ReadConfig"
+        },
+        "?AddCDPath@@YAXPAD@Z": {
+          "size": 336,
+          "note": "Speedy Blupi 2 keeps the folder test (_EGAMES)"
+        },
+        "??1CButton@@QAE@XZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "??1CMenu@@QAE@XZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "?OutputDebug@@YAXPAD@Z": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "?GetBenchmarkSuccess@CPixmap@@QAEHXZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "?GetEnable@CSound@@QAEHXZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "_DDColorMatch": {
+          "size": 240,
+          "note": "VC5 RTM code is 240 bytes"
+        },
+        "?MousePosToSprite@CEvent@@QAEHUtagPOINT@@@Z": {
+          "size": 128,
+          "note": "no intro screens in Speedy Blupi 2 (_EGAMES)"
+        },
+        "?TreatEventBase@CEvent@@QAEHIIJ@Z": {
+          "size": 8368,
+          "note": "Speedy Blupi 2's TreatEventBase (_EGAMES differences, scratch/w-b2event)"
+        },
+        "?GetBlupiInfo@CDecor@@QAEXPAH000@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?IsBridge@CDecor@@QAEHUtagPOINT@@PAU2@@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?IsDoor@CDecor@@QAEHUtagPOINT@@PAU2@@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?IsTeleporte@CDecor@@QAEHUtagPOINT@@@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?DrawButtons@CEvent@@QAEHXZ": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?ChangePhase@CEvent@@QAEHI@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?MouseBackDraw@CPixmap@@QAEXXZ": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        }
+      }
     },
     "sb2/blupi/fr": {
       "exe": "assets/blupi2_variants/francais/Blupi.exe",
       "sha256": "acad0730b90a50acf05898d8c0bb524f28a9a5f45fa07451ccda0403d085723d",
-      "status": "planned"
+      "built": "2001-05-03",
+      "linker": "LINK 5.00 (no Rich header, separate .idata); compiler VC5 RTM 11.00.7022",
+      "build_path": "D:\\Blupi\\Profil\\sound.cpp",
+      "status": "active",
+      "manifest": "games/sb2/recon.json",
+      "oracle": "oracle/sb2-blupi-fr",
+      "defines": [
+        "_EGAMES=0"
+      ],
+      "game_text_end": "0x2b410",
+      "toolchain_tree": "rtm",
+      "accepted_functions": [
+        {
+          "symbol": "??0CJauge@@QAE@XZ",
+          "rva": "0x25e80",
+          "size": 32,
+          "tu": "games/sb2/src/jauge.cpp",
+          "note": "[EVIDENCE] STRICT in Blupi 2; its address-only constructor is missing from the derived map. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?ChatFlush@CEvent@@IAEXXZ",
+          "rva": "0x236c0",
+          "size": 32,
+          "tu": "games/sb2/src/event.cpp",
+          "note": "[EVIDENCE] STRICT in Blupi 2; omitted from the derived map near Eggbert 2's absent IntroStep. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?ChatPop@CEvent@@IAEXXZ",
+          "rva": "0x236e0",
+          "size": 80,
+          "tu": "games/sb2/src/event.cpp",
+          "note": "[EVIDENCE] STRICT in Blupi 2; omitted from the derived map near Eggbert 2's absent IntroStep. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?CreateSoundBuffer@CSound@@QAEHHKKKKH@Z",
+          "rva": "0x2a2c0",
+          "size": 208,
+          "tu": "games/sb2/src/sound.cpp",
+          "note": "[EVIDENCE] STRICT with Blupi 2's historical sound path, including __FILE__ and line 63. Eggbert 2's different descriptor size and line remain open. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+          "rva": "0x19910",
+          "size": 240,
+          "tu": "games/sb2/src/decmove.cpp",
+          "note": "[EVIDENCE] STRICT in Blupi 2 with every relocation verified; Eggbert 2's operand-order residue remains open. docs/SB2.md, blocker repair."
+        }
+      ],
+      "accepted_overrides": {
+        "?CheckWorld1@CEvent@@IAEHXZ": {
+          "status": "strict",
+          "rva": "0x1fbd0",
+          "size": 128,
+          "note": "[EVIDENCE] Blupi 2 checks data\\world001.blp at 0x1fbd0; Eggbert 2 folds its constant TRUE body into CPixmap::Flush. Do not translate that folded owner to Blupi 2."
+        },
+        "?IsWorld@CDecor@@QAEHUtagPOINT@@@Z": {
+          "withdrawn": null,
+          "note": "[EVIDENCE] STRICT at 0x14080 (272 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
+        },
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
+          "withdrawn": null,
+          "note": "[EVIDENCE] STRICT at 0x14dd0 (112 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
+        },
+        "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z": {
+          "withdrawn": null,
+          "note": "[EVIDENCE] STRICT at 0x14f30 (496 bytes), both ModifDecor calls verified, in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
+        },
+        "?ReadConfig@@YAHPAD@Z": {
+          "size": 912,
+          "note": "Speedy Blupi 2's ReadConfig (static read: 0x1030..0x13b8)"
+        },
+        "?UpdateFrame@@YAXXZ": {
+          "rva": "0x13c0",
+          "size": 528,
+          "note": "no publisher intro step (_EGAMES); starts after the longer ReadConfig"
+        },
+        "?AddCDPath@@YAXPAD@Z": {
+          "size": 336,
+          "note": "Speedy Blupi 2 keeps the folder test (_EGAMES)"
+        },
+        "??1CButton@@QAE@XZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "??1CMenu@@QAE@XZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "?OutputDebug@@YAXPAD@Z": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "?GetBenchmarkSuccess@CPixmap@@QAEHXZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "?GetEnable@CSound@@QAEHXZ": {
+          "status": "strict",
+          "note": "LINK 5.00 (VC5 RTM): the comparator proves this symbol STRICT at the shared body; Eggbert 2's linker folds it"
+        },
+        "_DDColorMatch": {
+          "size": 240,
+          "note": "VC5 RTM code is 240 bytes"
+        },
+        "?MousePosToSprite@CEvent@@QAEHUtagPOINT@@@Z": {
+          "size": 128,
+          "note": "no intro screens in Speedy Blupi 2 (_EGAMES)"
+        },
+        "?TreatEventBase@CEvent@@QAEHIIJ@Z": {
+          "size": 8368,
+          "note": "Speedy Blupi 2's TreatEventBase (_EGAMES differences, scratch/w-b2event)"
+        },
+        "?GetBlupiInfo@CDecor@@QAEXPAH000@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?IsBridge@CDecor@@QAEHUtagPOINT@@PAU2@@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?IsDoor@CDecor@@QAEHUtagPOINT@@PAU2@@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?IsTeleporte@CDecor@@QAEHUtagPOINT@@@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?DrawButtons@CEvent@@QAEHXZ": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?ChangePhase@CEvent@@QAEHI@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?MouseBackDraw@CPixmap@@QAEXXZ": {
+          "exclude": true,
+          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        }
+      }
     },
     "sb2/eggbert/en": {
       "exe": "assets/eggbert2/Eggbert2.exe",

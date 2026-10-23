@@ -11,7 +11,7 @@ Status (2026-10-22): **Speedy Blupi 1 and Speedy Eggbert 1 are done in every lan
 |---|---|---|---|---|
 | `sb1` Speedy Blupi | `blupi` | 1998-10-14, Epsitec, version 1.0, LINK 5.10 | US (= ENGLISH), DEUTSCH, FRANCAIS | `sb1/blupi/us` (primary), `de`, `fr` |
 | `sb1` | `eggbert` | 1999-06-24, eGames, version 1.1, LINK 5.00.7022 | English, Deu, Esp, Fra, Ita, Por | `sb1/eggbert/en`, `de`, `es`, `fr`, `it`, `pt` |
-| `sb2` Speedy Blupi 2 | `blupi` | 2001-05-03, Epsitec, "LINK 5.00" | english, deutsch, francais | `sb2/blupi/en` (same tree and manifest, `_EGAMES=0`) |
+| `sb2` Speedy Blupi 2 | `blupi` | 2001-05-03, Epsitec, "LINK 5.00" | english, deutsch, francais | `sb2/blupi/en`, `de`, `fr` (same tree and manifest, `_EGAMES=0`) |
 | `sb2` | `eggbert` | 2004-05-03, eGames, LINK 5.10 | English | `sb2/eggbert/en` (own tree and manifest) |
 
 - A **game** is one body of C++ source.
@@ -40,6 +40,7 @@ Two goals, kept apart:
 | `sb1/eggbert/de`, `es`, `it`, `pt` | 123,120 / 141,328 | also `LANGUAGE_DE` (de), `LANGUAGE_ACCENTS`, `LANGUAGE_ES` (es), `LANGUAGE_PT` (pt) |
 | `sb2/eggbert/en` | 136,080 / 172,992 | accepted: 447 STRICT, 12 FOLDED; own tree `games/sb2/src/` ([SB2.md](SB2.md)) |
 | `sb2/blupi/en` | 121,712 / 173,072 | accepted: 449 STRICT, 5 FOLDED; same tree, `_EGAMES=0`, VC5 RTM + LINK 5.00; comparator total 121,728 ([SB2.md](SB2.md)) |
+| `sb2/blupi/de`, `fr` | 121,712 / 173,072 | as `sb2/blupi/en`: `.text` and `.data` identical to English, the language is in `.rsrc` only ([SB2.md](SB2.md)) |
 
 SB2 accepted totals use the effective target manifest. Blupi-only proofs live in targets.json's
 `accepted_functions`, already in that target's RVAs; `accepted_overrides` may explicitly clear an
