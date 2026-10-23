@@ -60,7 +60,8 @@ def main() -> int:
     folded = sum(c[1] for c in counts.values())
     print(f"  {'total':<12} {strict:>4} STRICT {folded:>3} FOLDED  {total:>7,} bytes "
           f"({100 * total / (end - start):.1f}%)")
-    equivalent = manifest.get('target_equivalent_functions', {}).get(target.name, [])
+    from equivalence_target import declarations
+    equivalent = declarations(target, manifest)
     if equivalent:
         intervals = [(max(int(str(e['rva']), 0), start), min(int(str(e['rva']), 0)+e['size'], end))
                      for e in equivalent]

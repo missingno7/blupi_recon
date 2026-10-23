@@ -387,7 +387,7 @@ def main(argv=None):
         if target.primary:
             import equivalence
             equivalent = equivalence.check(manifest, comparison, evidence_objects, out)
-        elif target.name.startswith('sb2/'):
+        elif target.name.startswith(('sb1/', 'sb2/')):
             import equivalence_target
             equivalent = equivalence_target.check(target, manifest, comparison, evidence_objects, out)
         else:

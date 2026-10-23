@@ -141,9 +141,9 @@ class TargetEquivalenceTests(unittest.TestCase):
             target = targets.load(name)
             entries = equiv.declarations(target, target.manifest())
             if name.startswith('sb1/'):
-                self.assertEqual(entries, [])
-                continue
-            expected = 6 if name == 'sb2/eggbert/en' else 11
+                expected = 0 if target.primary else 3 if '/eggbert/' in name else 2
+            else:
+                expected = 6 if name == 'sb2/eggbert/en' else 11
             self.assertEqual(len(entries), expected)
             self.assertTrue(all(target.slug in e['certificate'] for e in entries))
             # Translation never applies to the namespaced target records.
@@ -152,11 +152,13 @@ class TargetEquivalenceTests(unittest.TestCase):
             self.assertEqual(equiv.declarations(translated, translated.manifest()), entries)
 
     def test_equivalent_cannot_satisfy_strict_acceptance(self):
-        entry = equiv.declarations(targets.load('sb2/blupi/en'), targets.load('sb2/blupi/en').manifest())[0]
-        for status in ('MISMATCH', 'EQUIVALENT'):
-            row = dict(name=entry['symbol'], status=status, code_size=entry['size'], matches=[dict(rva=entry['rva'])])
-            self.assertEqual(len(verify.accepted_regressions(
-                dict(accepted_functions=[entry]), {entry['tu']: [row]})), 1)
+        for name in targets.names():
+            target = targets.load(name)
+            for entry in equiv.declarations(target,target.manifest()):
+                for status in ('MISMATCH', 'EQUIVALENT'):
+                    row = dict(name=entry['symbol'], status=status, code_size=entry['size'], matches=[dict(rva=entry['rva'])])
+                    self.assertEqual(len(verify.accepted_regressions(
+                        dict(accepted_functions=[entry]), {entry['tu']: [row]})), 1)
 
     def test_coverage_keeps_strict_line_identical(self):
         target = targets.load('sb2/blupi/en')
@@ -304,6 +306,105 @@ class TargetEquivalenceTests(unittest.TestCase):
     def test_unmodeled_control_transfer_is_rejected(self):
         with self.assertRaisesRegex(ValueError,'control transfers'):
             equiv.constant_states(equiv.decode(bytes.fromhex('e2fe c3')))
+
+
+class SB1EquivalenceTests(unittest.TestCase):
+    @staticmethod
+    def switch_function():
+        # Every input either takes JA to RET or uses one of two checked slots.
+        # The three bytes between RET and the table are unreachable padding.
+        payload = bytes.fromhex('83f801 7707 ff248500000000 c3 8d4900 00000000 00000000')
+        symbols = {1:SimpleNamespace(name='$Ltable',storage=6,section=1,value=16),
+                   2:SimpleNamespace(name='$Lret',storage=6,section=1,value=12)}
+        relocs = [SimpleNamespace(offset=off,typ=6,symbol_index=s) for off,s in ((8,1),(16,2),(20,2))]
+        function = SimpleNamespace(data=payload,start=0,relocs=relocs,section=SimpleNamespace(index=1))
+        coff = SimpleNamespace(sym_by_index=symbols)
+        raw = bytearray(payload)
+        for off,value in ((8,0x401010),(16,0x40100c),(20,0x40100c)):
+            raw[off:off+4] = value.to_bytes(4,'little')
+        raw[13:16] = bytes.fromhex('908bff')
+        entry = dict(name='WindowProc',code_end='0xd',regions=[],padding=[['0xd','0x10']],
+                     switches=[dict(jump='0x5',compare='0x0',table='0x10',count=2)])
+        return function,bytes(raw),coff,entry
+
+    def test_padding_has_complete_cfg_and_independent_table_bindings(self):
+        f,raw,c,entry = self.switch_function()
+        sites,proof = equiv.sb1_structure(f,raw,c,entry,0x1000,0x400000)
+        self.assertEqual(sites,{8:8,16:16,20:20})
+        self.assertEqual(proof['differing_bytes'],3)
+        self.assertEqual(proof['cfg']['sides'][0]['indirect_successors'],{'0x5':['0xc']})
+
+    def test_direct_branch_into_mutated_padding_is_rejected(self):
+        f,raw,c,entry = self.switch_function()
+        data,original = bytearray(f.data),bytearray(raw)
+        data[4] = original[4] = 8  # JA +0xd: the padding is now executable.
+        f.data = bytes(data)
+        with self.assertRaisesRegex(ValueError,'control flow reaches padding'):
+            equiv.sb1_structure(f,bytes(original),c,entry,0x1000,0x400000)
+
+    def test_jump_table_cannot_target_padding_even_with_consistent_relocation(self):
+        f,raw,c,entry = self.switch_function()
+        c.sym_by_index[2].value = 13
+        original = bytearray(raw)
+        for off in (16,20):
+            original[off:off+4] = (0x40100d).to_bytes(4,'little')
+        with self.assertRaisesRegex(ValueError,'table destination is not a code boundary'):
+            equiv.sb1_structure(f,bytes(original),c,entry,0x1000,0x400000)
+
+    def test_retargeted_local_relocation_is_rejected(self):
+        f,raw,c,entry = self.switch_function()
+        c.sym_by_index[2].value = 0
+        with self.assertRaisesRegex(ValueError,'retargeted local relocation'):
+            equiv.sb1_structure(f,raw,c,entry,0x1000,0x400000)
+
+    def test_valid_padding_change_still_invalidates_complete_payload_certificate(self):
+        f,raw,c,entry = self.switch_function()
+        saved = dict(payload_sha256=equiv.hashed(f.data.hex()))
+        data = bytearray(f.data)
+        data[13:16] = bytes.fromhex('909090')
+        f.data = bytes(data)
+        equiv.sb1_structure(f,raw,c,entry,0x1000,0x400000) # Reachability proof still holds.
+        with self.assertRaisesRegex(ValueError,'certificate changed'):
+            equiv.validate_certificate(saved,dict(payload_sha256=equiv.hashed(f.data.hex())),'WindowProc')
+
+    def test_outside_window_mutation_and_incorrect_table_bound_fail(self):
+        f,raw,c,entry = self.switch_function()
+        data = bytearray(f.data); data[2] = 2; f.data = bytes(data)
+        with self.assertRaisesRegex(ValueError,'bound/count'):
+            equiv.sb1_structure(f,raw,c,entry,0x1000,0x400000)
+        f,raw,c,entry = self.switch_function()
+        data = bytearray(f.data); data[12] = 0x90; f.data = bytes(data)
+        with self.assertRaisesRegex(ValueError,'end at RET'):
+            equiv.sb1_structure(f,raw,c,entry,0x1000,0x400000)
+
+    def test_aliasing_load_is_sensitive_to_prior_store_trace(self):
+        # Moving the load across an arbitrary pointed-to store is not proved.
+        a = equiv.decode(bytes.fromhex('8b01 8902 c3'))
+        b = equiv.decode(bytes.fromhex('8902 8b01 c3'))
+        with self.assertRaisesRegex(ValueError,'unequal effects'):
+            equiv.sb1_schedule([a,b],0,4,[equiv.live_masks(x,True) for x in (a,b)])
+
+    def test_rep_copy_requires_equal_counts_and_preserves_length_register_renaming(self):
+        a = equiv.decode(bytes.fromhex('8bd1 f3a5 8bca c3'))
+        b = equiv.decode(bytes.fromhex('8bc1 f3a5 8bc8 c3'))
+        # EAX is an ABI result: the differing saved value cannot escape.
+        with self.assertRaisesRegex(ValueError,'unequal effects'):
+            equiv.sb1_schedule([a,b],0,6,[equiv.live_masks(x,True) for x in (a,b)])
+        a = equiv.decode(bytes.fromhex('8bd1 f3a5 8bca 33c0 c3'))
+        b = equiv.decode(bytes.fromhex('8bc1 f3a5 8bc8 33c0 c3'))
+        equiv.sb1_schedule([a,b],0,6,[equiv.live_masks(x,True) for x in (a,b)])
+
+    def test_sb1_declarations_exclude_primary_and_doinit(self):
+        for name in targets.names():
+            if not name.startswith('sb1/'):
+                continue
+            t = targets.load(name)
+            entries = equiv.declarations(t,t.manifest())
+            self.assertFalse(any(e['name']=='DoInit' for e in entries))
+            self.assertEqual(len(entries),0 if t.primary else 3 if '/eggbert/' in name else 2)
+            for entry in entries:
+                self.assertEqual(entry['proof_method'],'sb1-local')
+                self.assertTrue(entry['certificate'].startswith('evidence/equivalence/'+t.slug+'/'))
 
 
 if __name__ == '__main__':

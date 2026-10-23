@@ -21,7 +21,86 @@
       "defines": [
         "LANGUAGE_DE=1"
       ],
-      "game_text_end": "0x238b0"
+      "game_text_end": "0x238b0",
+      "equivalent_functions": [
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x19310",
+          "size": 6928,
+          "certificate": "evidence/equivalence/sb1-blupi-de/ChangePhase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x1b07",
+          "regions": [
+            [
+              "0xc5",
+              "0x110"
+            ],
+            [
+              "0x5f0",
+              "0x5fc"
+            ]
+          ]
+        },
+        {
+          "name": "TreatEventBase",
+          "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x1d230",
+          "size": 7072,
+          "certificate": "evidence/equivalence/sb1-blupi-de/TreatEventBase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x19d8",
+          "regions": [
+            [
+              "0x41a",
+              "0x42f"
+            ],
+            [
+              "0x6f3",
+              "0x700"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x716",
+              "compare": "0x705",
+              "table": "0x19d8",
+              "count": 17,
+              "bytes": "0x1a1c"
+            },
+            {
+              "jump": "0xcb6",
+              "compare": "0xca5",
+              "table": "0x1a84",
+              "count": 8,
+              "bytes": "0x1aa4"
+            },
+            {
+              "jump": "0xe72",
+              "compare": "0xe69",
+              "table": "0x1ac0",
+              "count": 5
+            },
+            {
+              "jump": "0x10c2",
+              "compare": "0x10b9",
+              "table": "0x1ad4",
+              "count": 7
+            },
+            {
+              "jump": "0x150f",
+              "compare": "0x14fe",
+              "table": "0x1af0",
+              "count": 17,
+              "bytes": "0x1b34"
+            }
+          ]
+        }
+      ]
     },
     "sb1/blupi/fr": {
       "exe": "assets/blupi_variants/FRANCAIS/BLUPI.EXE",
@@ -30,7 +109,86 @@
       "status": "active",
       "manifest": "recon.json",
       "defines": [],
-      "game_text_end": "0x238b0"
+      "game_text_end": "0x238b0",
+      "equivalent_functions": [
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x19310",
+          "size": 6928,
+          "certificate": "evidence/equivalence/sb1-blupi-fr/ChangePhase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x1b07",
+          "regions": [
+            [
+              "0xc5",
+              "0x110"
+            ],
+            [
+              "0x5f0",
+              "0x5fc"
+            ]
+          ]
+        },
+        {
+          "name": "TreatEventBase",
+          "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x1d230",
+          "size": 7072,
+          "certificate": "evidence/equivalence/sb1-blupi-fr/TreatEventBase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x19d8",
+          "regions": [
+            [
+              "0x41a",
+              "0x42f"
+            ],
+            [
+              "0x6f3",
+              "0x700"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x716",
+              "compare": "0x705",
+              "table": "0x19d8",
+              "count": 17,
+              "bytes": "0x1a1c"
+            },
+            {
+              "jump": "0xcb6",
+              "compare": "0xca5",
+              "table": "0x1a84",
+              "count": 8,
+              "bytes": "0x1aa4"
+            },
+            {
+              "jump": "0xe72",
+              "compare": "0xe69",
+              "table": "0x1ac0",
+              "count": 5
+            },
+            {
+              "jump": "0x10c2",
+              "compare": "0x10b9",
+              "table": "0x1ad4",
+              "count": 7
+            },
+            {
+              "jump": "0x150f",
+              "compare": "0x14fe",
+              "table": "0x1af0",
+              "count": 17,
+              "bytes": "0x1b34"
+            }
+          ]
+        }
+      ]
     },
     "sb1/eggbert/en": {
       "exe": "assets/eggbert/Game/egames.exe",
@@ -87,7 +245,217 @@
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
         }
-      }
+      },
+      "equivalent_functions": [
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x19280",
+          "size": 6928,
+          "certificate": "evidence/equivalence/sb1-eggbert-en/ChangePhase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x1b0d",
+          "regions": [
+            [
+              "0xc5",
+              "0x110"
+            ],
+            [
+              "0x5f0",
+              "0x5fc"
+            ],
+            [
+              "0x10a2",
+              "0x10da"
+            ],
+            [
+              "0x10e1",
+              "0x10f5"
+            ],
+            [
+              "0x1104",
+              "0x111f"
+            ],
+            [
+              "0x1126",
+              "0x1131"
+            ],
+            [
+              "0x1199",
+              "0x11d1"
+            ],
+            [
+              "0x11d8",
+              "0x11ec"
+            ],
+            [
+              "0x11fb",
+              "0x1216"
+            ],
+            [
+              "0x121d",
+              "0x1228"
+            ],
+            [
+              "0x1261",
+              "0x1279"
+            ],
+            [
+              "0x1286",
+              "0x1299"
+            ],
+            [
+              "0x12aa",
+              "0x12e7"
+            ],
+            [
+              "0x12ec",
+              "0x12f9"
+            ],
+            [
+              "0x12fb",
+              "0x1320"
+            ],
+            [
+              "0x1325",
+              "0x133c"
+            ],
+            [
+              "0x1400",
+              "0x1412"
+            ],
+            [
+              "0x15a5",
+              "0x15dd"
+            ],
+            [
+              "0x15e4",
+              "0x15f8"
+            ],
+            [
+              "0x1608",
+              "0x1623"
+            ],
+            [
+              "0x162a",
+              "0x1635"
+            ],
+            [
+              "0x168c",
+              "0x16c7"
+            ],
+            [
+              "0x16ea",
+              "0x16fc"
+            ],
+            [
+              "0x1701",
+              "0x170d"
+            ],
+            [
+              "0x171c",
+              "0x1723"
+            ]
+          ]
+        },
+        {
+          "name": "TreatEventBase",
+          "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x1d1a0",
+          "size": 7072,
+          "certificate": "evidence/equivalence/sb1-eggbert-en/TreatEventBase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x19d8",
+          "regions": [
+            [
+              "0x41a",
+              "0x42f"
+            ],
+            [
+              "0x6f3",
+              "0x700"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x716",
+              "compare": "0x705",
+              "table": "0x19d8",
+              "count": 17,
+              "bytes": "0x1a1c"
+            },
+            {
+              "jump": "0xcb6",
+              "compare": "0xca5",
+              "table": "0x1a84",
+              "count": 8,
+              "bytes": "0x1aa4"
+            },
+            {
+              "jump": "0xe72",
+              "compare": "0xe69",
+              "table": "0x1ac0",
+              "count": 5
+            },
+            {
+              "jump": "0x10c2",
+              "compare": "0x10b9",
+              "table": "0x1ad4",
+              "count": 7
+            },
+            {
+              "jump": "0x150f",
+              "compare": "0x14fe",
+              "table": "0x1af0",
+              "count": 17,
+              "bytes": "0x1b34"
+            }
+          ],
+          "padding": [
+            [
+              "0x1abd",
+              "0x1ac0"
+            ]
+          ]
+        },
+        {
+          "name": "WindowProc",
+          "symbol": "?WindowProc@@YGJPAXIIJ@Z",
+          "tu": "src/blupi.cpp",
+          "rva": "0x15f0",
+          "size": 1360,
+          "certificate": "evidence/equivalence/sb1-eggbert-en/WindowProc.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x42d",
+          "regions": [],
+          "padding": [
+            [
+              "0x42d",
+              "0x430"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x219",
+              "compare": "0x210",
+              "table": "0x430",
+              "count": 4
+            },
+            {
+              "jump": "0x2f6",
+              "compare": "0x2e3",
+              "table": "0x440",
+              "count": 5,
+              "bytes": "0x454"
+            }
+          ]
+        }
+      ]
     },
     "sb1/eggbert/de": {
       "exe": "assets/eggbert_variants/Deu/EGAMES.EXE",
@@ -145,7 +513,217 @@
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
         }
-      }
+      },
+      "equivalent_functions": [
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x19280",
+          "size": 6928,
+          "certificate": "evidence/equivalence/sb1-eggbert-de/ChangePhase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x1b0d",
+          "regions": [
+            [
+              "0xc5",
+              "0x110"
+            ],
+            [
+              "0x5f0",
+              "0x5fc"
+            ],
+            [
+              "0x10a2",
+              "0x10da"
+            ],
+            [
+              "0x10e1",
+              "0x10f5"
+            ],
+            [
+              "0x1104",
+              "0x111f"
+            ],
+            [
+              "0x1126",
+              "0x1131"
+            ],
+            [
+              "0x1199",
+              "0x11d1"
+            ],
+            [
+              "0x11d8",
+              "0x11ec"
+            ],
+            [
+              "0x11fb",
+              "0x1216"
+            ],
+            [
+              "0x121d",
+              "0x1228"
+            ],
+            [
+              "0x1261",
+              "0x1279"
+            ],
+            [
+              "0x1286",
+              "0x1299"
+            ],
+            [
+              "0x12aa",
+              "0x12e7"
+            ],
+            [
+              "0x12ec",
+              "0x12f9"
+            ],
+            [
+              "0x12fb",
+              "0x1320"
+            ],
+            [
+              "0x1325",
+              "0x133c"
+            ],
+            [
+              "0x1400",
+              "0x1412"
+            ],
+            [
+              "0x15a5",
+              "0x15dd"
+            ],
+            [
+              "0x15e4",
+              "0x15f8"
+            ],
+            [
+              "0x1608",
+              "0x1623"
+            ],
+            [
+              "0x162a",
+              "0x1635"
+            ],
+            [
+              "0x168c",
+              "0x16c7"
+            ],
+            [
+              "0x16ea",
+              "0x16fc"
+            ],
+            [
+              "0x1701",
+              "0x170d"
+            ],
+            [
+              "0x171c",
+              "0x1723"
+            ]
+          ]
+        },
+        {
+          "name": "TreatEventBase",
+          "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x1d1a0",
+          "size": 7072,
+          "certificate": "evidence/equivalence/sb1-eggbert-de/TreatEventBase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x19d8",
+          "regions": [
+            [
+              "0x41a",
+              "0x42f"
+            ],
+            [
+              "0x6f3",
+              "0x700"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x716",
+              "compare": "0x705",
+              "table": "0x19d8",
+              "count": 17,
+              "bytes": "0x1a1c"
+            },
+            {
+              "jump": "0xcb6",
+              "compare": "0xca5",
+              "table": "0x1a84",
+              "count": 8,
+              "bytes": "0x1aa4"
+            },
+            {
+              "jump": "0xe72",
+              "compare": "0xe69",
+              "table": "0x1ac0",
+              "count": 5
+            },
+            {
+              "jump": "0x10c2",
+              "compare": "0x10b9",
+              "table": "0x1ad4",
+              "count": 7
+            },
+            {
+              "jump": "0x150f",
+              "compare": "0x14fe",
+              "table": "0x1af0",
+              "count": 17,
+              "bytes": "0x1b34"
+            }
+          ],
+          "padding": [
+            [
+              "0x1abd",
+              "0x1ac0"
+            ]
+          ]
+        },
+        {
+          "name": "WindowProc",
+          "symbol": "?WindowProc@@YGJPAXIIJ@Z",
+          "tu": "src/blupi.cpp",
+          "rva": "0x15f0",
+          "size": 1360,
+          "certificate": "evidence/equivalence/sb1-eggbert-de/WindowProc.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x42d",
+          "regions": [],
+          "padding": [
+            [
+              "0x42d",
+              "0x430"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x219",
+              "compare": "0x210",
+              "table": "0x430",
+              "count": 4
+            },
+            {
+              "jump": "0x2f6",
+              "compare": "0x2e3",
+              "table": "0x440",
+              "count": 5,
+              "bytes": "0x454"
+            }
+          ]
+        }
+      ]
     },
     "sb1/eggbert/es": {
       "exe": "assets/eggbert_variants/Esp/EGAMES.EXE",
@@ -203,7 +781,217 @@
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
         }
-      }
+      },
+      "equivalent_functions": [
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x19280",
+          "size": 6928,
+          "certificate": "evidence/equivalence/sb1-eggbert-es/ChangePhase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x1b0d",
+          "regions": [
+            [
+              "0xc5",
+              "0x110"
+            ],
+            [
+              "0x5f0",
+              "0x5fc"
+            ],
+            [
+              "0x10a2",
+              "0x10da"
+            ],
+            [
+              "0x10e1",
+              "0x10f5"
+            ],
+            [
+              "0x1104",
+              "0x111f"
+            ],
+            [
+              "0x1126",
+              "0x1131"
+            ],
+            [
+              "0x1199",
+              "0x11d1"
+            ],
+            [
+              "0x11d8",
+              "0x11ec"
+            ],
+            [
+              "0x11fb",
+              "0x1216"
+            ],
+            [
+              "0x121d",
+              "0x1228"
+            ],
+            [
+              "0x1261",
+              "0x1279"
+            ],
+            [
+              "0x1286",
+              "0x1299"
+            ],
+            [
+              "0x12aa",
+              "0x12e7"
+            ],
+            [
+              "0x12ec",
+              "0x12f9"
+            ],
+            [
+              "0x12fb",
+              "0x1320"
+            ],
+            [
+              "0x1325",
+              "0x133c"
+            ],
+            [
+              "0x1400",
+              "0x1412"
+            ],
+            [
+              "0x15a5",
+              "0x15dd"
+            ],
+            [
+              "0x15e4",
+              "0x15f8"
+            ],
+            [
+              "0x1608",
+              "0x1623"
+            ],
+            [
+              "0x162a",
+              "0x1635"
+            ],
+            [
+              "0x168c",
+              "0x16c7"
+            ],
+            [
+              "0x16ea",
+              "0x16fc"
+            ],
+            [
+              "0x1701",
+              "0x170d"
+            ],
+            [
+              "0x171c",
+              "0x1723"
+            ]
+          ]
+        },
+        {
+          "name": "TreatEventBase",
+          "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x1d1a0",
+          "size": 7072,
+          "certificate": "evidence/equivalence/sb1-eggbert-es/TreatEventBase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x19d8",
+          "regions": [
+            [
+              "0x41a",
+              "0x42f"
+            ],
+            [
+              "0x6f3",
+              "0x700"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x716",
+              "compare": "0x705",
+              "table": "0x19d8",
+              "count": 17,
+              "bytes": "0x1a1c"
+            },
+            {
+              "jump": "0xcb6",
+              "compare": "0xca5",
+              "table": "0x1a84",
+              "count": 8,
+              "bytes": "0x1aa4"
+            },
+            {
+              "jump": "0xe72",
+              "compare": "0xe69",
+              "table": "0x1ac0",
+              "count": 5
+            },
+            {
+              "jump": "0x10c2",
+              "compare": "0x10b9",
+              "table": "0x1ad4",
+              "count": 7
+            },
+            {
+              "jump": "0x150f",
+              "compare": "0x14fe",
+              "table": "0x1af0",
+              "count": 17,
+              "bytes": "0x1b34"
+            }
+          ],
+          "padding": [
+            [
+              "0x1abd",
+              "0x1ac0"
+            ]
+          ]
+        },
+        {
+          "name": "WindowProc",
+          "symbol": "?WindowProc@@YGJPAXIIJ@Z",
+          "tu": "src/blupi.cpp",
+          "rva": "0x15f0",
+          "size": 1360,
+          "certificate": "evidence/equivalence/sb1-eggbert-es/WindowProc.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x42d",
+          "regions": [],
+          "padding": [
+            [
+              "0x42d",
+              "0x430"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x219",
+              "compare": "0x210",
+              "table": "0x430",
+              "count": 4
+            },
+            {
+              "jump": "0x2f6",
+              "compare": "0x2e3",
+              "table": "0x440",
+              "count": 5,
+              "bytes": "0x454"
+            }
+          ]
+        }
+      ]
     },
     "sb1/eggbert/fr": {
       "exe": "assets/eggbert_variants/Fra/EGAMES.EXE",
@@ -259,7 +1047,217 @@
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
         }
-      }
+      },
+      "equivalent_functions": [
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x19280",
+          "size": 6928,
+          "certificate": "evidence/equivalence/sb1-eggbert-fr/ChangePhase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x1b0d",
+          "regions": [
+            [
+              "0xc5",
+              "0x110"
+            ],
+            [
+              "0x5f0",
+              "0x5fc"
+            ],
+            [
+              "0x10a2",
+              "0x10da"
+            ],
+            [
+              "0x10e1",
+              "0x10f5"
+            ],
+            [
+              "0x1104",
+              "0x111f"
+            ],
+            [
+              "0x1126",
+              "0x1131"
+            ],
+            [
+              "0x1199",
+              "0x11d1"
+            ],
+            [
+              "0x11d8",
+              "0x11ec"
+            ],
+            [
+              "0x11fb",
+              "0x1216"
+            ],
+            [
+              "0x121d",
+              "0x1228"
+            ],
+            [
+              "0x1261",
+              "0x1279"
+            ],
+            [
+              "0x1286",
+              "0x1299"
+            ],
+            [
+              "0x12aa",
+              "0x12e7"
+            ],
+            [
+              "0x12ec",
+              "0x12f9"
+            ],
+            [
+              "0x12fb",
+              "0x1320"
+            ],
+            [
+              "0x1325",
+              "0x133c"
+            ],
+            [
+              "0x1400",
+              "0x1412"
+            ],
+            [
+              "0x15a5",
+              "0x15dd"
+            ],
+            [
+              "0x15e4",
+              "0x15f8"
+            ],
+            [
+              "0x1608",
+              "0x1623"
+            ],
+            [
+              "0x162a",
+              "0x1635"
+            ],
+            [
+              "0x168c",
+              "0x16c7"
+            ],
+            [
+              "0x16ea",
+              "0x16fc"
+            ],
+            [
+              "0x1701",
+              "0x170d"
+            ],
+            [
+              "0x171c",
+              "0x1723"
+            ]
+          ]
+        },
+        {
+          "name": "TreatEventBase",
+          "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x1d1a0",
+          "size": 7072,
+          "certificate": "evidence/equivalence/sb1-eggbert-fr/TreatEventBase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x19d8",
+          "regions": [
+            [
+              "0x41a",
+              "0x42f"
+            ],
+            [
+              "0x6f3",
+              "0x700"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x716",
+              "compare": "0x705",
+              "table": "0x19d8",
+              "count": 17,
+              "bytes": "0x1a1c"
+            },
+            {
+              "jump": "0xcb6",
+              "compare": "0xca5",
+              "table": "0x1a84",
+              "count": 8,
+              "bytes": "0x1aa4"
+            },
+            {
+              "jump": "0xe72",
+              "compare": "0xe69",
+              "table": "0x1ac0",
+              "count": 5
+            },
+            {
+              "jump": "0x10c2",
+              "compare": "0x10b9",
+              "table": "0x1ad4",
+              "count": 7
+            },
+            {
+              "jump": "0x150f",
+              "compare": "0x14fe",
+              "table": "0x1af0",
+              "count": 17,
+              "bytes": "0x1b34"
+            }
+          ],
+          "padding": [
+            [
+              "0x1abd",
+              "0x1ac0"
+            ]
+          ]
+        },
+        {
+          "name": "WindowProc",
+          "symbol": "?WindowProc@@YGJPAXIIJ@Z",
+          "tu": "src/blupi.cpp",
+          "rva": "0x15f0",
+          "size": 1360,
+          "certificate": "evidence/equivalence/sb1-eggbert-fr/WindowProc.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x42d",
+          "regions": [],
+          "padding": [
+            [
+              "0x42d",
+              "0x430"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x219",
+              "compare": "0x210",
+              "table": "0x430",
+              "count": 4
+            },
+            {
+              "jump": "0x2f6",
+              "compare": "0x2e3",
+              "table": "0x440",
+              "count": 5,
+              "bytes": "0x454"
+            }
+          ]
+        }
+      ]
     },
     "sb1/eggbert/it": {
       "exe": "assets/eggbert_variants/Ita/EGAMES.EXE",
@@ -316,7 +1314,217 @@
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
         }
-      }
+      },
+      "equivalent_functions": [
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x19280",
+          "size": 6928,
+          "certificate": "evidence/equivalence/sb1-eggbert-it/ChangePhase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x1b0d",
+          "regions": [
+            [
+              "0xc5",
+              "0x110"
+            ],
+            [
+              "0x5f0",
+              "0x5fc"
+            ],
+            [
+              "0x10a2",
+              "0x10da"
+            ],
+            [
+              "0x10e1",
+              "0x10f5"
+            ],
+            [
+              "0x1104",
+              "0x111f"
+            ],
+            [
+              "0x1126",
+              "0x1131"
+            ],
+            [
+              "0x1199",
+              "0x11d1"
+            ],
+            [
+              "0x11d8",
+              "0x11ec"
+            ],
+            [
+              "0x11fb",
+              "0x1216"
+            ],
+            [
+              "0x121d",
+              "0x1228"
+            ],
+            [
+              "0x1261",
+              "0x1279"
+            ],
+            [
+              "0x1286",
+              "0x1299"
+            ],
+            [
+              "0x12aa",
+              "0x12e7"
+            ],
+            [
+              "0x12ec",
+              "0x12f9"
+            ],
+            [
+              "0x12fb",
+              "0x1320"
+            ],
+            [
+              "0x1325",
+              "0x133c"
+            ],
+            [
+              "0x1400",
+              "0x1412"
+            ],
+            [
+              "0x15a5",
+              "0x15dd"
+            ],
+            [
+              "0x15e4",
+              "0x15f8"
+            ],
+            [
+              "0x1608",
+              "0x1623"
+            ],
+            [
+              "0x162a",
+              "0x1635"
+            ],
+            [
+              "0x168c",
+              "0x16c7"
+            ],
+            [
+              "0x16ea",
+              "0x16fc"
+            ],
+            [
+              "0x1701",
+              "0x170d"
+            ],
+            [
+              "0x171c",
+              "0x1723"
+            ]
+          ]
+        },
+        {
+          "name": "TreatEventBase",
+          "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x1d1a0",
+          "size": 7072,
+          "certificate": "evidence/equivalence/sb1-eggbert-it/TreatEventBase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x19d8",
+          "regions": [
+            [
+              "0x41a",
+              "0x42f"
+            ],
+            [
+              "0x6f3",
+              "0x700"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x716",
+              "compare": "0x705",
+              "table": "0x19d8",
+              "count": 17,
+              "bytes": "0x1a1c"
+            },
+            {
+              "jump": "0xcb6",
+              "compare": "0xca5",
+              "table": "0x1a84",
+              "count": 8,
+              "bytes": "0x1aa4"
+            },
+            {
+              "jump": "0xe72",
+              "compare": "0xe69",
+              "table": "0x1ac0",
+              "count": 5
+            },
+            {
+              "jump": "0x10c2",
+              "compare": "0x10b9",
+              "table": "0x1ad4",
+              "count": 7
+            },
+            {
+              "jump": "0x150f",
+              "compare": "0x14fe",
+              "table": "0x1af0",
+              "count": 17,
+              "bytes": "0x1b34"
+            }
+          ],
+          "padding": [
+            [
+              "0x1abd",
+              "0x1ac0"
+            ]
+          ]
+        },
+        {
+          "name": "WindowProc",
+          "symbol": "?WindowProc@@YGJPAXIIJ@Z",
+          "tu": "src/blupi.cpp",
+          "rva": "0x15f0",
+          "size": 1360,
+          "certificate": "evidence/equivalence/sb1-eggbert-it/WindowProc.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x42d",
+          "regions": [],
+          "padding": [
+            [
+              "0x42d",
+              "0x430"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x219",
+              "compare": "0x210",
+              "table": "0x430",
+              "count": 4
+            },
+            {
+              "jump": "0x2f6",
+              "compare": "0x2e3",
+              "table": "0x440",
+              "count": 5,
+              "bytes": "0x454"
+            }
+          ]
+        }
+      ]
     },
     "sb1/eggbert/pt": {
       "exe": "assets/eggbert_variants/Por/EGAMES.EXE",
@@ -374,7 +1582,217 @@
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
         }
-      }
+      },
+      "equivalent_functions": [
+        {
+          "name": "ChangePhase",
+          "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x19280",
+          "size": 6928,
+          "certificate": "evidence/equivalence/sb1-eggbert-pt/ChangePhase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x1b0d",
+          "regions": [
+            [
+              "0xc5",
+              "0x110"
+            ],
+            [
+              "0x5f0",
+              "0x5fc"
+            ],
+            [
+              "0x10a2",
+              "0x10da"
+            ],
+            [
+              "0x10e1",
+              "0x10f5"
+            ],
+            [
+              "0x1104",
+              "0x111f"
+            ],
+            [
+              "0x1126",
+              "0x1131"
+            ],
+            [
+              "0x1199",
+              "0x11d1"
+            ],
+            [
+              "0x11d8",
+              "0x11ec"
+            ],
+            [
+              "0x11fb",
+              "0x1216"
+            ],
+            [
+              "0x121d",
+              "0x1228"
+            ],
+            [
+              "0x1261",
+              "0x1279"
+            ],
+            [
+              "0x1286",
+              "0x1299"
+            ],
+            [
+              "0x12aa",
+              "0x12e7"
+            ],
+            [
+              "0x12ec",
+              "0x12f9"
+            ],
+            [
+              "0x12fb",
+              "0x1320"
+            ],
+            [
+              "0x1325",
+              "0x133c"
+            ],
+            [
+              "0x1400",
+              "0x1412"
+            ],
+            [
+              "0x15a5",
+              "0x15dd"
+            ],
+            [
+              "0x15e4",
+              "0x15f8"
+            ],
+            [
+              "0x1608",
+              "0x1623"
+            ],
+            [
+              "0x162a",
+              "0x1635"
+            ],
+            [
+              "0x168c",
+              "0x16c7"
+            ],
+            [
+              "0x16ea",
+              "0x16fc"
+            ],
+            [
+              "0x1701",
+              "0x170d"
+            ],
+            [
+              "0x171c",
+              "0x1723"
+            ]
+          ]
+        },
+        {
+          "name": "TreatEventBase",
+          "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+          "tu": "src/event.cpp",
+          "rva": "0x1d1a0",
+          "size": 7072,
+          "certificate": "evidence/equivalence/sb1-eggbert-pt/TreatEventBase.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x19d8",
+          "regions": [
+            [
+              "0x41a",
+              "0x42f"
+            ],
+            [
+              "0x6f3",
+              "0x700"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x716",
+              "compare": "0x705",
+              "table": "0x19d8",
+              "count": 17,
+              "bytes": "0x1a1c"
+            },
+            {
+              "jump": "0xcb6",
+              "compare": "0xca5",
+              "table": "0x1a84",
+              "count": 8,
+              "bytes": "0x1aa4"
+            },
+            {
+              "jump": "0xe72",
+              "compare": "0xe69",
+              "table": "0x1ac0",
+              "count": 5
+            },
+            {
+              "jump": "0x10c2",
+              "compare": "0x10b9",
+              "table": "0x1ad4",
+              "count": 7
+            },
+            {
+              "jump": "0x150f",
+              "compare": "0x14fe",
+              "table": "0x1af0",
+              "count": 17,
+              "bytes": "0x1b34"
+            }
+          ],
+          "padding": [
+            [
+              "0x1abd",
+              "0x1ac0"
+            ]
+          ]
+        },
+        {
+          "name": "WindowProc",
+          "symbol": "?WindowProc@@YGJPAXIIJ@Z",
+          "tu": "src/blupi.cpp",
+          "rva": "0x15f0",
+          "size": 1360,
+          "certificate": "evidence/equivalence/sb1-eggbert-pt/WindowProc.json",
+          "proof_method": "sb1-local",
+          "returns_value": true,
+          "code_end": "0x42d",
+          "regions": [],
+          "padding": [
+            [
+              "0x42d",
+              "0x430"
+            ]
+          ],
+          "switches": [
+            {
+              "jump": "0x219",
+              "compare": "0x210",
+              "table": "0x430",
+              "count": 4
+            },
+            {
+              "jump": "0x2f6",
+              "compare": "0x2e3",
+              "table": "0x440",
+              "count": 5,
+              "bytes": "0x454"
+            }
+          ]
+        }
+      ]
     },
     "sb2/blupi/en": {
       "exe": "assets/blupi2/BLUPI.EXE",

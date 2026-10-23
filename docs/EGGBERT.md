@@ -19,6 +19,12 @@ reconstruction builds both, and what it means for the port. Static reads only (2
 
 - [EVIDENCE] The code is SP3's, not RTM's. With the RTM compiler, 17 functions differ; with SP3,
   only the version 1.1 changes do.
+- [EVIDENCE] The target-scoped EQUIVALENT tier (`tools/equivalence_target.py`, certificates in
+  `evidence/equivalence/sb1-*`; `scratch/w-sb1equiv/REPORT.md`) now covers SB1's secondary targets:
+  `ChangePhase` and `TreatEventBase` on all eight (14,000 bytes), plus Speedy Eggbert 1's `WindowProc`
+  (its three differing bytes are unreachable padding before the jump table; 15,360 bytes per Eggbert
+  language). `DoInit`'s 235 relocations are all verified (its raw status stays RELOC-UNVERIFIED). SB1's
+  pinned primary checker and certificates are unchanged; EQUIVALENT never counts as STRICT.
 - [OPEN] `WindowProc` differs from SP3's output in three alignment-padding bytes before its jump
   table: `90 8b ff` in 1.1, `8d 49 00` from every installed compiler (RTM, SP2, SP3, NT5 1592 and
   1691, VC6). `WindowProc`, and `DoInit` (whose reference to it is proven only once it matches),

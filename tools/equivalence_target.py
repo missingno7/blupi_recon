@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Target-local SB2 behavioral certificates. Never changes comparator/STRICT results.
+"""Target-local behavioral certificates. Never changes comparator/STRICT results.
 
 Every run proves the declared straight-line/acyclic regions symbolically, checks
 the complete continuation by aligned instructions or an inductive product CFG,
@@ -85,6 +85,8 @@ def difference_ranges(differences):
 
 def declarations(target, manifest):
     """These are absolute target RVAs, never the base manifest's translated RVAs."""
+    if target.name.startswith('sb1/'):
+        return [] if target.primary else targets.registry()['targets'][target.name].get('equivalent_functions', [])
     return manifest.get('target_equivalent_functions', {}).get(target.name, [])
 
 
@@ -253,7 +255,7 @@ def decode(data):
     return insns
 
 
-def live_masks(insns, returns, pure_calls=None):
+def live_masks(insns, returns, pure_calls=None, no_this_calls=()):
     """Conservative bit-level register liveness, fixed point over the whole CFG."""
     by = {i.address: i for i in insns}
     live = {pc: {} for pc in by}
@@ -276,7 +278,7 @@ def live_masks(insns, returns, pure_calls=None):
                 and i.operands[1].imm & ((1 << (8*i.operands[0].size))-1) == (1 << (8*i.operands[0].size))-1):
             read.pop(alias(i.reg_name(i.operands[0].reg))[0], None)
         if i.mnemonic == 'call':
-            if not pure_calls or i.address not in pure_calls:
+            if (not pure_calls or i.address not in pure_calls) and i.address not in no_this_calls:
                 read['ecx'] = MASK
             for r in ('eax', 'ecx', 'edx', 'eflags'):
                 write[r] = MASK
@@ -849,12 +851,322 @@ def cfg_structure(function, raw, regions, returns):
         difference_values_sha256=hashed(differences),differing_bytes=len(differences))
 
 
+class SB1State(State):
+    """Narrow scheduling lemma; calls are barriers, never interpreted here.
+
+    Ordinary loads include the complete preceding store trace, so no object
+    alias disjointness is inferred. Stack memory is separate by the stated ABI
+    assumption. REP MOVS is an opaque memory operation with identical operands,
+    not an assumption about the copied values or string length.
+    """
+    def is_stack(self, address):
+        delta = add((address, 1), (('input', 'esp'), -1))
+        return isinstance(delta, int)
+
+    def load(self, address, size):
+        if self.is_stack(address):
+            for (a, n), v in self.stack.items():
+                distance = add((address, 1), (a, -1))
+                if address == a and size == n:
+                    return v
+                require(not isinstance(distance, int) or n <= distance <= (1 << 32)-size,
+                        'overlapping stack load needs a byte-level lemma')
+            return ('stack-input', size, address)
+        value = ('memory-after', size, address, tuple(self.writes))
+        self.reads.add(value)
+        return value
+
+    def put(self, op, value):
+        if op.type == X86_OP_MEM and self.is_stack(self.address(op)):
+            self.store_stack(self.address(op), op.size, value)
+        else:
+            super().put(op, value)
+
+    def store_stack(self, address, size, value):
+        for a, n in self.stack:
+            distance = add((address, 1), (a, -1))
+            require((address == a and size == n) or n <= distance <= (1 << 32)-size,
+                    'overlapping stack store needs a byte-level lemma')
+        self.stack[address, size] = low(value, size*8)
+
+    def step(self, i, pure_calls=None):
+        m, o = i.mnemonic, i.operands
+        if m == 'push':
+            value = self.value(o[0])
+            self.regs['esp'] = add((self.regs['esp'],1),(-4,1))
+            self.store_stack(self.regs['esp'],4,value)
+        elif m == 'shr':
+            value, count = self.value(o[0]), self.value(o[1])
+            require(isinstance(count, int) and 0 < count < 32, 'unsupported SHR count')
+            self.put(o[0], ('shr', value, count))
+            self.flags = ('shr', value, count)
+        elif m == 'imul':
+            require(len(o) == 1 and o[0].size == 4, 'only widening signed IMUL is modeled')
+            args = tuple(sorted((self.regs['eax'], self.value(o[0])), key=repr))
+            self.regs['eax'], self.regs['edx'] = ('imul-low', args), ('imul-high', args)
+            self.flags = ('imul-defined-flags', args)
+        elif m in ('sete', 'setne'):
+            value = ('zero', self.flags)
+            self.put(o[0], value if m == 'sete' else ('not', value))
+        elif m in ('rep movsd', 'rep movsb'):
+            width = 4 if m.endswith('movsd') else 1
+            source, dest, count = (self.regs[r] for r in ('esi', 'edi', 'ecx'))
+            require(not self.is_stack(source) and not self.is_stack(dest), 'REP stack copy needs a separate lemma')
+            self.writes.append(('rep-copy-forward', width, source, dest, count))
+            for r in ('esi', 'edi'):
+                self.regs[r] = add((self.regs[r], 1), (count, width))
+            self.regs['ecx'] = 0
+        else:
+            super().step(i, pure_calls)
+
+
+def sb1_schedule(decoded, lo, hi, lives):
+    """All Boolean paths, symbolic 32-bit expressions and live values at joins."""
+    runs = [paths(body, lo, hi, initial=SB1State()) for body in decoded]
+    atoms = sorted({a for run in runs for _, _, c in run for a in c}, key=repr)
+    require(len(atoms) <= 10, 'SB1 schedule has too many branch atoms')
+    observations = []
+    for side, run in enumerate(runs):
+        obs = []
+        for pc, state, conditions in run:
+            require(isinstance(pc, int) and pc in lives[side], 'schedule leaves the function')
+            masks = dict(lives[0][pc])
+            for reg, mask in lives[1][pc].items():
+                masks[reg] = masks.get(reg, 0) | mask
+            values = {r:low(state.regs[r], mask.bit_length()) for r,mask in masks.items() if r in REGS}
+            if masks.get('eflags'):
+                values['eflags'] = state.flags
+            active = []
+            for (address, size), value in state.stack.items():
+                delta = add((address, 1), (state.regs['esp'], -1))
+                require(isinstance(delta, int), 'nonconstant stack extent')
+                if delta < 0x80000000:
+                    active.append((address, size, value))
+            obs.append(((pc, values, state.writes, sorted(active,key=repr)), conditions))
+        observations.append(obs)
+    for bits in itertools.product((False, True), repeat=len(atoms)):
+        assignment = dict(zip(atoms, bits))
+        selected = [[obs for obs, cond in run if all(assignment[k] == v for k,v in cond.items())]
+                    for run in observations]
+        require(len(selected[0]) == len(selected[1]) == 1, 'schedule path coverage failed')
+        require(selected[0] == selected[1], f'SB1 schedule +{lo:x}..+{hi:x}: unequal effects (observations {hashed(repr(selected))})')
+    return dict(window=[hex(lo),hex(hi)], exhaustive_boolean_assignments=1 << len(atoms),
+                observations_sha256=hashed([[(obs,sorted(cond.items(),key=repr)) for obs,cond in run] for run in observations]))
+
+
+def sb1_tables(function, raw, coff, rva, image_base, entry):
+    """Prove complete switch successors and bounded table reads on both sides.
+
+    A table declaration is a proof obligation, not a trusted CFG edge list:
+    exact CMP/JA[/zero+byte-load]/JMP sequences must dominate dispatch through
+    their only predecessors, every pointer slot has its own COFF relocation,
+    and both bodies' table destinations must agree with that symbol+addend.
+    """
+    end = int(entry['code_end'],0)
+    bodies = [decode(data[:end]) for data in (function.data,raw)]
+    relocs = {r.offset-function.start:r for r in function.relocs}
+    local = {}
+    for offset, r in relocs.items():
+        s = coff.sym_by_index[r.symbol_index]
+        if s.section == function.section.index and s.name.startswith('$L') and s.storage == 6:
+            require(r.typ == 6, 'non-DIR32 local table reference')
+            local[offset] = s.value-function.start+int.from_bytes(function.data[offset:offset+4],'little')
+            require(int.from_bytes(raw[offset:offset+4],'little') == image_base+rva+local[offset],
+                    'retargeted local relocation')
+    cfgs, receipts = [], []
+    for side, body in enumerate(bodies):
+        by = {i.address:i for i in body}
+        require(body[-1].mnemonic.startswith('ret'), 'code extent must end at RET')
+        edges = {}
+        indirect = {}
+        chains = []
+        reads = []
+        for table in entry.get('switches', []):
+            jump, cmp_pc, table_start, count = [int(str(table[k]),0) for k in ('jump','compare','table','count')]
+            j, c = by[jump], by[cmp_pc]
+            require(c.mnemonic == 'cmp' and c.operands[0].type == X86_OP_REG
+                    and c.operands[0].size == 4 and c.operands[1].type == X86_OP_IMM,
+                    'switch range comparison changed')
+            bound = c.operands[1].imm
+            ja = by[cmp_pc+c.size]
+            require(ja.mnemonic == 'ja', 'unsigned table range guard required')
+            chain = [c, ja]
+            index = c.operands[0].reg
+            pc = ja.address+ja.size
+            if 'bytes' in table:
+                byte_start = int(str(table['bytes']),0)
+                z, load = by[pc], by[pc+by[pc].size]
+                require(z.mnemonic == 'xor' and z.operands[0].type == z.operands[1].type == X86_OP_REG
+                        and z.operands[0].reg == z.operands[1].reg and z.operands[0].size == 4,
+                        'switch byte index must be zero extended')
+                require(load.mnemonic == 'mov' and load.operands[0].type == X86_OP_REG
+                        and load.operands[0].size == 1 and alias(load.reg_name(load.operands[0].reg))[0] == z.reg_name(z.operands[0].reg)
+                        and load.operands[1].type == X86_OP_MEM and load.operands[1].size == 1
+                        and load.operands[1].mem.base == index and not load.operands[1].mem.index
+                        and local.get(load.address+load.disp_offset) == byte_start,
+                        'switch byte-map reference changed')
+                values = (function.data if side == 0 else raw)[byte_start:byte_start+bound+1]
+                require(len(values) == bound+1 and max(values) < count, 'byte-map table index outside pointer table')
+                reads.append((byte_start, byte_start+bound+1))
+                chain.extend([z,load]); pc = load.address+load.size
+                index = z.operands[0].reg
+            else:
+                require(bound+1 == count, 'direct table bound/count differ')
+            require(pc == jump and j.mnemonic == 'jmp' and j.operands[0].type == X86_OP_MEM
+                    and not j.operands[0].mem.base and j.operands[0].mem.index == index
+                    and j.operands[0].mem.scale == 4 and local.get(j.address+j.disp_offset) == table_start,
+                    'switch dispatch reference changed')
+            chain.append(j)
+            destinations = []
+            for offset in range(table_start, table_start+4*count, 4):
+                require(offset in local and local[offset] in by, 'table destination is not a code boundary')
+                destinations.append(local[offset])
+            indirect[jump] = sorted(set(destinations))
+            chains.append([i.address for i in chain])
+            reads.append((table_start, table_start+4*count))
+        for i in body:
+            if i.mnemonic.startswith('ret'):
+                following = []
+            elif i.mnemonic.startswith('j'):
+                if i.operands[0].type == X86_OP_IMM:
+                    following = [i.operands[0].imm] + ([] if i.mnemonic == 'jmp' else [i.address+i.size])
+                else:
+                    require(i.address in indirect, 'unproved indirect CFG edge')
+                    following = indirect[i.address]
+            else:
+                require(not i.group(cs.CS_GRP_JUMP), 'unmodeled CFG transfer')
+                following = [i.address+i.size]
+            require(all(pc in by for pc in following), 'control flow reaches padding/data or leaves function')
+            edges[i.address] = following
+        predecessors = {pc:set() for pc in by}
+        for pc, dests in edges.items():
+            for dest in dests:
+                predecessors[dest].add(pc)
+        for chain in chains:
+            for prev, pc in zip(chain,chain[1:]):
+                require(predecessors[pc] == {prev}, 'switch bounds bypassed by another predecessor')
+        reached, pending = set(), [0]
+        while pending:
+            pc = pending.pop()
+            if pc in reached:
+                continue
+            reached.add(pc); pending.extend(edges[pc])
+        for lo,hi in entry.get('padding', []):
+            lo,hi = int(lo,0),int(hi,0)
+            require(end <= lo < hi <= len(raw), 'padding overlaps code/outside body')
+            require(not any(a < hi and lo < b for a,b in reads), 'padding is reachable table data')
+            require(not any(lo <= dest < hi for dest in local.values()), 'local reference reaches padding')
+        # Every local relocation in executable code must be one of the audited
+        # table references. This also rules out unmodeled code-data reads.
+        expected_sites = {i.address+i.disp_offset for chain in chains for pc in chain for i in [by[pc]]
+                          if i.disp_size == 4 and i.address+i.disp_offset in local}
+        require({k for k in local if k < end} == expected_sites, 'unmodeled local code/data reference')
+        cfgs.append(edges)
+        receipts.append(dict(reachable_instructions=len(reached), edges_sha256=hashed(edges),
+                             table_reads=[[hex(a),hex(b)] for a,b in reads],
+                             indirect_successors={hex(k):[hex(x) for x in v] for k,v in indirect.items()}))
+    return bodies, cfgs, dict(code_end=hex(end), sides=receipts, padding=entry.get('padding', []),
+                             theorem='all direct/fallthrough/table edges stay within decoded code; bounded table reads exclude padding')
+
+
+def sb1_structure(function, raw, coff, entry, rva, image_base):
+    import equivalence as primary
+    bodies, cfgs, tables = sb1_tables(function,raw,coff,rva,image_base,entry)
+    decoded = [{i.address:i for i in body} for body in bodies]
+    regions = [tuple(int(x,0) for x in pair) for pair in entry.get('regions',[])]
+    padding = [tuple(int(x,0) for x in pair) for pair in entry.get('padding',[])]
+    mask = {k for r in function.relocs for k in range(r.offset-function.start,r.offset-function.start+4)}
+    require(all(r.typ in (6,0x14) for r in function.relocs), 'unsupported SB1 relocation')
+    require(all(not any(lo<=k<hi for k in mask) for lo,hi in regions+padding), 'proof window contains relocation')
+    differences = [[hex(k),x,y] for k,(x,y) in enumerate(zip(function.data,raw)) if x!=y and k not in mask]
+    require(all(any(lo<=int(k,0)<hi for lo,hi in regions+padding) for k,_,_ in differences),
+            'unproved bytes outside SB1 proof windows')
+    for side, d in enumerate(decoded):
+        previous = 0
+        for lo,hi in regions:
+            require(previous <= lo < hi and lo in d and hi in d, 'SB1 region boundary/order')
+            previous = hi
+            for pc,dests in cfgs[side].items():
+                require(lo<=pc<hi or not any(lo<dest<hi for dest in dests), 'control enters proof region interior')
+    checks = dict(differing_bytes=len(differences), nonrelocation_difference_ranges=difference_ranges(differences),
+                  difference_values_sha256=hashed(differences), cfg=tables,
+                  primary_lemma_checker_sha256=digest(primary.__file__))
+    guards = []
+    if entry['name'] == 'ChangePhase':
+        require(regions[:2] == [(0xc5,0x110),(0x5f0,0x5fc)], 'unknown SB1 guard regions')
+        excluded = {0x62e,0x605,0x62f,0x632,0x631,0x630}
+        constants = [constant_states(body,mask) for body in bodies]
+        for known in constants:
+            require(known[0x110].get('ebx') == known[0x11b].get('ebx') == known[0x5f0].get('ebx') == 0x5f5
+                    and known[0xc5].get('edi') == 0, 'guard preconditions not proved by whole-CFG must constants')
+        # Exhaustive representatives are valid only for unary equality tests
+        # against the enumerated constants, never cross-variable comparisons.
+        for d in decoded:
+            for lo,hi in regions[:2]:
+                roles = {'esi':'phase','edi':0,'ebx':0x5f5 if lo == 0x5f0 else 'unproved-ebx'}
+                def role(op):
+                    if op.type == X86_OP_IMM:
+                        return op.imm & MASK
+                    if op.type == X86_OP_REG:
+                        return roles[MD.reg_name(op.reg)]
+                    require(op.type == X86_OP_MEM and MD.reg_name(op.mem.base) == 'ebp'
+                            and not op.mem.index and not op.mem.segment and op.size == 4
+                            and op.mem.disp in (0x6d28,0x9918), 'unknown guard memory predicate')
+                    return 'old' if op.mem.disp == 0x6d28 else 'demo'
+                for pc,i in d.items():
+                    if not lo<=pc<hi:
+                        continue
+                    if i.mnemonic == 'mov':
+                        require(i.operands[0].type == X86_OP_REG and i.reg_name(i.operands[0].reg) in ('eax','ebx'),
+                                'guard changes a non-scratch input')
+                        dest = i.reg_name(i.operands[0].reg)
+                        value = role(i.operands[1])
+                        require(dest != 'ebx' or value == 0x5f5, 'guard EBX constant changed')
+                        roles[dest] = value
+                    elif i.mnemonic == 'cmp':
+                        a,b = [role(o) for o in i.operands]
+                        require(isinstance(a,int) != isinstance(b,int), 'guard class partition needs unary constant tests')
+                        value,kind = (a,b) if isinstance(a,int) else (b,a)
+                        allowed = ({'phase':excluded|{0x5f5},'old':{0x5f5},'demo':{0}} if lo == 0xc5 else
+                                   {'phase':{0x5f5,0x609},'old':set(),'demo':set()})
+                        require(value in allowed[kind], 'guard compares an unclassified constant')
+                    else:
+                        require(i.mnemonic in ('je','jne'), 'unknown guard transfer')
+        for phase,old,demo in itertools.product(sorted(excluded|{0x5f5,MASK}), (0x5f5,MASK), (0,MASK)):
+            values = {'esi':phase,'edi':0,'ebx':0x5f5,0x6d28:old,0x9918:demo}
+            expected = 0x110 if not demo and (old==0x5f5 or phase!=0x5f5) and phase not in excluded else 0x11b
+            require([primary.guard(d,0xc5,{0x110,0x11b},values) for d in decoded] == [expected]*2,
+                    'SB1 exhaustive guard class failed')
+        for phase in (0x5f5,0x609,MASK):
+            require([primary.guard(d,0x5f0,{0x5fc,0x616},{'esi':phase,'ebx':0x5f5}) for d in decoded]
+                    == [0x5fc if phase in (0x5f5,0x609) else 0x616]*2, 'SB1 WriteInfo class failed')
+        checks['guards'] = dict(guard_classes=32, writeinfo_classes=3,
+            precondition_method='whole-CFG must constants; unary constant equality predicates only',
+            constant_states_sha256=hashed(constants),
+            guard_dirty_kills={hex(pc):[primary.dead_before_use(d,pc,{'eax','eflags'}) for d in decoded] for pc in (0x110,0x11b)},
+            writeinfo_dirty_kills={hex(pc):[primary.dead_before_use(d,pc,{'eflags'}) for d in decoded] for pc in (0x5fc,0x616)})
+        guards = regions[:2]
+    no_this_calls = {}
+    for r in function.relocs:
+        symbol = coff.sym_by_index[r.symbol_index].name
+        if symbol.startswith('_') or '@@YA' in symbol or '@@YG' in symbol:
+            owner = next((i for i in bodies[0] if i.address<=r.offset-function.start<i.address+i.size),None)
+            if owner and owner.mnemonic == 'call':
+                no_this_calls[owner.address] = symbol
+    lives = [live_masks(body, True, no_this_calls=no_this_calls) for body in bodies]
+    checks['nonmember_call_abi'] = {hex(k):v for k,v in no_this_calls.items()}
+    checks['schedules'] = [sb1_schedule(bodies,lo,hi,lives) for lo,hi in regions if (lo,hi) not in guards]
+    require(bool(differences), 'no differing payload bytes to certify')
+    return {r.offset-function.start:r.offset-function.start for r in function.relocs}, checks
+
+
 @contextmanager
 def inventory(target):
     starts, tus = cmpfunc.oracle_function_starts, cmpfunc.oracle_tu_at_rva
     try:
-        cmpfunc.oracle_function_starts = lambda: starts(target.oracle_dir/'functions.csv')
-        cmpfunc.oracle_tu_at_rva = lambda: tus(target.oracle_dir/'tu_map.csv')
+        directory = target.oracle_dir or ROOT/'oracle'
+        cmpfunc.oracle_function_starts = lambda: starts(directory/'functions.csv')
+        cmpfunc.oracle_tu_at_rva = lambda: tus(directory/'tu_map.csv')
         yield
     finally:
         cmpfunc.oracle_function_starts, cmpfunc.oracle_tu_at_rva = starts, tus
@@ -894,6 +1206,18 @@ def bindings(target, manifest, comparison, evidence, pe, out, library):
                 key, va = 'global:'+row['name'], ib+int(row['matches'][0]['rva'], 16)
                 require(key not in global_ or global_[key] == va, 'conflicting independently checked binding')
                 global_[key] = va
+    if target.name.startswith('sb1/'):
+        # The primary proof uses this same raw-body identity, independently
+        # checked against each secondary executable and its STRICT owner.
+        symbol, owner = '?GetTrueColorBack@CPixmap@@QAEHXZ', '?GetEnable@CSound@@QAEHXZ'
+        candidates = [(cmpfunc.Coff(path),f) for path in paths_ for f in cmpfunc.Coff(path).functions() if f.name == symbol]
+        require(len(candidates) == 1 and 'global:'+owner in global_, 'missing SB1 getter identity')
+        _, getter = candidates[0]
+        va = global_['global:'+owner]
+        require(not getter.relocs and len(getter.data) == 16 and getter.data == pe.get_data(va-ib,16),
+                'SB1 getter is not raw-identical to STRICT owner')
+        require(global_.get('global:'+symbol) in (None,va), 'SB1 getter identity conflict')
+        global_['global:'+symbol] = va
     # Missing CRT names must have a unique complete, raw-identical library body
     # WITHOUT relocations. This is stricter than a masked signature identity.
     needed = {r['symbol'] for r in declarations(target, manifest)}
@@ -968,12 +1292,107 @@ def pure_sort_callee(comparison, pe, symbol):
                 theorem='F(x)=1 for x in {2,3,96,97}; F(12)=2; F(x)=3 otherwise. Total, read-only stack argument, no external effects.')
 
 
+def sb1_window_entry(comparison, pe, state, entry):
+    """The derived Eggbert inventory omits WindowProc; anchor its address in
+    the uniquely byte-located DoInit initializer, auditing every other site.
+    This proves a code-pointer identity, never DoInit STRICT acceptance.
+    """
+    require(entry['symbol'] == '?WindowProc@@YGJPAXIIJ@Z', 'unknown missing SB1 entry')
+    symbol = '?DoInit@@YAHPAXPADH@Z'
+    unit,row = next((u,r) for u in comparison for r in u['functions'] if r['name'] == symbol)
+    coff = cmpfunc.Coff(Path(unit['object']))
+    f, = [f for f in coff.functions() if f.name == symbol]
+    text = next(s for s in pe.sections if s.Name.startswith(b'.text'))
+    hits = cmpfunc.candidates_for(f,text.get_data())
+    require(len(hits) == 1 and row['status'] == 'RELOC-UNVERIFIED' and len(row['matches']) == 1
+            and int(row['matches'][0]['rva'],0) == text.VirtualAddress+hits[0], 'DoInit anchor not independently located')
+    references = [r for r in f.relocs if coff.sym_by_index[r.symbol_index].name == entry['symbol']]
+    require(len(references) == 1 and references[0].typ == 6, 'WindowProc initializer reference changed')
+    off = references[0].offset-f.start
+    require(f.data[off:off+4] == b'\0'*4, 'WindowProc initializer addend changed')
+    raw = text.get_data()[hits[0]:hits[0]+len(f.data)]
+    require(int.from_bytes(raw[off:off+4],'little') == pe.OPTIONAL_HEADER.ImageBase+int(entry['rva'],0),
+            'WindowProc initializer target changed')
+    shared,global_,fd,dd,imports,explicit,starts = state
+    status, rows = cmpfunc.resolve_sites(replace(f,relocs=[r for r in f.relocs if r not in references]),
+        hits[0],text.get_data(),text.VirtualAddress,pe.OPTIONAL_HEADER.ImageBase,pe,coff,Path(unit['object']),
+        shared,fd,dd,imports,explicit,global_,starts)
+    require(status == 'STRICT' and all(r['verified'] for r in rows), 'DoInit anchor has other unproved relocations')
+    return dict(method='unique complete relocation-masked DoInit payload; all other relocations independently verified',
+        caller_rva=hex(text.VirtualAddress+hits[0]), caller_payload_sha256=hashed(dict(bytes=f.data.hex(),
+            relocations=[[r.offset-f.start,r.typ,coff.sym_by_index[r.symbol_index].name] for r in f.relocs])),
+        caller_oracle_sha256=hashlib.sha256(raw).hexdigest(), pointer_offset=hex(off),
+        target_rva=entry['rva'], other_relocations_sha256=hashed(relocation_binding(rows)),
+        other_verified_relocations=len(rows))
+
+
+def sb1_window_static(target, function, coff, obj, pe, state, rva):
+    """An otherwise unobserved local static has an independent cross-edition
+    data address in the derived map. Never infer it from the candidate field.
+    The normal resolver still checks section, extent and initialized payload.
+    """
+    global_ = state[1]
+    primary = targets.load()
+    primary.check_exe()
+    original = pefile.PE(str(primary.exe))
+    receipts = []
+    for r in function.relocs:
+        s = coff.sym_by_index[r.symbol_index]
+        key = cmpfunc.symbol_map_key(obj,s)
+        if key in global_:
+            continue
+        if not s.name.startswith('_?hInstance@?1??WindowProc@@YGJPAXIIJ@Z@4PAXA$S'):
+            continue
+        require(target.address_map is not None and r.typ == 6 and r.offset-function.start == 0xad,
+                'WindowProc local static reference changed')
+        old = int.from_bytes(original.get_data(0x1610+0xad,4),'little')
+        expected = target.translate(old,'data')
+        require(expected is not None and int.from_bytes(pe.get_data(rva+0xad,4),'little') == expected
+                and function.data[0xad:0xb1] == b'\0'*4, 'WindowProc local static address map mismatch')
+        global_[key] = expected
+        receipts.append(dict(symbol=s.name,va=hex(expected),primary_va=hex(old),primary_rva='0x1610',site='0xad',
+            primary_oracle_sha256=primary.sha256,address_map_sha256=digest(target.oracle_dir/'address_map.json'),
+            method='homologous primary WindowProc static field, independently translated by derived original data address map'))
+    return receipts
+
+
+def sb1_doinit(comparison, pe, state, certified_entries, out):
+    """Audit byte-identical caller after certifying WindowProc's entry identity.
+    The raw comparator row and STRICT acceptance are deliberately unchanged.
+    """
+    window = '?WindowProc@@YGJPAXIIJ@Z'
+    require(window in certified_entries, 'DoInit requires proved WindowProc entry')
+    unit,row = next((u,r) for u in comparison for r in u['functions'] if r['name'] == '?DoInit@@YAHPAXPADH@Z')
+    coff = cmpfunc.Coff(Path(unit['object']))
+    f, = [f for f in coff.functions() if f.name == row['name']]
+    text = next(s for s in pe.sections if s.Name.startswith(b'.text'))
+    hits = cmpfunc.candidates_for(f,text.get_data())
+    require(len(hits) == 1 and row['status'] == 'RELOC-UNVERIFIED', 'DoInit byte status changed')
+    shared,global_,fd,dd,imports,explicit,starts = state
+    status, rows = cmpfunc.resolve_sites(f,hits[0],text.get_data(),text.VirtualAddress,
+        pe.OPTIONAL_HEADER.ImageBase,pe,coff,Path(unit['object']),shared,fd,dd,imports,explicit,global_,starts)
+    require(status == 'STRICT' and all(r['verified'] for r in rows), 'DoInit relocation audit failed')
+    (out/'DoInit-relocations.json').write_text(json.dumps(rows,indent=2)+'\n',encoding='utf-8')
+    result = dict(status='RELOCATIONS-VERIFIED', byte_status=row['status'], size=len(f.data),
+        rva=hex(text.VirtualAddress+hits[0]), verified_relocations=len(rows),
+        relocations_sha256=hashed(relocation_binding(rows)),
+        dependency=certified_entries[window],
+        note='complete non-relocation payload byte-identical; all targets verified using EQUIVALENT WindowProc entry; no EQUIVALENT certificate and no STRICT acceptance promotion')
+    print(f'DoInit: RELOCATIONS-VERIFIED ({len(rows)} sites; raw comparator RELOC-UNVERIFIED; excluded from EQUIVALENT/STRICT acceptance)')
+    return result
+
+
+def validate_certificate(saved, current, name):
+    require(saved == current, f'{name}: equivalence certificate changed; review required')
+
+
 def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
     entries = declarations(target, manifest)
     if not entries:
         return {}
     require(__debug__, 'equivalence requires assertions enabled (no -O)')
-    require(target.name.startswith('sb2/') and target.oracle_dir is not None, 'SB2 inventory required')
+    require((target.name.startswith('sb2/') and target.oracle_dir is not None)
+            or (target.name.startswith('sb1/') and not target.primary), 'secondary target required')
     target.check_exe()
     out = Path(out_dir).resolve()
     require(any(out.is_relative_to(ROOT/d) for d in ('build', 'scratch')), 'proof output must be inside build/ or scratch/')
@@ -996,7 +1415,10 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
         rva, size = int(str(entry['rva']),0), entry['size']
         require(row['code_size'] == size, f'{name}: function extent changed')
         require(Path(unit['object']).stem.endswith('_'+Path(entry['tu']).stem), f'{name}: TU changed')
-        require(pe.OPTIONAL_HEADER.ImageBase+rva in state[-1], f'{name}: not an oracle entry')
+        entry_identity = None
+        if pe.OPTIONAL_HEADER.ImageBase+rva not in state[-1]:
+            require(target.name.startswith('sb1/eggbert/') and name == 'WindowProc', f'{name}: not an oracle entry')
+            entry_identity = sb1_window_entry(comparison,pe,state,entry)
         require(row['status'] in ('MISMATCH', 'STRICT', 'FOLDED'), f'{name}: unexpected byte status')
         if row['status'] in ('STRICT','FOLDED'):
             require(len(row['matches']) == 1 and int(row['matches'][0]['rva'],16) == rva, f'{name}: strict location changed')
@@ -1008,7 +1430,10 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
         require(len(f.data) == len(raw) == size, f'{name}: incomplete payload')
         regions = [tuple(int(str(x),0) for x in r) for r in entry['regions']]
         pure = pure_sort_callee(comparison, pe, entry['pure_callee']) if entry.get('pure_callee') else None
-        if entry.get('proof_method') == 'cfg-constants':
+        if entry.get('proof_method') == 'sb1-local':
+            require(target.name.startswith('sb1/') and not target.primary, 'SB1-only proof')
+            sites, checks = sb1_structure(f,raw,coff,entry,rva,pe.OPTIONAL_HEADER.ImageBase)
+        elif entry.get('proof_method') == 'cfg-constants':
             sites,checks = cfg_structure(f,raw,regions,entry['returns_value'])
         else:
             require('proof_method' not in entry, 'unknown proof method')
@@ -1017,6 +1442,10 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
                 [tuple(int(str(x),0) for x in pair) for pair in entry.get('region_relocations',[])])
         if pure:
             checks['pure_callee_identity'] = pure
+        if entry_identity:
+            checks['entry_identity'] = entry_identity
+        if target.name.startswith('sb1/eggbert/') and name == 'WindowProc':
+            checks['static_data_identity'] = sb1_window_static(target,f,coff,Path(unit['object']),pe,state,rva)
         shared, globals_, fd, dd, imports, explicit, starts = state
         rr = []
         for reloc in f.relocs:
@@ -1054,9 +1483,17 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
                        checker_sha256=digest(__file__), comparator_sha256=digest(ROOT/'tools/cmpfunc.py'),
                        comparator_wrapper_sha256=digest(ROOT/'tools/cmpfunc_target.py'),
                        capstone_version=cs.__version__, crt_library_sha256=digest(library),
-                       inventory_sha256={p:digest(target.oracle_dir/p) for p in ('functions.csv','tu_map.csv')},
+                       inventory_sha256={p:digest((target.oracle_dir or ROOT/'oracle')/p) for p in ('functions.csv','tu_map.csv')},
                        crt_target_identity={k:v for k,v in crt.items() if k not in ('__findfirst','__findnext')
                            or any(coff.sym_by_index[r.symbol_index].name == k for r in f.relocs)}, checks=checks)
+        if target.name.startswith('sb1/'):
+            current['assumptions'] = [
+                'Functions are entered at their declared ABI entry; calls return normally and obey the x86 ABI with flat DS/ES and clear DF. Scratch registers and arithmetic flags are not hidden call arguments or results.',
+                'Memory accesses are defined ordinary RAM with no MMIO, concurrency, asynchronous observation or self-modifying code; function code and switch tables remain immutable and are not aliased by pointed-to objects or buffers.',
+                'The active stack frame and argument stack do not alias pointed-to objects; dead stack slots below ESP are unobservable. Ordinary loads retain the preceding store trace, without assuming distinct objects do not alias.',
+                'Equivalence covers defined memory effects, branch outcomes, identical call targets/arguments and ABI returns; timing, faults on invalid memory and intermediate scratch-register/flags observation are excluded.',
+                'Relocation evidence proves target identities, not behavioral equivalence of unmatched callees. File-enumeration CRT identities use unique complete signatures in the pinned library.',
+            ]
         path = (ROOT/entry['certificate']).resolve()
         require(path.parent == (ROOT/'evidence/equivalence'/target.slug).resolve() and path.suffix == '.json',
                 'certificate outside target evidence directory')
@@ -1064,7 +1501,7 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps(current, indent=2)+'\n', encoding='utf-8')
         else:
-            require(json.loads(path.read_text(encoding='utf-8')) == current, f'{name}: equivalence certificate changed; review required')
+            validate_certificate(json.loads(path.read_text(encoding='utf-8')), current, name)
         results[name] = dict(status='EQUIVALENT', byte_status=row['status'], size=size, rva=hex(rva),
                              certificate=entry['certificate'])
         key,va = 'global:'+f.name,pe.OPTIONAL_HEADER.ImageBase+rva
@@ -1077,7 +1514,14 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
                                              payload_sha256=current['payload_sha256'])
         else:
             require(globals_[key] == va,'certified callee entry conflicts with run-wide identity')
+        if target.name.startswith('sb1/'):
+            certified_entries[f.name] = dict(rva=hex(rva),certificate=entry['certificate'],
+                                             payload_sha256=current['payload_sha256'])
+        if entry_identity:
+            starts.add(va)
         print(f'{name}: EQUIVALENT ({size:,} bytes; static local proof; byte status MISMATCH)')
+    if target.name.startswith('sb1/eggbert/'):
+        results['DoInit'] = sb1_doinit(comparison,pe,state,certified_entries,out)
     accepted = [r for r in results.values() if r['status'] == 'EQUIVALENT']
     print(f'EQUIVALENT tier: {len(accepted)} functions, {sum(r["size"] for r in accepted):,} bytes (excluded from STRICT coverage)')
     (out/'equivalence.json').write_text(json.dumps(results, indent=2)+'\n', encoding='utf-8')

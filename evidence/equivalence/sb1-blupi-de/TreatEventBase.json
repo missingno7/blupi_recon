@@ -1,0 +1,347 @@
+{
+  "schema": 2,
+  "status": "EQUIVALENT",
+  "target": "sb1/blupi/de",
+  "declaration": {
+    "name": "TreatEventBase",
+    "symbol": "?TreatEventBase@CEvent@@QAEHIIJ@Z",
+    "tu": "src/event.cpp",
+    "rva": "0x1d230",
+    "size": 7072,
+    "certificate": "evidence/equivalence/sb1-blupi-de/TreatEventBase.json",
+    "proof_method": "sb1-local",
+    "returns_value": true,
+    "code_end": "0x19d8",
+    "regions": [
+      [
+        "0x41a",
+        "0x42f"
+      ],
+      [
+        "0x6f3",
+        "0x700"
+      ]
+    ],
+    "switches": [
+      {
+        "jump": "0x716",
+        "compare": "0x705",
+        "table": "0x19d8",
+        "count": 17,
+        "bytes": "0x1a1c"
+      },
+      {
+        "jump": "0xcb6",
+        "compare": "0xca5",
+        "table": "0x1a84",
+        "count": 8,
+        "bytes": "0x1aa4"
+      },
+      {
+        "jump": "0xe72",
+        "compare": "0xe69",
+        "table": "0x1ac0",
+        "count": 5
+      },
+      {
+        "jump": "0x10c2",
+        "compare": "0x10b9",
+        "table": "0x1ad4",
+        "count": 7
+      },
+      {
+        "jump": "0x150f",
+        "compare": "0x14fe",
+        "table": "0x1af0",
+        "count": 17,
+        "bytes": "0x1b34"
+      }
+    ]
+  },
+  "scope": "static-local-equivalence",
+  "assumptions": [
+    "Functions are entered at their declared ABI entry; calls return normally and obey the x86 ABI with flat DS/ES and clear DF. Scratch registers and arithmetic flags are not hidden call arguments or results.",
+    "Memory accesses are defined ordinary RAM with no MMIO, concurrency, asynchronous observation or self-modifying code; function code and switch tables remain immutable and are not aliased by pointed-to objects or buffers.",
+    "The active stack frame and argument stack do not alias pointed-to objects; dead stack slots below ESP are unobservable. Ordinary loads retain the preceding store trace, without assuming distinct objects do not alias.",
+    "Equivalence covers defined memory effects, branch outcomes, identical call targets/arguments and ABI returns; timing, faults on invalid memory and intermediate scratch-register/flags observation are excluded.",
+    "Relocation evidence proves target identities, not behavioral equivalence of unmatched callees. File-enumeration CRT identities use unique complete signatures in the pinned library."
+  ],
+  "payload_sha256": "839a0fbca385f005248bf0980253734ef0de5e0768eef9f32b762c66a93db6b5",
+  "oracle_sha256": "356e190d0b606f8826cb23b0706fe39be31b201e29081dd147d9f20bf55b19c4",
+  "oracle_function_sha256": "ec7352ca1c93bac7e490caade6b5dea64748aeb7cc91f69d5f540767e7a019cf",
+  "checker_sha256": "5cb7ab9a8749b1b68faaabfb9df71f6e85bacac30acf14abb9915ba77c8e225a",
+  "comparator_sha256": "e5f128d8f4fed1aba7371f03397a154f76b3d2d72b8dee874b167bff83bf2323",
+  "comparator_wrapper_sha256": "ae663881d257785e3f7f6729080c0982e5b25034cd870988bfa2330d3b5ef2dc",
+  "capstone_version": "5.0.3",
+  "crt_library_sha256": "3b5f43e920c37c8da086b0d3ef0396e6517d44fcdcb4e7d03a6058620bc13ee3",
+  "inventory_sha256": {
+    "functions.csv": "7b8fa8f7e8b29007a3029b1a6af9ab27747a256baa2e9a2473adcc054eaeaa9e",
+    "tu_map.csv": "10105c5a658b09d751d35b271a0271e3ee56cc6c64ea06bf69cf7f89710c8e18"
+  },
+  "crt_target_identity": {},
+  "checks": {
+    "differing_bytes": 8,
+    "nonrelocation_difference_ranges": [
+      [
+        "0x41b",
+        "0x41c"
+      ],
+      [
+        "0x421",
+        "0x422"
+      ],
+      [
+        "0x423",
+        "0x424"
+      ],
+      [
+        "0x426",
+        "0x427"
+      ],
+      [
+        "0x428",
+        "0x429"
+      ],
+      [
+        "0x42e",
+        "0x42f"
+      ],
+      [
+        "0x6f4",
+        "0x6f5"
+      ],
+      [
+        "0x6ff",
+        "0x700"
+      ]
+    ],
+    "difference_values_sha256": "0d5dd5e3aa53e204d3a5962e9d382226b923939943c161c6d080fcd25a5b2b84",
+    "cfg": {
+      "code_end": "0x19d8",
+      "sides": [
+        {
+          "reachable_instructions": 1894,
+          "edges_sha256": "74c3c9c0560ee96b5d28ac7e606377ec707286f2b866d065f227905842f0a413",
+          "table_reads": [
+            [
+              "0x1a1c",
+              "0x1a83"
+            ],
+            [
+              "0x19d8",
+              "0x1a1c"
+            ],
+            [
+              "0x1aa4",
+              "0x1abd"
+            ],
+            [
+              "0x1a84",
+              "0x1aa4"
+            ],
+            [
+              "0x1ac0",
+              "0x1ad4"
+            ],
+            [
+              "0x1ad4",
+              "0x1af0"
+            ],
+            [
+              "0x1b34",
+              "0x1b9b"
+            ],
+            [
+              "0x1af0",
+              "0x1b34"
+            ]
+          ],
+          "indirect_successors": {
+            "0x716": [
+              "0x71d",
+              "0x736",
+              "0x9f7",
+              "0xaab",
+              "0xadf",
+              "0xb0b",
+              "0xb19",
+              "0xb27",
+              "0xb35",
+              "0xb43",
+              "0xb51",
+              "0xb5f",
+              "0xb8d",
+              "0xbbb",
+              "0xbe9",
+              "0x1820",
+              "0x1861"
+            ],
+            "0xcb6": [
+              "0xcbd",
+              "0xcc8",
+              "0xcd3",
+              "0xcde",
+              "0xce9",
+              "0xcf4",
+              "0x1861"
+            ],
+            "0xe72": [
+              "0xe79",
+              "0xf30",
+              "0x1861"
+            ],
+            "0x10c2": [
+              "0x10c9",
+              "0x1162",
+              "0x11fb",
+              "0x1294",
+              "0x132d",
+              "0x13c6",
+              "0x145f"
+            ],
+            "0x150f": [
+              "0x1516",
+              "0x1536",
+              "0x15a8",
+              "0x15d8",
+              "0x15fa",
+              "0x1711",
+              "0x1832",
+              "0x1849",
+              "0x1861"
+            ]
+          }
+        },
+        {
+          "reachable_instructions": 1894,
+          "edges_sha256": "74c3c9c0560ee96b5d28ac7e606377ec707286f2b866d065f227905842f0a413",
+          "table_reads": [
+            [
+              "0x1a1c",
+              "0x1a83"
+            ],
+            [
+              "0x19d8",
+              "0x1a1c"
+            ],
+            [
+              "0x1aa4",
+              "0x1abd"
+            ],
+            [
+              "0x1a84",
+              "0x1aa4"
+            ],
+            [
+              "0x1ac0",
+              "0x1ad4"
+            ],
+            [
+              "0x1ad4",
+              "0x1af0"
+            ],
+            [
+              "0x1b34",
+              "0x1b9b"
+            ],
+            [
+              "0x1af0",
+              "0x1b34"
+            ]
+          ],
+          "indirect_successors": {
+            "0x716": [
+              "0x71d",
+              "0x736",
+              "0x9f7",
+              "0xaab",
+              "0xadf",
+              "0xb0b",
+              "0xb19",
+              "0xb27",
+              "0xb35",
+              "0xb43",
+              "0xb51",
+              "0xb5f",
+              "0xb8d",
+              "0xbbb",
+              "0xbe9",
+              "0x1820",
+              "0x1861"
+            ],
+            "0xcb6": [
+              "0xcbd",
+              "0xcc8",
+              "0xcd3",
+              "0xcde",
+              "0xce9",
+              "0xcf4",
+              "0x1861"
+            ],
+            "0xe72": [
+              "0xe79",
+              "0xf30",
+              "0x1861"
+            ],
+            "0x10c2": [
+              "0x10c9",
+              "0x1162",
+              "0x11fb",
+              "0x1294",
+              "0x132d",
+              "0x13c6",
+              "0x145f"
+            ],
+            "0x150f": [
+              "0x1516",
+              "0x1536",
+              "0x15a8",
+              "0x15d8",
+              "0x15fa",
+              "0x1711",
+              "0x1832",
+              "0x1849",
+              "0x1861"
+            ]
+          }
+        }
+      ],
+      "padding": [],
+      "theorem": "all direct/fallthrough/table edges stay within decoded code; bounded table reads exclude padding"
+    },
+    "primary_lemma_checker_sha256": "3495694ba4ebac9cd2601fa594d98deb8b177f4ded505946061494905899045d",
+    "nonmember_call_abi": {
+      "0x14": "?ConvLongToPos@@YA?AUtagPOINT@@J@Z",
+      "0xd86": "__imp__ClientToScreen@8",
+      "0xd96": "__imp__SetCursorPos@8",
+      "0xfed": "__imp__PostMessageA@16"
+    },
+    "schedules": [
+      {
+        "window": [
+          "0x41a",
+          "0x42f"
+        ],
+        "exhaustive_boolean_assignments": 1,
+        "observations_sha256": "ab936162a00eae70019ff691f397b3afa4f8afd4805fce4ee3f13b6566196d72"
+      },
+      {
+        "window": [
+          "0x6f3",
+          "0x700"
+        ],
+        "exhaustive_boolean_assignments": 1,
+        "observations_sha256": "384d7a55bf382452db8627717364841d84d56b6df631d82a9e8ee169c7ca8ea9"
+      }
+    ],
+    "verified_relocations": 273,
+    "relocations_sha256": "7f163b32bdc3b429fc6e3f317915cddfc63bb8230ba1b1d75866d3825175f816",
+    "previously_proved_equivalent_callee_entries": {
+      "?ChangePhase@CEvent@@QAEHI@Z": {
+        "rva": "0x19310",
+        "certificate": "evidence/equivalence/sb1-blupi-de/ChangePhase.json",
+        "payload_sha256": "3d1883c7c6fa4fc90b5132ed39a65437320a3a830d35eb5b2dff81464da04436"
+      }
+    }
+  }
+}
