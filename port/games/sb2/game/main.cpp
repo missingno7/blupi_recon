@@ -1143,6 +1143,8 @@ struct Input { long frame; std::string kind; int x = 0, y = 0; };
 struct Options {
     blupi::host::Options host;
     std::string data, user, trace, soundfont, demoLog, probe;
+    std::string displayLog, displayDumpDir;
+    long displayDumpEvery = 0;
     long frames = -1, every = 1;
     std::vector<Input> inputs;
     std::vector<std::pair<long, std::string>> shots, dumps;
@@ -1158,6 +1160,8 @@ void Usage() {
          "  --data DIR --user DIR --headless --frames N --color 8|16\n"
          "  --trace FILE --trace-every N --screenshot N:FILE --state-dump N:FILE\n"
          "  --input FILE --probe FILE --soundfont FILE --language CODE --check-commands --demo-log FILE\n"
+         "  --display-log FILE  raw back-buffer hash at every Display (cross-build oracle)\n"
+         "  --display-dump DIR:N  raw frame file at every Nth Display\n"
          "  --reference         historical Build (test oracle)\n"
          "  --check-scene       compare const scene commands with historical Build\n"
          "  --check-view        compare DrawView at alpha 1 with FlattenScene\n"
@@ -1177,6 +1181,15 @@ bool Parse(int argc, char** argv, Options& o) {
         else if (a == "--frames") o.frames = atol(next());
         else if (a == "--color") { g_portColorDepth = atoi(next()); if (g_portColorDepth != 8 && g_portColorDepth != 16) return false; }
         else if (a == "--trace") o.trace = next();
+        else if (a == "--display-log") { o.displayLog = next(); if (o.displayLog.empty()) return false; }
+        else if (a == "--display-dump") {
+            std::string v = next(); size_t colon = v.rfind(':');
+            if (colon == std::string::npos || colon == 0) return false;
+            o.displayDumpDir = v.substr(0, colon);
+            char* end = nullptr;
+            o.displayDumpEvery = strtol(v.c_str() + colon + 1, &end, 10);
+            if (o.displayDumpEvery <= 0 || !end || *end) return false;
+        }
         else if (a == "--demo-log") o.demoLog = next();
         else if (a == "--probe") o.probe = next();
         else if (a == "--trace-every") { o.every = atol(next()); if (o.every < 1) return false; }
@@ -1438,6 +1451,10 @@ int BlupiMain(int argc, char** argv) {
 	o.host.viewWidth = g_wideWidth;
 	g_bInterpolate = g_settings.interpolate && g_settings.displayRate;
 	g_presentDisplayRate = g_settings.displayRate;
+    extern const unsigned char g_sb2IconPng[];
+    extern const unsigned g_sb2IconPngSize;
+    o.host.iconPng = g_sb2IconPng;
+    o.host.iconPngSize = g_sb2IconPngSize;
     if (!blupi::host::init("Speedy Blupi 2 / Speedy Eggbert 2", LXIMAGE, LYIMAGE, o.host)) return 1;
     if (o.data.empty()) { if (const char* p = getenv("BLUPI2_DATA")) o.data = p; }
     if (o.data.empty()) o.data = g_settings.dataFolder;
@@ -1463,6 +1480,13 @@ int BlupiMain(int argc, char** argv) {
         if (demoLog) fclose(demoLog);
         blupi::audio::shutdown(); blupi::music::shutdown(); blupi::host::shutdown(); return 2;
     }
+    FILE* displayLog = o.displayLog.empty() ? nullptr : fopen(o.displayLog.c_str(), "w");
+    if (!o.displayLog.empty() && !displayLog) {
+        if (trace) fclose(trace);
+        if (demoLog) fclose(demoLog);
+        blupi::audio::shutdown(); blupi::music::shutdown(); blupi::host::shutdown(); return 2;
+    }
+    PortPixmapSetDisplayCapture(displayLog, o.displayDumpDir.c_str(), o.displayDumpEvery);
     g_bActive = TRUE;
     g_bReference = o.reference;
     g_bCheckScene = o.checkScene;
@@ -1581,6 +1605,8 @@ int BlupiMain(int argc, char** argv) {
 		if (g_presentationMismatches != 0 || (g_bCheckPresentation && g_presentationFrames == 0)) result = 7;
 	}
     FinishObjects();
+    PortPixmapSetDisplayCapture(nullptr, "", 0);
+    if (displayLog) fclose(displayLog);
     blupi::audio::shutdown(); blupi::music::shutdown(); blupi::host::shutdown();
     return result;
 }

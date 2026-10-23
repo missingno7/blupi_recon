@@ -102,6 +102,7 @@ endif()
 # Software reference renderer: plain C++, no SDL and no Win32 names.
 add_library(blupi_render STATIC
     common/render/bmp.cpp
+    common/render/display_capture.cpp
     common/render/device.cpp
     common/render/surface.cpp)
 target_include_directories(blupi_render PUBLIC ${BLUPI_COMMON})
@@ -183,6 +184,10 @@ if(WIN32)
     set_target_properties(blupi PROPERTIES WIN32_EXECUTABLE $<NOT:$<CONFIG:Debug>>)
     # The port's icon (res/icon.ico, which SDL also uses for the window) and
     # the version information.
+    set(BLUPI_RC_ICON ${CMAKE_CURRENT_SOURCE_DIR}/res/icon.ico)
+    set(BLUPI_RC_DESCRIPTION "Speedy Blupi (SDL3 port)")
+    set(BLUPI_RC_NAME blupi-sdl3)
+    set(BLUPI_RC_PRODUCT "Speedy Blupi SDL3 port")
     configure_file(common/platform/blupi_win.rc.in ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_win.rc @ONLY)
     target_sources(blupi PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_win.rc)
     if(MINGW)

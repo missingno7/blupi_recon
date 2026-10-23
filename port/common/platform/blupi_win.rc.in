@@ -2,7 +2,7 @@
 // the port's icon (res/icon.ico, tools/make_icon.py) and the version.
 #include <winver.h>
 
-1 ICON "@CMAKE_CURRENT_SOURCE_DIR@/res/icon.ico"
+1 ICON "@BLUPI_RC_ICON@"
 
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION     @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,@PROJECT_VERSION_PATCH@,0
@@ -14,11 +14,11 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription", "Speedy Blupi (SDL3 port)"
+            VALUE "FileDescription", "@BLUPI_RC_DESCRIPTION@"
             VALUE "FileVersion", "@PROJECT_VERSION@"
-            VALUE "InternalName", "blupi-sdl3"
-            VALUE "OriginalFilename", "blupi-sdl3.exe"
-            VALUE "ProductName", "Speedy Blupi SDL3 port"
+            VALUE "InternalName", "@BLUPI_RC_NAME@"
+            VALUE "OriginalFilename", "@BLUPI_RC_NAME@.exe"
+            VALUE "ProductName", "@BLUPI_RC_PRODUCT@"
             VALUE "ProductVersion", "@PROJECT_VERSION@"
         END
     END

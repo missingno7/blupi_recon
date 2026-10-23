@@ -1,14 +1,17 @@
 """Makes the port's icon from the game's own Blupi sprite (waving).
 
-    python make_icon.py <game folder>
+    python make_icon.py <game folder>              Speedy Blupi 1 (blupi)
+    python make_icon.py --game sb2 <game folder>   Speedy Blupi 2 (blupi2)
 
-Cuts sprite 47 of the Blupi sheet (IMAGE08/BLUPI000.BLP, rectangle from
-table_icon_blupi in src/pixtables.h), makes the sheet's blue key colour
-transparent and centres it on a 64x64 canvas. Writes:
+Cuts sprite 47 of a Blupi sheet (rectangle from table_icon_blupi in the game's
+pixtables.h), makes the sheet's blue key colour transparent and centres it on a
+64x64 canvas. SB1 uses the yellow sheet IMAGE08/BLUPI000.BLP and src/pixtables.h;
+SB2 the same pose from the green player sheet IMAGE08/BLUPI003.BLP and
+games/sb2/src/pixtables.h. Writes, under port/res (SB1) or port/games/sb2/res (SB2):
 
-    port/res/icon.png   the source image (Linux window icon, Android launcher)
-    port/res/icon.ico   Windows: 16-64 px averaged down, 128 and 256 px in
-                        whole pixels (stored as PNG)
+    icon.png   the source image (window icon where the executable has none)
+    icon.ico   Windows: 16-64 px averaged down, 128 and 256 px in whole
+               pixels (stored as PNG)
 """
 import os
 import re
@@ -22,8 +25,15 @@ CANVAS = 64
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 
 
-def sprite_rect(index):
-    text = open(os.path.join(ROOT, 'src', 'pixtables.h'), encoding='latin-1').read()
+GAMES = {
+    # game: (pixtables.h, Blupi sheet, output folder)
+    'sb1': (('src', 'pixtables.h'), 'BLUPI000.BLP', ('port', 'res')),
+    'sb2': (('games', 'sb2', 'src', 'pixtables.h'), 'BLUPI003.BLP', ('port', 'games', 'sb2', 'res')),
+}
+
+
+def sprite_rect(index, tables=GAMES['sb1'][0]):
+    text = open(os.path.join(ROOT, *tables), encoding='latin-1').read()
     body = re.search(r'table_icon_blupi\[\]\s*=\s*\{(.*?)\};', text, re.S).group(1)
     values = [int(v) for v in re.findall(r'-?\d+', body)]
     x, y, _, _, w, h = values[1 + index * 6:7 + index * 6]
@@ -112,10 +122,18 @@ def ico_bytes(images):
 
 
 def main():
-    if len(sys.argv) != 2:
+    args = sys.argv[1:]
+    game = 'sb1'
+    if args[:1] == ['--game'] and len(args) >= 2:
+        game, args = args[1], args[2:]
+    if len(args) != 1 or game not in GAMES:
         sys.exit(__doc__)
-    pixel = read_bmp8(os.path.join(sys.argv[1], 'IMAGE08', 'BLUPI000.BLP'))
-    sx, sy, w, h = sprite_rect(SPRITE)
+    tables, sheet, folder = GAMES[game]
+    path = os.path.join(args[0], 'IMAGE08', sheet)
+    if not os.path.exists(path):                     # case-sensitive file systems
+        path = os.path.join(args[0], 'IMAGE08', sheet.lower())
+    pixel = read_bmp8(path)
+    sx, sy, w, h = sprite_rect(SPRITE, tables)
     x0, y0 = (CANVAS - w) // 2, (CANVAS - h) // 2
     image = [[(0, 0, 0, 0)] * CANVAS for _ in range(CANVAS)]
     for y in range(h):
@@ -123,12 +141,13 @@ def main():
             p = pixel(sx + x, sy + y)
             image[y0 + y][x0 + x] = p if p[3] else (0, 0, 0, 0)
 
-    out = os.path.join(ROOT, 'port', 'res')
+    out = os.path.join(ROOT, *folder)
     os.makedirs(out, exist_ok=True)
     open(os.path.join(out, 'icon.png'), 'wb').write(png_bytes(image))
     sizes = [16, 24, 32, 48, 64, 128, 256]
     open(os.path.join(out, 'icon.ico'), 'wb').write(ico_bytes([scaled(image, s) for s in sizes]))
-    print('port/res/icon.png, port/res/icon.ico: sprite %d (%dx%d)' % (SPRITE, w, h))
+    rel = '/'.join(folder)
+    print('%s/icon.png, %s/icon.ico: %s sprite %d (%dx%d)' % (rel, rel, sheet, SPRITE, w, h))
 
 
 if __name__ == '__main__':

@@ -154,3 +154,95 @@ probe exercises Eggbert's optional 61-tick intro transitions with copies of the 
 as placeholder art in the test user root (the shipped `_INTRO=0` folder has no publisher
 images); Blupi rejects those phases even with those files present. This does not establish
 the publisher screens' historical pixels. No original executable was run.
+
+## SB2 cross-build capture
+
+`tools/oracle_capture_sb2.ps1` uses `blupi2` and the edition's validated source
+relink. It does not change SB1's `oracle_capture.ps1` defaults. The default data
+folders are `assets/eggbert2` and `assets/blupi2`, selected from `targets.json`.
+The default rebuilds are `build/sb2gate/relink-rsrc-eggbert-en/Eggbert2.exe` and
+`build/sb2gate/relink-rsrc-blupi-en/BLUPI.EXE`; override with `-BuiltExe` for a fresh
+relink. The script requires sibling `gate.json` with `status=PASS` and a successful
+`build.json` for the selected target, including source-built resources. It refuses
+original executable hashes, including renamed originals from the target catalog.
+
+To create a reference from already verified objects (no game execution):
+
+```powershell
+.\.pyenv\python.exe tools\relink.py --target sb2/eggbert/en --objects-dir build\verify-sb2-eggbert-en\objects --out-dir build\oracle-relink-eggbert
+.\.pyenv\python.exe tools\relink.py --target sb2/blupi/en --objects-dir build\verify-sb2-blupi-en\objects --out-dir build\oracle-relink-blupi --historical-cvtres-only
+```
+
+Use the output only if its gate is PASS; a sound build-path gate may require the
+supervisor's normal historical-path environment. Supply the resulting executable
+with `-BuiltExe`. No original executable is launched or copied into the run folder.
+
+[EVIDENCE] Startup indexing, from `games/sb2/src/blupi.cpp` and `pixmap.cpp`:
+`DoInit` calls `CacheAll(TRUE)`, which draws and displays `init.blp` once (index 0).
+`CPixmap::Benchmark` then performs blits only, with no Display. After DoInit,
+the application `Benchmark` performs ten UpdateFrame/SetDecor/Display iterations
+(indices 1..10). The first timer update is display index 11. Thus `-Frames N`
+means **N displays**, and the port runs `--frames (N - 11)`. This also matches the
+proxy's existing scripted-input offset: input timer frame F is posted at display
+F+10 and affects display F+11. CacheAll during a later phase can add displays on
+both sides; this is why the logs use display indices, not timer ticks.
+
+The port captures the reference device's raw back buffer at each game Display,
+before presentation. Both games use `common/render/display_capture.cpp`: the
+existing SB1 hash seed/multiplier, `index bpp 16-digit-hash` log, and BLPF dump
+format (including the RGBX palette in 8-bit mode). The capture script explicitly
+selects `--reference`, so it compares the historical SetDecor/Build path.
+
+The isolated config is byte-identical for both sides. `Benchmark=6666` enables
+SB2's color options; `TrueColorBack` and `TrueColorDecor` both select the requested
+depth. `MouseType=2` removes the desktop-dependent graphic cursor. `CDAudio=0`
+avoids CD audio. `-nocd` bypasses Blupi 2's drive-type check. Eggbert 2's
+`AddCDPath` prefixes the configured folder directly, so it gets `CD-Rom=.` (the staged
+installation folder). Blupi 2's keeps SB1's CD layout: `data\`, `image*\` and `movie\`
+lie one level above the configured folder (the shipped config.def says `CD-Rom=H:\US`),
+so it gets `CD-Rom=US` and an empty `US` folder in the copy. [EVIDENCE] With `CD-Rom=.`
+the Blupi 2 rebuild's `CheckWorld1` found no `..\data\world001.blp` and showed the
+insert-CD screen at the first locked world (display 81 of the tour and editor runs);
+the port has no CD check. Timer=50 and SpeedRate=1 use game defaults.
+The complete config fits in ReadConfig's 199-byte read. cnc-ddraw comes from the
+edition's folder and is renamed `cnc-ddraw.dll` behind the same 32-bit proxy.
+
+Preparation only (copies data, builds the proxy if needed, validates and writes
+`compare.json` with `status=PREPARED`; **launches neither game**):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition eggbert -ColorDepth 16 -PortExe build\port-oracle-make\blupi2.exe -PrepareOnly
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition blupi -ColorDepth 8 -PortExe build\port-oracle-make\blupi2.exe -PrepareOnly
+```
+
+Supervisor's windowed captures (one at a time; do not touch mouse/keyboard):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition eggbert -ColorDepth 16 -Frames 2200 -PortExe build\port-oracle-make\blupi2.exe
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition eggbert -ColorDepth 8 -Frames 2200 -PortExe build\port-oracle-make\blupi2.exe
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition blupi -ColorDepth 16 -Frames 2200 -PortExe build\port-oracle-make\blupi2.exe
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition blupi -ColorDepth 8 -Frames 2200 -PortExe build\port-oracle-make\blupi2.exe
+```
+
+`-InputScript port\tests\golden\sb2_tour.input` (`-Frames 201` for Eggbert 2, `241`
+for Blupi 2: the tour quits the game) or `sb2_editor.input` (`-Frames 260`) adds menu navigation (click and
+key/keydown/keyup only; unsupported input is rejected). Each run lives under
+`build/oracle/sb2-<edition>-<timestamp>/`. `compare.json` records executable,
+gate/build, port, proxy, cnc-ddraw and config hashes, arguments, exit status,
+frame counts and first difference. Status is MATCH only for a complete successful
+capture with every requested display equal; incomplete runs remain INCOMPLETE.
+`-DumpEvery 0` disables raw dumps. Use `oracle_diff.py RUN_DIR` as for SB1.
+
+### SB2 results (2026-10-24, relinks from `build/sb2gate/relink-rsrc-<edition>-en`)
+
+| Run | Eggbert 2, 16 bpp | Eggbert 2, 8 bpp | Blupi 2, 16 bpp | Blupi 2, 8 bpp |
+|---|---:|---:|---:|---:|
+| Attract mode (2200 displays) | 2200/2200 | 2200/2200 | 2200/2200 | 2200/2200 |
+| `sb2_tour.input` (201 / 241 displays) | 201/201 | 201/201 | 241/241 | 241/241 |
+| `sb2_editor.input` (260 displays) | 260/260 | 260/260 | 260/260 | 260/260 |
+
+[EVIDENCE] Every run is MATCH: the port's reference renderer and the shared SB2 code
+reproduce both rebuilt editions' back buffers bit for bit in both colour depths, through
+attract-mode demo playback, the menus, world selection, the editor and the quit screens.
+This is runtime evidence about the rebuilt executables (whose code is STRICT or certified
+EQUIVALENT, docs/SB2.md), not a strict/equivalence proof. No timing race was seen.

@@ -328,3 +328,16 @@ was run, no game data was written, no commit was made and no game/build process 
 [OPEN] Supervisor Ninja/Linux reruns, historical SB2 pixel comparison, Android/packaging
 and audible music remain separate gates. Local M4b gate results and the handoff are in
 `scratch/w-portm4b/REPORT.md`.
+
+
+## Cross-build oracle and icon (2026-10-24)
+
+- [EVIDENCE] Historical SB2 pixel comparison: `tools/oracle_capture_sb2.ps1` runs each edition's
+  rebuilt executable (`build/sb2gate/relink-rsrc-<edition>-en`, gate PASS) under cnc-ddraw against
+  `blupi2 --headless --reference --display-log`. Attract mode (2200 displays), `sb2_tour.input` and
+  `sb2_editor.input` are identical in every display for Eggbert 2 and Blupi 2, at 16 and 8 bpp
+  (table and setup in [ORACLE.md](ORACLE.md)). Blupi 2's capture needs the CD layout of its shipped
+  config (`CD-Rom=` one folder below the data); the port has no CD check.
+- `blupi2` has its own window and executable icon: SB1's waving pose from SB2's green Blupi sheet
+  (`games/sb2/res/`, `tools/make_icon.py --game sb2`), embedded and passed to `host::init`
+  (`Options::iconPng`); SB1 keeps `res/icon.png`.

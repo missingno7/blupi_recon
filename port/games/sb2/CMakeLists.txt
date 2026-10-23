@@ -46,9 +46,20 @@ add_library(blupi2_game STATIC
     game/editor_wide.cpp game/scene.cpp game/end_of_tick.cpp
     game/main.cpp game/pixmap.cpp game/sound.cpp game/misc.cpp
     game/movie.cpp game/network.cpp game/state_hash.cpp game/language.cpp game/probe.cpp
+    game/icon.cpp
     $<TARGET_OBJECTS:blupi2_hist>)
 target_link_libraries(blupi2_game PRIVATE blupi2_hist_context PUBLIC blupi_platform)
 target_compile_definitions(blupi2_game PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
+
+# blupi2's icon (res/icon.png, tools/make_icon.py --game sb2), for the window on
+# systems without executable resources (game/icon.cpp).
+set(SB2_ICON_INC ${CMAKE_CURRENT_BINARY_DIR}/generated/sb2_icon_png.inc)
+add_custom_command(OUTPUT ${SB2_ICON_INC}
+    COMMAND ${CMAKE_COMMAND} -DIN=${SB2_GAME}/res/icon.png -DOUT=${SB2_ICON_INC}
+            -P ${PROJECT_SOURCE_DIR}/cmake/embed_bytes.cmake
+    DEPENDS ${SB2_GAME}/res/icon.png ${PROJECT_SOURCE_DIR}/cmake/embed_bytes.cmake
+    COMMENT "Embedding games/sb2/res/icon.png")
+target_sources(blupi2_game PRIVATE ${SB2_ICON_INC})
 
 file(GLOB SB2_PACKS CONFIGURE_DEPENDS ${SB2_GAME}/languages/*.txt)
 list(SORT SB2_PACKS)
@@ -67,6 +78,15 @@ target_link_libraries(blupi2 PRIVATE blupi2_game SDL3::SDL3)
 set_target_properties(blupi2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 if(MINGW)
     target_link_options(blupi2 PRIVATE -static)
+endif()
+if(WIN32)
+    # blupi2's icon (res/icon.ico, which SDL also uses for the window) and version.
+    set(BLUPI_RC_ICON ${SB2_GAME}/res/icon.ico)
+    set(BLUPI_RC_DESCRIPTION "Speedy Blupi 2 / Speedy Eggbert 2 (SDL3 port)")
+    set(BLUPI_RC_NAME blupi2)
+    set(BLUPI_RC_PRODUCT "Speedy Blupi 2 SDL3 port")
+    configure_file(${BLUPI_COMMON}/platform/blupi_win.rc.in ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi2_win.rc @ONLY)
+    target_sources(blupi2 PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi2_win.rc)
 endif()
 if(WIN32)
     add_custom_command(TARGET blupi2 POST_BUILD

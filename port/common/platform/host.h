@@ -24,6 +24,8 @@ struct Options
     int  viewWidth = 0;       // widescreen: presented width (> logical width); the game's
                               // frame is centred in it and mouse positions stay frame-relative
     bool autoWide = false;    // widescreen: view width from the window shape (4:3 to 21:9)
+    const unsigned char* iconPng = nullptr;  // the game's window icon (PNG bytes, kept alive
+    unsigned iconPngSize = 0;                // by the game); nullptr: the built-in res/icon.png
 };
 
 // Widest automatic view: 21:9 at the frame height of 480.

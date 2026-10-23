@@ -343,7 +343,9 @@ bool init(const char* title, int logicalWidth, int logicalHeight, const Options&
     SDL_SetWindowMinimumSize(g_window, logicalWidth / 2, logicalHeight / 2);
 #if !defined(SDL_PLATFORM_WINDOWS) && !defined(SDL_PLATFORM_ANDROID)
     // (Windows takes it from the executable's resources.)
-    if (SDL_Surface* icon = game_icon())
+    if (SDL_Surface* icon = options.iconPng
+            ? SDL_LoadPNG_IO(SDL_IOFromConstMem(options.iconPng, options.iconPngSize), true)
+            : game_icon())
     {
         SDL_SetWindowIcon(g_window, icon);
         SDL_DestroySurface(icon);

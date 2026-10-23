@@ -115,6 +115,7 @@ Releases (`docs/RELEASING.md`):
   Packages go to `build/release/` and are never committed.
 - The Android release key and its properties file stay in `%USERPROFILE%\.android\`, outside
   the repository; never print, copy or commit their contents.
-- `res/icon.png` and `res/icon.ico` change only through `tools/make_icon.py`.
+- `res/icon.png` and `res/icon.ico` change only through `tools/make_icon.py`, and
+  `games/sb2/res/icon.png` and `icon.ico` only through `tools/make_icon.py --game sb2`.
 - Packages carry `release/COPYING.txt` (GPLv3, inherited from the reconstructed source) and
   the third-party notices; game data is never packaged.

@@ -273,6 +273,27 @@ target_link_libraries(test_sb2_view PRIVATE blupi2_hist_context blupi2_game)
 add_test(NAME sb2_view COMMAND test_sb2_view)
 set(BLUPI2_TEST_DATA "$ENV{BLUPI2_DATA}" CACHE PATH "Eggbert 2 data root for SB2 golden tests")
 set(BLUPI2_TEST_DATA_BLUPI "" CACHE PATH "Blupi 2 data root for SB2 golden tests")
+foreach(game sb1 sb2_eggbert sb2_blupi)
+    if(game STREQUAL "sb1")
+        set(oracle_exe blupi)
+        set(oracle_data "${BLUPI_TEST_DATA}")
+    elseif(game STREQUAL "sb2_eggbert")
+        set(oracle_exe blupi2)
+        set(oracle_data "${BLUPI2_TEST_DATA}")
+    else()
+        set(oracle_exe blupi2)
+        set(oracle_data "${BLUPI2_TEST_DATA_BLUPI}")
+    endif()
+    if(oracle_data)
+        foreach(depth 8 16)
+            add_test(NAME oracle_display_${game}_${depth}
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${oracle_exe}> -DDATA=${oracle_data}
+                    -DWORK=${CMAKE_CURRENT_BINARY_DIR}/oracle_${game}_${depth}
+                    -DBUILDROOT=${CMAKE_CURRENT_BINARY_DIR} -DDEPTH=${depth}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/oracle_display.cmake)
+        endforeach()
+    endif()
+endforeach()
 option(BLUPI2_UPDATE_GOLDEN "Rewrite only the SB2 golden traces" OFF)
 # Optional presentation modes use the existing faithful traces as their oracle.
 # Updating any golden is deliberately disabled for these variants.

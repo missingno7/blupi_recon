@@ -1,3 +1,4 @@
+#include "render/display_capture.h"
 // SB2 CPixmap adapter, derived from port/games/sb1/game/pixmap.cpp
 // and games/sb2/src/pixmap.cpp; historical clipping/blit bodies retained.
 // Port replacement of games/sb2/src/pixmap.cpp (historical: Planet Blupi-derived
@@ -138,70 +139,11 @@ short IconValue(const short* table, int index)
 #define DD_OK         ((HRESULT)0)
 #define DDERR_GENERIC ((HRESULT)0x80004005L)
 
-// Host-path fopen (the forced include maps fopen to the game file system).
-#pragma push_macro("fopen")
-#undef fopen
-static FILE* blupi_host_fopen(const char* path, const char* mode)
-{
-	return fopen(path, mode);
-}
-#pragma pop_macro("fopen")
-
-// Cross-build oracle (port/docs/ROADMAP.md 0.3): the same raw-row hash and
-// frame file format as port/oracle/ddraw_proxy.cpp, taken at every Display.
-static FILE* s_displayLog = NULL;
-static char  s_displayDumpDir[260] = "";
-static long  s_displayDumpEvery = 0;
-static long  s_displayIndex = 0;
-
-static void PortDisplayCapture(const Surface& back, const blupi::render::Palette& pal)
-{
-	if ( s_displayLog == NULL && s_displayDumpEvery <= 0 )  return;
-	const size_t rowBytes = (size_t)back.width() * (back.bpp() / 8);
-	uint64_t hash = 1469598103934665603ULL;
-	for ( int y=0 ; y<back.height() ; y++ )
-	{
-		const uint8_t* row = back.row(y);
-		for ( size_t i=0 ; i<rowBytes ; i++ )
-		{
-			hash ^= row[i];
-			hash *= 1099511628211ULL;
-		}
-	}
-	if ( s_displayLog )
-	{
-		fprintf(s_displayLog, "%ld %d %016llx\n", s_displayIndex, back.bpp(), (unsigned long long)hash);
-	}
-	if ( s_displayDumpEvery > 0 && s_displayIndex % s_displayDumpEvery == 0 )
-	{
-		char path[300];
-		snprintf(path, sizeof(path), "%s/frame_%06ld.raw", s_displayDumpDir, s_displayIndex);
-		FILE* f = blupi_host_fopen(path, "wb");
-		if ( f != NULL )
-		{
-			int header[3] = { back.width(), back.height(), back.bpp() };
-			fwrite("BLPF", 1, 4, f);
-			fwrite(header, sizeof(int), 3, f);
-			if ( back.bpp() == 8 )
-			{
-				for ( int i=0 ; i<256 ; i++ )
-				{
-					uint8_t e[4] = { pal[i].r, pal[i].g, pal[i].b, 0 };
-					fwrite(e, 1, 4, f);
-				}
-			}
-			for ( int y=0 ; y<back.height() ; y++ )  fwrite(back.row(y), 1, rowBytes, f);
-			fclose(f);
-		}
-	}
-	s_displayIndex++;
-}
-
+// Shared cross-build oracle (host paths, independent of the game VFS).
+static blupi::render::DisplayCapture s_displayCapture;
 void PortPixmapSetDisplayCapture(FILE* log, const char* dumpDir, long dumpEvery)
 {
-	s_displayLog = log;
-	s_displayDumpEvery = dumpEvery;
-	if ( dumpDir != NULL )  snprintf(s_displayDumpDir, sizeof(s_displayDumpDir), "%s", dumpDir);
+    s_displayCapture.configure(log, dumpDir, dumpEvery);
 }
 
 // Command check: replays the commands recorded since the last Display on the
@@ -1304,7 +1246,7 @@ BOOL CPixmap::Display()
 	if ( blt_fast(m_lpDDSPrimary, 0, 0, m_lpDDSBack, MapRect, FALSE) != DD_OK )  return FALSE;
 	s_dirty = true;
 	PortCommandCheck();
-	PortDisplayCapture(*s_reference.surface(blupi::render::kBackBuffer), s_reference.palette());
+	s_displayCapture.write(*s_reference.surface(blupi::render::kBackBuffer), s_reference.palette());
 	return TRUE;
 }
 
