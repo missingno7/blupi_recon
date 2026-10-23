@@ -2270,13 +2270,15 @@ BOOL CEvent::ChangePhase(UINT phase)
 			}
 			if (!bEnable)
 			{
-#if !_EGAMES
 				OutputNetDebug("CEvent::ChangePhase [Cache error]\r\n");
 				WaitMouse(FALSE);
-#endif
+#if _EGAMES // Version 1.1 returns to the title after a background-load failure.
+				return ChangePhase(WM_PHASE_INIT);
+#else
 				m_tryInsertCount = 40;
 				m_tryPhase = m_phase;
 				return ChangePhase(WM_PHASE_INSERT);
+#endif
 			}
 		}
 	}
@@ -2298,10 +2300,16 @@ BOOL CEvent::ChangePhase(UINT phase)
 		}
 		else
 		{
+#if _EGAMES // Version 1.1 handles mission-read failure like background-load failure.
+			OutputNetDebug("CEvent::ChangePhase [Cache error]\r\n");
+			WaitMouse(FALSE);
+			return ChangePhase(WM_PHASE_INIT);
+#else
 OutputNetDebug("CEvent::ChangePhase [Read error]\r\n");
 			m_tryInsertCount = 40;
 			m_tryPhase = m_phase;
 			return ChangePhase(WM_PHASE_INSERT);
+#endif
 		}
 	}
 

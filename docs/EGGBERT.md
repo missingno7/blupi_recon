@@ -67,11 +67,18 @@ reconstruction builds both, and what it means for the port. Static reads only (2
 
 - [EVIDENCE] A negative control fails as it should: Spanish without its defines mismatches in
   `GetCharWidth` and `DrawChar`.
-- [OPEN] `ChangePhase` carries the primary target's residue (it first differs at the same offset),
-  so its 1.1 changes are written but not byte-proven.
+- [EVIDENCE] `ChangePhase`'s 1.1 changes (`scratch/w-eggcp/REPORT.md`): after a background-load or a
+  mission-read failure, version 1.1 logs `[Cache error]`, waits for the mouse and returns to the title
+  (`WM_PHASE_INIT`) instead of retrying via the disc screen, as Speedy Eggbert 2 does. With them, the
+  function's differences fall from 4,374 to 279 bytes in all six languages; it still carries the primary
+  target's guard-order residue plus 247 bytes [OPEN]. The relinked `.text` now has the original's size, and
+  365/408 accepted functions land at their original RVA (`--order eggbert-jauge-before-menu`). The
+  return-TRUE body at 0x19270 is now owned by `CEvent::CheckWorld1` (event.cpp's region) with
+  `CPixmap::Flush` FOLDED into it; coverage is unchanged.
 - [EVIDENCE] `tools/relink.py --target` relinks every 1.1 target with its own linker, order and generated
   resource script (`src/res/sb1-*.rc`, `tools/make_rc.py --target`; `scratch/w-sb1relink/REPORT.md`): no
-  unresolved or duplicate symbols; Speedy Eggbert 1: 235/408 accepted functions at their original RVA,
+  unresolved or duplicate symbols; Speedy Eggbert 1: 365/408 accepted functions at their original RVA (with `ChangePhase`'s 1.1 code and
+  `--order eggbert-jauge-before-menu`),
   `.rsrc` equal except 71 timestamp fields; German/French Speedy Blupi: 394/412, `.rsrc` raw exact.
   [OPEN] Full `.text`/`.data` image equality.
 
