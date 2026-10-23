@@ -386,6 +386,33 @@ body and loses its Eggbert match; explicit GetBlupiInfo mask locals are inert. N
 [OPEN] The historical spellings are not uniquely recovered by these equal-byte results. The
 remaining BlupiStep, ChangePhase, DrawButtons and smaller residues are still unresolved.
 
+### Round 7: allocator and edition-context studies (`scratch/w-chgphase`, `w-stepalloc`, `w-eggctx`)
+
+[EVIDENCE] **Blupi 2 ChangePhase** is exactly an allocator boundary. In a private c2 replay (SP3; our
+body is identical under RTM), either of two diagnostic interventions reproduces all 2,012 original
+instructions with zero non-relocated byte differences: excluding four late zero uses from constant
+pooling (`index < 0` at line 2831, `HideMouse(FALSE)`, `!m_bBuildOfficialMissions`,
+`table[m_index].bLocked`; the original tests them against an immediate 0), or moving the zero (22
+reads) or WM_PHASE_PLAY (9 reads) priority by 14 points (they are 13 apart: SB1's BLUPI-ALLOC-01
+boundary). All decisive references are shared source; the Blupi-only retry blocks own none. [OPEN] Which
+source/IL difference gives the original's pooling or priority; no natural form found.
+
+[EVIDENCE] **BlupiStep allocator residues**: (b) the 1/2 constant order is the boundary reload order by
+fragment ID; (c) the 1/10 promotion needs the literal-1 component to fall from 49 to 46 references and
+the literal-10 one from 11 to 9 (consumers identified: vertigo guards, first DecorDetect, Jeep and
+Tank/Skate entries); (d) the key TEST differs only in encoded operand orientation. [OPEN] The source
+form that splits those fragments while keeping the guarded member load; the w-step2 snapshot stays
+rejected.
+
+[EVIDENCE] **Eggbert 2 decblupi context**: the two originals' decblupi functions are identical except
+BlupiStep's wind block (register choice/order only) and data addresses, and no CDecor method is
+edition-only: one source, different declaration context. Diagnostic insertions after BlupiStep
+(k = 178..218) make up to four withdrawn functions STRICT (+960 bytes) but lose up to 15 (−2,032);
+isolated insertions fix IsMoveTraj (k = 6) or IsVentillo (k = 218) alone, which are not genuine.
+With the current tree, DX7 `dsound.h` over DX5 still loses GetBlupiInfo and SetMoveTraj (−160) and gains
+nothing on Eggbert 2.
+[OPEN] The entities by which Eggbert 2's 2004 context differs before these functions.
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten
