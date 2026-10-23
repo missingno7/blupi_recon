@@ -28,7 +28,7 @@ LINKERS = {
 
 
 def build_resources(out, rc_source, vc_root):
-    """Compile a target's source resource script; LINK runs its matching CVTRES."""
+    """Compile a target's resource script to .res; the selected linker converts it."""
     rc = vc_root.parent / "SHAREDIDE/BIN/RC.EXE"
     res = out / (rc_source.stem + ".res")
     temp = ROOT / "build/tmp"
@@ -41,6 +41,23 @@ def build_resources(out, rc_source, vc_root):
     if run.returncode:
         raise SystemExit("RC failed: " + run.stdout + run.stderr)
     return res
+
+
+def resource_directory_timestamp(pe):
+    """Return the oracle's unique resource-directory timestamp, if present."""
+    root = getattr(pe, "DIRECTORY_ENTRY_RESOURCE", None)
+    if root is None:
+        raise ValueError("oracle has no resource directory")
+    timestamps = []
+    pending = [root]
+    while pending:
+        directory = pending.pop()
+        timestamps.append(directory.struct.TimeDateStamp)
+        pending.extend(entry.directory for entry in directory.entries if hasattr(entry, "directory"))
+    unique = sorted(set(timestamps))
+    if len(unique) != 1:
+        raise ValueError(f"oracle resource directories have nonuniform timestamps: {unique}")
+    return unique[0]
 
 
 def parse_number(value):
@@ -258,7 +275,7 @@ def main(argv=None):
     parser.add_argument("--link-only", action="store_true", help="reuse this output directory's objects")
     parser.add_argument("--linker", choices=sorted(set(LINKERS) | {"rtm"}), default=None)
     parser.add_argument("--historical-host", action="store_true",
-                        help="run unmodified SP3 LINK with the VC5 CRT and oracle UTC clock via histlink.py")
+                        help="run pinned SP3/RTM LINK with its VC5 CRT and oracle UTC clock via histlink.py")
     parser.add_argument("--order", choices=("oracle", "manifest", "recorded", "eggbert-jauge-before-menu"))
     parser.add_argument("--standalone", action="store_true",
                         help="build from recorded source settings without reading an oracle or running verification")
@@ -290,8 +307,10 @@ def main(argv=None):
         parser.error('--standalone cannot use an oracle-based object order')
     if args.standalone and not all(key in settings for key in ('image_base', 'section_alignment')):
         parser.error('--standalone requires image_base and section_alignment in the selected manifest')
-    if args.historical_host and args.linker != "sp3":
-        parser.error("--historical-host requires --linker sp3 (the pinned LINK.EXE)")
+    if args.historical_host and args.standalone:
+        parser.error('--historical-host requires an oracle timestamp; omit --standalone')
+    if args.historical_host and args.linker not in ("sp3", "rtm"):
+        parser.error("--historical-host requires the pinned --linker sp3 or rtm")
     out = args.out_dir.resolve()
     # Generated artifacts belong in build/ or scratch/, never beside original inputs.
     if not any(out.is_relative_to(ROOT / d) for d in ("build", "scratch")):
@@ -440,13 +459,45 @@ def main(argv=None):
         resource_status = f"{resource_script.relative_to(ROOT)} via target RC + CVTRES"
     else:
         res_files, resource_status = [], "no source .rc in target tree; original .rsrc is comparison-only"
+
+    resource_host_report = None
+    resource_timestamp = None
+    res_path = resource_obj = None
+    if args.historical_host and args.linker == "rtm" and res_files:
+        # RTM LINK normally starts CVTRES as a child; the existing debugger
+        # scope is one process. Convert the .res in a separate, clock-frozen
+        # CVTRES process and give LINK its normal COFF resource object.
+        resource_host_report = out / "historical-cvtres-host.json"
+        if resource_host_report.exists():
+            resource_host_report.unlink()
+        resource_timestamp = resource_directory_timestamp(oracle)
+        res_path = res_files[0]
+        resource_obj = res_path.with_suffix(".obj")
+        if resource_obj.exists():
+            resource_obj.unlink()
+        cvtres_args = ["/NOLOGO", "/MACHINE:IX86", f"/OUT:{resource_obj}", str(res_path)]
+        cvtres_command = [sys.executable, str(ROOT / "tools/histlink.py"), "--tool", "rtm-cvtres",
+                          "--timestamp", hex(resource_timestamp), "--report", str(resource_host_report),
+                          "--", *cvtres_args]
+        cvtres_run = subprocess.run(cvtres_command, cwd=ROOT, capture_output=True, text=True,
+                                    encoding="mbcs", errors="replace")
+        (out / "historical-cvtres.log").write_text(cvtres_run.stdout + cvtres_run.stderr, encoding="utf-8")
+        if cvtres_run.returncode or not resource_obj.is_file():
+            print(f"historical RTM CVTRES failed; full log: {out / 'historical-cvtres.log'}", flush=True)
+            if cvtres_run.stdout or cvtres_run.stderr:
+                print(cvtres_run.stdout + cvtres_run.stderr, flush=True)
+            return cvtres_run.returncode or 1
+        res_files = [resource_obj]
+        resource_status += f"; RTM CVTRES preconverted at oracle resource time {resource_timestamp:#x}"
     arguments = options + [str(objects[u["source"]]) for u in ordered] + list(map(str, res_files)) + list(map(str, libraries))
     response = out / "link.rsp"
     response.write_text("\n".join(subprocess.list2cmdline([arg]) for arg in arguments) + "\n", encoding="cp1252")
     command = [str(linker), "@" + str(response)]
     host_report = out / "historical-host.json" if args.historical_host else None
     if host_report:
-        command = [sys.executable, str(ROOT / "tools/histlink.py"), "--report", str(host_report),
+        tool_kind = "rtm-link" if args.linker == "rtm" else "sp3-link"
+        command = [sys.executable, str(ROOT / "tools/histlink.py"), "--tool", tool_kind,
+                   "--timestamp", hex(oracle.FILE_HEADER.TimeDateStamp), "--report", str(host_report),
                    "--", "@" + str(response)]
     temp = ROOT / "build/tmp"
     temp.mkdir(parents=True, exist_ok=True)
@@ -486,6 +537,15 @@ def main(argv=None):
         record["historical_host"] = dict(report=str(host_report),
             launcher_sha256=digest(ROOT / "tools/histlink.py"),
             **(json.loads(host_report.read_text(encoding="utf-8")) if host_report.is_file() else {}))
+    if resource_host_report:
+        record["historical_cvtres_host"] = dict(report=str(resource_host_report),
+            launcher_sha256=digest(ROOT / "tools/histlink.py"),
+            **(json.loads(resource_host_report.read_text(encoding="utf-8"))
+               if resource_host_report.is_file() else {}))
+        record["historical_resource_conversion"] = dict(
+            res_path=str(res_path), res_sha256=digest(res_path),
+            object_path=str(resource_obj), object_sha256=digest(resource_obj),
+            oracle_resource_timestamp=resource_timestamp)
     (out / "build.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     if run.returncode:
         # A source-definition failure can print hundreds of redundant errors.

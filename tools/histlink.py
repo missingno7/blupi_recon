@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Run the unchanged VC5 SP3 LINK with its historical CRT and a process-local clock.
+"""Run pinned VC5 link/resource tools with their historical CRT and a process-local clock.
 
-Only the running tool's IAT/debug state is changed; no executable output is
-opened or rewritten. Requires 64-bit Windows Python (the repo's PyPy works).
+The debugger only changes the running tool's IAT and clock API results. Link
+and resource-object outputs are written naturally by the pinned tools and are
+never patched afterward. Requires 64-bit Windows Python (the repo's PyPy works).
 The private CRT copy is byte-identical to the pinned redistributable.
 """
 from __future__ import annotations
@@ -24,10 +25,23 @@ import pefile
 from c2trace.c2dbg import K, CTX, DEBUG_EVENT, SI, PI, BP_CODES, SS_CODES, DBG_CONTINUE, DBG_NOT_HANDLED
 
 ROOT = Path(__file__).resolve().parents[1]
-LINK = Path(r'C:\tools\msvc5_sp3\VC\BIN\LINK.EXE')
-CRT = Path(r'C:\tools\msvc5_sp3\VC\REDIST\MSVCRT.DLL')
-LINK_SHA256 = '04c892989f4cc8076ef45e033215eb7aefbdf1459cbee9b13a81f8ddb718b579'
-CRT_SHA256 = 'e390b0529fb9ee1214bb68302a4658b578134d92ab76bc5eb48f3badd843d210'
+TOOLS = {
+    'sp3-link': dict(tool=Path(r'C:\tools\msvc5_sp3\VC\BIN\LINK.EXE'),
+                     tool_sha256='04c892989f4cc8076ef45e033215eb7aefbdf1459cbee9b13a81f8ddb718b579',
+                     crt=Path(r'C:\tools\msvc5_sp3\VC\REDIST\MSVCRT.DLL'),
+                     crt_sha256='e390b0529fb9ee1214bb68302a4658b578134d92ab76bc5eb48f3badd843d210',
+                     crt_imports=111, label='VC5 SP3 LINK'),
+    'rtm-link': dict(tool=Path(r'C:\tools\msvc5_rtm\VC\BIN\LINK.EXE'),
+                     tool_sha256='279544809e6353c8e622eb88aea94e86b0258f3c4b8a976373bf4d68a41b63e1',
+                     crt=Path(r'C:\tools\msvc5_rtm\VC\REDIST\MSVCRT.DLL'),
+                     crt_sha256='d398de0da85572ae6e40254f93ffe0ab0bc4bfcb77681b4a0c358493552707bb',
+                     crt_imports=97, label='VC5 RTM LINK'),
+    'rtm-cvtres': dict(tool=Path(r'C:\tools\msvc5_rtm\VC\BIN\CVTRES.EXE'),
+                       tool_sha256='0f82167cd888105224463feef5cadebaef970c12932597919e3033d77ed3de6c',
+                       crt=Path(r'C:\tools\msvc5_rtm\VC\REDIST\MSVCRT.DLL'),
+                       crt_sha256='d398de0da85572ae6e40254f93ffe0ab0bc4bfcb77681b4a0c358493552707bb',
+                       crt_imports=45, label='VC5 RTM CVTRES'),
+}
 ORACLE_TIME = 0x36245013
 
 for name, result, args in [
@@ -37,6 +51,7 @@ for name, result, args in [
     ('WaitForSingleObject', W.DWORD, [W.HANDLE, W.DWORD]),
     ('GetFinalPathNameByHandleW', W.DWORD, [W.HANDLE, W.LPWSTR, W.DWORD, W.DWORD]),
     ('VirtualAllocEx', C.c_void_p, [W.HANDLE, C.c_void_p, C.c_size_t, W.DWORD, W.DWORD]),
+    ('VirtualProtectEx', W.BOOL, [W.HANDLE, C.c_void_p, C.c_size_t, W.DWORD, C.POINTER(W.DWORD)]),
     ('GetStdHandle', W.HANDLE, [W.DWORD]),
     ('SetHandleInformation', W.BOOL, [W.HANDLE, W.DWORD, W.DWORD]),
     ('CreateJobObjectW', W.HANDLE, [C.c_void_p, W.LPCWSTR]),
@@ -92,6 +107,16 @@ class Process:
         if actual.value != len(data):
             raise RuntimeError('short process memory write')
         checked(K.FlushInstructionCache(self.handle, address, len(data)), 'FlushInstructionCache')
+
+    def write_import(self, address, value):
+        old = W.DWORD()
+        checked(K.VirtualProtectEx(self.handle, address, 4, 0x04, C.byref(old)), 'VirtualProtectEx')
+        try:
+            self.write(address, struct.pack('<I', value))
+        finally:
+            restored = W.DWORD()
+            checked(K.VirtualProtectEx(self.handle, address, 4, old.value, C.byref(restored)),
+                    'VirtualProtectEx restore')
 
     def arm(self, address, kind, name):
         if address in self.breakpoints:
@@ -149,40 +174,51 @@ def resolve(modules, module, name):
     return item['base'] + symbol.address
 
 
-def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME, timeout=120, trace_rich=False):
-    """Block until LINK exits; return its exit code and always write an audit report."""
+def launch(arguments, report_path, *, tool_kind='sp3-link', historical_crt=True,
+           timestamp=ORACLE_TIME, timeout=120, trace_rich=False):
+    """Block until the selected tool exits; return its code and write an audit report."""
     if os.name != 'nt' or C.sizeof(C.c_void_p) != 8:
         raise RuntimeError('histlink requires 64-bit Windows Python')
+    if tool_kind not in TOOLS:
+        raise ValueError('unsupported historical tool profile: ' + tool_kind)
+    profile = TOOLS[tool_kind]
+    tool_path, tool_hash = profile['tool'], profile['tool_sha256']
+    crt_path, crt_hash = profile['crt'], profile['crt_sha256']
+    if trace_rich and tool_kind != 'sp3-link':
+        raise ValueError('--trace-rich is supported only for the pinned SP3 LINK')
     if timestamp is not None and not 0 <= timestamp <= 0x7fffffff:
         raise ValueError('timestamp must fit VC5 time_t')
-    if sha(LINK) != LINK_SHA256 or sha(CRT) != CRT_SHA256:
-        raise RuntimeError('pinned LINK.EXE/MSVCRT.DLL hash mismatch')
+    if sha(tool_path) != tool_hash or sha(crt_path) != crt_hash:
+        raise RuntimeError('pinned historical tool/VC5 MSVCRT.DLL hash mismatch')
     report_path = report_path.resolve()
     if not any(report_path.is_relative_to(ROOT / d) for d in ('build', 'scratch')):
         raise ValueError('report must be under build/ or scratch/')
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    private = report_path.parent / ('msvcrt-vc5-' + CRT_SHA256[:16] + '.dll')
+    private = report_path.parent / ('msvcrt-vc5-' + crt_hash[:16] + '.dll')
     if historical_crt:
-        if private.exists() and sha(private) != CRT_SHA256:
+        if private.exists() and sha(private) != crt_hash:
             raise RuntimeError('private CRT copy has unexpected contents')
         if not private.exists():
-            private.write_bytes(CRT.read_bytes())
-        if sha(private) != CRT_SHA256:
+            private.write_bytes(crt_path.read_bytes())
+        if sha(private) != crt_hash:
             raise RuntimeError('private CRT copy verification failed')
-    image = pefile.PE(str(LINK))
+    image = pefile.PE(str(tool_path))
     crt_imports = [i for t in image.DIRECTORY_ENTRY_IMPORT if t.dll.lower() == b'msvcrt.dll' for i in t.imports]
-    if len(crt_imports) != 111:
-        raise RuntimeError('unexpected LINK import table')
-    report = dict(link=str(LINK), linker_sha256=LINK_SHA256, historical_crt=historical_crt,
-                  crt_source=str(CRT), crt_sha256=CRT_SHA256, private_crt=str(private) if historical_crt else None,
+    if len(crt_imports) != profile['crt_imports']:
+        raise RuntimeError('unexpected ' + profile['label'] + ' MSVCRT import table')
+    if not any(i.name == b'time' for i in crt_imports):
+        raise RuntimeError('historical tool does not import CRT time()')
+    report = dict(tool_kind=tool_kind, tool=str(tool_path), tool_sha256=tool_hash,
+                  link=str(tool_path), linker_sha256=tool_hash, historical_crt=historical_crt,
+                  crt_source=str(crt_path), crt_sha256=crt_hash, private_crt=str(private) if historical_crt else None,
                   timestamp=timestamp, utc=datetime.fromtimestamp(timestamp, timezone.utc).isoformat() if timestamp is not None else None,
-                  command=[str(LINK), *arguments], modules=[], bindings=[], calls={}, time_returns=[],
+                  command=[str(tool_path), *arguments], modules=[], bindings=[], calls={}, time_returns=[],
                   configured_before_entry=False, exit_code=None, sorts=[])
     env = dict(os.environ)
     temp = ROOT / 'build/tmp'
     temp.mkdir(parents=True, exist_ok=True)
-    env.update(TMP=str(temp), TEMP=str(temp), PATH=os.pathsep.join(map(str, [LINK.parent,
-        LINK.parents[2] / 'SHAREDIDE/BIN', Path(env.get('SystemRoot', r'C:\Windows')) / 'System32'])))
+    env.update(TMP=str(temp), TEMP=str(temp), PATH=os.pathsep.join(map(str, [tool_path.parent,
+        tool_path.parents[2] / 'SHAREDIDE/BIN', Path(env.get('SystemRoot', r'C:\Windows')) / 'System32'])))
     if timestamp is not None:
         env['TZ'] = 'UTC0'
     report['environment'] = {k: env.get(k) for k in ('TMP', 'TEMP', 'PATH', 'TZ')}
@@ -195,7 +231,7 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
         if handle and handle != C.c_void_p(-1).value:
             checked(K.SetHandleInformation(handle, 1, 1), 'SetHandleInformation')
         setattr(startup, field, handle)
-    command = C.create_unicode_buffer(subprocess.list2cmdline([str(LINK), *arguments]))
+    command = C.create_unicode_buffer(subprocess.list2cmdline([str(tool_path), *arguments]))
     process = None
     job = None
     event = DEBUG_EVENT()
@@ -241,7 +277,7 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
                 raise RuntimeError('historical CRT not present in debug module list')
             if report['crt_base'] != hex(module['base']):
                 raise RuntimeError('loaded CRT handle does not identify the private DLL')
-            if sha(Path(module['path'])) != CRT_SHA256:
+            if sha(Path(module['path'])) != crt_hash:
                 raise RuntimeError('loaded historical CRT has unexpected contents')
             for imp in crt_imports:
                 name = imp.name.decode('ascii')
@@ -249,15 +285,16 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
                 if target is None:
                     raise RuntimeError('missing historical export: ' + name)
                 before = process.u32(imp.address)
-                process.write(imp.address, struct.pack('<I', target))
+                process.write_import(imp.address, target)
                 actual = process.u32(imp.address)
                 if actual != target:
                     raise RuntimeError('IAT verification failed: ' + name)
                 report['bindings'].append(dict(name=name, slot=hex(imp.address), original=hex(before),
                                                expected=hex(target), actual=hex(actual)))
         for name in ('time', 'ctime', 'qsort'):
-            imp = next(i for i in crt_imports if i.name == name.encode('ascii'))
-            process.arm(process.u32(imp.address), 'observe', 'MSVCRT!' + name)
+            imp = next((i for i in crt_imports if i.name == name.encode('ascii')), None)
+            if imp:
+                process.arm(process.u32(imp.address), 'observe', 'MSVCRT!' + name)
         if trace_rich:
             process.arm(0x43e3af, 'rich', 'Rich module census')
         process.disarm(entry)
@@ -288,7 +325,7 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
         limits = C.create_string_buffer(144)
         struct.pack_into('<I', limits, 16, 0x2000)  # JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
         checked(K.SetInformationJobObject(job, 9, limits, 144), 'SetInformationJobObject')
-        checked(K.CreateProcessW(str(LINK), command, None, None, True, 0x406, block, str(ROOT),
+        checked(K.CreateProcessW(str(tool_path), command, None, None, True, 0x406, block, str(ROOT),
                                 C.byref(startup), C.byref(pi)), 'CreateProcessW')
         process = Process(pi.hProcess)
         checked(K.AssignProcessToJobObject(job, pi.hProcess), 'AssignProcessToJobObject')
@@ -311,7 +348,7 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
             elif event.Code == 3:
                 base = C.c_void_p.from_buffer(event, 40).value
                 if base != image.OPTIONAL_HEADER.ImageBase:
-                    raise RuntimeError('unexpected LINK image base')
+                    raise RuntimeError('unexpected ' + profile['label'] + ' image base')
                 file_handle = C.c_void_p.from_buffer(event, 16).value
                 if file_handle:
                     K.CloseHandle(file_handle)
@@ -319,7 +356,7 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
                     handle = C.c_void_p.from_buffer(event, offset).value
                     if handle and handle != own:
                         K.CloseHandle(handle)
-                process.arm(entry, 'entry', 'LINK entry')
+                process.arm(entry, 'entry', profile['label'] + ' entry')
             elif event.Code == 6:
                 module = module_from_event(event)
                 if module:
@@ -415,7 +452,7 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
             checked(K.ContinueDebugEvent(event.Pid, event.Tid, status), 'ContinueDebugEvent')
             pending = False
         if not report['configured_before_entry']:
-            raise RuntimeError('LINK exited before host configuration completed')
+            raise RuntimeError(profile['label'] + ' exited before host configuration completed')
         return report['exit_code']
     except BaseException as error:
         report['error'] = str(error)
@@ -451,28 +488,30 @@ def launch(arguments, report_path, *, historical_crt=True, timestamp=ORACLE_TIME
         K.CloseHandle(pi.hProcess)
         if job:
             K.CloseHandle(job)
-        report['tool_files_unchanged'] = sha(LINK) == LINK_SHA256 and sha(CRT) == CRT_SHA256
+        report['tool_files_unchanged'] = sha(tool_path) == tool_hash and sha(crt_path) == crt_hash
         report['elapsed_seconds'] = round(time.monotonic()-started, 3)
         report_path.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--tool', choices=sorted(TOOLS), default='sp3-link',
+                        help='pinned VC5 tool profile')
     parser.add_argument('--report', type=Path, default=ROOT/'build/histlink/host.json')
     parser.add_argument('--timestamp', type=lambda s: int(s, 0), default=ORACLE_TIME)
     parser.add_argument('--real-clock', action='store_true', help='control: retain the native wall clock')
-    parser.add_argument('--system-crt', action='store_true', help='control: retain LINK\'s original system-CRT bindings')
+    parser.add_argument('--system-crt', action='store_true', help='control: retain the tool\'s original system-CRT bindings')
     parser.add_argument('--timeout', type=int, default=120)
     parser.add_argument('--trace-rich', action='store_true', help='observe every module counted by the Rich writer')
-    parser.add_argument('arguments', nargs=argparse.REMAINDER, help='-- followed by LINK arguments, usually @response.rsp')
+    parser.add_argument('arguments', nargs=argparse.REMAINDER, help='-- followed by tool arguments')
     args = parser.parse_args()
     arguments = args.arguments[1:] if args.arguments[:1] == ['--'] else args.arguments
     if not arguments:
-        parser.error('supply LINK arguments after --')
+        parser.error('supply tool arguments after --')
     if not 0 <= args.timestamp <= 0x7fffffff or args.timeout <= 0:
         parser.error('timestamp must fit VC5 time_t; timeout must be positive')
     try:
-        return launch(arguments, args.report, historical_crt=not args.system_crt,
+        return launch(arguments, args.report, tool_kind=args.tool, historical_crt=not args.system_crt,
                       timestamp=None if args.real_clock else args.timestamp, timeout=args.timeout, trace_rich=args.trace_rich)
     except (OSError, RuntimeError, ValueError) as error:
         print('histlink: ' + str(error), file=sys.stderr)

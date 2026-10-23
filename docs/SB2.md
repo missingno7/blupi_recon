@@ -469,6 +469,12 @@ as script text from each original), and `tools/relink.py` links them. After norm
 Blupi 2 en/de/fr equal all bytes except 73 resource-directory timestamp fields each. SB1's `blupi.rc` and
 relinked image are unchanged.
 
+[EVIDENCE] Those timestamps come from VC5 RTM CVTRES's process clock (the `.res` file time has no effect;
+RTM LINK keeps them). `tools/relink.py --historical-host` with the RTM linker now runs the pinned CVTRES and
+LINK under `tools/histlink.py` at the original resource and PE timestamps (no output patching;
+`scratch/w-rsrcts/REPORT.md`): the relinked `.rsrc` is raw byte-exact for Blupi 2 en/de/fr and for all six
+Speedy Eggbert 1 languages. SB1's primary relink is unchanged.
+
 [NEGATIVE] Context solvers over natural, byte-neutral respellings (`scratch/w-solve-decblupi`,
 `w-solve-pixmap`): our compiles of decblupi.cpp and pixmap.cpp are byte-identical under SP3 and RTM and every
 respelling shifts both compilers equally, but the two ORIGINALS differ in operand/register order for seven
