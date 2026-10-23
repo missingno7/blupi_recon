@@ -436,6 +436,19 @@ so it is not a template for Blupi 2's. SB1's canonical reordered guards give Blu
 not its instruction order. [OPEN] The genuine source or C1 input behind the original's cut history;
 two output-identical internal histories exist and the bytes do not choose between them.
 
+### Round 9: evidence checks (`scratch/w-edcmp`, `scratch/w-sb1event`)
+
+[EVIDENCE] The two originals compared function by function across blupi, pixmap, decor, event,
+decblock, decdesign and decmove (static, 287 pairs): every real code difference is already modelled by an
+edition switch (phase table, intro phases/timer, credit line, quit/bye flow, cache/read retries,
+`REQUIRE_CD`, installation path) or is RTM-vs-SP3 emission in functions STRICT on both targets. The only
+one-sided function is Eggbert 2's `IntroStep` (guarded). [NEGATIVE] So no unmodelled edition code is
+left to explain Blupi 2's declaration-context residues.
+
+[NEGATIVE] SB1's EQUIVALENT `ChangePhase` and `TreatEventBase` do not become STRICT with Eggbert 2's STRICT
+spellings: the SB2 forms give SB1 the opposite zero/PLAY allocation, and SB2's toggle form widens
+TreatEventBase's register residue from 8 to 14 bytes (no losses elsewhere on the nine SB1 targets).
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten
