@@ -102,7 +102,7 @@ class TargetEquivalenceTests(unittest.TestCase):
             if name.startswith('sb1/'):
                 self.assertEqual(entries, [])
                 continue
-            expected = 5 if name == 'sb2/eggbert/en' else 9
+            expected = 6 if name == 'sb2/eggbert/en' else 11
             self.assertEqual(len(entries), expected)
             self.assertTrue(all(target.slug in e['certificate'] for e in entries))
             # Translation never applies to the namespaced target records.
@@ -131,8 +131,8 @@ class TargetEquivalenceTests(unittest.TestCase):
                 self.assertEqual(target_coverage.main(), 0)
             lines.append(output.getvalue().splitlines())
         self.assertEqual(lines[0], lines[1][:-1])
-        self.assertIn('9 functions', lines[1][-1])
-        self.assertIn('8,944 bytes', lines[1][-1])
+        self.assertIn('11 functions', lines[1][-1])
+        self.assertIn('51,312 bytes', lines[1][-1])
 
     @staticmethod
     def function(payload):
@@ -175,6 +175,94 @@ class TargetEquivalenceTests(unittest.TestCase):
         a = self.function('e800000000 c3')
         with self.assertRaisesRegex(ValueError, 'purity theorem'):
             equiv.structure(a, a.data, [(0,5,0,5)], True)
+
+    def test_constant_analysis_meets_joins_and_preserves_only_abi_saved_values(self):
+        # Both arms establish EBX=1; the call destroys EAX, but preserves EBX.
+        ins = equiv.decode(bytes.fromhex('7407 bb01000000 eb05 bb01000000 b801000000 e800000000 c3'))
+        constants = equiv.constant_states(ins)
+        self.assertEqual(constants[0x13], {'ebx':1,'eax':1})
+        self.assertEqual(constants[0x18], {'ebx':1})
+        changed = equiv.decode(bytes.fromhex('7407 bb01000000 eb05 bb02000000 b801000000 e800000000 c3'))
+        self.assertNotIn('ebx', equiv.constant_states(changed)[0xe])
+        partial = equiv.decode(bytes.fromhex('bb01000000 b302 c3'))
+        self.assertNotIn('ebx', equiv.constant_states(partial)[7])
+
+    def test_constant_analysis_accounts_for_loop_predecessors_and_relocations(self):
+        ins = equiv.decode(bytes.fromhex('bb01000000 43 75fd c3'))
+        self.assertNotIn('ebx', equiv.constant_states(ins)[5])
+        relocated = equiv.decode(bytes.fromhex('bb01000000 c3'))
+        self.assertNotIn('ebx', equiv.constant_states(relocated,[1])[5])
+
+    def test_constant_register_relation_and_live_flags(self):
+        a = self.function('53 57 31db bff5050000 39d8 7500 5f 5b c3')
+        b = bytes.fromhex('53 57 31ff bbf5050000 39f8 7500 5f 5b c3')
+        _, proof = equiv.structure(a,b,[(2,11,2,11)],False,constant_invariants=True)
+        self.assertIn('constant_invariants',proof)
+        bad = bytes.fromhex('53 57 31ff bbf5050000 39d8 7500 5f 5b c3')
+        with self.assertRaisesRegex(ValueError,'unequal symbolic effects'):
+            equiv.structure(a,bad,[(2,11,2,11)],False,constant_invariants=True)
+
+    def test_unchanged_uses_and_returns_cannot_observe_unequal_constants(self):
+        a = self.function('53 57 31db bff5050000 53 5f 5b c3')
+        b = bytes.fromhex('53 57 31ff bbf5050000 53 5f 5b c3')
+        with self.assertRaisesRegex(ValueError,'reads unequal constants'):
+            equiv.structure(a,b,[(2,9,2,9)],False,constant_invariants=True)
+        a = self.function('31db c3')
+        with self.assertRaisesRegex(ValueError,'reads unequal constants|unequal symbolic effects'):
+            equiv.structure(a,bytes.fromhex('31ff c3'),[(0,2,0,2)],False,constant_invariants=True)
+
+    def test_cmp_zero_test_identity_excludes_af_observation(self):
+        a = self.function('31db 39d8 7500 c3')
+        b = bytes.fromhex('31db 85c0 7500 c3')
+        equiv.structure(a,b,[(2,4,2,4)],False,constant_invariants=True)
+        with self.assertRaisesRegex(ValueError,'flags observer'):
+            equiv.structure(self.function('31db 39d8 9f c3'),bytes.fromhex('31db 85c0 9f c3'),
+                            [(2,4,2,4)],False,constant_invariants=True)
+
+    def test_cfg_constant_reload_order_and_returns(self):
+        a = self.function('53 57 bb01000000 bf02000000 8919 897904 5f 5b c3')
+        b = bytes.fromhex('53 57 bf02000000 bb01000000 8919 897904 5f 5b c3')
+        _,proof = equiv.cfg_structure(a,b,[],False)
+        self.assertTrue(proof['constant_reload_proofs'])
+        with self.assertRaisesRegex(ValueError,'unequal constant read'):
+            equiv.cfg_structure(self.function('b801000000 c3'),bytes.fromhex('b802000000 c3'),[],True)
+
+    def test_cfg_repeated_guard_and_je_jne_complement(self):
+        for second in ('75','74'):
+            a = self.function('83f801 7505 83f801 '+second+'00 c3')
+            _,proof = equiv.cfg_structure(a,bytes.fromhex('83f801 7500 c3'),[],False)
+            self.assertTrue(proof['repeated_guard_proofs'])
+        with self.assertRaisesRegex(ValueError,'CFG opcode|unproved instruction'):
+            equiv.cfg_structure(self.function('83f801 7505 83f802 7500 c3'),bytes.fromhex('83f801 7500 c3'),[],False)
+        with self.assertRaisesRegex(ValueError,'CFG opcode|unproved instruction'):
+            equiv.cfg_structure(self.function('83f801 7505 83f801 7f00 c3'),bytes.fromhex('83f801 7500 c3'),[],False)
+
+    def test_cfg_silent_cycles_and_unproved_memory_writes_fail(self):
+        with self.assertRaisesRegex(ValueError,'silent cycle'):
+            equiv.cfg_structure(self.function('ebfe c3'),bytes.fromhex('c3'),[],False)
+        with self.assertRaisesRegex(ValueError,'CFG opcode'):
+            equiv.cfg_structure(self.function('8901 c3'),bytes.fromhex('c3'),[],False)
+        # Even a paired ordinary write invalidates the remembered guard: an
+        # extra comparison after it needs fresh proof, not the stale outcome.
+        with self.assertRaisesRegex(ValueError,'CFG opcode'):
+            equiv.cfg_structure(self.function('833901 750b c70102000000 833901 7500 c3'),
+                                bytes.fromhex('833901 7506 c70102000000 c3'),[],False)
+
+    def test_cfg_call_targets_and_complete_relocation_bijection_are_required(self):
+        with self.assertRaisesRegex(ValueError,'unproved instruction'):
+            equiv.cfg_structure(self.function('e800000000 c3'),bytes.fromhex('e801000000 c3'),[],False)
+
+    def test_constant_fact_loss_cannot_strengthen_a_join_relation(self):
+        lives=[{1:{'ebx':equiv.MASK}},{1:{'ebx':equiv.MASK}}]
+        constants=[{0:{'ebx':0},1:{}},{0:{'ebx':1},1:{'ebx':1}}]
+        with self.assertRaisesRegex(ValueError,'relation lost at join'):
+            equiv.constant_join((0,0),(1,1),lives,constants)
+        equiv.constant_join((0,0),(1,1),lives,constants,{'ebx'})
+        self.assertNotIn('eax',equiv.full_register_writes(equiv.decode(bytes.fromhex('66b80100'))[0]))
+
+    def test_unmodeled_control_transfer_is_rejected(self):
+        with self.assertRaisesRegex(ValueError,'control transfers'):
+            equiv.constant_states(equiv.decode(bytes.fromhex('e2fe c3')))
 
 
 if __name__ == '__main__':

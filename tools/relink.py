@@ -259,11 +259,13 @@ def main(argv=None):
     parser.add_argument("--linker", choices=sorted(set(LINKERS) | {"rtm"}), default=None)
     parser.add_argument("--historical-host", action="store_true",
                         help="run unmodified SP3 LINK with the VC5 CRT and oracle UTC clock via histlink.py")
-    parser.add_argument("--order", choices=("oracle", "manifest", "recorded"))
+    parser.add_argument("--order", choices=("oracle", "manifest", "recorded", "eggbert-jauge-before-menu"))
     parser.add_argument("--standalone", action="store_true",
                         help="build from recorded source settings without reading an oracle or running verification")
     parser.add_argument("--opt", choices=("ref,icf", "ref,noicf", "noref,icf", "noref,noicf"), default="ref,icf")
     parser.add_argument("--library", action="append", default=[], type=Path, help="additional genuine library")
+    parser.add_argument("--library-order", choices=("target", "crt-first"), default="target",
+                        help="secondary SB1 layout hypothesis: place LIBC/OLDNAMES before import libraries")
     parser.add_argument("--oracle", type=Path, help="override the selected target's executable oracle")
     parser.add_argument("--no-res", action="store_true", help="omit the selected source tree's resource script")
     parser.add_argument("--default-libs", action="store_true", help="IDE-style: LIBC/OLDNAMES via the objects' /defaultlib directives, no /nodefaultlib")
@@ -284,8 +286,8 @@ def main(argv=None):
                       target.name.startswith("sb1/eggbert/") else "sp3")
     args.linker = args.linker or default_linker
     args.order = args.order or ('recorded' if args.standalone else 'oracle')
-    if args.standalone and args.order == 'oracle':
-        parser.error('--standalone cannot use --order oracle')
+    if args.standalone and args.order in ('oracle', 'eggbert-jauge-before-menu'):
+        parser.error('--standalone cannot use an oracle-based object order')
     if args.standalone and not all(key in settings for key in ('image_base', 'section_alignment')):
         parser.error('--standalone requires image_base and section_alignment in the selected manifest')
     if args.historical_host and args.linker != "sp3":
@@ -384,8 +386,19 @@ def main(argv=None):
         print("DIAGNOSTIC LINK: accepted-function gate FAILED; the image is for layout measurement only", flush=True)
     if args.order == 'recorded' and not settings.get('object_order'):
         parser.error('--order recorded requires standalone_link.object_order in the selected manifest')
-    ordered = (oracle_order(units, target) if args.order == 'oracle' else
-               recorded_order(units, settings) if args.order == 'recorded' else units)
+    if args.order == 'eggbert-jauge-before-menu' and not target.name.startswith('sb1/eggbert/'):
+        parser.error('--order eggbert-jauge-before-menu requires an SB1 Eggbert target')
+    if args.order in ('oracle', 'eggbert-jauge-before-menu'):
+        ordered = oracle_order(units, target)
+        if args.order == 'eggbert-jauge-before-menu':
+            jauge = next(u for u in ordered if Path(u['source']).name == 'jauge.cpp')
+            menu = next(u for u in ordered if Path(u['source']).name == 'menu.cpp')
+            ordered.remove(jauge)
+            ordered.insert(ordered.index(menu), jauge)
+    elif args.order == 'recorded':
+        ordered = recorded_order(units, settings)
+    else:
+        ordered = units
     oracle_path = args.oracle.resolve() if args.oracle else target.exe
     oracle = None if args.standalone else pefile.PE(str(oracle_path))
     image_base = int(settings['image_base'], 0) if args.standalone else oracle.OPTIONAL_HEADER.ImageBase
@@ -395,6 +408,14 @@ def main(argv=None):
     if args.linker == "rtm" and manifest["toolchain"]["tree"].lower() != "rtm":
         _tree, library_vc_root, _shared = toolchain_roots("rtm")
     libraries = target_libraries(manifest, vc_root, library_vc_root)
+    if args.library_order == "crt-first":
+        if target.primary or not target.name.startswith("sb1/") or args.default_libs:
+            parser.error("--library-order crt-first requires an explicit-library secondary SB1 target")
+        crt_libraries = [lib for lib in libraries if lib.name.upper() in ("LIBC.LIB", "OLDNAMES.LIB")]
+        import_libraries = [lib for lib in libraries if lib not in crt_libraries]
+        if len(crt_libraries) != 2:
+            parser.error("--library-order crt-first requires both LIBC.LIB and OLDNAMES.LIB")
+        libraries = crt_libraries + import_libraries
     if args.default_libs:
         libraries = [l for l in libraries if l.name.upper() not in ("LIBC.LIB", "OLDNAMES.LIB")]
     libraries += args.library

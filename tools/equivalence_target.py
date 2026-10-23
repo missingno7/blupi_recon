@@ -2,8 +2,8 @@
 """Target-local SB2 behavioral certificates. Never changes comparator/STRICT results.
 
 Every run proves the declared straight-line/acyclic regions symbolically, checks
-the rest of the complete function instruction by instruction (including branch
-destinations), and independently resolves every symbolic relocation. Certificates
+the complete continuation by aligned instructions or an inductive product CFG,
+and independently resolves every symbolic relocation. Certificates
 pin emitted bytes, oracle, tools, inventory, CRT and the complete proof receipt.
 No native game code is run; oracle bytes are used only by this verifier.
 """
@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 import copy
+from collections import deque
 from dataclasses import replace
 import hashlib
 import itertools
@@ -49,6 +50,18 @@ def digest(path):
 
 def hashed(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def difference_ranges(differences):
+    """Enumerate offsets compactly; complete payload hashes bind byte values."""
+    ranges = []
+    for offset,_,_ in differences:
+        offset = int(offset,0)
+        if ranges and int(ranges[-1][1],0) == offset:
+            ranges[-1][1] = hex(offset+1)
+        else:
+            ranges.append([hex(offset),hex(offset+1)])
+    return ranges
 
 
 def declarations(target, manifest):
@@ -111,6 +124,8 @@ def bitop(op, a, b):
 
 
 def alias(name):
+    if name in ('si','di','bp','sp'):
+        return 'e'+name,0xffff
     for full, names in (('eax', ('al', 'ah', 'ax')), ('ebx', ('bl', 'bh', 'bx')),
                         ('ecx', ('cl', 'ch', 'cx')), ('edx', ('dl', 'dh', 'dx'))):
         if name in names:
@@ -288,9 +303,9 @@ def disjoint_writes(writes):
     return tuple(sorted(writes, key=repr))
 
 
-def paths(insns, lo, hi, pure_calls=None):
+def paths(insns, lo, hi, pure_calls=None, initial=None, invariant_flags=False):
     by = {i.address: i for i in insns}
-    pending, result = [(lo, State(), {}, frozenset())], []
+    pending, result = [(lo, initial or State(), {}, frozenset())], []
     while pending:
         pc, state, conditions, visited = pending.pop()
         if pc < lo or pc >= hi:
@@ -314,7 +329,13 @@ def paths(insns, lo, hi, pure_calls=None):
                 new[atom] = truth
                 pending.append((dest, copy.deepcopy(state), new, visited))
         else:
-            state.step(i, pure_calls)
+            if invariant_flags and i.mnemonic in ('sete', 'setne'):
+                value = ('zero', state.flags)
+                state.put(i.operands[0], value if i.mnemonic == 'sete' else ('not', value))
+            else:
+                state.step(i, pure_calls)
+            if invariant_flags:
+                state.flags = defined_flags(state.flags)
             if i.mnemonic.startswith('ret'):
                 result.append(('return', state, conditions))
             else:
@@ -322,10 +343,107 @@ def paths(insns, lo, hi, pure_calls=None):
     return result
 
 
-def prove_region(a, b, region, mapping, lives, returns, pure_calls):
+def defined_flags(flags):
+    # CMP x,0 and TEST x,x define identical CF/OF/ZF/SF/PF. AF is
+    # undefined for TEST; invariant mode separately rejects any AF observer.
+    if flags[0] == 'cmp' and flags[3] == 0:
+        return ('zero-flags', flags[1], flags[2])
+    if flags[0] == 'test' and flags[2] == flags[3]:
+        return ('zero-flags', flags[1], flags[2])
+    return flags
+
+
+def constant_states(insns, relocation_offsets=()):
+    """Must constants at each reachable instruction, including back edges.
+
+    Only MOV and zero/all-ones idioms generate facts. Every other write
+    conservatively kills its full register, including partial writes. No
+    field value, branch feasibility or callee result is assumed.
+    """
+    by = {i.address: i for i in insns}
+    require(not any((i.group(cs.CS_GRP_JUMP) or i.group(cs.CS_GRP_BRANCH_RELATIVE))
+                    and not i.mnemonic.startswith('j') and i.mnemonic != 'call' for i in insns),
+            'constant invariants need explicitly modeled control transfers')
+    incoming, pending = {0: {}}, deque([0])
+    while pending:
+        pc = pending.popleft()
+        i, before = by[pc], incoming[pc]
+        after = dict(before)
+        for r in i.regs_access()[1]:
+            after.pop(alias(i.reg_name(r))[0], None)
+        if i.mnemonic == 'call':
+            for r in ('eax','ecx','edx'):
+                after.pop(r, None)
+        o = i.operands
+        relocated = any(i.address <= k < i.address+i.size for k in relocation_offsets)
+        if o and o[0].type == X86_OP_REG and o[0].size == 4 and not relocated:
+            reg = i.reg_name(o[0].reg)
+            if i.mnemonic == 'mov':
+                if o[1].type == X86_OP_IMM:
+                    after[reg] = o[1].imm & MASK
+                elif o[1].type == X86_OP_REG and i.reg_name(o[1].reg) in before:
+                    after[reg] = before[i.reg_name(o[1].reg)]
+            elif i.mnemonic == 'xor' and o[1].type == X86_OP_REG and o[0].reg == o[1].reg:
+                after[reg] = 0
+            elif i.mnemonic == 'or' and o[1].type == X86_OP_IMM and o[1].imm & MASK == MASK:
+                after[reg] = MASK
+        if i.mnemonic.startswith('ret'):
+            successors = []
+        elif i.mnemonic.startswith('j'):
+            require(o[0].type == X86_OP_IMM, 'constant invariants need a complete direct CFG')
+            successors = [o[0].imm] + ([] if i.mnemonic == 'jmp' else [pc+i.size])
+        else:
+            successors = [pc+i.size]
+        for dest in successors:
+            require(dest in by, f'CFG leaves decoded body at +{dest:x}')
+            joined = after if dest not in incoming else {r:v for r,v in incoming[dest].items() if after.get(r) == v}
+            if dest not in incoming or incoming[dest] != joined:
+                incoming[dest] = dict(joined)
+                pending.append(dest)
+    return incoming
+
+
+def constant_join(before, after, lives, constants, full_writes=()):
+    """Dropping a unary fact at a join must not silently strengthen R.
+
+    If two independently known constants differ, equality cannot become an
+    obligation at a successor unless the common instruction fully overwrites
+    that register from equal inputs. Partial writes cannot discharge this.
+    """
+    for r in REGS:
+        if r not in lives[0].get(after[0],{}) or r not in lives[1].get(after[1],{}):
+            continue
+        if all(r in constants[s].get(after[s],{}) for s in (0,1)) or r in full_writes:
+            continue
+        a,b = (constants[s].get(before[s],{}).get(r) for s in (0,1))
+        require(a is None or b is None or a == b, f'constant relation lost at join for {r}: {before}->{after}')
+
+
+def full_register_writes(i):
+    result = {alias(i.reg_name(r))[0] for r in i.regs_access()[1] if alias(i.reg_name(r))[1] == MASK}
+    if i.mnemonic == 'call':
+        result.update(('eax','ecx','edx'))
+    return result
+
+
+def prove_region(a, b, region, mapping, lives, returns, pure_calls, constants=None):
     lo, hi, other_lo, other_hi = region
-    runs = [paths(insns, start, end, calls) for insns, start, end, calls in
-            ((a, lo, hi, pure_calls[0]), (b, other_lo, other_hi, pure_calls[1]))]
+    initial = [State(), State()]
+    if constants:
+        for r in REGS:
+            ca, cb = constants[0][lo].get(r), constants[1][other_lo].get(r)
+            both_live = r in lives[0][lo] and r in lives[1][other_lo]
+            for side, c in enumerate((ca, cb)):
+                other = (cb, ca)[side]
+                initial[side].regs[r] = (c if c is not None else other if both_live and other is not None
+                                        else ('input', r) if both_live else ('private', side, r))
+        # Stack addresses must correspond even if a region doesn't itself read ESP.
+        initial[0].regs['esp'] = initial[1].regs['esp'] = ('input','esp')
+        if 'eflags' not in lives[0][lo] or 'eflags' not in lives[1][other_lo]:
+            for side in (0,1):
+                initial[side].flags = ('private-flags',side)
+    runs = [paths(insns, start, end, calls, initial[side], bool(constants)) for side,(insns,start,end,calls) in enumerate(
+            ((a, lo, hi, pure_calls[0]), (b, other_lo, other_hi, pure_calls[1])))]
     atoms = sorted({atom for run in runs for _, _, cond in run for atom in cond}, key=repr)
     require(len(atoms) <= 14, 'region Boolean proof too large')
     def observation(side, pc, state):
@@ -333,10 +451,28 @@ def prove_region(a, b, region, mapping, lives, returns, pure_calls):
         if pc == 'return':
             masks = {r: MASK for r in ('ebx', 'esi', 'edi', 'ebp', 'esp') + (('eax',) if returns else ())}
         else:
-            masks = dict(lives[0].get(pc if side == 0 else next(k for k,v in mapping.items() if v == pc), {}))
+            origin = pc if side == 0 else hi if pc == other_hi else next(k for k,v in mapping.items() if v == pc)
+            masks = dict(lives[0].get(origin, {}))
             for r, mask in lives[1].get(dest, {}).items():
                 masks[r] = masks.get(r, 0) | mask
         values = {r: low(state.regs[r], mask.bit_length()) for r, mask in masks.items() if r in REGS}
+        if constants and pc != 'return':
+            origin = pc if side == 0 else hi if pc == other_hi else next(k for k,v in mapping.items() if v == pc)
+            for r in list(values):
+                if r == 'esp':
+                    continue
+                # The join relation is equality of all mutually live unknowns;
+                # must-constant registers may instead carry their independent
+                # proven constants. A private dead register is unconstrained.
+                own_pc = pc
+                c = constants[side].get(own_pc, {}).get(r)
+                if c is not None:
+                    require(low(state.regs[r], masks[r].bit_length()) == low(c, masks[r].bit_length()),
+                            f'constant postcondition failed for {r} at +{own_pc:x}')
+                if r not in lives[0].get(origin,{}) or r not in lives[1].get(dest,{}):
+                    del values[r]
+                elif r in constants[0].get(origin,{}) and r in constants[1].get(dest,{}):
+                    del values[r]
         if masks.get('eflags'):
             values['eflags'] = state.flags
         active_stack = []
@@ -358,7 +494,8 @@ def prove_region(a, b, region, mapping, lives, returns, pure_calls):
                 symbolic_outcomes_sha256=hashed([obs for obs, _ in observations[0]]))
 
 
-def structure(function, raw, regions, returns, coff=None, pure_symbol=None):
+def structure(function, raw, regions, returns, coff=None, pure_symbol=None, constant_invariants=False,
+              region_relocations=()):
     a, b = decode(function.data), decode(raw)
     require(bool(regions), 'equivalence needs an explicit proof region')
     for side, insns in enumerate((a, b)):
@@ -402,9 +539,22 @@ def structure(function, raw, regions, returns, coff=None, pure_symbol=None):
             require(x[2] == y[2], 'region order differs')
     sites, reloc_by_insn, pure_calls = {}, {}, [{}, {}]
     inside_calls = []
+    region_sites = dict(region_relocations)
+    symbolic_raw = bytearray(raw)
     for r in function.relocs:
         off, size = r.offset - function.start, cmpfunc.relocation_size(r.typ)
         owner = next(i for i in aa if i.address <= off and off + size <= i.address + i.size)
+        if off in region_sites:
+            other = region_sites[off]
+            j = next(i for i in bb if i.address <= other and other+size <= i.address+i.size)
+            require(r.typ == 6 and size == 4 and off == owner.address+owner.disp_offset
+                    and other == j.address+j.disp_offset and owner.disp_size == j.disp_size == 4,
+                    'region relocation must be an audited absolute memory displacement')
+            require(any(x <= owner.address < y and z <= j.address < w for x,y,z,w in regions),
+                    'region relocation outside paired regions')
+            sites[off] = other
+            symbolic_raw[other:other+size] = function.data[off:off+size]
+            continue
         if owner.address not in mapping:
             require(pure_symbol and coff.sym_by_index[r.symbol_index].name == pure_symbol
                     and r.typ == 0x14 and owner.mnemonic == 'call' and off == owner.address+1,
@@ -427,7 +577,8 @@ def structure(function, raw, regions, returns, coff=None, pure_symbol=None):
         require(i.mnemonic == j.mnemonic, f'outside region opcode +{i.address:x}')
         if i.mnemonic.startswith('j'):
             if i.operands[0].type == j.operands[0].type == X86_OP_IMM:
-                require(mapping.get(i.operands[0].imm) == j.operands[0].imm, 'branch destination changed/enters region interior')
+                require(mapping.get(i.operands[0].imm) == j.operands[0].imm,
+                        f'branch destination changed/enters region interior at +{i.address:x}: +{i.operands[0].imm:x}/+{j.operands[0].imm:x}')
             else:
                 require(i.bytes == j.bytes and not regions, 'indirect jump needs an explicit jump-table proof')
         else:
@@ -437,15 +588,246 @@ def structure(function, raw, regions, returns, coff=None, pure_symbol=None):
                 left[off:off+size] = right[off:off+size] = b'\0' * size
             require(left == right, f'unproved outside-region instruction +{i.address:x}: {i.mnemonic} {i.op_str}')
     lives = [live_masks(a, returns, pure_calls[0]), live_masks(b, returns, pure_calls[1])]
-    checks = [prove_region(a, b, r, mapping, lives, returns, pure_calls) for r in regions]
+    constants = None
+    if constant_invariants:
+        constants = [constant_states(a, [r.offset-function.start for r in function.relocs]),
+                     constant_states(b, sites.values())]
+        require(not any('esp' in state for states in constants for state in states.values()),
+                'constant ESP needs a separate stack relation')
+        # No instruction may observe AF or expose flags as a whole: this makes
+        # the CMP-zero/TEST identity valid for every flags consumer here.
+        for insns in (aa,bb):
+            for i in insns:
+                if any(i.reg_name(r) == 'eflags' for r in i.regs_access()[0]):
+                    require(i.mnemonic.startswith(('j','set','cmov','rep')) or i.mnemonic in ('adc','sbb'),
+                            f'unsupported flags observer in invariant proof: {i.mnemonic}')
+        for x,y in zip(ta,tb):
+            if x[0] != 'i':
+                continue
+            i,j = x[2],y[2]
+            ca,cb = constants[0].get(i.address,{}), constants[1].get(j.address,{})
+            reads = {alias(i.reg_name(r))[0] for r in i.regs_access()[0]}
+            if i.mnemonic == 'call':
+                reads.add('ecx')
+            if i.mnemonic.startswith('ret'):
+                reads.update(('ebx','esi','edi','ebp','esp') + (('eax',) if returns else ()))
+            if i.mnemonic == 'xor' and len(i.operands)==2 and i.operands[0].type==i.operands[1].type==X86_OP_REG and i.operands[0].reg==i.operands[1].reg:
+                reads.discard(alias(i.reg_name(i.operands[0].reg))[0])
+            require(not any(r in ca and r in cb and ca[r] != cb[r] for r in reads),
+                    f'unchanged instruction reads unequal constants at +{i.address:x}')
+            if not i.mnemonic.startswith('ret'):
+                successors = [(i.address+i.size,j.address+j.size)]
+                if i.mnemonic.startswith('j'):
+                    successors = [(i.operands[0].imm,j.operands[0].imm)] + ([] if i.mnemonic=='jmp' else successors)
+                for successor in successors:
+                    constant_join((i.address,j.address),successor,lives,constants,full_register_writes(i))
+    proof_b = decode(bytes(symbolic_raw)) if region_sites else b
+    checks = [prove_region(a, proof_b, r, mapping, lives, returns, pure_calls, constants) for r in regions]
     object_mask = {k for r in function.relocs for k in range(r.offset-function.start, r.offset-function.start+4)}
     oracle_mask = {k for off in sites.values() for k in range(off,off+4)}
     differences = [[hex(k), x, y] for k,(x,y) in enumerate(zip(function.data, raw))
                    if x != y and k not in object_mask.intersection(oracle_mask)]
-    return sites, dict(regions=checks, nonrelocation_differences=differences,
+    receipt = dict(regions=checks, nonrelocation_differences=differences,
                        differing_bytes=len(differences), outside_region_instructions_checked=sum(x[0]=='i' for x in ta),
                        object_padding_bytes=len(function.data)-(aa[-1].address+aa[-1].size),
                        oracle_padding_bytes=len(raw)-(bb[-1].address+bb[-1].size))
+    if constants:
+        receipt.pop('nonrelocation_differences')
+        receipt['nonrelocation_difference_ranges'] = difference_ranges(differences)
+        receipt['difference_values_sha256'] = hashed(differences)
+        receipt['constant_invariants'] = dict(method='whole-CFG must constants, meet at every predecessor/back edge; ABI call kills',
+            object_reachable_instructions=len(constants[0]), oracle_reachable_instructions=len(constants[1]),
+            states_sha256=hashed(constants), relation='equal mutually live unknown registers; independently proven must constants; equal observable memory, stack and defined flags')
+    require(set(region_sites) <= set(sites), 'unused region relocation declaration')
+    return sites, receipt
+
+
+def cfg_structure(function, raw, regions, returns):
+    """Inductive product-CFG proof, allowing finite constant-reload stutters.
+
+    Every paired boundary has the same live-unknown/independent-must-constant
+    relation as prove_region. Plain MOV r32,imm32 and direct unconditional jumps
+    may move across joins; each one-sided MOV is proved as an empty-other-side
+    region. No calls, stores, flags writes or arbitrary instructions stutter.
+    Finite epsilon closures rule out unmatched silent divergence. Both complete
+    reachable instruction sets, branch arms and relocation fields are covered.
+    """
+    decoded = [decode(function.data),decode(raw)]
+    bodies = []
+    for insns in decoded:
+        body = list(insns)
+        while body and body[-1].mnemonic == 'nop':
+            body.pop()
+        require(body and body[-1].mnemonic.startswith('ret'), 'CFG proof needs terminal padding')
+        bodies.append(body)
+    by = [{i.address:i for i in insns} for insns in bodies]
+    region_at = [{},{}]
+    for side in (0,1):
+        previous = 0
+        for n,r in enumerate(regions):
+            lo,hi = r[2*side:2*side+2]
+            require(previous <= lo < hi and lo in by[side] and hi in by[side], 'CFG region boundary/order')
+            region_at[side][lo] = n
+            previous = hi
+        for i in bodies[side]:
+            if i.mnemonic.startswith('j'):
+                require(i.operands[0].type == X86_OP_IMM, 'CFG indirect branch is unproved')
+                dest = i.operands[0].imm
+                require(dest in by[side], 'CFG branch leaves complete body')
+                require(not any(r[2*side] < dest < r[2*side+1] for r in regions), 'CFG jump enters region interior')
+            if any(i.reg_name(r) == 'eflags' for r in i.regs_access()[0]):
+                require(i.mnemonic.startswith(('j','set','cmov','rep')) or i.mnemonic in ('adc','sbb'), 'CFG unsupported flags observer')
+    object_sites = {r.offset-function.start:r for r in function.relocs}
+    lives = [live_masks(insns,returns) for insns in bodies]
+    # Oracle constant-generating immediates inside .text never carry data
+    # relocations in this method: all such fields pair with an object field.
+    # Exclude every plausible absolute image pointer conservatively as well.
+    oracle_addresses = [i.address+i.imm_offset for i in bodies[1] if i.imm_size == 4 and
+                        any(o.type == X86_OP_IMM and 0x400000 <= o.imm < 0x10000000 for o in i.operands)]
+    constants = [constant_states(bodies[0],object_sites),constant_states(bodies[1],oracle_addresses)]
+    require(not any('esp' in s for states in constants for s in states.values()), 'CFG constant ESP unproved')
+    seen,covered,sites,checks,stutters = set(),[set(),set()],{},[],[]
+    pending = [(0,0,None,None)]
+    flags_cache = {}
+    def flag_key(side,lo,hi):
+        if (side,lo,hi) in flags_cache:
+            return flags_cache[side,lo,hi]
+        state = State()
+        state.regs.update(constants[side][lo])
+        pc = lo
+        while pc < hi:
+            i = by[side][pc]
+            state.step(i)
+            pc += i.size
+        require(pc == hi,'flag-key instruction boundary')
+        flags_cache[side,lo,hi] = defined_flags(state.flags)
+        return flags_cache[side,lo,hi]
+    def silent(side, pc, other, known):
+        chain = set()
+        while pc not in region_at[side]:
+            require(pc not in chain, 'CFG unmatched silent cycle')
+            i = by[side][pc]
+            is_reload = (i.mnemonic == 'mov' and i.operands[0].type == X86_OP_REG and i.operands[0].size == 4
+                         and i.operands[1].type == X86_OP_IMM)
+            if is_reload:
+                if i.bytes == by[1-side][other].bytes:
+                    break  # execute matching materializations synchronously
+                # Relocated addresses must be paired and independently audited.
+                if side == 0 and any(i.address<=k<i.address+i.size for k in object_sites):
+                    break
+                if side == 1 and i.address+i.imm_offset in oracle_addresses:
+                    break
+                r = (pc,pc+i.size,other,other) if side == 0 else (other,other,pc,pc+i.size)
+                proof = prove_region(*decoded,r,{r[0]:r[2],r[1]:r[3]},lives,returns,[{},{}],constants)
+                stutters.append(dict(side=side,offset=hex(pc),proof=proof))
+                dest = pc+i.size
+            elif i.mnemonic == 'jmp':
+                dest = i.operands[0].imm
+                stutters.append(dict(side=side,offset=hex(pc),jump_to=hex(dest)))
+            elif i.mnemonic in ('cmp','test') and known:
+                j = by[side].get(pc+i.size)
+                key = flag_key(side,pc,pc+i.size)
+                inverse = {'je':'jne','jne':'je'}
+                if not (j and j.mnemonic in (known[2],inverse.get(known[2])) and key == known[side]):
+                    break
+                truth = known[3] if j.mnemonic == known[2] else not known[3]
+                dest = j.operands[0].imm if truth else j.address+j.size
+                if 'eflags' in lives[side][dest] or 'eflags' in lives[1-side][other]:
+                    break  # synchronize the comparison instead of discarding flags
+                # Since the paired guard was observed, only literal-register
+                # loads and direct jumps have executed. No ordinary memory
+                # write/call or unknown-register assignment can invalidate its
+                # identical symbolic operands. This extra stable read therefore
+                # has the known outcome; it is not a sampled branch condition.
+                stutters.append(dict(side=side,offset=hex(pc),repeated_guard=repr(key),
+                                     conditional=j.mnemonic,truth=truth,prior_conditional=known[2],
+                                     prior_truth=known[3],jump_to=hex(dest)))
+                covered[side].add(j.address)
+            else:
+                break
+            before = (pc,other) if side == 0 else (other,pc)
+            after = (dest,other) if side == 0 else (other,dest)
+            # MOV's stronger symbolic postcondition was checked above; this
+            # also checks precision loss through jump/repeated-guard joins.
+            if not is_reload:
+                constant_join(before,after,lives,constants)
+            chain.add(pc)
+            covered[side].add(pc)
+            pc = dest
+        return pc
+    while pending:
+        x,y,last_flags,known = pending.pop()
+        incoming_pair = (hex(x),hex(y))
+        # Close epsilon transitions in a fixed order, with local relational
+        # proofs for each MOV and a bounded, acyclic closure on each side.
+        x = silent(0,x,y,known)
+        y = silent(1,y,x,known)
+        visit = (x,y,last_flags,known)
+        if visit in seen:
+            continue
+        seen.add(visit)
+        ix,iy = region_at[0].get(x),region_at[1].get(y)
+        if ix is not None or iy is not None:
+            require(ix == iy and ix is not None, f'CFG region correspondence +{x:x}/+{y:x}')
+            r = regions[ix]
+            proof = prove_region(*decoded,r,{r[0]:r[2],r[1]:r[3]},lives,returns,[{},{}],constants)
+            checks.append(proof)
+            for side in (0,1):
+                covered[side].update(i.address for i in bodies[side] if r[2*side]<=i.address<r[2*side+1])
+            require(not any(r[0]<=k<r[1] for k in object_sites), 'CFG region relocation needs a separate theorem')
+            keys = tuple(flag_key(s,r[2*s],r[2*s+1]) for s in (0,1))
+            pending.append((r[1],r[3],keys,None))
+            continue
+        i,j = by[0][x],by[1][y]
+        require(i.mnemonic == j.mnemonic, f'CFG opcode +{x:x}/+{y:x}: {i.mnemonic}/{j.mnemonic}')
+        covered[0].add(x); covered[1].add(y)
+        ca,cb = constants[0][x],constants[1][y]
+        reads = {alias(i.reg_name(r))[0] for r in i.regs_access()[0]}
+        if i.mnemonic == 'call': reads.add('ecx')
+        if i.mnemonic.startswith('ret'): reads.update(('ebx','esi','edi','ebp','esp')+(('eax',) if returns else ()))
+        if i.mnemonic == 'xor' and len(i.operands)==2 and i.operands[0].type==i.operands[1].type==X86_OP_REG and i.operands[0].reg==i.operands[1].reg:
+            reads.discard(alias(i.reg_name(i.operands[0].reg))[0])
+        require(not any(r in ca and r in cb and ca[r] != cb[r] for r in reads), f'CFG unequal constant read +{x:x}/+{y:x}')
+        if i.mnemonic.startswith('j'):
+            for truth,xx,yy in ((True,i.operands[0].imm,j.operands[0].imm),(False,x+i.size,y+j.size)):
+                constant_join((x,y),(xx,yy),lives,constants)
+                fact = (*last_flags,i.mnemonic,truth) if last_flags and i.mnemonic in ('je','jne') else None
+                pending.append((xx,yy,last_flags,fact))
+        else:
+            left,right = bytearray(i.bytes),bytearray(j.bytes)
+            require(len(left)==len(right), f'CFG instruction extent +{x:x}/+{y:x}')
+            for off,reloc in object_sites.items():
+                if x <= off < x+i.size:
+                    size = cmpfunc.relocation_size(reloc.typ)
+                    require(off+size<=x+i.size,'CFG split relocation')
+                    other = y+off-x
+                    require(off not in sites or sites[off]==other,'CFG inconsistent relocation pairing')
+                    sites[off]=other
+                    left[off-x:off-x+size]=right[off-x:off-x+size]=b'\0'*size
+            require(left==right, f'CFG unproved instruction +{x:x}/+{y:x}: {i.mnemonic} {i.op_str} / {j.op_str}; incoming={incoming_pair}; guard={known}')
+            if not i.mnemonic.startswith('ret'):
+                constant_join((x,y),(x+i.size,y+j.size),lives,constants,full_register_writes(i))
+                literal_move = (i.mnemonic == 'mov' and i.operands[0].type == X86_OP_REG
+                                and i.operands[1].type == X86_OP_IMM and i.operands[0].size == 4
+                                and not any(x<=off<x+i.size for off in object_sites))
+                keys = tuple(flag_key(s,p,p+k.size) for s,p,k in ((0,x,i),(1,y,j))) if i.mnemonic in ('cmp','test') else last_flags if literal_move else None
+                pending.append((x+i.size,y+j.size,keys,known if literal_move else None))
+    require(all(covered[s] == set(by[s]) for s in (0,1)), 'CFG incomplete instruction coverage')
+    require(set(sites)==set(object_sites) and len(set(sites.values()))==len(sites), 'CFG incomplete/nonbijective relocation pairing')
+    object_mask = {k for off in object_sites for k in range(off,off+4)}
+    oracle_mask = {k for off in sites.values() for k in range(off,off+4)}
+    differences = [[hex(k),x,y] for k,(x,y) in enumerate(zip(function.data,raw)) if x!=y and k not in object_mask.intersection(oracle_mask)]
+    return sites, dict(method='inductive product CFG with finite MOV-constant/JMP stutters and stable repeated-guard elimination',
+        paired_boundaries=len(seen), regions=checks, stutters_sha256=hashed(stutters),
+        stuttered_direct_jumps=sum('jump_to' in s and 'repeated_guard' not in s for s in stutters),
+        constant_reload_proofs=[s for s in stutters if 'proof' in s],
+        repeated_guard_proofs=[s for s in stutters if 'repeated_guard' in s],
+        covered_instructions=[len(x) for x in covered],constant_states_sha256=hashed(constants),
+        object_padding_bytes=len(function.data)-(bodies[0][-1].address+bodies[0][-1].size),
+        oracle_padding_bytes=len(raw)-(bodies[1][-1].address+bodies[1][-1].size),
+        instruction_pairs_sha256=hashed(sorted(seen,key=repr)),
+        nonrelocation_difference_ranges=difference_ranges(differences),
+        difference_values_sha256=hashed(differences),differing_bytes=len(differences))
 
 
 @contextmanager
@@ -506,13 +888,35 @@ def bindings(target, manifest, comparison, evidence, pe, out, library):
                     if 'global:'+name not in global_:
                         missing.add(name)
     crt = {}
+    imports = cmpfunc.import_map(pe)
+    for name in sorted(missing):
+        if name.startswith('__imp_') and cmpfunc.normalize_import(name) in imports:
+            # PE import-by-name identity is independent of the caller bytes.
+            global_['global:'+name] = imports[cmpfunc.normalize_import(name)]
     if missing:
         for coff, functions in library_functions(library, out):
             for f in functions:
-                if f.name not in missing or f.relocs:
+                if f.name not in missing:
                     continue
                 hits = cmpfunc.candidates_for(f, td)
-                if len(hits) == 1 and f.data == td[hits[0]:hits[0]+len(f.data)]:
+                if f.relocs:
+                    # Same narrow identity method as SB1's pinned certificate:
+                    # a unique complete library signature identifies these CRT
+                    # names. This is NOT a strict byte/body-equivalence claim.
+                    if f.name not in ('__findfirst','__findnext'):
+                        continue
+                    require(len(f.data) == {'__findfirst':304,'__findnext':288}[f.name],
+                            'file-enumeration CRT signature extent changed')
+                    require(len(hits) == 1, 'file-enumeration CRT signature is not unique')
+                    va = ib+tr+hits[0]
+                    require(va in starts and f.name not in crt, 'ambiguous CRT signature entry')
+                    global_['global:'+f.name] = va
+                    crt[f.name] = dict(va=hex(va), size=len(f.data),
+                        library_payload_sha256=hashed(dict(bytes=f.data.hex(),relocations=[
+                            [r.offset-f.start,r.typ,coff.sym_by_index[r.symbol_index].name] for r in f.relocs])),
+                        oracle_body_sha256=hashlib.sha256(td[hits[0]:hits[0]+len(f.data)]).hexdigest(),
+                        proof='unique complete relocation-masked pinned-LIBC signature; target identity only, NOT STRICT or CRT behavioral equivalence')
+                elif len(hits) == 1 and f.data == td[hits[0]:hits[0]+len(f.data)]:
                     require(f.name not in crt, 'ambiguous CRT library definition')
                     va = ib+tr+hits[0]
                     require(va in starts, 'CRT signature not at an oracle function entry')
@@ -563,6 +967,7 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
     tx = next(s for s in pe.sections if s.Name.startswith(b'.text'))
     state, crt = bindings(target, manifest, comparison, evidence_objects, pe, out, library)
     results = {}
+    certified_entries = {}
     require(len({e['symbol'] for e in entries}) == len(entries), 'duplicate equivalence declarations')
     for entry in entries:
         name, symbol = entry['name'], entry['symbol']
@@ -584,7 +989,13 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
         require(len(f.data) == len(raw) == size, f'{name}: incomplete payload')
         regions = [tuple(int(str(x),0) for x in r) for r in entry['regions']]
         pure = pure_sort_callee(comparison, pe, entry['pure_callee']) if entry.get('pure_callee') else None
-        sites, checks = structure(f, raw, regions, entry['returns_value'], coff, entry.get('pure_callee'))
+        if entry.get('proof_method') == 'cfg-constants':
+            sites,checks = cfg_structure(f,raw,regions,entry['returns_value'])
+        else:
+            require('proof_method' not in entry, 'unknown proof method')
+            sites, checks = structure(f, raw, regions, entry['returns_value'], coff, entry.get('pure_callee'),
+                entry.get('constant_invariants', False),
+                [tuple(int(str(x),0) for x in pair) for pair in entry.get('region_relocations',[])])
         if pure:
             checks['pure_callee_identity'] = pure
         shared, globals_, fd, dd, imports, explicit, starts = state
@@ -594,13 +1005,25 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
             # The original call site may move when a region changes length.
             # Resolve the actual original field, preserving the COFF addend.
             one = replace(f, relocs=[reloc])
+            site_explicit = explicit
+            if coff.sym_by_index[reloc.symbol_index].name == f.name and sites[offset] != offset:
+                # resolve_sites' self-call shortcut assumes an unshifted body.
+                # A recursive edge instead binds to this proof's checked entry,
+                # not to the temporary site-displacement adjustment below.
+                self_va = pe.OPTIONAL_HEADER.ImageBase+rva
+                require(globals_.get('global:'+f.name) in (None,self_va), 'recursive entry binding conflict')
+                site_explicit = dict(explicit, **{f.name:self_va})
             status, rows = cmpfunc.resolve_sites(one, rva-tx.VirtualAddress+sites[offset]-offset,
                 tx.get_data(), tx.VirtualAddress, pe.OPTIONAL_HEADER.ImageBase, pe, coff, Path(unit['object']),
-                shared, fd, dd, imports, explicit, globals_, starts)
+                shared, fd, dd, imports, site_explicit, globals_, starts)
             require(status == 'STRICT' and all(r['verified'] for r in rows), f'{name}: unresolved relocation {rows}')
             rr.extend(dict(r, oracle_offset=sites[offset]) for r in rows)
         checks['verified_relocations'] = len(rr)
         checks['relocations_sha256'] = hashed(rr)
+        dependencies = {coff.sym_by_index[r.symbol_index].name:certified_entries[coff.sym_by_index[r.symbol_index].name]
+                        for r in f.relocs if coff.sym_by_index[r.symbol_index].name in certified_entries}
+        if dependencies:
+            checks['previously_proved_equivalent_callee_entries'] = dependencies
         current = dict(schema=1, status='EQUIVALENT', target=target.name, declaration=entry,
                        scope='static-local-equivalence', assumptions=ASSUMPTIONS,
                        payload_sha256=hashed(dict(bytes=f.data.hex(), relocations=[
@@ -610,7 +1033,8 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
                        comparator_wrapper_sha256=digest(ROOT/'tools/cmpfunc_target.py'),
                        capstone_version=cs.__version__, crt_library_sha256=digest(library),
                        inventory_sha256={p:digest(target.oracle_dir/p) for p in ('functions.csv','tu_map.csv')},
-                       crt_target_identity=crt, checks=checks)
+                       crt_target_identity={k:v for k,v in crt.items() if k not in ('__findfirst','__findnext')
+                           or any(coff.sym_by_index[r.symbol_index].name == k for r in f.relocs)}, checks=checks)
         path = (ROOT/entry['certificate']).resolve()
         require(path.parent == (ROOT/'evidence/equivalence'/target.slug).resolve() and path.suffix == '.json',
                 'certificate outside target evidence directory')
@@ -621,6 +1045,16 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
             require(json.loads(path.read_text(encoding='utf-8')) == current, f'{name}: equivalence certificate changed; review required')
         results[name] = dict(status='EQUIVALENT', byte_status=row['status'], size=size, rva=hex(rva),
                              certificate=entry['certificate'])
+        key,va = 'global:'+f.name,pe.OPTIONAL_HEADER.ImageBase+rva
+        if key not in globals_:
+            # Identity of this already-proved target-local entry is available
+            # to later certificates. It is NOT a STRICT byte-body candidate:
+            # shared/function_defs and comparator status remain unchanged.
+            globals_[key] = va
+            certified_entries[f.name] = dict(rva=hex(rva),certificate=entry['certificate'],
+                                             payload_sha256=current['payload_sha256'])
+        else:
+            require(globals_[key] == va,'certified callee entry conflicts with run-wide identity')
         print(f'{name}: EQUIVALENT ({size:,} bytes; static local proof; byte status MISMATCH)')
     accepted = [r for r in results.values() if r['status'] == 'EQUIVALENT']
     print(f'EQUIVALENT tier: {len(accepted)} functions, {sum(r["size"] for r in accepted):,} bytes (excluded from STRICT coverage)')

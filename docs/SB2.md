@@ -2,7 +2,7 @@
 
 Status (2026-10-23, blocker repair): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
 target with its own oracle, source tree `games/sb2/src/` and manifest `games/sb2/recon.json`.
-Accepted: **447 STRICT + 12 FOLDED functions, 136,080 / 172,992 game `.text` bytes (78.7%)**, plus 5 EQUIVALENT (1,200 bytes).
+Accepted: **447 STRICT + 12 FOLDED functions, 136,080 / 172,992 game `.text` bytes (78.7%)**, plus a separate EQUIVALENT tier of 6 functions (36,656 bytes, BlupiStep included; section 8 round 11-12): together 99.9% of game code is STRICT or certified EQUIVALENT. Speedy Blupi 2 en/de/fr: 11 EQUIVALENT functions (51,312 bytes, ChangePhase, BlupiStep and DrawButtons included), 99.98% together.
 **Speedy Blupi 2** (`sb2/blupi/en`, `_EGAMES=0`) has **449 STRICT + 5 FOLDED accepted functions,
 121,712 / 173,072 bytes (70.3%)**. Its complete comparator report finds 454 STRICT + 6 FOLDED,
 121,728 bytes; the extra 16 unique bytes have an unproven shared owner. Both complete regression gates
@@ -497,6 +497,31 @@ both executables; SB1 has 3,792). With it the relinked `.data` is 3,296 bytes sh
 
 [NEGATIVE] The decblock/decmove solver (`scratch/w-solve-decblock`) found GetBlupiInfo and MoveObjectSort
 need opposite contexts in the two editions, like the decblupi and pixmap predicates.
+
+### ChangePhase and BlupiStep certified; atlas tables; Eggbert 1 link order (round 12)
+
+[EVIDENCE] `scratch/w-equiv2/REPORT.md`: Blupi 2 en/de/fr ChangePhase (6,912 bytes) and BlupiStep on all four
+SB2 targets (35,456 bytes) are certified EQUIVALENT. The BlupiStep proof pairs both control-flow graphs
+(every branch arm and back edge, 10,457 / 10,435 boundaries), binds all 499 relocations bijectively, and
+proves each differing window: constant 1/2/10 order, literal-1 promotion, Jeep entry, literal-10 stores,
+commutative TEST orientation and, on Eggbert 2, the wind index expression (affine address arithmetic mod
+2^32). ChangePhase's zero/PLAY register swap is proved across 30 windows with whole-CFG constant facts. Four
+negative controls (an alternate XOR encoding, reversed TEST operands, PLAY or literal 10 changed by one) are
+rejected. Assumptions as SB1's (ordinary stable RAM, declared ABI); local static equivalence, not STRICT.
+EQUIVALENT tier now: Eggbert 2 6 functions / 36,656 bytes; Blupi 2 11 / 51,312 bytes per language.
+
+[EVIDENCE] `scratch/w-data2/REPORT.md`: four truncated atlas tables in `pixtables.h` (complete 6-short
+records decoded from both originals, 4,658 more bytes); all four compare byte for byte in both relinked
+images; the relinked `.data` is now 1,376 (Eggbert 2) / 1,408 (Blupi 2) bytes LONGER than the original
+([OPEN] which contribution); no missing BSS declaration found. Function statuses unchanged.
+
+[EVIDENCE] `scratch/w-layout11/REPORT.md`: `tools/relink.py --order eggbert-jauge-before-menu` (linking
+jauge.cpp before menu.cpp, so ICF keeps `CJauge::~CJauge` as the original does) puts 272/408 accepted Speedy
+Eggbert 1 functions at their original RVA (oracle order: 235). [OPEN] Its `.text` is 16 bytes short (first at
+`CEvent::GetPhase`) and every SB1 secondary `.data` 32 bytes long (zero fill).
+
+Outside both tiers: Eggbert 2's CreateSoundBuffer (DX7 descriptor, line 64), SetDemo (owner ambiguous with
+SetState), the GetHide/IsHost shared body.
 
 ### DirectX header environment (round 5)
 

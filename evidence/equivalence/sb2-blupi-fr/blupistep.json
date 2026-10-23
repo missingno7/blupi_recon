@@ -1,0 +1,2831 @@
+{
+  "schema": 1,
+  "status": "EQUIVALENT",
+  "target": "sb2/blupi/fr",
+  "declaration": {
+    "name": "BlupiStep",
+    "symbol": "?BlupiStep@CDecor@@QAEXXZ",
+    "tu": "games/sb2/src/decblupi.cpp",
+    "rva": "0xa840",
+    "size": 35456,
+    "returns_value": false,
+    "regions": [
+      [
+        "0x1f2d",
+        "0x1f3c",
+        "0x1f2d",
+        "0x1f3c"
+      ],
+      [
+        "0x3dbb",
+        "0x3dc6",
+        "0x3dbb",
+        "0x3dc2"
+      ],
+      [
+        "0x3e7e",
+        "0x3e7f",
+        "0x3e7a",
+        "0x3e7c"
+      ],
+      [
+        "0x3ee8",
+        "0x3eee",
+        "0x3ee0",
+        "0x3ee7"
+      ],
+      [
+        "0x400c",
+        "0x4012",
+        "0x4005",
+        "0x4012"
+      ],
+      [
+        "0x4123",
+        "0x412e",
+        "0x4123",
+        "0x412d"
+      ],
+      [
+        "0x4149",
+        "0x414f",
+        "0x4141",
+        "0x414b"
+      ],
+      [
+        "0x5b68",
+        "0x5b6a",
+        "0x5b64",
+        "0x5b66"
+      ]
+    ],
+    "proof_method": "cfg-constants",
+    "certificate": "evidence/equivalence/sb2-blupi-fr/blupistep.json"
+  },
+  "scope": "static-local-equivalence",
+  "assumptions": [
+    "Memory accessed by either body is valid ordinary RAM, stable during each proof region; no MMIO, concurrency or asynchronous register/flags observation.",
+    "The active callee stack frame is disjoint from pointed-to objects and outputs; distinct fields of an output POINT do not overlap.",
+    "Calls follow the declared x86 ABI (stack arguments and ECX this); arithmetic flags and other scratch registers are not hidden arguments or return values.",
+    "Equivalence covers defined memory effects, branch outcomes, ABI-preserved registers and declared return values. Calls retain their targets/arguments except for the separately proved pure SortGetType call commutation; timing, pure-helper invocation order and dead stack spills are excluded.",
+    "Relocation checks establish symbol/data identity under the comparator binding model; they do not assert equivalence of otherwise unmatched callees."
+  ],
+  "payload_sha256": "e9a0bc10bd4f8fe6685371eb53e49af990cc3a6c5ca5bf5ce6f36173b36aebc0",
+  "oracle_sha256": "acad0730b90a50acf05898d8c0bb524f28a9a5f45fa07451ccda0403d085723d",
+  "oracle_function_sha256": "65083d75d4c1a01b6d147891e81322ffbbc4d0b2294eb8e344becb11c3cc24b2",
+  "checker_sha256": "fa74892f3f93d6fb2d0e1a09f32721efb53aacfb88aa49a752d105a23f3dfacb",
+  "comparator_sha256": "e5f128d8f4fed1aba7371f03397a154f76b3d2d72b8dee874b167bff83bf2323",
+  "comparator_wrapper_sha256": "ae663881d257785e3f7f6729080c0982e5b25034cd870988bfa2330d3b5ef2dc",
+  "capstone_version": "5.0.3",
+  "crt_library_sha256": "4ae22c6f35a87c55c453ad388ada649ea3ba190614be3d1ab95935ba0faa7416",
+  "inventory_sha256": {
+    "functions.csv": "60e1094c795f7841a6d05fcd225641bfb738d459be78839da1cc331dde2bda6a",
+    "tu_map.csv": "87a32efa880769341647be4c386aa015bfa13225dfc286e8c5ee7968c7df3aa4"
+  },
+  "crt_target_identity": {
+    "_strchr": {
+      "va": "0x42c1f0",
+      "size": 188,
+      "body_sha256": "6979c6178f67a389b905ed0e7c5328630a49bc83d5660fb2758fd6de07864049",
+      "proof": "unique complete raw-identical relocation-free CRT library body"
+    }
+  },
+  "checks": {
+    "method": "inductive product CFG with finite MOV-constant/JMP stutters and stable repeated-guard elimination",
+    "paired_boundaries": 10457,
+    "regions": [
+      {
+        "object_window": [
+          "0x3dbb",
+          "0x3dc6"
+        ],
+        "oracle_window": [
+          "0x3dbb",
+          "0x3dc2"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "a045b19ce7f00881ab660d8a7b519ae340d4429c70fb292e639643b3567c0a42"
+      },
+      {
+        "object_window": [
+          "0x3ee8",
+          "0x3eee"
+        ],
+        "oracle_window": [
+          "0x3ee0",
+          "0x3ee7"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "534f734aec76d09b15e25c7b59b1b96e59c0cc4c7cfe0b10016e2f22a444f9de"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x4123",
+          "0x412e"
+        ],
+        "oracle_window": [
+          "0x4123",
+          "0x412d"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "cc36e6e755ebce12d1ed7a02817db75dd843ee28ec425ddde735cf77d9007c04"
+      },
+      {
+        "object_window": [
+          "0x4149",
+          "0x414f"
+        ],
+        "oracle_window": [
+          "0x4141",
+          "0x414b"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "da997131883997a76d8d290f601f3d4e5271f874898096ecaeb8de70aceffe50"
+      },
+      {
+        "object_window": [
+          "0x5b68",
+          "0x5b6a"
+        ],
+        "oracle_window": [
+          "0x5b64",
+          "0x5b66"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "7eee0aa3ecad78ea6c4a7fdb6c36c286cad2cc0d2f4f182f531895d451dc7d2a"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x3e7e",
+          "0x3e7f"
+        ],
+        "oracle_window": [
+          "0x3e7a",
+          "0x3e7c"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "52ca0257a5a2c156ffecbe1f9420e46e0b1091db17511b9c43657cf9c003c3bc"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x400c",
+          "0x4012"
+        ],
+        "oracle_window": [
+          "0x4005",
+          "0x4012"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "5a426a115bd4d8a331afe506f12986acb380f8c29cba757d4c052ba69b3ae970"
+      },
+      {
+        "object_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "oracle_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "aa3c9d7b63d4642b861b9f5f9eea20683c4bd47f796e5d915ed974a1f5ea7477"
+      },
+      {
+        "object_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "oracle_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "aa3c9d7b63d4642b861b9f5f9eea20683c4bd47f796e5d915ed974a1f5ea7477"
+      },
+      {
+        "object_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "oracle_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "aa3c9d7b63d4642b861b9f5f9eea20683c4bd47f796e5d915ed974a1f5ea7477"
+      },
+      {
+        "object_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "oracle_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "aa3c9d7b63d4642b861b9f5f9eea20683c4bd47f796e5d915ed974a1f5ea7477"
+      },
+      {
+        "object_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "oracle_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "aa3c9d7b63d4642b861b9f5f9eea20683c4bd47f796e5d915ed974a1f5ea7477"
+      },
+      {
+        "object_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "oracle_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "aa3c9d7b63d4642b861b9f5f9eea20683c4bd47f796e5d915ed974a1f5ea7477"
+      },
+      {
+        "object_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "oracle_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "aa3c9d7b63d4642b861b9f5f9eea20683c4bd47f796e5d915ed974a1f5ea7477"
+      },
+      {
+        "object_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "oracle_window": [
+          "0x1f2d",
+          "0x1f3c"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "aa3c9d7b63d4642b861b9f5f9eea20683c4bd47f796e5d915ed974a1f5ea7477"
+      }
+    ],
+    "stutters_sha256": "f892e80162c03df77e8ce88d56b0eb43d0f478397ba3d5fd4e28ac80c26be5b2",
+    "stuttered_direct_jumps": 255,
+    "constant_reload_proofs": [
+      {
+        "side": 0,
+        "offset": "0x7b5e",
+        "proof": {
+          "object_window": [
+            "0x7b5e",
+            "0x7b63"
+          ],
+          "oracle_window": [
+            "0x7b45",
+            "0x7b45"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "a8673ead685ba8d9859997deee7848e64e8fb239107d0a6e40011c81162784a1"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x7b5a",
+        "proof": {
+          "object_window": [
+            "0x7b63",
+            "0x7b63"
+          ],
+          "oracle_window": [
+            "0x7b5a",
+            "0x7b5f"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "60958974553ccf640702d0f38942fe5b0cfa58033420ab9c16639af60605fd58"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x7b5e",
+        "proof": {
+          "object_window": [
+            "0x7b5e",
+            "0x7b63"
+          ],
+          "oracle_window": [
+            "0x7b4d",
+            "0x7b4d"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "c8de9d2cbd047205a873158a8053e9709fff364490413ee507b6802395c48439"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x7b5a",
+        "proof": {
+          "object_window": [
+            "0x7b63",
+            "0x7b63"
+          ],
+          "oracle_window": [
+            "0x7b5a",
+            "0x7b5f"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "60958974553ccf640702d0f38942fe5b0cfa58033420ab9c16639af60605fd58"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x7b5e",
+        "proof": {
+          "object_window": [
+            "0x7b5e",
+            "0x7b63"
+          ],
+          "oracle_window": [
+            "0x7b4d",
+            "0x7b4d"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "c8de9d2cbd047205a873158a8053e9709fff364490413ee507b6802395c48439"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x7b5a",
+        "proof": {
+          "object_window": [
+            "0x7b63",
+            "0x7b63"
+          ],
+          "oracle_window": [
+            "0x7b5a",
+            "0x7b5f"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "60958974553ccf640702d0f38942fe5b0cfa58033420ab9c16639af60605fd58"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x42a5",
+            "0x42a5"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x42a5",
+            "0x42a5"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x42a5",
+            "0x42a5"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x42a5",
+            "0x42a5"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x42a5",
+            "0x42a5"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x42a5",
+            "0x42a5"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x42a5",
+            "0x42a5"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x42a5",
+            "0x42a5"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x42a5",
+            "0x42a5"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 1,
+        "offset": "0x429c",
+        "proof": {
+          "object_window": [
+            "0x43ee",
+            "0x43ee"
+          ],
+          "oracle_window": [
+            "0x429c",
+            "0x42a1"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "783d365026f08b6be387a42a3d127885ca9d61e384f8a26025e479609cac86b0"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x413a",
+        "proof": {
+          "object_window": [
+            "0x413a",
+            "0x413f"
+          ],
+          "oracle_window": [
+            "0x413b",
+            "0x413b"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "d38d0bf142ab9ae8e3cce26759ab4a383e854a51349e236d3bd0e8143be7a92f"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x413a",
+        "proof": {
+          "object_window": [
+            "0x413a",
+            "0x413f"
+          ],
+          "oracle_window": [
+            "0x4137",
+            "0x4137"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "958a9eaa56c9570de073ffaad849c8598e9daea6fe2d479a37864051f14c25cf"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x4157",
+        "proof": {
+          "object_window": [
+            "0x4157",
+            "0x415c"
+          ],
+          "oracle_window": [
+            "0x4151",
+            "0x4151"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "4424aa78523b2c49d1c3ec2355a3114eb0385ed356be4cf0a8cb704e950a5b89"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x4157",
+        "proof": {
+          "object_window": [
+            "0x4157",
+            "0x415c"
+          ],
+          "oracle_window": [
+            "0x4151",
+            "0x4151"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "4424aa78523b2c49d1c3ec2355a3114eb0385ed356be4cf0a8cb704e950a5b89"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x4157",
+        "proof": {
+          "object_window": [
+            "0x4157",
+            "0x415c"
+          ],
+          "oracle_window": [
+            "0x4151",
+            "0x4151"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "4424aa78523b2c49d1c3ec2355a3114eb0385ed356be4cf0a8cb704e950a5b89"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x4157",
+        "proof": {
+          "object_window": [
+            "0x4157",
+            "0x415c"
+          ],
+          "oracle_window": [
+            "0x4151",
+            "0x4151"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "4424aa78523b2c49d1c3ec2355a3114eb0385ed356be4cf0a8cb704e950a5b89"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x4157",
+        "proof": {
+          "object_window": [
+            "0x4157",
+            "0x415c"
+          ],
+          "oracle_window": [
+            "0x4151",
+            "0x4151"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "4424aa78523b2c49d1c3ec2355a3114eb0385ed356be4cf0a8cb704e950a5b89"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x4157",
+        "proof": {
+          "object_window": [
+            "0x4157",
+            "0x415c"
+          ],
+          "oracle_window": [
+            "0x4151",
+            "0x4151"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "4424aa78523b2c49d1c3ec2355a3114eb0385ed356be4cf0a8cb704e950a5b89"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x4157",
+        "proof": {
+          "object_window": [
+            "0x4157",
+            "0x415c"
+          ],
+          "oracle_window": [
+            "0x4151",
+            "0x4151"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "4424aa78523b2c49d1c3ec2355a3114eb0385ed356be4cf0a8cb704e950a5b89"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x4157",
+        "proof": {
+          "object_window": [
+            "0x4157",
+            "0x415c"
+          ],
+          "oracle_window": [
+            "0x4151",
+            "0x4151"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "4424aa78523b2c49d1c3ec2355a3114eb0385ed356be4cf0a8cb704e950a5b89"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x4157",
+        "proof": {
+          "object_window": [
+            "0x4157",
+            "0x415c"
+          ],
+          "oracle_window": [
+            "0x4151",
+            "0x4151"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "4424aa78523b2c49d1c3ec2355a3114eb0385ed356be4cf0a8cb704e950a5b89"
+        }
+      },
+      {
+        "side": 0,
+        "offset": "0x3ede",
+        "proof": {
+          "object_window": [
+            "0x3ede",
+            "0x3ee3"
+          ],
+          "oracle_window": [
+            "0x3edb",
+            "0x3edb"
+          ],
+          "boolean_atoms": 0,
+          "exhaustive_boolean_assignments": 1,
+          "symbolic_outcomes_sha256": "7f0e2a07fc2d26e78a39b027fc23cfc166174b0e7266f869d19a67b258ffcecf"
+        }
+      }
+    ],
+    "repeated_guard_proofs": [
+      {
+        "side": 0,
+        "offset": "0x43d8",
+        "repeated_guard": "('zero-flags', 4, ('input', 'eax'))",
+        "conditional": "je",
+        "truth": false,
+        "prior_conditional": "jne",
+        "prior_truth": true,
+        "jump_to": "0x43dc"
+      },
+      {
+        "side": 1,
+        "offset": "0x43d4",
+        "repeated_guard": "('zero-flags', 4, ('input', 'eax'))",
+        "conditional": "je",
+        "truth": false,
+        "prior_conditional": "jne",
+        "prior_truth": true,
+        "jump_to": "0x43d8"
+      },
+      {
+        "side": 0,
+        "offset": "0x428f",
+        "repeated_guard": "('zero-flags', 4, ('input', 'eax'))",
+        "conditional": "je",
+        "truth": false,
+        "prior_conditional": "jne",
+        "prior_truth": true,
+        "jump_to": "0x4293"
+      },
+      {
+        "side": 1,
+        "offset": "0x4284",
+        "repeated_guard": "('zero-flags', 4, ('input', 'eax'))",
+        "conditional": "je",
+        "truth": false,
+        "prior_conditional": "jne",
+        "prior_truth": true,
+        "jump_to": "0x4288"
+      },
+      {
+        "side": 1,
+        "offset": "0x42a1",
+        "repeated_guard": "('cmp', 4, ('memory', 4, ('+', 54016, ((('input', 'esi'), 1),))), 1)",
+        "conditional": "jne",
+        "truth": true,
+        "prior_conditional": "jne",
+        "prior_truth": true,
+        "jump_to": "0x43ea"
+      },
+      {
+        "side": 0,
+        "offset": "0x413f",
+        "repeated_guard": "('zero-flags', 4, ('input', 'eax'))",
+        "conditional": "je",
+        "truth": false,
+        "prior_conditional": "jne",
+        "prior_truth": true,
+        "jump_to": "0x4143"
+      },
+      {
+        "side": 0,
+        "offset": "0x415c",
+        "repeated_guard": "('cmp', 4, ('memory', 4, ('+', 54016, ((('input', 'esi'), 1),))), 1)",
+        "conditional": "jne",
+        "truth": true,
+        "prior_conditional": "jne",
+        "prior_truth": true,
+        "jump_to": "0x43ee"
+      },
+      {
+        "side": 1,
+        "offset": "0x42a1",
+        "repeated_guard": "('cmp', 4, ('memory', 4, ('+', 54016, ((('input', 'esi'), 1),))), 1)",
+        "conditional": "jne",
+        "truth": true,
+        "prior_conditional": "jne",
+        "prior_truth": true,
+        "jump_to": "0x43ea"
+      },
+      {
+        "side": 0,
+        "offset": "0x37df",
+        "repeated_guard": "('test', 1, ('memory', 1, ('+', 52216, ((('input', 'esi'), 1),))), 20)",
+        "conditional": "jne",
+        "truth": false,
+        "prior_conditional": "je",
+        "prior_truth": true,
+        "jump_to": "0x37e8"
+      },
+      {
+        "side": 1,
+        "offset": "0x37df",
+        "repeated_guard": "('test', 1, ('memory', 1, ('+', 52216, ((('input', 'esi'), 1),))), 20)",
+        "conditional": "jne",
+        "truth": false,
+        "prior_conditional": "je",
+        "prior_truth": true,
+        "jump_to": "0x37e8"
+      }
+    ],
+    "covered_instructions": [
+      9215,
+      9212
+    ],
+    "constant_states_sha256": "3b3626983af21b390b5744784453c6ecdc482eaef7d596bce3af094e4dfa56f8",
+    "object_padding_bytes": 0,
+    "oracle_padding_bytes": 4,
+    "instruction_pairs_sha256": "af2911bff21a5668a663e978910600d3b9697df0d4cd4a089abb2e5cdd65bebe",
+    "nonrelocation_difference_ranges": [
+      [
+        "0x1f2d",
+        "0x1f2f"
+      ],
+      [
+        "0x1f37",
+        "0x1f39"
+      ],
+      [
+        "0x3dbb",
+        "0x3e5e"
+      ],
+      [
+        "0x3e5f",
+        "0x3e60"
+      ],
+      [
+        "0x3e61",
+        "0x3e76"
+      ],
+      [
+        "0x3e77",
+        "0x3e78"
+      ],
+      [
+        "0x3e79",
+        "0x3e8a"
+      ],
+      [
+        "0x3e8b",
+        "0x3e95"
+      ],
+      [
+        "0x3e96",
+        "0x3e98"
+      ],
+      [
+        "0x3e99",
+        "0x3e9f"
+      ],
+      [
+        "0x3ea0",
+        "0x3ec1"
+      ],
+      [
+        "0x3ec2",
+        "0x3ecc"
+      ],
+      [
+        "0x3ecd",
+        "0x3ecf"
+      ],
+      [
+        "0x3ed0",
+        "0x3ed6"
+      ],
+      [
+        "0x3ed7",
+        "0x3eff"
+      ],
+      [
+        "0x3f00",
+        "0x3f07"
+      ],
+      [
+        "0x3f08",
+        "0x3f0f"
+      ],
+      [
+        "0x3f10",
+        "0x3f2d"
+      ],
+      [
+        "0x3f2f",
+        "0x3f32"
+      ],
+      [
+        "0x3f33",
+        "0x3f37"
+      ],
+      [
+        "0x3f38",
+        "0x3f39"
+      ],
+      [
+        "0x3f3a",
+        "0x3f3e"
+      ],
+      [
+        "0x3f3f",
+        "0x3f43"
+      ],
+      [
+        "0x3f45",
+        "0x3f68"
+      ],
+      [
+        "0x3f69",
+        "0x3f70"
+      ],
+      [
+        "0x3f71",
+        "0x3f78"
+      ],
+      [
+        "0x3f79",
+        "0x3f96"
+      ],
+      [
+        "0x3f98",
+        "0x3f9b"
+      ],
+      [
+        "0x3f9c",
+        "0x3fa0"
+      ],
+      [
+        "0x3fa1",
+        "0x3fa2"
+      ],
+      [
+        "0x3fa3",
+        "0x3fa7"
+      ],
+      [
+        "0x3fa8",
+        "0x3fac"
+      ],
+      [
+        "0x3fae",
+        "0x3fb4"
+      ],
+      [
+        "0x3fb5",
+        "0x3fdd"
+      ],
+      [
+        "0x3fde",
+        "0x3ff9"
+      ],
+      [
+        "0x3ffb",
+        "0x3ffe"
+      ],
+      [
+        "0x3fff",
+        "0x4003"
+      ],
+      [
+        "0x4005",
+        "0x400a"
+      ],
+      [
+        "0x400b",
+        "0x400e"
+      ],
+      [
+        "0x400f",
+        "0x4012"
+      ],
+      [
+        "0x4014",
+        "0x4016"
+      ],
+      [
+        "0x4020",
+        "0x4021"
+      ],
+      [
+        "0x402c",
+        "0x402d"
+      ],
+      [
+        "0x4038",
+        "0x4039"
+      ],
+      [
+        "0x4044",
+        "0x4045"
+      ],
+      [
+        "0x4050",
+        "0x4052"
+      ],
+      [
+        "0x405c",
+        "0x405d"
+      ],
+      [
+        "0x4068",
+        "0x4069"
+      ],
+      [
+        "0x4074",
+        "0x4075"
+      ],
+      [
+        "0x4080",
+        "0x4081"
+      ],
+      [
+        "0x411e",
+        "0x411f"
+      ],
+      [
+        "0x4122",
+        "0x4125"
+      ],
+      [
+        "0x4126",
+        "0x4127"
+      ],
+      [
+        "0x4128",
+        "0x412a"
+      ],
+      [
+        "0x412b",
+        "0x412c"
+      ],
+      [
+        "0x412d",
+        "0x4132"
+      ],
+      [
+        "0x4133",
+        "0x4153"
+      ],
+      [
+        "0x4154",
+        "0x415b"
+      ],
+      [
+        "0x415c",
+        "0x4161"
+      ],
+      [
+        "0x4162",
+        "0x4167"
+      ],
+      [
+        "0x4168",
+        "0x416d"
+      ],
+      [
+        "0x416e",
+        "0x4173"
+      ],
+      [
+        "0x4174",
+        "0x4179"
+      ],
+      [
+        "0x417a",
+        "0x417f"
+      ],
+      [
+        "0x4180",
+        "0x4185"
+      ],
+      [
+        "0x4186",
+        "0x418b"
+      ],
+      [
+        "0x418c",
+        "0x4191"
+      ],
+      [
+        "0x4192",
+        "0x4197"
+      ],
+      [
+        "0x4198",
+        "0x419d"
+      ],
+      [
+        "0x419e",
+        "0x41a2"
+      ],
+      [
+        "0x41a4",
+        "0x41a9"
+      ],
+      [
+        "0x41aa",
+        "0x41ae"
+      ],
+      [
+        "0x41b0",
+        "0x41b5"
+      ],
+      [
+        "0x41b6",
+        "0x41ba"
+      ],
+      [
+        "0x41bc",
+        "0x41c1"
+      ],
+      [
+        "0x41c2",
+        "0x41c6"
+      ],
+      [
+        "0x41c8",
+        "0x41cd"
+      ],
+      [
+        "0x41ce",
+        "0x41fb"
+      ],
+      [
+        "0x41fc",
+        "0x4200"
+      ],
+      [
+        "0x4201",
+        "0x4211"
+      ],
+      [
+        "0x4212",
+        "0x4228"
+      ],
+      [
+        "0x4229",
+        "0x422a"
+      ],
+      [
+        "0x422c",
+        "0x4237"
+      ],
+      [
+        "0x4238",
+        "0x4248"
+      ],
+      [
+        "0x4249",
+        "0x4257"
+      ],
+      [
+        "0x4259",
+        "0x4277"
+      ],
+      [
+        "0x4278",
+        "0x4282"
+      ],
+      [
+        "0x4284",
+        "0x429e"
+      ],
+      [
+        "0x429f",
+        "0x42a3"
+      ],
+      [
+        "0x42a4",
+        "0x42f2"
+      ],
+      [
+        "0x42f3",
+        "0x42fe"
+      ],
+      [
+        "0x42ff",
+        "0x430a"
+      ],
+      [
+        "0x430b",
+        "0x4328"
+      ],
+      [
+        "0x4329",
+        "0x432a"
+      ],
+      [
+        "0x432b",
+        "0x4340"
+      ],
+      [
+        "0x4341",
+        "0x4342"
+      ],
+      [
+        "0x4343",
+        "0x4379"
+      ],
+      [
+        "0x437b",
+        "0x43b0"
+      ],
+      [
+        "0x43b1",
+        "0x43bf"
+      ],
+      [
+        "0x43c0",
+        "0x43f3"
+      ],
+      [
+        "0x43f4",
+        "0x43f8"
+      ],
+      [
+        "0x43f9",
+        "0x4410"
+      ],
+      [
+        "0x4412",
+        "0x441a"
+      ],
+      [
+        "0x441b",
+        "0x4444"
+      ],
+      [
+        "0x4446",
+        "0x44d2"
+      ],
+      [
+        "0x44d4",
+        "0x4540"
+      ],
+      [
+        "0x4542",
+        "0x4648"
+      ],
+      [
+        "0x4649",
+        "0x4703"
+      ],
+      [
+        "0x4704",
+        "0x4705"
+      ],
+      [
+        "0x4706",
+        "0x471d"
+      ],
+      [
+        "0x471f",
+        "0x4745"
+      ],
+      [
+        "0x4746",
+        "0x47b3"
+      ],
+      [
+        "0x47b4",
+        "0x47d6"
+      ],
+      [
+        "0x47d7",
+        "0x48b6"
+      ],
+      [
+        "0x48b7",
+        "0x493c"
+      ],
+      [
+        "0x493d",
+        "0x4949"
+      ],
+      [
+        "0x494a",
+        "0x49be"
+      ],
+      [
+        "0x49bf",
+        "0x4a69"
+      ],
+      [
+        "0x4a6a",
+        "0x4a76"
+      ],
+      [
+        "0x4a77",
+        "0x4aeb"
+      ],
+      [
+        "0x4aec",
+        "0x4b5d"
+      ],
+      [
+        "0x4b5e",
+        "0x4b69"
+      ],
+      [
+        "0x4b6a",
+        "0x4b75"
+      ],
+      [
+        "0x4b76",
+        "0x4b7c"
+      ],
+      [
+        "0x4b7d",
+        "0x4b7e"
+      ],
+      [
+        "0x4b7f",
+        "0x4b9b"
+      ],
+      [
+        "0x4b9c",
+        "0x4bb0"
+      ],
+      [
+        "0x4bb2",
+        "0x4bd3"
+      ],
+      [
+        "0x4bd4",
+        "0x4bd8"
+      ],
+      [
+        "0x4bd9",
+        "0x4ccc"
+      ],
+      [
+        "0x4ccd",
+        "0x4d0c"
+      ],
+      [
+        "0x4d0d",
+        "0x4d7c"
+      ],
+      [
+        "0x4d7d",
+        "0x4e0e"
+      ],
+      [
+        "0x4e10",
+        "0x4e9f"
+      ],
+      [
+        "0x4ea0",
+        "0x4eea"
+      ],
+      [
+        "0x4eeb",
+        "0x4ef0"
+      ],
+      [
+        "0x4ef2",
+        "0x4fa5"
+      ],
+      [
+        "0x4fa6",
+        "0x4fa7"
+      ],
+      [
+        "0x4fa8",
+        "0x4fb7"
+      ],
+      [
+        "0x4fb9",
+        "0x4fd4"
+      ],
+      [
+        "0x4fd5",
+        "0x4fda"
+      ],
+      [
+        "0x4fdc",
+        "0x5031"
+      ],
+      [
+        "0x5033",
+        "0x50c6"
+      ],
+      [
+        "0x50c7",
+        "0x50c8"
+      ],
+      [
+        "0x50ca",
+        "0x5104"
+      ],
+      [
+        "0x5105",
+        "0x514b"
+      ],
+      [
+        "0x514c",
+        "0x5233"
+      ],
+      [
+        "0x5234",
+        "0x523f"
+      ],
+      [
+        "0x5240",
+        "0x524b"
+      ],
+      [
+        "0x524c",
+        "0x5257"
+      ],
+      [
+        "0x5258",
+        "0x5263"
+      ],
+      [
+        "0x5264",
+        "0x526f"
+      ],
+      [
+        "0x5270",
+        "0x52cb"
+      ],
+      [
+        "0x52cc",
+        "0x52f0"
+      ],
+      [
+        "0x52f2",
+        "0x5307"
+      ],
+      [
+        "0x5308",
+        "0x5331"
+      ],
+      [
+        "0x5333",
+        "0x537d"
+      ],
+      [
+        "0x537e",
+        "0x53b4"
+      ],
+      [
+        "0x53b6",
+        "0x53fa"
+      ],
+      [
+        "0x53fb",
+        "0x5400"
+      ],
+      [
+        "0x5402",
+        "0x544d"
+      ],
+      [
+        "0x544e",
+        "0x546b"
+      ],
+      [
+        "0x546c",
+        "0x5483"
+      ],
+      [
+        "0x5484",
+        "0x5505"
+      ],
+      [
+        "0x5507",
+        "0x56df"
+      ],
+      [
+        "0x56e0",
+        "0x56eb"
+      ],
+      [
+        "0x56ec",
+        "0x56f7"
+      ],
+      [
+        "0x56f8",
+        "0x5703"
+      ],
+      [
+        "0x5704",
+        "0x570f"
+      ],
+      [
+        "0x5710",
+        "0x5737"
+      ],
+      [
+        "0x5738",
+        "0x5739"
+      ],
+      [
+        "0x573a",
+        "0x574d"
+      ],
+      [
+        "0x574e",
+        "0x575c"
+      ],
+      [
+        "0x575d",
+        "0x5762"
+      ],
+      [
+        "0x5764",
+        "0x5853"
+      ],
+      [
+        "0x5854",
+        "0x58d1"
+      ],
+      [
+        "0x58d3",
+        "0x59da"
+      ],
+      [
+        "0x59dc",
+        "0x5a09"
+      ],
+      [
+        "0x5a0a",
+        "0x5a15"
+      ],
+      [
+        "0x5a16",
+        "0x5a21"
+      ],
+      [
+        "0x5a22",
+        "0x5a2d"
+      ],
+      [
+        "0x5a2e",
+        "0x5a39"
+      ],
+      [
+        "0x5a3a",
+        "0x5a45"
+      ],
+      [
+        "0x5a46",
+        "0x5a51"
+      ],
+      [
+        "0x5a52",
+        "0x5a5d"
+      ],
+      [
+        "0x5a5e",
+        "0x5a79"
+      ],
+      [
+        "0x5a7b",
+        "0x5b0d"
+      ],
+      [
+        "0x5b0e",
+        "0x5b0f"
+      ],
+      [
+        "0x5b10",
+        "0x5b6c"
+      ],
+      [
+        "0x5b6d",
+        "0x5b6e"
+      ],
+      [
+        "0x5b6f",
+        "0x5b82"
+      ],
+      [
+        "0x5b83",
+        "0x5b96"
+      ],
+      [
+        "0x5b97",
+        "0x5b9a"
+      ],
+      [
+        "0x5b9b",
+        "0x5ba2"
+      ],
+      [
+        "0x5ba3",
+        "0x5bb0"
+      ],
+      [
+        "0x5bb1",
+        "0x5c90"
+      ],
+      [
+        "0x5c91",
+        "0x5d11"
+      ],
+      [
+        "0x5d13",
+        "0x5d72"
+      ],
+      [
+        "0x5d73",
+        "0x5d7e"
+      ],
+      [
+        "0x5d7f",
+        "0x5d8a"
+      ],
+      [
+        "0x5d8b",
+        "0x5d96"
+      ],
+      [
+        "0x5d97",
+        "0x5da2"
+      ],
+      [
+        "0x5da3",
+        "0x5dae"
+      ],
+      [
+        "0x5daf",
+        "0x5dba"
+      ],
+      [
+        "0x5dbb",
+        "0x5dc6"
+      ],
+      [
+        "0x5dc7",
+        "0x5dd2"
+      ],
+      [
+        "0x5dd3",
+        "0x5de3"
+      ],
+      [
+        "0x5de5",
+        "0x5eb2"
+      ],
+      [
+        "0x5eb3",
+        "0x5ebe"
+      ],
+      [
+        "0x5ebf",
+        "0x5eca"
+      ],
+      [
+        "0x5ecb",
+        "0x5ed6"
+      ],
+      [
+        "0x5ed7",
+        "0x5ee2"
+      ],
+      [
+        "0x5ee3",
+        "0x5eee"
+      ],
+      [
+        "0x5eef",
+        "0x5efa"
+      ],
+      [
+        "0x5efb",
+        "0x5f06"
+      ],
+      [
+        "0x5f07",
+        "0x5f12"
+      ],
+      [
+        "0x5f13",
+        "0x5f1e"
+      ],
+      [
+        "0x5f1f",
+        "0x5fde"
+      ],
+      [
+        "0x5fdf",
+        "0x5fea"
+      ],
+      [
+        "0x5feb",
+        "0x5ff6"
+      ],
+      [
+        "0x5ff7",
+        "0x6002"
+      ],
+      [
+        "0x6003",
+        "0x600e"
+      ],
+      [
+        "0x600f",
+        "0x601a"
+      ],
+      [
+        "0x601b",
+        "0x6026"
+      ],
+      [
+        "0x6027",
+        "0x6032"
+      ],
+      [
+        "0x6033",
+        "0x603e"
+      ],
+      [
+        "0x603f",
+        "0x604a"
+      ],
+      [
+        "0x604b",
+        "0x6056"
+      ],
+      [
+        "0x6057",
+        "0x607f"
+      ],
+      [
+        "0x6080",
+        "0x610a"
+      ],
+      [
+        "0x610b",
+        "0x6116"
+      ],
+      [
+        "0x6117",
+        "0x6122"
+      ],
+      [
+        "0x6123",
+        "0x612e"
+      ],
+      [
+        "0x612f",
+        "0x613a"
+      ],
+      [
+        "0x613b",
+        "0x6146"
+      ],
+      [
+        "0x6147",
+        "0x6152"
+      ],
+      [
+        "0x6153",
+        "0x615e"
+      ],
+      [
+        "0x615f",
+        "0x616a"
+      ],
+      [
+        "0x616b",
+        "0x6176"
+      ],
+      [
+        "0x6177",
+        "0x6182"
+      ],
+      [
+        "0x6183",
+        "0x61ab"
+      ],
+      [
+        "0x61ac",
+        "0x622a"
+      ],
+      [
+        "0x622b",
+        "0x6257"
+      ],
+      [
+        "0x6258",
+        "0x62a7"
+      ],
+      [
+        "0x62a9",
+        "0x62f0"
+      ],
+      [
+        "0x62f1",
+        "0x62fd"
+      ],
+      [
+        "0x62fe",
+        "0x6309"
+      ],
+      [
+        "0x630a",
+        "0x6315"
+      ],
+      [
+        "0x6316",
+        "0x6321"
+      ],
+      [
+        "0x6322",
+        "0x632d"
+      ],
+      [
+        "0x632e",
+        "0x6339"
+      ],
+      [
+        "0x633a",
+        "0x6345"
+      ],
+      [
+        "0x6346",
+        "0x6351"
+      ],
+      [
+        "0x6352",
+        "0x635d"
+      ],
+      [
+        "0x635e",
+        "0x6369"
+      ],
+      [
+        "0x636a",
+        "0x637a"
+      ],
+      [
+        "0x637b",
+        "0x6380"
+      ],
+      [
+        "0x6382",
+        "0x6391"
+      ],
+      [
+        "0x6392",
+        "0x6427"
+      ],
+      [
+        "0x6428",
+        "0x6433"
+      ],
+      [
+        "0x6434",
+        "0x64c9"
+      ],
+      [
+        "0x64ca",
+        "0x6571"
+      ],
+      [
+        "0x6572",
+        "0x658d"
+      ],
+      [
+        "0x658e",
+        "0x65d9"
+      ],
+      [
+        "0x65da",
+        "0x65db"
+      ],
+      [
+        "0x65dc",
+        "0x65e2"
+      ],
+      [
+        "0x65e3",
+        "0x65e4"
+      ],
+      [
+        "0x65e5",
+        "0x6636"
+      ],
+      [
+        "0x6637",
+        "0x6638"
+      ],
+      [
+        "0x6639",
+        "0x663f"
+      ],
+      [
+        "0x6640",
+        "0x6641"
+      ],
+      [
+        "0x6642",
+        "0x665d"
+      ],
+      [
+        "0x665f",
+        "0x670a"
+      ],
+      [
+        "0x670b",
+        "0x6788"
+      ],
+      [
+        "0x678a",
+        "0x6835"
+      ],
+      [
+        "0x6837",
+        "0x68ae"
+      ],
+      [
+        "0x68b0",
+        "0x696d"
+      ],
+      [
+        "0x696f",
+        "0x69ff"
+      ],
+      [
+        "0x6a00",
+        "0x6a7a"
+      ],
+      [
+        "0x6a7b",
+        "0x6bc1"
+      ],
+      [
+        "0x6bc2",
+        "0x6c3b"
+      ],
+      [
+        "0x6c3c",
+        "0x6c3e"
+      ],
+      [
+        "0x6c3f",
+        "0x6c6a"
+      ],
+      [
+        "0x6c6b",
+        "0x6d6b"
+      ],
+      [
+        "0x6d6d",
+        "0x6d86"
+      ],
+      [
+        "0x6d87",
+        "0x6da6"
+      ],
+      [
+        "0x6da7",
+        "0x6dfe"
+      ],
+      [
+        "0x6dff",
+        "0x6e24"
+      ],
+      [
+        "0x6e25",
+        "0x6e4a"
+      ],
+      [
+        "0x6e4b",
+        "0x6e70"
+      ],
+      [
+        "0x6e71",
+        "0x6eaf"
+      ],
+      [
+        "0x6eb1",
+        "0x6eea"
+      ],
+      [
+        "0x6eeb",
+        "0x6ff3"
+      ],
+      [
+        "0x6ff5",
+        "0x702e"
+      ],
+      [
+        "0x702f",
+        "0x7086"
+      ],
+      [
+        "0x7087",
+        "0x70ac"
+      ],
+      [
+        "0x70ad",
+        "0x70d2"
+      ],
+      [
+        "0x70d3",
+        "0x70f8"
+      ],
+      [
+        "0x70f9",
+        "0x7160"
+      ],
+      [
+        "0x7161",
+        "0x71aa"
+      ],
+      [
+        "0x71ab",
+        "0x71ae"
+      ],
+      [
+        "0x71af",
+        "0x71e3"
+      ],
+      [
+        "0x71e4",
+        "0x71ef"
+      ],
+      [
+        "0x71f0",
+        "0x71fb"
+      ],
+      [
+        "0x71fc",
+        "0x7256"
+      ],
+      [
+        "0x7258",
+        "0x72b3"
+      ],
+      [
+        "0x72b4",
+        "0x72bf"
+      ],
+      [
+        "0x72c0",
+        "0x72cb"
+      ],
+      [
+        "0x72cc",
+        "0x72d7"
+      ],
+      [
+        "0x72d8",
+        "0x7324"
+      ],
+      [
+        "0x7325",
+        "0x732a"
+      ],
+      [
+        "0x732c",
+        "0x7348"
+      ],
+      [
+        "0x7349",
+        "0x734a"
+      ],
+      [
+        "0x734b",
+        "0x73ca"
+      ],
+      [
+        "0x73cb",
+        "0x73cc"
+      ],
+      [
+        "0x73cd",
+        "0x74ac"
+      ],
+      [
+        "0x74ad",
+        "0x74b8"
+      ],
+      [
+        "0x74b9",
+        "0x74c4"
+      ],
+      [
+        "0x74c5",
+        "0x74d0"
+      ],
+      [
+        "0x74d1",
+        "0x74dc"
+      ],
+      [
+        "0x74dd",
+        "0x74e8"
+      ],
+      [
+        "0x74e9",
+        "0x74f4"
+      ],
+      [
+        "0x74f5",
+        "0x7539"
+      ],
+      [
+        "0x753a",
+        "0x753f"
+      ],
+      [
+        "0x7541",
+        "0x7563"
+      ],
+      [
+        "0x7564",
+        "0x7565"
+      ],
+      [
+        "0x7566",
+        "0x7595"
+      ],
+      [
+        "0x7596",
+        "0x75a1"
+      ],
+      [
+        "0x75a2",
+        "0x75ad"
+      ],
+      [
+        "0x75ae",
+        "0x75b9"
+      ],
+      [
+        "0x75ba",
+        "0x75c5"
+      ],
+      [
+        "0x75c6",
+        "0x75d1"
+      ],
+      [
+        "0x75d2",
+        "0x75dd"
+      ],
+      [
+        "0x75de",
+        "0x7608"
+      ],
+      [
+        "0x760a",
+        "0x7638"
+      ],
+      [
+        "0x7639",
+        "0x763a"
+      ],
+      [
+        "0x763b",
+        "0x76a9"
+      ],
+      [
+        "0x76aa",
+        "0x76bb"
+      ],
+      [
+        "0x76bc",
+        "0x76e2"
+      ],
+      [
+        "0x76e3",
+        "0x7711"
+      ],
+      [
+        "0x7712",
+        "0x7727"
+      ],
+      [
+        "0x7728",
+        "0x7729"
+      ],
+      [
+        "0x772a",
+        "0x7742"
+      ],
+      [
+        "0x7744",
+        "0x774e"
+      ],
+      [
+        "0x774f",
+        "0x775a"
+      ],
+      [
+        "0x775b",
+        "0x77c0"
+      ],
+      [
+        "0x77c1",
+        "0x7809"
+      ],
+      [
+        "0x780a",
+        "0x7815"
+      ],
+      [
+        "0x7816",
+        "0x7820"
+      ],
+      [
+        "0x7822",
+        "0x7852"
+      ],
+      [
+        "0x7853",
+        "0x792b"
+      ],
+      [
+        "0x792c",
+        "0x7937"
+      ],
+      [
+        "0x7938",
+        "0x793c"
+      ],
+      [
+        "0x793d",
+        "0x7984"
+      ],
+      [
+        "0x7986",
+        "0x7995"
+      ],
+      [
+        "0x7996",
+        "0x799b"
+      ],
+      [
+        "0x799d",
+        "0x79a7"
+      ],
+      [
+        "0x79a8",
+        "0x79a9"
+      ],
+      [
+        "0x79aa",
+        "0x79ab"
+      ],
+      [
+        "0x79ac",
+        "0x79ad"
+      ],
+      [
+        "0x79ae",
+        "0x79ea"
+      ],
+      [
+        "0x79eb",
+        "0x79f0"
+      ],
+      [
+        "0x79f2",
+        "0x79fc"
+      ],
+      [
+        "0x79fd",
+        "0x79fe"
+      ],
+      [
+        "0x79ff",
+        "0x7a00"
+      ],
+      [
+        "0x7a01",
+        "0x7a02"
+      ],
+      [
+        "0x7a03",
+        "0x7a3a"
+      ],
+      [
+        "0x7a3b",
+        "0x7a58"
+      ],
+      [
+        "0x7a59",
+        "0x7abc"
+      ],
+      [
+        "0x7abd",
+        "0x7ad8"
+      ],
+      [
+        "0x7ad9",
+        "0x7ade"
+      ],
+      [
+        "0x7ae0",
+        "0x7afb"
+      ],
+      [
+        "0x7afc",
+        "0x7b11"
+      ],
+      [
+        "0x7b13",
+        "0x7b2f"
+      ],
+      [
+        "0x7b31",
+        "0x7b3a"
+      ],
+      [
+        "0x7b3c",
+        "0x7b57"
+      ],
+      [
+        "0x7b59",
+        "0x7b5c"
+      ],
+      [
+        "0x7b5e",
+        "0x7bfc"
+      ],
+      [
+        "0x7bfe",
+        "0x7da5"
+      ],
+      [
+        "0x7da6",
+        "0x7e25"
+      ],
+      [
+        "0x7e26",
+        "0x7f15"
+      ],
+      [
+        "0x7f16",
+        "0x7f17"
+      ],
+      [
+        "0x7f19",
+        "0x7f86"
+      ],
+      [
+        "0x7f87",
+        "0x7fb5"
+      ],
+      [
+        "0x7fb7",
+        "0x7fec"
+      ],
+      [
+        "0x7fed",
+        "0x7fee"
+      ],
+      [
+        "0x7ff0",
+        "0x8036"
+      ],
+      [
+        "0x8037",
+        "0x8038"
+      ],
+      [
+        "0x803a",
+        "0x80b4"
+      ],
+      [
+        "0x80b5",
+        "0x8156"
+      ],
+      [
+        "0x8157",
+        "0x8169"
+      ],
+      [
+        "0x816b",
+        "0x816e"
+      ],
+      [
+        "0x816f",
+        "0x81a8"
+      ],
+      [
+        "0x81a9",
+        "0x81aa"
+      ],
+      [
+        "0x81ab",
+        "0x81f3"
+      ],
+      [
+        "0x81f4",
+        "0x8217"
+      ],
+      [
+        "0x8218",
+        "0x821d"
+      ],
+      [
+        "0x821f",
+        "0x822e"
+      ],
+      [
+        "0x822f",
+        "0x82d1"
+      ],
+      [
+        "0x82d2",
+        "0x82d6"
+      ],
+      [
+        "0x82d7",
+        "0x82dc"
+      ],
+      [
+        "0x82de",
+        "0x8341"
+      ],
+      [
+        "0x8342",
+        "0x835f"
+      ],
+      [
+        "0x8360",
+        "0x8361"
+      ],
+      [
+        "0x8362",
+        "0x83ab"
+      ],
+      [
+        "0x83ac",
+        "0x83cb"
+      ],
+      [
+        "0x83cc",
+        "0x842e"
+      ],
+      [
+        "0x842f",
+        "0x844a"
+      ],
+      [
+        "0x844b",
+        "0x8450"
+      ],
+      [
+        "0x8452",
+        "0x8466"
+      ],
+      [
+        "0x8468",
+        "0x84d5"
+      ],
+      [
+        "0x84d6",
+        "0x855f"
+      ],
+      [
+        "0x8560",
+        "0x8573"
+      ],
+      [
+        "0x8574",
+        "0x8586"
+      ],
+      [
+        "0x8588",
+        "0x859d"
+      ],
+      [
+        "0x859f",
+        "0x85cd"
+      ],
+      [
+        "0x85cf",
+        "0x85f0"
+      ],
+      [
+        "0x85f1",
+        "0x85fa"
+      ],
+      [
+        "0x85fb",
+        "0x8652"
+      ],
+      [
+        "0x8654",
+        "0x8913"
+      ],
+      [
+        "0x8914",
+        "0x8946"
+      ],
+      [
+        "0x8947",
+        "0x8953"
+      ],
+      [
+        "0x8954",
+        "0x8969"
+      ],
+      [
+        "0x896a",
+        "0x8974"
+      ],
+      [
+        "0x8975",
+        "0x8976"
+      ],
+      [
+        "0x8977",
+        "0x897e"
+      ],
+      [
+        "0x897f",
+        "0x89a2"
+      ],
+      [
+        "0x89a3",
+        "0x89c6"
+      ],
+      [
+        "0x89c7",
+        "0x89ef"
+      ],
+      [
+        "0x89f0",
+        "0x8a61"
+      ],
+      [
+        "0x8a62",
+        "0x8a80"
+      ]
+    ],
+    "difference_values_sha256": "65dc7af627655d29ea582c6f96c452f05fbef61bb943baaaab1deb2b46bfc6f3",
+    "differing_bytes": 18906,
+    "verified_relocations": 499,
+    "relocations_sha256": "bba3d32277792ca1fa75f134f82750941cb22334c9c1590a12194ca79180961d",
+    "previously_proved_equivalent_callee_entries": {
+      "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z": {
+        "rva": "0x14b00",
+        "certificate": "evidence/equivalence/sb2-blupi-fr/IsDeepWater.json",
+        "payload_sha256": "d8c2e3f835407e4e838c1dd00d8df9985cc2eb200edc4bcd9db3881940b8eba8"
+      },
+      "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z": {
+        "rva": "0x14b50",
+        "certificate": "evidence/equivalence/sb2-blupi-fr/IsOutWater.json",
+        "payload_sha256": "f8a8c44e437a586cdd5acbb5a7c5bf51e45ac810ca27aa03c1fd71070457e3f7"
+      },
+      "?IsBridge@CDecor@@QAEHUtagPOINT@@PAU2@@Z": {
+        "rva": "0x147c0",
+        "certificate": "evidence/equivalence/sb2-blupi-fr/IsBridge.json",
+        "payload_sha256": "49198bc49275d819d2131468ed661ce355586fe278469b346d1d95da884f4977"
+      },
+      "?IsDoor@CDecor@@QAEHUtagPOINT@@PAU2@@Z": {
+        "rva": "0x14890",
+        "certificate": "evidence/equivalence/sb2-blupi-fr/IsDoor.json",
+        "payload_sha256": "95c45cc84500c9c48ea809e41fc024db17dba062fa77745bc6bdc632d36c3ce3"
+      }
+    }
+  }
+}
