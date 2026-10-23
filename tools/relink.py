@@ -168,7 +168,8 @@ def imports(pe):
 
 def image_info(pe):
     header = pe.OPTIONAL_HEADER
-    return dict(image_base=header.ImageBase, entry_rva=header.AddressOfEntryPoint,
+    return dict(file_timestamp=pe.FILE_HEADER.TimeDateStamp,
+                image_base=header.ImageBase, entry_rva=header.AddressOfEntryPoint,
                 section_alignment=header.SectionAlignment, file_alignment=header.FileAlignment,
                 linker_version=[header.MajorLinkerVersion, header.MinorLinkerVersion],
                 sections=[dict(name=s.Name.rstrip(b"\0").decode(), rva=s.VirtualAddress,
@@ -276,6 +277,8 @@ def main(argv=None):
     parser.add_argument("--linker", choices=sorted(set(LINKERS) | {"rtm"}), default=None)
     parser.add_argument("--historical-host", action="store_true",
                         help="run pinned SP3/RTM LINK with its VC5 CRT and oracle UTC clock via histlink.py")
+    parser.add_argument("--historical-cvtres-only", action="store_true",
+                        help="run RTM CVTRES under histlink's oracle clock, then LINK on the normal host")
     parser.add_argument("--order", choices=("oracle", "manifest", "recorded", "eggbert-jauge-before-menu"))
     parser.add_argument("--standalone", action="store_true",
                         help="build from recorded source settings without reading an oracle or running verification")
@@ -309,6 +312,12 @@ def main(argv=None):
         parser.error('--standalone requires image_base and section_alignment in the selected manifest')
     if args.historical_host and args.standalone:
         parser.error('--historical-host requires an oracle timestamp; omit --standalone')
+    if args.historical_cvtres_only and args.historical_host:
+        parser.error('--historical-cvtres-only cannot be combined with --historical-host')
+    if args.historical_cvtres_only and args.standalone:
+        parser.error('--historical-cvtres-only requires an oracle resource timestamp; omit --standalone')
+    if args.historical_cvtres_only and args.linker not in (None, "rtm"):
+        parser.error('--historical-cvtres-only requires the pinned RTM linker/resource toolchain')
     if args.historical_host and args.linker not in ("sp3", "rtm"):
         parser.error("--historical-host requires the pinned --linker sp3 or rtm")
     out = args.out_dir.resolve()
@@ -463,7 +472,7 @@ def main(argv=None):
     resource_host_report = None
     resource_timestamp = None
     res_path = resource_obj = None
-    if args.historical_host and args.linker == "rtm" and res_files:
+    if (args.historical_host or args.historical_cvtres_only) and args.linker == "rtm" and res_files:
         # RTM LINK normally starts CVTRES as a child; the existing debugger
         # scope is one process. Convert the .res in a separate, clock-frozen
         # CVTRES process and give LINK its normal COFF resource object.
@@ -520,6 +529,7 @@ def main(argv=None):
     unresolved = sorted(set(re.findall(r"unresolved external symbol (.*)", transcript)))
     record = dict(target=target.name, target_oracle=str(oracle_path), oracle_sha256=target.sha256,
                   linker_selection=args.linker,
+                  historical_cvtres_only=args.historical_cvtres_only,
                   command=command, expanded_command=[str(linker)] + arguments,
                   compile_commands=compile_commands, order=[u["source"] for u in ordered],
                   objects={k: dict(path=str(v), sha256=digest(v)) for k, v in objects.items()},
