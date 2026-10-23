@@ -1,0 +1,1141 @@
+// Scene builder: port-side derivative of CDecor::Build, DecorNextAction,
+// DrawInfo, BlitzActif and VoyageDraw (games/sb2/src/decblock.cpp and
+// games/sb2/src/decor.cpp), extending SB1 game/scene.cpp; see SB2_PORT.md M4a.
+//
+// Conventions:
+//  * CDecor state is read through pointer-to-member accessors (DecorAccess),
+//    bound to const references with the historical member names at the top of
+//    each function, so the copied bodies stay textually close to games/sb2/src/ and any
+//    write to game state is a compile error.
+//  * Inside the copied bodies, m_pPixmap names a Recorder, not the CPixmap: its
+//    methods have CPixmap's signatures plus a trailing Tag (layer, entity,
+//    index) and append one Item with exactly the historical arguments. A call
+//    that reached the real CPixmap would not compile.
+//  * Historical state changes made while drawing are not made; where later
+//    drawing in the same Build depends on them they are computed into locals
+//    and the original statement is kept as a comment.
+
+#include "game/scene.h"
+#include "game/member_access.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+
+#include "dectables.h"
+#include "jauge.h"
+#include "misc.h"
+#include "network.h"
+#include "text.h"
+
+extern int table_blitz[];
+extern int table_shieldloop[], table_decor_piege2[], table_decor_piege1[];
+extern int table_decor_goutte[], table_decor_ecraseur[], table_decor_scie[];
+extern int table_decor_temp[], table_decor_blitz[];
+
+namespace blupi::scene
+{
+namespace
+{
+// Read access to the protected state of CDecor (and CJauge) without changing
+// any header: pointers to members formed through a derived class.
+#define SCENE_DECOR_MEMBERS(X) \
+	X(m_pPixmap) \
+	X(m_pNetwork) \
+	X(m_decor) \
+	X(m_bigDecor) \
+	X(m_moveObject) \
+	X(m_posDecor) \
+	X(m_dimDecor) \
+	X(m_posCelHili) \
+	X(m_dimCelHili) \
+	X(m_liftEnd) \
+	X(m_phase) \
+	X(m_time) \
+	X(m_blupiPos) \
+	X(m_blupiIcon) \
+	X(m_blupiChannel) \
+	X(m_blupiShield) \
+	X(m_blupiPower) \
+	X(m_blupiCloud) \
+	X(m_blupiHide) \
+	X(m_blupiFront) \
+	X(m_blupiBullet) \
+	X(m_blupiPerso) \
+	X(m_blupiTimeShield) \
+	X(m_blupiStartPos) \
+	X(m_blupiStartDir) \
+	X(m_bMulti) \
+	X(m_team) \
+	X(m_netBlupiPos) \
+	X(m_netBlupiIcon) \
+	X(m_netBlupiSec) \
+	X(m_netBlupiTransport) \
+	X(m_notifText) \
+	X(m_jauges) \
+	X(m_bPrivate) \
+	X(m_bDrawSecret) \
+	X(m_bJoystick) \
+	X(m_mission) \
+	X(m_nbVies) \
+	X(m_nbTresor) \
+	X(m_totalTresor) \
+	X(m_voyageIcon) \
+	X(m_voyageChannel) \
+	X(m_voyagePhase) \
+	X(m_voyageTotal) \
+	X(m_voyageStart) \
+	X(m_voyageEnd) \
+	X(m_bPause) X(m_blupiFocus) X(m_bBuildOfficialMissions) \
+	X(m_blupiDynamite) X(m_blupiCle) \
+	X(m_decorAction) \
+	X(m_decorPhase)
+BLUPI_MEMBER_ACCESS(DecorAccess, CDecor, SCENE_DECOR_MEMBERS)
+
+#define SCENE_JAUGE_MEMBERS(X) X(m_bHide) X(m_pos) X(m_dim) X(m_type) X(m_level) X(m_bMinimizeRedraw) X(m_bRedraw)
+BLUPI_MEMBER_ACCESS(JaugeAccess, CJauge, SCENE_JAUGE_MEMBERS)
+
+// Annotation of one recorded draw call.
+struct Tag
+{
+	Layer  layer;
+	Entity entity;
+	int    index;
+	bool   simCamera;  // World item placed with m_posDecor instead of the shaken view
+	Item::Cull cull = Item::Cull::None;
+	POINT  ref = {0, 0};
+	bool   extended = false;
+};
+
+Tag AtBack(int index) { return {Layer::Background, Entity::Parallax, index, false}; }
+Tag AtWorld(Entity e, int index = 0) { return {Layer::World, e, index, false}; }
+Tag AtWorldSim(Entity e, int index = 0) { return {Layer::World, e, index, true}; }
+Tag AtScreen(Entity e, int index = 0) { return {Layer::Screen, e, index, false}; }
+Tag AtTarget(Entity e, int index = 0) { return {Layer::Target, e, index, false}; }
+
+// Cell of a pixel coordinate; views and coverage edges can be negative.
+int FloorDiv(int a, int b)
+{
+	return a >= 0 ? a / b : -((-a + b - 1) / b);
+}
+
+// Build's visibility rules (the tile loop ranges and the move-object bounds
+// tests of CDecor::Build), for a view of any position and size. At Build's
+// own view and 640x480 they select exactly the items Build draws.
+bool VisibleRule(Item::Cull cull, int index, POINT ref, POINT view, int width, int height)
+{
+	const int i = index / MAXCELY, j = index % MAXCELY;
+	const int cx = FloorDiv(view.x, DIMOBJX), cy = FloorDiv(view.y, DIMOBJY);
+	switch (cull)
+	{
+	case Item::Cull::None:
+		return true;
+	case Item::Cull::BigCell:
+		return i >= cx - 1 && i < cx + width / DIMOBJX + 3 && j >= cy - 1 && j < cy + height / DIMOBJY + 2;
+	case Item::Cull::Cell:
+		return i >= cx && i < cx + width / DIMOBJX + 2 && j >= cy && j < cy + height / DIMOBJY + 2;
+	case Item::Cull::Point:
+		return ref.x >= view.x - DIMOBJX && ref.y >= view.y - DIMOBJY &&
+			   ref.x <= view.x + width && ref.y <= view.y + height;
+	}
+	return true;
+}
+
+// A tile cell, extended unless Build draws it at its own view.
+Tag AtCell(Entity e, Item::Cull rule, int i, int j, POINT view)
+{
+	Tag t = AtWorld(e, i * MAXCELY + j);
+	t.cull = rule;
+	t.extended = !VisibleRule(rule, t.index, t.ref, view, LXIMAGE, LYIMAGE);
+	return t;
+}
+
+// An object tested on ref, extended unless Build draws it at its own view.
+Tag AtPoint(Entity e, int index, POINT ref, POINT view)
+{
+	Tag t = AtWorld(e, index);
+	t.cull = Item::Cull::Point;
+	t.ref = ref;
+	t.extended = !VisibleRule(t.cull, index, ref, view, LXIMAGE, LYIMAGE);
+	return t;
+}
+
+// Stands in for m_pPixmap inside the copied bodies; records instead of drawing.
+class Recorder
+{
+public:
+	explicit Recorder(Scene& scene) : m_scene(scene) {}
+
+	void SetClipping(RECT clip, Tag t)
+	{
+		Item& it = Add(Item::Op::SetClip, t);
+		it.rect = clip;
+	}
+	void DrawPart(int chDst, int channel, POINT dest, RECT rect, int mode, BOOL bMask, Tag t)
+	{
+		Item& it = Add(Item::Op::DrawPart, t);
+		it.chDst = chDst;
+		it.channel = channel;
+		it.rect = rect;
+		it.mode = mode;
+		it.mask = bMask;
+		Place(it, dest, t);
+	}
+	void QuickIcon(int channel, int rank, POINT pos, Tag t)
+	{
+		Item& it = Add(Item::Op::QuickIcon, t);
+		it.channel = channel;
+		it.rank = rank;
+		Place(it, pos, t);
+	}
+	void DrawIcon(int chDst, int channel, int rank, POINT pos, int mode, BOOL bMask, Tag t)
+	{
+		Item& it = Add(Item::Op::DrawIcon, t);
+		it.chDst = chDst;
+		it.channel = channel;
+		it.rank = rank;
+		it.mode = mode;
+		it.mask = bMask;
+		Place(it, pos, t);
+	}
+	void Text(Item::Op op, POINT pos, const char* pText, int font, Tag t)
+	{
+		Item& it = Add(op, t);
+		it.text = pText;
+		it.font = font;
+		Place(it, pos, t);
+	}
+	// m_jauges[i].Draw()
+	// m_jauges[i].Draw(), as a snapshot of the jauge (CJauge::Draw, games/sb2/src/jauge.cpp).
+	// Its state change (m_bRedraw = FALSE) is made by EndOfTick.
+	void JaugeDraw(const CJauge& jauge, int i, Tag t)
+	{
+		if (jauge.*JaugeAccess::m_bMinimizeRedraw && !(jauge.*JaugeAccess::m_bRedraw)) return;
+		const POINT& pos = jauge.*JaugeAccess::m_pos;
+		const POINT& dim = jauge.*JaugeAccess::m_dim;
+		Item& it = Add(Item::Op::JaugeDraw, t);
+		it.index = i;
+		it.mask = jauge.*JaugeAccess::m_bHide;
+		it.mode = jauge.*JaugeAccess::m_type;
+		it.rank = jauge.*JaugeAccess::m_level;
+		it.pos = pos;
+		it.rect = RECT{pos.x, pos.y, pos.x + dim.x, pos.y + dim.y};
+	}
+
+	Item& Last() { return m_scene.items.back(); }
+
+private:
+	Item& Add(Item::Op op, Tag t)
+	{
+		m_scene.items.emplace_back();
+		Item& it = m_scene.items.back();
+		it.op = op;
+		it.layer = t.layer;
+		it.entity = t.entity;
+		it.index = t.index;
+		it.cull = t.cull;
+		it.ref = t.ref;
+		it.simCamera = t.simCamera;
+		it.extended = t.extended;
+		return it;
+	}
+	void Place(Item& it, POINT pos, Tag t)
+	{
+		it.pos = pos;
+		if (t.layer == Layer::World)
+		{
+			POINT origin = t.simCamera ? m_scene.camera : m_scene.view;
+			it.world.x = pos.x + origin.x;
+			it.world.y = pos.y + origin.y;
+		}
+	}
+
+	Scene& m_scene;
+};
+
+// Text functions of games/sb2/src/text.h, recorded (same arguments plus a Tag).
+void DrawText(Recorder* pPixmap, POINT pos, const char* pText, int font, Tag t)
+{
+	pPixmap->Text(Item::Op::DrawText, pos, pText, font, t);
+}
+
+void DrawTextCenter(Recorder* pPixmap, POINT pos, const char* pText, int font, Tag t)
+{
+	pPixmap->Text(Item::Op::DrawTextCenter, pos, pText, font, t);
+}
+
+// Copy of CJauge::GetHide (games/sb2/src/jauge.cpp), const.
+BOOL GetHide(const CJauge& jauge)
+{
+	return jauge.*JaugeAccess::m_bHide;
+}
+
+// Copy of CDecor::GetBlupiChannelActual (games/sb2/src/decblock.cpp), const.
+int GetBlupiChannelActual(const CDecor& decor)
+{
+	const BOOL& m_bMulti = decor.*DecorAccess::m_bMulti;
+	const int& m_blupiChannel = decor.*DecorAccess::m_blupiChannel;
+	const int& m_team = decor.*DecorAccess::m_team;
+
+	if (m_bMulti && m_blupiChannel == 2 && m_team > 0) {
+		return m_team + CHBLUPI1 - 1;
+	}
+	else return m_blupiChannel;
+}
+
+// Copy of CDecor::GetBlupiChannelStandard (games/sb2/src/decblock.cpp), const.
+int GetBlupiChannelStandard(const CDecor& decor)
+{
+	const BOOL& m_bMulti = decor.*DecorAccess::m_bMulti;
+	const int& m_team = decor.*DecorAccess::m_team;
+
+	if (m_bMulti && m_team > 0) {
+		return m_team + CHBLUPI1 - 1;
+	}
+	else return 2;
+}
+
+// Copy of CDecor::GetIconPerso (games/sb2/src/decblock.cpp), const.
+int GetIconPerso(const CDecor& decor)
+{
+	const BOOL& m_bMulti = decor.*DecorAccess::m_bMulti;
+	const int& m_team = decor.*DecorAccess::m_team;
+
+	if (m_bMulti) return m_team + 0x6c;
+	return 0x6c;
+}
+
+// Derived from CDecor::DecorNextAction (games/sb2/src/decblock.cpp): returns the camera
+// shaken by the current decor action. The two state changes of the original
+// (m_decorPhase++, m_decorAction = 0) are not made; nothing later in Build
+// reads them.
+POINT DecorNextAction(const CDecor& decor)
+{
+	const int& m_decorAction = decor.*DecorAccess::m_decorAction;
+	const int& m_decorPhase = decor.*DecorAccess::m_decorPhase;
+	const POINT& m_posDecor = decor.*DecorAccess::m_posDecor;
+	const POINT& m_dimDecor = decor.*DecorAccess::m_dimDecor;
+
+	int num, num2;
+	POINT posDecor;
+	num = 0;
+	if (m_decorAction == 0 || (decor.*DecorAccess::m_bPause))
+	{
+		return m_posDecor;
+	}
+	posDecor = m_posDecor;
+	while (table_decor_action[num] != 0)
+	{
+		if (m_decorAction == table_decor_action[num])
+		{
+			if (m_decorPhase < table_decor_action[num + 1])
+			{
+				posDecor.x += 3 * table_decor_action[num + 2 + m_decorPhase * 2];
+				posDecor.y += 3 * table_decor_action[num + 2 + m_decorPhase * 2 + 1];
+				if (m_dimDecor.x == 0)
+				{
+					num2 = 0;
+				}
+				else
+				{
+					num2 = DIMOBJX * MAXCELX - LXIMAGE;
+				}
+				if (posDecor.x < 0)
+				{
+					posDecor.x = 0;
+				}
+				if (posDecor.x > num2)
+				{
+					posDecor.x = num2;
+				}
+				if (m_dimDecor.y == 0)
+				{
+					num2 = 0;
+				}
+				else
+				{
+					num2 = DIMOBJY * MAXCELY - LYIMAGE;
+				}
+				if (posDecor.y < 0)
+				{
+					posDecor.y = 0;
+				}
+				if (posDecor.y > num2)
+				{
+					posDecor.y = num2;
+				}
+				// m_decorPhase++;  (state change, ROADMAP.md stage 4)
+				break;
+			}
+			// m_decorAction = 0;  (state change, ROADMAP.md stage 4)
+			break;
+		}
+		else
+		{
+			num += 2 + table_decor_action[num + 1] * 2;
+		}
+	}
+	return posDecor;
+}
+
+// BlitzActif's predicate only. PlaySound (including NetPlaySound) is EndOfTick's work.
+BOOL BlitzActif(const CDecor& decor, POINT cel)
+{
+	const int& m_phase = decor.*DecorAccess::m_phase;
+	const int& m_time = decor.*DecorAccess::m_time;
+	const POINT& m_blupiPos = decor.*DecorAccess::m_blupiPos;
+	if (m_phase == WM_PHASE_BUILD) return !(m_time % 2);
+
+	POINT pos = { cel.x * DIMOBJX, cel.y * DIMOBJY };
+
+	int num = m_time % 100;
+
+	if (m_blupiPos.x >= pos.x - 80 && m_blupiPos.x <= pos.x + 80 &&
+		m_blupiPos.y >= pos.y - 500 && m_blupiPos.y <= pos.y + 500)
+	{
+
+		for (int i = 0; table_blitz[i] != -1; )
+		{
+			if (m_time % 100 == table_blitz[i++]) return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+void DrawInfo(const CDecor& decor, Recorder* m_pPixmap)
+{
+	const int& m_phase = decor.*DecorAccess::m_phase;
+	const char (&m_notifText)[MAXNOTIF][100] = decor.*DecorAccess::m_notifText;
+	const int& m_nbVies = decor.*DecorAccess::m_nbVies;
+	const int& m_blupiBullet = decor.*DecorAccess::m_blupiBullet;
+	const int& m_blupiPerso = decor.*DecorAccess::m_blupiPerso;
+	const int& m_mission = decor.*DecorAccess::m_mission;
+	const BOOL& m_bPrivate = decor.*DecorAccess::m_bPrivate;
+	const int& m_nbTresor = decor.*DecorAccess::m_nbTresor;
+	const int& m_totalTresor = decor.*DecorAccess::m_totalTresor;
+	const CJauge (&m_jauges)[2] = decor.*DecorAccess::m_jauges;
+	POINT m_blupiPos = decor.*DecorAccess::m_blupiPos;  // local copy, see above
+	const BOOL& m_bJoystick = decor.*DecorAccess::m_bJoystick;
+	const POINT& m_posCelHili = decor.*DecorAccess::m_posCelHili;
+	const POINT& m_dimCelHili = decor.*DecorAccess::m_dimCelHili;
+	const POINT& m_posDecor = decor.*DecorAccess::m_posDecor;
+	const int& m_liftEnd = decor.*DecorAccess::m_liftEnd;
+
+	const int& m_blupiDynamite = decor.*DecorAccess::m_blupiDynamite;
+	const int& m_blupiCle = decor.*DecorAccess::m_blupiCle;
+
+	POINT pos;
+	char text[100];
+	int i, x, y, icon;
+
+	if (m_phase == WM_PHASE_PLAY || m_phase == WM_PHASE_PLAYTEST)
+	{
+		pos.x = 10;
+		pos.y = 10;
+		for (i = 0; i < MAXNOTIF; i++)
+		{
+			if (m_notifText[i][0] != '\0')
+			{
+				DrawText(m_pPixmap, pos, m_notifText[i], FONTWHITE, AtScreen(Entity::Text, i));
+			}
+			pos.y += DIMTEXTY;
+		}
+
+		pos.x = -15;
+		pos.y = 417;
+		for (i = 0; i < m_nbVies; i++)
+		{
+			m_pPixmap->QuickIcon(GetBlupiChannelStandard(decor), 48, pos, AtScreen(Entity::Hud));
+			pos.x += 16;
+		}
+
+		pos.x = 398;
+		pos.y = 442;
+		for (i = 0; i < m_blupiBullet; i++)
+		{
+			m_pPixmap->QuickIcon(CHELEMENT, 176, pos, AtScreen(Entity::Hud));
+			pos.x += 4;
+		}
+
+		if (m_blupiPerso > 0)
+		{
+			pos.x = 465;
+			pos.y = 438;
+			m_pPixmap->QuickIcon(CHBLUPI, GetIconPerso(decor), pos, AtScreen(Entity::Hud));
+			sprintf(text, "= %d", m_blupiPerso);
+			pos.x = 497;
+			pos.y = 452;
+			DrawText(m_pPixmap, pos, text, FONTWHITE, AtScreen(Entity::Text));
+		}
+
+		if (m_blupiDynamite > 0)
+		{
+			pos.x = 505; pos.y = 414;
+			m_pPixmap->QuickIcon(CHELEMENT, 252, pos, AtScreen(Entity::Hud));
+		}
+		if (m_blupiCle & CLE_RED)
+		{
+			pos.x = 520; pos.y = 418;
+			m_pPixmap->QuickIcon(CHELEMENT, 215, pos, AtScreen(Entity::Hud));
+		}
+		if (m_blupiCle & CLE_GREEN)
+		{
+			pos.x = 530; pos.y = 418;
+			m_pPixmap->QuickIcon(CHELEMENT, 222, pos, AtScreen(Entity::Hud));
+		}
+		if (m_blupiCle & CLE_BLUE)
+		{
+			pos.x = 540; pos.y = 418;
+			m_pPixmap->QuickIcon(CHELEMENT, 229, pos, AtScreen(Entity::Hud));
+		}
+
+		if ((m_mission != 1 && m_mission % 10 != 0) || m_bPrivate)
+		{
+			sprintf(text, "%d/%d", m_nbTresor, m_totalTresor);
+			pos.x = 590;
+			pos.y = 452;
+			DrawText(m_pPixmap, pos, text, FONTWHITE, AtScreen(Entity::Text));
+		}
+
+		for (i = 0; i < 2; i++)
+		{
+			if (!GetHide(m_jauges[i])) m_pPixmap->JaugeDraw(m_jauges[i], i, AtScreen(Entity::Jauge, i));
+		}
+
+		if (m_mission == 10 && m_phase == WM_PHASE_PLAY && !m_bPrivate)
+		{
+			if (m_nbTresor == 0 && m_blupiPos.x > 212) m_blupiPos.x = 212;
+			if (m_nbTresor == 1 && m_blupiPos.x > 788) m_blupiPos.x = 788;
+
+			POINT cel = { (m_blupiPos.x + DIMBLUPIX / 2) / DIMOBJX,
+				(m_blupiPos.y + DIMBLUPIY / 2) / DIMOBJY };
+			for (i = 0; table_tutorial[i] != -1; i += 6)
+			{
+				if (cel.x >= table_tutorial[i] &&
+					cel.x <= table_tutorial[i + 1] &&
+					cel.y >= table_tutorial[i + 2] &&
+					cel.y <= table_tutorial[i + 3] &&
+					(table_tutorial[i + 4] == -1 || m_nbTresor == table_tutorial[i + 4]))
+				{
+					if (m_bJoystick)
+						LoadString(table_tutorial[i + 5] + 100, text, 100);
+					else
+						LoadString(table_tutorial[i + 5], text, 100);
+					pos.x = 360;
+					pos.y = 460;
+					DrawTextCenter(m_pPixmap, pos, text, 0, AtScreen(Entity::Text));
+					break;
+				}
+			}
+		}
+	}
+
+	if (m_phase == WM_PHASE_BUILD)
+	{
+		if (m_posCelHili.x != -1)
+		{
+			pos.x = m_posCelHili.x * DIMOBJX - m_posDecor.x;
+			pos.y = m_posCelHili.y * DIMOBJY - m_posDecor.y;
+			icon = 0;
+			if (m_liftEnd != -1) icon = 31;
+
+			for (x = 0; x < m_dimCelHili.x; x++)
+			{
+				for (y = 0; y < m_dimCelHili.y; y++)
+				{
+					{
+						POINT iconPos = { pos.x + x * DIMOBJX, pos.y + y * DIMOBJY };
+						m_pPixmap->QuickIcon(1, icon,
+						iconPos, AtWorldSim(Entity::CellHili));
+					}
+				}
+			}
+		}
+		if (m_phase == WM_PHASE_BUILD)
+		{
+			LoadString(0x66, text, 100);
+			pos.x = 200;
+			pos.y = 460;
+			DrawText(m_pPixmap, pos, text, FONTGOLD, AtScreen(Entity::Text));
+		}
+	}
+
+	if (m_phase == WM_PHASE_PLAYTEST)
+	{
+		LoadString(0x67, text, 100);
+		pos.x = 200;
+		pos.y = 460;
+		DrawText(m_pPixmap, pos, text, FONTGOLD, AtScreen(Entity::Text));
+	}
+}
+
+void VoyageDraw(const CDecor& decor, Recorder* m_pPixmap)
+{
+	const int& m_voyageIcon = decor.*DecorAccess::m_voyageIcon;
+	const int& m_voyageChannel = decor.*DecorAccess::m_voyageChannel;
+	const int& m_voyagePhase = decor.*DecorAccess::m_voyagePhase;
+	const int& m_voyageTotal = decor.*DecorAccess::m_voyageTotal;
+	const POINT& m_voyageStart = decor.*DecorAccess::m_voyageStart;
+	const POINT& m_voyageEnd = decor.*DecorAccess::m_voyageEnd;
+
+	if (m_voyageIcon != -1)
+	{
+		int phase = m_voyagePhase;
+		if (m_voyageIcon == 40 && m_voyageChannel == CHELEMENT)
+		{
+			phase -= 30;
+			if (phase < 0) phase = 0;
+		}
+		POINT pos;
+		pos.x = m_voyageStart.x + (m_voyageEnd.x - m_voyageStart.x) * phase / m_voyageTotal;
+		pos.y = m_voyageStart.y + (m_voyageEnd.y - m_voyageStart.y) * phase / m_voyageTotal;
+		if (m_voyageIcon != 40 || m_voyageChannel != CHELEMENT || phase != 0)
+		{
+			m_pPixmap->QuickIcon(m_voyageChannel, m_voyageIcon, pos, AtScreen(Entity::Voyage));
+			Item& voyage = m_pPixmap->Last();
+			voyage.rect = RECT{m_voyageStart.x, m_voyageStart.y, m_voyageEnd.x, m_voyageEnd.y};
+			voyage.mode = phase;
+			voyage.font = m_voyageTotal;
+		}
+	}
+}
+} // namespace
+
+void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out, const Coverage& coverage)
+{
+	if (coverage.left || coverage.right || coverage.top || coverage.bottom)
+	{
+		fprintf(stderr, "SB2 extended scene coverage requires M4b\n");
+		std::abort();
+	}
+	(void)mousePos;  // unused by Build too
+	const int& m_phase = decor.*DecorAccess::m_phase;
+	const int& m_time = decor.*DecorAccess::m_time;
+	const Cellule (&m_decor)[MAXCELX][MAXCELY] = decor.*DecorAccess::m_decor;
+	const Cellule (&m_bigDecor)[MAXCELX][MAXCELY] = decor.*DecorAccess::m_bigDecor;
+	const MoveObject (&m_moveObject)[MAXMOVEOBJECT] = decor.*DecorAccess::m_moveObject;
+	const POINT (&m_blupiStartPos)[4] = decor.*DecorAccess::m_blupiStartPos;
+	const int (&m_blupiStartDir)[4] = decor.*DecorAccess::m_blupiStartDir;
+	const BOOL& m_bMulti = decor.*DecorAccess::m_bMulti;
+	const CNetwork* const m_pNetwork = decor.*DecorAccess::m_pNetwork;
+	const POINT (&m_netBlupiPos)[MAXNETPLAYER] = decor.*DecorAccess::m_netBlupiPos;
+	const int (&m_netBlupiIcon)[MAXNETPLAYER] = decor.*DecorAccess::m_netBlupiIcon;
+	const int (&m_netBlupiSec)[MAXNETPLAYER] = decor.*DecorAccess::m_netBlupiSec;
+	const int (&m_netBlupiTransport)[MAXNETPLAYER] = decor.*DecorAccess::m_netBlupiTransport;
+	const POINT& m_blupiPos = decor.*DecorAccess::m_blupiPos;
+	const int& m_blupiIcon = decor.*DecorAccess::m_blupiIcon;
+	const BOOL& m_blupiShield = decor.*DecorAccess::m_blupiShield;
+	const BOOL& m_blupiPower = decor.*DecorAccess::m_blupiPower;
+	const BOOL& m_blupiCloud = decor.*DecorAccess::m_blupiCloud;
+	const BOOL& m_blupiHide = decor.*DecorAccess::m_blupiHide;
+	const BOOL& m_blupiFront = decor.*DecorAccess::m_blupiFront;
+	const int& m_blupiTimeShield = decor.*DecorAccess::m_blupiTimeShield;
+	const BOOL& m_bDrawSecret = decor.*DecorAccess::m_bDrawSecret;
+
+	const BOOL& m_bBuildOfficialMissions = decor.*DecorAccess::m_bBuildOfficialMissions;
+	const BOOL& m_blupiFocus = decor.*DecorAccess::m_blupiFocus;
+
+	out.items.clear();
+	Recorder recorder(out);
+	Recorder* const m_pPixmap = &recorder;
+	int i, j, num, channel;
+	POINT tinyPoint, pos, posDecor;
+	RECT lastClip;
+
+	lastClip = (decor.*DecorAccess::m_pPixmap)->GetClipping();
+	m_pPixmap->SetClipping(rect, AtScreen(Entity::None));
+
+	posDecor = DecorNextAction(decor);
+	out.camera = decor.*DecorAccess::m_posDecor;
+	out.view = posDecor;
+	out.phase = m_phase;
+	const POINT& dim = decor.*DecorAccess::m_dimDecor;
+	out.maxView = POINT{dim.x == 0 ? 0 : DIMOBJX * MAXCELX - LXIMAGE,
+						dim.y == 0 ? 0 : DIMOBJY * MAXCELY - LYIMAGE};
+	pos.x = posDecor.x * 2 / 3;
+	pos.y = posDecor.y * 2 / 3;
+	int x = pos.x % DIMDECORX;
+	rect.left = x;
+	int y = pos.y % DIMDECORY;
+	tinyPoint.x = 0;
+	for (i = 0; i < 2; i++)
+	{
+		tinyPoint.y = 0;
+		rect.top = y;
+		rect.right = DIMDECORX;
+		rect.bottom = DIMDECORY;
+		for (j = 0; j < 2; j++)
+		{
+			m_pPixmap->DrawPart(-1, CHDECOR, tinyPoint, rect, 1, FALSE, AtBack(i * 2 + j));
+			rect.bottom -= rect.top;
+			tinyPoint.y += rect.bottom;
+			rect.top = 0;
+			rect.bottom = DIMDECORY;
+		}
+		tinyPoint.x += DIMDECORX - rect.left;
+		rect.left = 0;
+	}
+
+	tinyPoint.x = 0 - posDecor.x % DIMOBJX - DIMOBJX;
+	for (i = posDecor.x / DIMOBJX - 1; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 3; i++) {
+		tinyPoint.y = 2 - posDecor.y % DIMOBJY - DIMOBJY;
+		for (j = posDecor.y / DIMOBJY - 1; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
+		{
+			if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY)
+			{
+				num = m_bigDecor[i][j].icon;
+				channel = 9;
+				if (num != -1)
+				{
+					pos.x = tinyPoint.x;
+					pos.y = tinyPoint.y;
+					if (num == 203)
+					{
+						num = table_marine[m_time / 3 % 11];
+						channel = 1;
+					}
+					if (num >= 66 && num <= 68) pos.y -= 13;
+					if (num >= 87 && num <= 89) pos.y -= 2;
+					m_pPixmap->QuickIcon(channel, num, pos, AtCell(Entity::BigDecor, Item::Cull::BigCell, i, j, posDecor));
+				}
+			}
+			tinyPoint.y += DIMOBJY;
+		}
+		tinyPoint.x += DIMOBJX;
+	}
+
+	tinyPoint.x = 0 - posDecor.x % DIMOBJX;
+	for (i = posDecor.x / DIMOBJX; i < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 2; i++)
+	{
+		tinyPoint.y = 0 - posDecor.y % DIMOBJY;
+		for (j = posDecor.y / DIMOBJY; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
+		{
+			if (i >= 0 && i < MAXCELX && j >= 0 && j < MAXCELY && m_decor[i][j].icon != -1)
+			{
+				num = m_decor[i][j].icon;
+				if (num == 384 || num == 385) m_pPixmap->QuickIcon(1, num, tinyPoint, AtCell(Entity::Decor, Item::Cull::Cell, i, j, posDecor));
+			}
+			tinyPoint.y += DIMOBJY;
+		}
+		tinyPoint.x += DIMOBJX;
+	}
+
+	if (m_phase == WM_PHASE_BUILD)
+	{
+		for (i = 3; i >= 0; i--)
+		{
+			channel = 2;
+			if (i > 0) channel = CHBLUPI1 - 1 + i;
+			num = 4;
+			if (m_blupiStartDir[i] == DIR_RIGHT) num = 0;
+			tinyPoint.x = m_blupiStartPos[i].x - posDecor.x;
+			tinyPoint.y = m_blupiStartPos[i].y - posDecor.y;
+			m_pPixmap->QuickIcon(channel, num, tinyPoint, AtWorld(Entity::StartMarker, i));
+			if (m_bBuildOfficialMissions)
+			{
+				tinyPoint.x += 10;
+				tinyPoint.x += i * 8 - 12;
+				tinyPoint.y -= 20;
+				m_pPixmap->QuickIcon(CHBUTTON, i + 120, tinyPoint, AtWorld(Entity::StartMarker, i));
+			}
+		}
+	}
+
+	if (m_bMulti && m_phase != WM_PHASE_BUILD)
+	{
+		for (i = 0; i < 4; i++)
+		{
+			if (m_netBlupiIcon[i] != -1 && (m_netBlupiIcon[i] < 276 || m_netBlupiIcon[i] > 284) && m_netBlupiSec[i] != SEC_HIDE)
+			{
+				tinyPoint.x = m_netBlupiPos[i].x - posDecor.x;
+				tinyPoint.y = m_netBlupiPos[i].y - posDecor.y;
+				if (m_netBlupiSec[i] == SEC_SHIELD)
+				{
+					pos.x = tinyPoint.x;
+					pos.y = tinyPoint.y - 2;
+					m_pPixmap->QuickIcon(CHELEMENT, table_shield_blupi[m_time / 2 % 16], pos, AtWorld(Entity::NetBlupi, i));
+					m_pPixmap->QuickIcon(CHELEMENT, table_shieldloop[m_time / 2 % 5], tinyPoint, AtWorld(Entity::NetBlupi, i));
+				}
+				if (m_netBlupiSec[i] == SEC_POWER)
+				{
+					m_pPixmap->QuickIcon(CHELEMENT, table_magicloop[m_time / 2 % 5], tinyPoint, AtWorld(Entity::NetBlupi, i));
+				}
+				if (m_netBlupiSec[i] == SEC_CLOUD)
+				{
+					for (j = 0; j < 3; j++)
+					{
+						pos.x = tinyPoint.x - 34;
+						pos.y = tinyPoint.y - 34;
+						m_pPixmap->QuickIcon(CHEXPLO, (i + j + m_time) % 6 + 48, pos, AtWorld(Entity::NetBlupi, i));
+					}
+				}
+				int blupiChannel = m_netBlupiTransport[i];
+				int team = m_pNetwork->m_players[i].team;
+				if (blupiChannel == 2 && team > 0) blupiChannel = CHBLUPI1 - 1 + team;
+				m_pPixmap->QuickIcon(blupiChannel, m_netBlupiIcon[i], tinyPoint, AtWorld(Entity::NetBlupi, i));
+				pos.x = tinyPoint.x + 10;
+				pos.y = tinyPoint.y - 20;
+				m_pPixmap->QuickIcon(CHBUTTON, team + 120, pos, AtWorld(Entity::NetBlupi, i));
+			}
+		}
+	}
+
+	if (m_phase != WM_PHASE_BUILD)
+	{
+		// m_blupiSec = 0;  EndOfTick
+		if (!m_blupiFront)
+		{
+			tinyPoint.x = m_blupiPos.x - posDecor.x;
+			tinyPoint.y = m_blupiPos.y - posDecor.y;
+			if (m_blupiShield)
+			{
+		// m_blupiSec = SEC_SHIELD;  EndOfTick
+				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
+				{
+					num = table_shield_blupi[m_time / 2 % 16];
+					tinyPoint.y -= 2;
+					m_pPixmap->QuickIcon(CHELEMENT, num, tinyPoint, AtWorld(Entity::BlupiEffect));
+					tinyPoint.y += 2;
+					num = table_shieldloop[m_time / 2 % 5];
+					m_pPixmap->QuickIcon(CHELEMENT, num, tinyPoint, AtWorld(Entity::BlupiEffect));
+				}
+				m_pPixmap->QuickIcon(GetBlupiChannelActual(decor), m_blupiIcon, tinyPoint, AtWorld(Entity::Blupi));
+			}
+			else if (m_blupiPower)
+			{
+		// m_blupiSec = SEC_POWER;  EndOfTick
+				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
+				{
+					num = table_magicloop[m_time / 2 % 5];
+					m_pPixmap->QuickIcon(CHELEMENT, num, tinyPoint, AtWorld(Entity::BlupiEffect));
+				}
+				m_pPixmap->QuickIcon(GetBlupiChannelActual(decor), m_blupiIcon, tinyPoint, AtWorld(Entity::Blupi));
+			}
+			else if (m_blupiCloud)
+			{
+		// m_blupiSec = SEC_CLOUD;  EndOfTick
+				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
+				{
+					for (j = 0; j < 3; j++)
+					{
+						pos.x = tinyPoint.x - 34;
+						pos.y = tinyPoint.y - 34;
+						m_pPixmap->QuickIcon(CHEXPLO, (j + m_time) % 6 + 48, pos, AtWorld(Entity::BlupiEffect));
+					}
+				}
+				m_pPixmap->QuickIcon(GetBlupiChannelActual(decor), m_blupiIcon, tinyPoint, AtWorld(Entity::Blupi));
+			}
+			else if (m_blupiHide)
+			{
+		// m_blupiSec = SEC_HIDE;  EndOfTick
+				if (m_blupiTimeShield > 25 || m_time % 4 < 2)
+				{
+					POINT maskOrigin = { 0, 0 };
+					m_pPixmap->DrawIcon(CHTEMP, 1, 0xF5, maskOrigin, 0, TRUE, AtTarget(Entity::BlupiEffect));
+					m_pPixmap->DrawIcon(CHTEMP, GetBlupiChannelActual(decor), m_blupiIcon, maskOrigin, 1, FALSE, AtTarget(Entity::BlupiEffect));
+					m_pPixmap->DrawIcon(CHTEMP, 1, 0xED, maskOrigin, 0, TRUE, AtTarget(Entity::BlupiEffect));
+					m_pPixmap->QuickIcon(CHTEMP, 0, tinyPoint, AtWorld(Entity::BlupiEffect));
+				}
+				else
+				{
+					m_pPixmap->QuickIcon(GetBlupiChannelActual(decor), m_blupiIcon, tinyPoint, AtWorld(Entity::Blupi));
+				}
+			}
+			else
+			{
+				m_pPixmap->QuickIcon(GetBlupiChannelActual(decor), m_blupiIcon, tinyPoint, AtWorld(Entity::Blupi));
+			}
+		}
+	}
+
+
+	const MoveObject *pMoveObject = &m_moveObject[MAXMOVEOBJECT - 1];
+	for (i = MAXMOVEOBJECT; i != 0; pMoveObject--, i--)
+	{
+		if (pMoveObject->type == 0 || pMoveObject->posCurrent.x < posDecor.x - 64 || pMoveObject->posCurrent.y < posDecor.y - 64 || pMoveObject->posCurrent.x > posDecor.x + LXIMAGE || pMoveObject->posCurrent.y > posDecor.y + LYIMAGE) continue;
+		if (pMoveObject->type >= 8 && pMoveObject->type <= 11) continue;
+		if (pMoveObject->type >= 90 && pMoveObject->type <= 95) continue;
+		if (pMoveObject->type >= 98 && pMoveObject->type <= 100) continue;
+		if (pMoveObject->type == 53) continue;
+		if (pMoveObject->type == TYPE_ASCENSEUR || pMoveObject->type == TYPE_ASCENSEURs || pMoveObject->type == TYPE_ASCENSEURsi) continue;
+		tinyPoint.x = pMoveObject->posCurrent.x - posDecor.x;
+		tinyPoint.y = pMoveObject->posCurrent.y - posDecor.y;
+		if (pMoveObject->type == TYPE_BULLDOZER || pMoveObject->type == TYPE_BLUPIHELICO || pMoveObject->type == TYPE_BLUPITANK)
+		{
+			tinyPoint.x += 2;
+			tinyPoint.y += BLUPIOFFY;
+		}
+		if (pMoveObject->type == TYPE_CREATURE) tinyPoint.y += BLUPIOFFY;
+		m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint, AtPoint(Entity::MoveObject, int(pMoveObject - m_moveObject), pMoveObject->posCurrent, posDecor));
+		if ((m_bDrawSecret || m_phase != WM_PHASE_PLAY) && pMoveObject->type == TYPE_CAISSE && pMoveObject->icon != 32 && pMoveObject->icon != 33 && pMoveObject->icon != 34)
+		{
+			m_pPixmap->QuickIcon(1, 214, tinyPoint, AtPoint(Entity::MoveObject, int(pMoveObject - m_moveObject), pMoveObject->posCurrent, posDecor));
+		}
+	}
+	tinyPoint.x = 0 - posDecor.x % 64;
+	for (i = posDecor.x / 64; i < posDecor.x / 64 + LXIMAGE / 64 + 2; i++)
+	{
+		tinyPoint.y = 0 - posDecor.y % 64;
+		for (j = posDecor.y / 64; j < posDecor.y / 64 + LYIMAGE / 64 + 2; j++)
+		{
+			if (i >= 0 && i < 100 && j >= 0 && j < 100 && m_decor[i][j].icon != -1)
+			{
+				num = m_decor[i][j].icon;
+				pos.x = tinyPoint.x;
+				pos.y = tinyPoint.y;
+				if ((num >= 107 && num <= 109) || num == 157)
+				{
+					pos.y -= 7;
+				}
+				if (num == 211)
+				{
+					num = table_ressort[(m_time / 2 + i * 7) % 8];
+				}
+				if (num == 214 && !m_bDrawSecret && m_phase == WM_PHASE_PLAY)
+				{
+					num = -1;
+				}
+				if (num == 364) pos.y -= 2;
+				if (num != 68 && num != 91 && num != 92 && num != 305 && num != 317 &&
+					num != 324 && num != 373 && num != 404 && num != 410 && num != 378 &&
+					num != 384 && num != 385 && (num < 110 || num > 137))
+				{
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Decor, Item::Cull::Cell, i, j, posDecor));
+				}
+			}
+			tinyPoint.y += DIMOBJY;
+		}
+		tinyPoint.x += DIMOBJX;
+	}
+	pMoveObject = m_moveObject;
+	for (i = MAXMOVEOBJECT; i != 0; i--)
+	{
+		if ((pMoveObject->type == TYPE_ASCENSEUR || pMoveObject->type == TYPE_ASCENSEURs || pMoveObject->type == TYPE_ASCENSEURsi) &&
+			pMoveObject->posCurrent.x >= posDecor.x - 64 &&
+			pMoveObject->posCurrent.y >= posDecor.y - 64 &&
+			pMoveObject->posCurrent.x <= posDecor.x + LXIMAGE &&
+			pMoveObject->posCurrent.y <= posDecor.y + LYIMAGE)
+		{
+			tinyPoint.x = pMoveObject->posCurrent.x - posDecor.x;
+			tinyPoint.y = pMoveObject->posCurrent.y - posDecor.y;
+			m_pPixmap->QuickIcon(pMoveObject->channel, pMoveObject->icon, tinyPoint, AtPoint(Entity::Lift, int(pMoveObject - m_moveObject), pMoveObject->posCurrent, posDecor));
+		}
+		if (m_phase == WM_PHASE_BUILD &&
+			(pMoveObject->type == TYPE_ASCENSEUR || pMoveObject->type == TYPE_ASCENSEURs ||
+			 pMoveObject->type == TYPE_ASCENSEURsi || pMoveObject->type == TYPE_BOMBEMOVE ||
+			 pMoveObject->type == TYPE_BULLDOZER || pMoveObject->type == TYPE_POISSON ||
+			 pMoveObject->type == TYPE_OISEAU || pMoveObject->type == TYPE_GUEPE ||
+			 pMoveObject->type == TYPE_CREATURE || pMoveObject->type == TYPE_BLUPIHELICO ||
+			 pMoveObject->type == TYPE_BLUPITANK))
+		{
+			if (pMoveObject->posEnd.x >= posDecor.x - 64 &&
+				pMoveObject->posEnd.y >= posDecor.y - 64 &&
+				pMoveObject->posEnd.x <= posDecor.x + LXIMAGE &&
+				pMoveObject->posEnd.y <= posDecor.y + LYIMAGE)
+			{
+				tinyPoint.x = pMoveObject->posEnd.x - posDecor.x;
+				tinyPoint.y = pMoveObject->posEnd.y - posDecor.y;
+				m_pPixmap->QuickIcon(1, 31, tinyPoint, AtPoint(Entity::PathMarker, int(pMoveObject - m_moveObject), pMoveObject->posEnd, posDecor));
+			}
+			if (pMoveObject->posStart.x >= posDecor.x - 64 &&
+				pMoveObject->posStart.y >= posDecor.y - 64 &&
+				pMoveObject->posStart.x <= posDecor.x + LXIMAGE &&
+				pMoveObject->posStart.y <= posDecor.y + LYIMAGE)
+			{
+				tinyPoint.x = pMoveObject->posStart.x - posDecor.x;
+				tinyPoint.y = pMoveObject->posStart.y - posDecor.y;
+				m_pPixmap->QuickIcon(1, 30, tinyPoint, AtPoint(Entity::PathMarker, int(pMoveObject - m_moveObject), pMoveObject->posStart, posDecor));
+			}
+		}
+		pMoveObject++;
+	}
+	tinyPoint.x = 0 - posDecor.x % DIMOBJX;
+	for (x = posDecor.x / DIMOBJX; x < posDecor.x / DIMOBJX + LXIMAGE / DIMOBJX + 2; x++)
+	{
+		tinyPoint.y = 0 - posDecor.y % DIMOBJY;
+		for (j = posDecor.y / DIMOBJY; j < posDecor.y / DIMOBJY + LYIMAGE / DIMOBJY + 2; j++)
+		{
+			if (x >= 0 && x < MAXCELX && j >= 0 && j < MAXCELY && m_decor[x][j].icon != -1)
+			{
+				num = m_decor[x][j].icon;
+				pos = tinyPoint;
+				if (num == 68)
+				{
+					num = table_decor_lave[(x * 13 + j * 7 + m_time / 3) % 8];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 373)
+				{
+					if (m_blupiFocus)
+						num = table_decor_piege1[(x * 13 + j * 7 + m_time / 4) % 16];
+					else
+						num = table_decor_piege2[(x * 13 + j * 7 + m_time / 2) % 4];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 404 || num == 410)
+				{
+					num = table_decor_goutte[(x * 13 + j * 7 + m_time / 2) % 48];
+					pos.y -= 9;
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+					// Original writes m_decor[x][j].icon = 404 for frames
+					// 404..407, otherwise 410; EndOfTick does that once.
+
+				}
+				if (num == 317)
+				{
+					num = table_decor_ecraseur[m_time / 3 % 10];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 378)
+				{
+					num = table_decor_scie[(x * 13 + j * 7 + m_time / 1) % 6];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 324)
+				{
+					num = table_decor_temp[m_time / 4 % 20];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 92)
+				{
+					num = table_decor_eau1[(x * 13 + j * 7 + m_time / 3) % 4];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 91)
+				{
+					num = table_decor_eau2[(x * 13 + j * 7 + m_time / 3) % 4];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 305)
+				{
+					POINT cel = { x, j };
+					if (BlitzActif(decor, cel))
+					{
+						num = table_decor_blitz[(x * 13 + j * 7 + m_time) % 50];
+						m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+					}
+				}
+				if (num == 110)
+				{
+					num = table_decor_ventg[m_time / 1 % 4];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 114)
+				{
+					num = table_decor_ventd[m_time / 1 % 4];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 118)
+				{
+					num = table_decor_venth[m_time / 1 % 4];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 122)
+				{
+					num = table_decor_ventb[m_time / 1 % 4];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 126)
+				{
+					num = table_decor_ventillog[m_time / 2 % 3];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 129)
+				{
+					num = table_decor_ventillod[m_time / 2 % 3];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 132)
+				{
+					num = table_decor_ventilloh[m_time / 2 % 3];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+				if (num == 135)
+				{
+					num = table_decor_ventillob[m_time / 2 % 3];
+					m_pPixmap->QuickIcon(1, num, pos, AtCell(Entity::Overlay, Item::Cull::Cell, x, j, posDecor));
+				}
+			}
+			tinyPoint.y += DIMOBJY;
+		}
+		tinyPoint.x += DIMOBJX;
+	}
+	for (i = 0; i < MAXMOVEOBJECT; i++)
+	{
+		if (m_moveObject[i].type != 0 &&
+			m_moveObject[i].posCurrent.x >= posDecor.x - DIMOBJX &&
+			m_moveObject[i].posCurrent.y >= posDecor.y - DIMOBJY &&
+			m_moveObject[i].posCurrent.x <= posDecor.x + LXIMAGE &&
+			m_moveObject[i].posCurrent.y <= posDecor.y + LYIMAGE &&
+			((m_moveObject[i].type >= 8 && m_moveObject[i].type <= 11) ||
+			 (m_moveObject[i].type >= 90 && m_moveObject[i].type <= 95) ||
+			 (m_moveObject[i].type >= 98 && m_moveObject[i].type <= 100) || m_moveObject[i].type == TYPE_TENTACULE))
+		{
+			tinyPoint.x = m_moveObject[i].posCurrent.x - posDecor.x;
+			tinyPoint.y = m_moveObject[i].posCurrent.y - posDecor.y;
+			m_pPixmap->QuickIcon(m_moveObject[i].channel, m_moveObject[i].icon, tinyPoint, AtPoint(Entity::MoveObject, i, m_moveObject[i].posCurrent, posDecor));
+		}
+
+	}
+	if (m_blupiFront && m_phase != WM_PHASE_BUILD)
+	{
+		tinyPoint.x = m_blupiPos.x - posDecor.x;
+		tinyPoint.y = m_blupiPos.y - posDecor.y;
+		m_pPixmap->QuickIcon(GetBlupiChannelActual(decor), m_blupiIcon, tinyPoint, AtWorld(Entity::Blupi));
+	}
+	DrawInfo(decor, m_pPixmap);
+	VoyageDraw(decor, m_pPixmap);
+	m_pPixmap->SetClipping(lastClip, AtScreen(Entity::None));
+	// m_time advances in EndOfTick.
+}
+
+
+namespace
+{
+// Issues one item's CPixmap call with the item drawn at pos.
+void Issue(const Item& item, POINT pos, CPixmap* pixmap, std::string& text)
+{
+	commands::Issue(item, pos, pixmap, text, CHBACK, CHJAUGE, DIMJAUGEX, DIMJAUGEY,
+		[](CPixmap* p, POINT at, char* str, int font) { ::DrawText(p, at, str, font); },
+		[](CPixmap* p, POINT at, char* str, int font) { ::DrawTextCenter(p, at, str, font); });
+}
+
+} // namespace
+
+void FlattenScene(const Scene& scene, CPixmap* pixmap)
+{
+	std::string text;
+	commands::Flatten(scene.items, [&](const Item& item) { Issue(item, item.pos, pixmap, text); });
+}
+
+bool Visible(const Item& item, POINT ref, POINT view, int width, int height)
+{
+	return VisibleRule(item.cull, item.index, ref, view, width, height);
+}
+
+// M4a intentionally implements only the faithful 640x480 view. The world
+// positions are used here independently of FlattenScene, so --check-view
+// guards the seam M4b will extend. It never reads the live game state.
+void DrawView(const Scene& scene, const Motion* motion, double alpha, CPixmap* pixmap, const ViewSpec& spec)
+{
+	if (alpha != 1.0 || spec.width != LXIMAGE)
+	{
+		fprintf(stderr, "SB2 currently supports only alpha 1 at 640 wide (M4a)\n");
+		std::abort();
+	}
+	(void)motion;
+	std::string text;
+	for (const Item& item : scene.items)
+	{
+		if (item.extended) continue;
+		POINT pos = item.pos;
+		if (item.layer == Layer::World)
+		{
+			POINT origin = item.simCamera ? scene.camera : scene.view;
+			pos = POINT{item.world.x - origin.x, item.world.y - origin.y};
+		}
+		Issue(item, pos, pixmap, text);
+	}
+}
+} // namespace blupi::scene

@@ -20,7 +20,8 @@ Current release: **1.1.0** for Windows x64, Linux x86-64 and Android
 | `common/compat/src/win32.cpp` | port | Behaviour behind those names: posted-message queue, cursor, rectangles, file APIs, winmm joystick on SDL gamepads, MS `rand` |
 | `common/compat/src/hist_stdio.cpp` | port | `BlupiFile` streams for the shared TUs' file I/O (`common/compat/include/port_hist_stdio.h`) |
 | `games/sb1/game/` | port, partly derived from historical TUs | Speedy Blupi 1's and Speedy Eggbert 1's port code. Replacements of the 7 platform TUs: `main.cpp`←`blupi.cpp`, `pixmap.cpp`, `sound.cpp`, `misc.cpp`, `movie.cpp`, `network.cpp`; `ddutil.cpp` is not needed. Each file header names its historical origin; copied method bodies are kept verbatim where possible. Port-owned: scene builder and end of tick (`scene.cpp`, `end_of_tick.cpp`), wide editor, Display options, settings, languages and edition recognition (`language.cpp`), the build switches' port values (`port_switches.h`, second forced include), state hash and test probes |
-| `games/sb2/` | port, partly derived from historical TUs | `blupi2`: six platform adapters in `game/` (`main`←`blupi`, pixmap, sound, misc, movie, network), derived from SB1's adapters and SB2's reconstructed bodies; `ddutil` is replaced by the render device. `game/event.cpp`←`games/sb2/src/event.cpp` selects the original edition's phase data and quit/intro/retry behavior. SB2 state hash, edition/language service (version and optional credit data), forced switches, test-only phase probes, and original resource strings in `languages/`. Faithful 640×480 tick rendering; status and limits: [SB2_PORT.md](docs/SB2_PORT.md) |
+| `games/sb2/` | port, partly derived from historical TUs | `blupi2`: six platform adapters in `game/` (`main`←`blupi`, pixmap, sound, misc, movie, network), derived from SB1's adapters and SB2's reconstructed bodies; `ddutil` is replaced by the render device. `game/event.cpp`←`games/sb2/src/event.cpp` selects the original edition's phase data and quit/intro/retry behavior. SB2 state hash, edition/language service (version and optional credit data), forced switches, the const scene builder and end of tick (`scene.cpp`, `end_of_tick.cpp`, derived from SB2 `decblock.cpp`/`decor.cpp` using SB1's split), test-only phase/drawing probes, and original resource strings in `languages/`. Faithful 640×480 tick rendering; status and limits: [SB2_PORT.md](docs/SB2_PORT.md) |
+| `common/scene/commands.h` | port, shared by both games | Scene command storage, layer/coverage types and faithful replay (including gauge snapshots); adapters supply historical types, text calls and channel/size constants. Entity identities, visibility, scene builders, views and end-of-tick changes remain game-owned |
 | `common/render/` | port | Rendering device interface and commands (`device.h`), software reference renderer (8 bpp palettized and RGB565 surfaces, DirectDraw blit rules), BMP reader. No SDL, no Win32 names |
 | `common/platform/` | port | SDL3 host: window/presentation, input, touch controls, timing, audio mixer, MIDI synthesizer, file system roots, the language-pack format, icon, `SDL_main` entry (calls the game's `BlupiMain`). No game names: the game passes its own (e.g. its user folder's) |
 | `third_party/tinysoundfont/` | vendored | TinySoundFont v0.9 (MIT) and TinyMidiLoader v0.7 (zlib) headers, unchanged; provenance in its README |
@@ -98,6 +99,12 @@ Both editions support mission play, pause, save/load and the editor. Blupi 2 use
 screen; Eggbert 2 quits directly. Blupi 2's English, German and French packs can be selected
 with `--language en|de|fr`; Eggbert 2 has its own English pack. The supplied data determines
 the edition. As in SB1, CD checks are omitted; Blupi's error screen retries the supplied folder.
+
+SB2 now renders a const scene once per tick and applies the historical drawing side effects in
+`EndOfTick`, following SB1. `--reference` runs the unchanged historical `Build`; `--check-scene`
+compares its commands with the scene and uses that reference state, and `--check-view` checks
+`DrawView` at alpha 1 and 640 wide against `FlattenScene`. SB2 widescreen, interpolation and
+Display options are M4b; the default remains faithful 640x480.
 
 ```powershell
 build\port\blupi-sdl3.exe --data "D:\Prog\blupi_recon\assets\Speedy Blupi"

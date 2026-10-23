@@ -1,0 +1,126 @@
+# Explicit test-only drawing coverage. Syntax extends SB1 @draw probes.
+# Runs after entering official world 1. Pause before simulation; unpause only
+# at drawing for the shake step. Values/types come from games/sb2/src/def.h.
+75-199 pause 1
+75 @draw clear
+75 @draw camera 64 64
+75 @draw position 256 128
+75 @draw private 1
+75 @draw mission 2
+75 @draw clock 0
+75 @draw hud 7 1 1
+75 @draw notify SB2 scene equivalence fixture
+75 @draw front 0
+75 @draw gauge 0 65 0 0 1
+75 @draw gauge 1 20 0 1 1
+76 @draw gauge 0 0 0 0 1
+77 @draw gauge 0 100 1 1 1
+78 @draw gauge 0 100 0 1 0
+79 @draw gauge 0 100 0 1 1
+75 @draw big 1 1 203
+75 @draw big 2 1 66
+75 @draw big 3 1 87
+75 @draw big 0 0 68
+75 @draw big 99 99 203
+75 @draw tile 1 2 384
+75 @draw tile 2 2 385
+75 @draw tile 3 2 107
+75 @draw tile 4 2 108
+75 @draw tile 5 2 109
+75 @draw tile 6 2 157
+75 @draw tile 7 2 211
+75 @draw tile 8 2 214
+75 @draw tile 9 2 364
+75 @draw tile 10 2 68
+75 @draw tile 1 3 373
+75 @draw tile 2 3 404
+75 @draw tile 3 3 410
+75 @draw tile 4 3 317
+75 @draw tile 5 3 378
+75 @draw tile 6 3 324
+75 @draw tile 7 3 92
+75 @draw tile 8 3 91
+75 @draw tile 9 3 305
+75 @draw tile 10 3 110
+75 @draw tile 1 4 114
+75 @draw tile 2 4 118
+75 @draw tile 3 4 122
+75 @draw tile 4 4 126
+75 @draw tile 5 4 129
+75 @draw tile 6 4 132
+75 @draw tile 7 4 135
+75 @draw tile 9 2 305
+75 @draw tile 9 1 304
+75 @draw position 576 128
+75 @draw tile 20 20 404
+75 @draw tile 20 21 410
+75 @draw object 0 1 1 32 64 200
+75 @draw object 1 47 1 32 128 200
+75 @draw object 2 48 1 32 192 200
+75 @draw object 3 4 1 32 256 200
+75 @draw object 4 32 1 32 320 200
+75 @draw object 5 33 1 32 384 200
+75 @draw object 6 54 1 32 448 200
+75 @draw object 7 12 1 35 512 200
+75 @draw object 8 16 1 32 64 264
+75 @draw object 9 17 1 32 128 264
+75 @draw object 10 20 1 32 192 264
+75 @draw object 11 44 1 32 256 264
+75 @draw object 12 53 1 32 320 264
+75 @draw object 13 8 1 32 384 264
+75 @draw object 14 9 1 32 448 264
+75 @draw object 15 10 1 32 512 264
+75 @draw object 16 11 1 32 64 328
+75 @draw object 17 90 1 32 128 328
+75 @draw object 18 91 1 32 192 328
+75 @draw object 19 92 1 32 256 328
+75 @draw object 20 93 1 32 320 328
+75 @draw object 21 94 1 32 384 328
+75 @draw object 22 95 1 32 448 328
+75 @draw object 23 98 1 32 512 328
+75 @draw object 24 99 1 32 64 392
+75 @draw object 25 100 1 32 128 392
+75 @draw object 30 1 1 32 -1 64
+75 @draw object 31 1 1 32 0 64
+75 @draw object 32 1 1 32 704 64
+75 @draw object 33 1 1 32 705 64
+75 @draw object 34 1 1 32 64 544
+75 @draw object 35 1 1 32 64 545
+75 @draw multi 1
+75 @draw netblupi 0 0 -90 0 1 2
+75 @draw netblupi 1 0 -180 0 2 2
+75 @draw netblupi 2 0 -270 0 3 2
+75 @draw netblupi 3 0 -360 0 4 2
+75 @draw effect shield 100
+83 @draw effect shield 10
+87 @draw effect power 100
+90-101 @draw pause 0
+90 @draw shake 1 0
+91 @draw effect cloud 100
+95 @draw effect hide 100
+99 @draw shake 1 31
+100 @draw effect hide 10
+102 @draw shake 999 0
+104 @draw effect none
+105 @draw front 1
+108 @draw front 0
+109 @draw hud 7 1 0
+110 @draw clock 32767
+112 @draw netblupi 0 276 -90 0 1 2
+113 @draw netblupi 0 0 -90 0 4 2
+# Voyage 40 delays drawing by 30 phases but spawns RNG particles in both parts.
+115 @draw voyage 40 10 0 70 200 100 400 440
+120 @draw voyage 40 10 40 70 200 100 400 440
+125 @draw voyage 6 10 10 50 200 100 600 440
+130 @draw mission 10
+130 @draw private 0
+130 @draw treasure 0
+130 @draw position 500 128
+131 @draw treasure 1
+131 @draw position 900 128
+# Editor markers/paths, including SB2 official markers off/on.
+135 @draw drawphase 1526
+135 @draw official 0
+136 @draw official 1
+140 @draw drawphase 1530
+145 @draw drawphase 1525

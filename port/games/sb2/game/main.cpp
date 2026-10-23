@@ -1,6 +1,6 @@
 // SB2 application adapter: games/sb2/src/blupi.cpp (historical origin),
 // using the SDL host loop and zeroed allocation from SB1 port/main.cpp.
-// Build runs exactly once per logical tick; no scene extraction/enhancements.
+// A const scene plus EndOfTick replaces Build once per logical tick (M4a).
 // Port replacement of games/sb2/src/blupi.cpp (historical: WinMain, WindowProc,
 // multimedia-timer loop).
 //
@@ -36,6 +36,7 @@
 
 #include "game/port_game.h"
 #include "game/member_access.h"
+#include "game/scene.h"
 #include "platform/audio.h"
 #include "platform/music.h"
 #include "platform/host.h"
@@ -333,6 +334,80 @@ void UpdateFrame(void)
 	}
 }
 
+// Same seams as SB1: --check-scene runs the unchanged Build as the reference;
+// the normal path draws the const scene and makes Build's effects once in EndOfTick.
+static bool g_bReference = false, g_bCheckScene = false, g_bCheckView = false;
+static long g_drawProbeFrame = -1;
+struct SceneCheck
+{
+    long frames = 0, mismatches = 0, first = -1;
+    std::string detail;
+    void Record(bool same, const std::string& why = {})
+    {
+        if (!same) { if (first < 0) { first = frames; detail = why; } ++mismatches; }
+        ++frames;
+    }
+};
+static SceneCheck g_sceneCheck, g_viewCheck;
+static bool SameCommands(const std::vector<blupi::render::Command>& a,
+                         const std::vector<blupi::render::Command>& b)
+{
+    if (a.size() != b.size()) return false;
+    for (size_t i = 0; i < a.size(); ++i)
+        if (!blupi::render::same_command(a[i], b[i])) return false;
+    return true;
+}
+static void PortBuildDecor(RECT rect, POINT mouse)
+{
+    if (g_bReference && !g_bCheckScene && !g_bCheckView) { g_pDecor->Build(rect, mouse); return; }
+    blupi::scene::Scene scene;
+    uint64_t before = (g_bCheckScene || g_bCheckView) ? PortStateHash() : 0;
+    blupi::scene::BuildScene(*g_pDecor, rect, mouse, scene);
+    bool pure = !(g_bCheckScene || g_bCheckView) || before == PortStateHash();
+    std::vector<blupi::render::Command> flat;
+    if (g_bCheckScene || g_bCheckView)
+    {
+        PortPixmapCaptureBegin(false);
+        blupi::scene::FlattenScene(scene, g_pPixmap);
+        PortPixmapCaptureEnd(flat);
+    }
+    if (g_bCheckView)
+    {
+        before = PortStateHash();
+        std::vector<blupi::render::Command> view, moved;
+        blupi::scene::Motion motion;
+        motion.valid = true;
+        motion.from.resize(scene.items.size()); // ignored at alpha 1, as in SB1
+        PortPixmapCaptureBegin(false);
+        blupi::scene::DrawView(scene, NULL, 1.0, g_pPixmap);
+        PortPixmapCaptureEnd(view);
+        PortPixmapCaptureBegin(false);
+        blupi::scene::DrawView(scene, &motion, 1.0, g_pPixmap);
+        PortPixmapCaptureEnd(moved);
+        g_viewCheck.Record(pure && before == PortStateHash() && SameCommands(flat, view) && SameCommands(flat, moved),
+                           "DrawView commands or presentation purity differ");
+    }
+    if (g_bCheckScene)
+    {
+        std::vector<blupi::render::Command> historical;
+        PortPixmapCaptureBegin(true);
+        g_pDecor->Build(rect, mouse);
+        PortPixmapCaptureEnd(historical);
+        size_t at = 0;
+        while (at < flat.size() && at < historical.size() && blupi::render::same_command(flat[at], historical[at])) ++at;
+        char detail[180];
+        snprintf(detail, sizeof(detail), "Build %u commands, scene %u, first difference %u; pure=%d",
+                 (unsigned)historical.size(), (unsigned)flat.size(), (unsigned)at, (int)pure);
+        g_sceneCheck.Record(pure && SameCommands(historical, flat), detail);
+    }
+    else if (g_bReference) g_pDecor->Build(rect, mouse);
+    else
+    {
+        EndOfTick(*g_pDecor);
+        blupi::scene::FlattenScene(scene, g_pPixmap);
+    }
+}
+
 void SetDecor()
 {
 	UINT phase;
@@ -347,7 +422,8 @@ void SetDecor()
 	{
 		{
 			RECT rect = { 0, 0, LXIMAGE, LYIMAGE };
-			g_pDecor->Build(rect, posMouse);
+			PortProbeApplyBeforeDraw(g_drawProbeFrame);
+			PortBuildDecor(rect, posMouse);
 		}
 	}
 	else {
@@ -662,13 +738,16 @@ struct Options {
     long frames = -1, every = 1;
     std::vector<Input> inputs;
     std::vector<std::pair<long, std::string>> shots, dumps;
-    bool commands = false;
+    bool commands = false, reference = false, checkScene = false, checkView = false;
 };
 void Usage() {
     puts("blupi2 " BLUPI_PORT_VERSION "\n"
          "  --data DIR --user DIR --headless --frames N --color 8|16\n"
          "  --trace FILE --trace-every N --screenshot N:FILE --state-dump N:FILE\n"
          "  --input FILE --probe FILE --soundfont FILE --language CODE --check-commands --demo-log FILE\n"
+         "  --reference         historical Build (test oracle)\n"
+         "  --check-scene       compare const scene commands with historical Build\n"
+         "  --check-view        compare DrawView at alpha 1 with FlattenScene\n"
          "  --fullscreen --scale N --verbose --version\n"
          "Data is read-only; all game writes go to --user (use build/ for testing).");
 }
@@ -691,6 +770,9 @@ bool Parse(int argc, char** argv, Options& o) {
         else if (a == "--scale") o.host.scale = atoi(next());
         else if (a == "--verbose") blupi::host::set_verbose(true);
         else if (a == "--check-commands") o.commands = true;
+        else if (a == "--reference") o.reference = true;
+        else if (a == "--check-scene") o.checkScene = true;
+        else if (a == "--check-view") o.checkView = true;
         else if (a == "--screenshot" || a == "--state-dump") {
             std::string v = next(); size_t colon = v.find(':');
             if (colon == std::string::npos) return false;
@@ -801,6 +883,9 @@ int BlupiMain(int argc, char** argv) {
         blupi::audio::shutdown(); blupi::music::shutdown(); blupi::host::shutdown(); return 2;
     }
     g_bActive = TRUE;
+    g_bReference = o.reference;
+    g_bCheckScene = o.checkScene;
+    g_bCheckView = o.checkView;
     if (o.commands) PortPixmapEnableCommandCheck();
     int result = 0;
     if (!DoInit(NULL, (LPSTR)"", 0)) result = 1;
@@ -819,6 +904,7 @@ int BlupiMain(int argc, char** argv) {
             if (g_bQuit) break;
             uint64_t now = blupi::host::now_ns();
             if (o.host.headless || now >= next) {
+                g_drawProbeFrame = frame;
                 PortProbeApply(frame);
                 PostInput(o, frame); DispatchPosted();
                 if (g_bQuit) break;
@@ -853,6 +939,14 @@ int BlupiMain(int argc, char** argv) {
         printf("SB2 command check: %ld displays, %ld mismatches (first %ld)\n", displays, mismatches, first);
         if (!displays || mismatches) result = 3;
     }
+    auto checked = [&](const char* name, const SceneCheck& c, bool enabled) {
+        if (!enabled) return;
+        printf("SB2 %s check: %ld Build calls, %ld mismatches (first %ld%s%s)\n",
+               name, c.frames, c.mismatches, c.first, c.detail.empty() ? "" : ": ", c.detail.c_str());
+        if (!c.frames || c.mismatches) result = 4;
+    };
+    checked("scene", g_sceneCheck, o.checkScene);
+    checked("view", g_viewCheck, o.checkView);
     FinishObjects();
     blupi::audio::shutdown(); blupi::music::shutdown(); blupi::host::shutdown();
     return result;

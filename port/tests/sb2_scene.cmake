@@ -1,0 +1,25 @@
+﻿# Scene commands against historical Build, and full per-frame state/pixel
+# equality of scene+EndOfTick against that reference, in fresh user roots.
+file(REMOVE_RECURSE "${WORK}")
+file(MAKE_DIRECTORY "${WORK}")
+separate_arguments(args NATIVE_COMMAND "${ARGS}")
+foreach(mode native reference)
+    set(check --check-view --check-commands)
+    if(mode STREQUAL "reference")
+        list(APPEND check --reference --check-scene)
+    endif()
+    execute_process(COMMAND "${EXE}" --headless --data "${DATA}"
+        --user "${WORK}/${mode}" ${args} ${check} --trace "${WORK}/${mode}.trace"
+        RESULT_VARIABLE rc OUTPUT_VARIABLE out ERROR_VARIABLE err TIMEOUT 180)
+    file(WRITE "${WORK}/${mode}.log" "${out}${err}")
+    message(STATUS "${mode}: ${out}")
+    if(NOT rc EQUAL 0)
+        message(FATAL_ERROR "SB2 ${mode} failed (${rc}): ${err}")
+    endif()
+endforeach()
+file(READ "${WORK}/native.trace" native)
+file(READ "${WORK}/reference.trace" reference)
+if(native STREQUAL "" OR NOT native STREQUAL reference)
+    message(FATAL_ERROR "scene+EndOfTick differs from historical Build; per-frame traces in ${WORK}")
+endif()
+message(STATUS "SB2 scene+EndOfTick: every frame/phase/state/screen identical to historical Build")

@@ -1026,47 +1026,9 @@ namespace
 // Issues one item's CPixmap call with the item drawn at pos.
 void Issue(const Item& item, POINT pos, CPixmap* pixmap, std::string& text)
 {
-	switch (item.op)
-	{
-	case Item::Op::SetClip:   pixmap->SetClipping(item.rect); break;
-	case Item::Op::DrawPart:  pixmap->DrawPart(item.chDst, item.channel, pos, item.rect, item.mode, item.mask); break;
-	case Item::Op::QuickIcon: pixmap->QuickIcon(item.channel, item.rank, pos); break;
-	case Item::Op::DrawIcon:  pixmap->DrawIcon(item.chDst, item.channel, item.rank, pos, item.mode, item.mask); break;
-	case Item::Op::DrawText:
-		text = item.text;  // the historical functions take char*
-		::DrawText(pixmap, pos, &text[0], item.font);
-		break;
-	case Item::Op::DrawTextCenter:
-		text = item.text;
-		::DrawTextCenter(pixmap, pos, &text[0], item.font);
-		break;
-	case Item::Op::JaugeDraw:
-	{
-		// Drawing part of CJauge::Draw (src/jauge.cpp) from the snapshot.
-		int  part;
-		RECT rect;
-		if (item.mask)  // bouton caché ?
-		{
-			pixmap->DrawPart(-1, CHBACK, pos, item.rect, 1);  // dessine le fond
-			break;
-		}
-		part = (item.rank*(DIMJAUGEX-6-4))/100;
-		rect.left   = 0;
-		rect.right  = DIMJAUGEX;
-		rect.top    = DIMJAUGEY*0;
-		rect.bottom = DIMJAUGEY*1;
-		pixmap->DrawPart(-1, CHJAUGE, pos, rect);  // partie noire
-		if (part > 0)
-		{
-			rect.left   = 0;
-			rect.right  = 6+part;
-			rect.top    = DIMJAUGEY*item.mode;
-			rect.bottom = DIMJAUGEY*(item.mode+1);
-			pixmap->DrawPart(-1, CHJAUGE, pos, rect);  // partie colorée
-		}
-		break;
-	}
-	}
+	commands::Issue(item, pos, pixmap, text, CHBACK, CHJAUGE, DIMJAUGEX, DIMJAUGEY,
+		[](CPixmap* p, POINT at, char* str, int font) { ::DrawText(p, at, str, font); },
+		[](CPixmap* p, POINT at, char* str, int font) { ::DrawTextCenter(p, at, str, font); });
 }
 
 // Entities whose position changes between ticks (the rest is static or
@@ -1102,10 +1064,7 @@ long Mix(long from, long to, double alpha)
 void FlattenScene(const Scene& scene, CPixmap* pixmap)
 {
 	std::string text;
-	for (const Item& item : scene.items)
-	{
-		if (!item.extended) Issue(item, item.pos, pixmap, text);
-	}
+	commands::Flatten(scene.items, [&](const Item& item) { Issue(item, item.pos, pixmap, text); });
 }
 
 bool Visible(const Item& item, POINT ref, POINT view, int width, int height)

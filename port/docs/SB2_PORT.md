@@ -27,6 +27,8 @@ priority. This file records the milestones; [ARCHITECTURE.md](ARCHITECTURE.md) s
 | M1 build | `blupi2` builds with the mingw-x64 preset next to `blupi`; SB1's `ctest` suite and golden traces unchanged |
 | M2 headless | `blupi2 --headless` reads an SB2 folder (read-only; writes to a `build/` user root), reaches the title, plays the attract demos deterministically; SB2 golden traces and screenshots added; SB1 unchanged |
 | M3 playable | edition recognition (Eggbert 2 / Blupi 2 en/de/fr), SB2 language packs from the originals, bounded windowed run, Linux build; README ownership table updated |
+| M4a scene split | SB2 const scene plus Build-ordered EndOfTick, historical-command and faithful-view gates, SB1/SB2 goldens unchanged |
+| M4b presentation | extend SB1's optional widescreen/interpolation/display-rate/Display options to SB2, without simulation changes |
 
 Faithful mode first (640x480, original timing and colour depths); enhancements later and optional, as for SB1.
 
@@ -48,8 +50,8 @@ The README ownership table lists both games.
 creation order, `BackgroundCache` and `CacheAll` come from `games/sb2/src`. Their platform
 services use SB1's proven adapters: renderer commands, VFS, mixer, MIDI notifications,
 zeroed object allocation and the posted-message order. Each platform file names its origin.
-`CDecor::Build` runs once per logical tick, retaining its original state changes; there is
-no SB1 scene builder or extracted `EndOfTick` in this executable.
+At M1-M3, `CDecor::Build` ran once per logical tick, retaining its original state changes.
+M4a below replaces that call with SB2's scene and extracted `EndOfTick`.
 
 [EVIDENCE] The SB2 atlas has 336 Blupi, 441 object, 289 element and 100 explosion entries.
 The adapter uses those complete tables from the shared `dectables.cpp`. Explicit surrounding
@@ -120,7 +122,7 @@ The worker's Ninja stall was its sandbox's child-process limit; the Makefile bui
   and audible SB2 music validation remain outside the headless gates. SB1's historical
   pixel proofs do not establish SB2 historical pixel equality.
 - [OPEN] SB2 does not expose SB1's widescreen, interpolation, Display options or settings
-  persistence. Those require SB2-specific scene/coupling work after faithful playback.
+  persistence. M4a supplies the scene/coupling split; presentation enhancements are M4b.
 
 ## M3 edition flows and playability (2026-10-23)
 
@@ -190,6 +192,73 @@ The audit and reason are in [ORACLE.md](ORACLE.md), with local evidence under
   historical source and both optional SB2 data folders to the case-sensitive workspace,
   and enables their tests (also Eggbert 1 when its data is present).
 - [OPEN] After the Linux gate: packaging/Android, audible music and a historical
-  SB2 pixel-oracle comparison. Scene extraction, end-of-tick separation, widescreen,
-  interpolation, display-rate presentation and Display options remain a separate
-  enhancement layer with SB2-specific equivalence gates. Faithful mode stays the default.
+  SB2 pixel-oracle comparison. Scene extraction and end-of-tick separation are implemented
+  in M4a below. Widescreen, interpolation, display-rate presentation and Display options
+  remain M4b, with their own equivalence gates. Faithful mode stays the default.
+
+
+## M4a scene and end-of-tick split (2026-10-23)
+
+[EVIDENCE] This extends SB1's `scene.cpp` / `end_of_tick.cpp` and main-loop seam.
+SB2 `game/scene.cpp` keeps SB2's `CDecor::Build` draw order and helper bodies from
+`games/sb2/src/{decblock,decor}.cpp`, with const member-access bindings and a recorder.
+It includes SB2's rear tiles 384/385, big-decor offsets, shield loop, extra object passes,
+trap/drop/crusher/saw/timer/lightning animations, keys/dynamite HUD and delayed voyage 40.
+The scene stores world/entity/culling metadata in the same form as SB1.
+
+`EndOfTick` applies the following effects once, where Build ran, in this order:
+
+1. Camera shake phase/finish (stopped by SB2 pause), retaining the pre-increment shaken view.
+2. Blupi's secondary effect flags when behind the decor.
+3. Visible overlay cells, x major / y minor: drop icon stores and lightning sound/network effects.
+4. Visible gauge redraw flags, then the mission-10 tutorial position clamp.
+5. Voyage 40's two RNG draws and particle `ObjectStart`, including network effects.
+6. `m_time` increment and wrap at 32768, including while paused.
+
+The normal path builds a scene, applies EndOfTick and flattens the stored scene, then
+executes the historical buttons/cursor once per tick. Drawing never consumes RNG or
+spawns objects. `--reference` uses the unchanged shared Build; `--check-scene` builds the
+const scene before it and compares every rendering-device command, also checking state
+purity. That check uses historical state updates, so `tests/sb2_scene.cmake` separately
+compares native scene+EndOfTick with the reference every frame (phase, full state hash,
+screen hash). `--check-view` compares faithful DrawView commands with FlattenScene, both
+with and without motion metadata at alpha 1, and checks presentation purity.
+
+[EVIDENCE] `common/scene/commands.h` is now built by both games. Only command storage,
+layer/coverage values, primitive replay and faithful list traversal moved there, with
+point/rectangle/flag types, channel/gauge constants and text callbacks passed by each
+adapter. Entity identities, visibility, scene builders, views and mutations stay game-owned.
+SB1's algorithms and historical include context are unchanged; no historical TU moved.
+
+The sixteen `scene_sb2_*` tests cover both editions and depths: all ten attract demos,
+menu/pause/quit tour, editor/playtest, and `tests/sb2_scene.probe`. The explicit test fixture
+covers all overlay animation families, rear tiles, big-decor offsets, mover passes and
+cull boundaries, network actors, effects/masking, HUD keys/dynamite, gauge redraw modes,
+shake/pause/finish, clock wrap, tutorial clamps and both voyage-40 intervals. It uses
+only `--probe` state injection, following SB1; no gameplay paths inject test state.
+Goldens are compared as checked in, with both update options OFF.
+
+[EVIDENCE] M4a Windows gates: the mingw-x64 preset configures; Ninja stalls at the
+sandbox glob recheck and is stopped. The documented `build/port-make` fallback builds
+both games with `-j 4`. Serial `ctest --test-dir build/port-make --output-on-failure`
+passes **132/132** in **395.31 seconds** (95 SB1, 37 SB2), with SB1, Eggbert 1, Eggbert 2
+and Blupi 2 data roots configured and both golden-update options OFF. All sixteen new
+scene/state/view/command comparisons pass, alongside all existing goldens. Each attract
+reference checks 7,009 Build calls and 8,011 device displays; each effects reference checks
+90 Build calls and 171 displays, with zero mismatches. Log: `build/w-portm4a/ctest.log`;
+per-scenario logs/traces: `build/port-make/tests/scene_sb2_*/`.
+
+[EVIDENCE] `git diff --check` passes; matching sources (`src/`, `games/sb2/src/`), tools,
+manifests and `port/tests/golden/` are unchanged. No original executable was run, no data
+was written, no commit was made, and no game/build process remained after the gates.
+Worker report: `scratch/w-portm4a/REPORT.md`.
+
+[OPEN] M4b must extend coverage/culling to the wider view (only Build's own set may be
+faithful), pair scenes and interpolate visual positions, capture the tick's UI and
+present stored frames at display rate, then add SB1's Display options/settings flow.
+M4a accepts only zero Coverage and DrawView at alpha 1, 640 wide; other requests fail
+explicitly. No M4b option is exposed. Keep simulation camera, sound pan, activation,
+pause semantics, RNG/particle spawns and all EndOfTick effects at the original tick rate.
+Add SB2's wide/interpolation/presentation gates and retain every current golden trace.
+Linux and Ninja supervisor reruns remain required in this sandbox; historical SB2 pixel
+comparison and Android/packaging/audible music validation remain separate work.

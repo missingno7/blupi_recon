@@ -279,6 +279,23 @@ foreach(edition eggbert blupi)
     endif()
     if(sb2_data)
         foreach(depth 8 16)
+            # SB1's scene / command / faithful-view seams, extended for SB2.
+            # Compare full traces every frame; never regenerate a golden file.
+            foreach(scenario attract tour editor effects)
+                if(scenario STREQUAL "attract")
+                    set(scene_args "--frames 8000")
+                elseif(scenario STREQUAL "effects")
+                    set(scene_args "--frames 160 --input ${CMAKE_CURRENT_SOURCE_DIR}/sb2_scene.input --probe ${CMAKE_CURRENT_SOURCE_DIR}/sb2_scene.probe")
+                else()
+                    set(scene_args "--frames 260 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/sb2_${scenario}.input")
+                endif()
+                set(scene_name scene_sb2_${edition}_${scenario}${depth})
+                add_test(NAME ${scene_name}
+                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                        -DWORK=${CMAKE_CURRENT_BINARY_DIR}/${scene_name}
+                        "-DARGS=--color ${depth} ${scene_args}"
+                        -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_scene.cmake)
+            endforeach()
             set(name sb2_${edition}_attract${depth})
             add_test(NAME golden_${name}
                 COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}

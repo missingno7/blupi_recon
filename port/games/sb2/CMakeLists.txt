@@ -42,6 +42,7 @@ else()
 endif()
 add_library(blupi2_game STATIC
     ${BLUPI_COMMON}/compat/src/win32.cpp ${BLUPI_COMMON}/compat/src/hist_stdio.cpp
+    game/scene.cpp game/end_of_tick.cpp
     game/main.cpp game/pixmap.cpp game/sound.cpp game/misc.cpp
     game/movie.cpp game/network.cpp game/state_hash.cpp game/language.cpp game/probe.cpp
     $<TARGET_OBJECTS:blupi2_hist>)

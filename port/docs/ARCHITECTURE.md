@@ -172,6 +172,9 @@ Rendering mutates game state:
 | `CDecor::Build` (`decblock.cpp:1539`) | `m_time++` once per drawn frame (not per `MoveStep`) | `m_time` drives gameplay: `decblupi.cpp` uses `m_time % N` for timers and behaviour, net packets carry it, saves store it. Drawing more often would speed up the game |
 | `CDecor::DecorNextAction` (called by `Build`) | advances `m_decorPhase` and clears `m_decorAction` (camera shake sequences) | shake would run faster and is saved state |
 | `CDecor::Build` | sets `m_blupiSec` (shield, power, cloud, hide) | sent in network packets; derived from simulation flags |
+| SB2 `Build` overlay loop | stores drop icons 404/410 for visible cells, in x/y order | extra drawing would mutate the saved world, with a viewport-dependent set |
+| SB2 `BlitzActif` called by `Build` | `PlaySound` / `NetPlaySound` for active lightning | redraws would emit extra sound and network messages |
+| SB2 `VoyageDraw` | two RNG calls and `ObjectStart(TYPE_EXPLO8, ..., TRUE)` for element 40 | redraws would advance RNG, spawn particles and emit network messages |
 | `CPixmap` mouse save/restore | back-buffer bookkeeping | presentation only |
 
 The camera (`m_posDecor`) is simulation state updated in `BlupiStep` (scroll margins
@@ -373,12 +376,23 @@ Port (`games/sb1/game/sound.cpp` + `common/platform/music.cpp`):
 [EVIDENCE] SB2 bring-up (2026-10-23): `games/sb2/` builds the separate desktop executable
 `blupi2`, using its own historical include context. M1/M2 compiled twelve SB2 shared TUs;
 M3 keeps eleven unchanged and derives `game/event.cpp` from `games/sb2/src/event.cpp`.
-It links the existing `common/` libraries; no SB1 source or common behaviour changed.
-SB2 uses its historical `SetDecor`/`CDecor::Build` once per logical tick, including Build's
-state changes. The coupling table in section 4 describes SB1's extracted rendering; SB2
-has no scene extraction, interpolation, widescreen or display-rate redraw yet. Those need
-their own equivalence gates before they can be offered. [SB2_PORT.md](SB2_PORT.md) records
+M1-M3 linked the existing `common/` libraries without changing SB1 source or common behaviour.
+M4a extends SB1's scene/end-of-tick split to SB2: `game/scene.cpp` derives from SB2's
+`Build`, `DrawInfo`, `DecorNextAction`, `BlitzActif` and `VoyageDraw`, reading const state.
+`game/end_of_tick.cpp` performs their side effects once, in Build's order (section 4).
+The normal `SetDecor` builds the scene, applies EndOfTick, flattens it, then draws buttons
+and the cursor once per tick. `--reference` retains the unchanged historical Build as the
+test oracle. Scene commands and per-frame state/pixels are checked against that path;
+`--check-view` checks alpha 1 at 640 wide. Interpolation, widescreen, display-rate redraw
+and Display options remain M4b and require their own equivalence gates. [SB2_PORT.md](SB2_PORT.md) records
 the milestone evidence and the remaining services.
+
+[EVIDENCE] Both games consume `common/scene/commands.h`: only command values, layer/coverage
+types, primitive replay and faithful list traversal moved there. It includes no game or
+compat headers; the game passes its point/rectangle/flag types, text functions, channel
+numbers and gauge dimensions. Builders, culling rules, entity tags and view algorithms
+remain under their game, as do all writes in EndOfTick. No shared historical TU changed
+ownership for M4a.
 
 - **Layout.** `common/` (`compat/`, `platform/`, `render/`) holds what does not depend on a
   game; it names no game. `games/sb1/` holds Speedy Blupi 1's port code, which also serves

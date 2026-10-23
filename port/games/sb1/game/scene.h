@@ -16,20 +16,13 @@
 
 #include "def.h"
 #include "decor.h"
+#include "scene/commands.h"
 
 #include <string>
 #include <vector>
 
 namespace blupi::scene
 {
-enum class Layer : unsigned char
-{
-	Background,   // parallax decor image, scrolled at 2/3 of the camera
-	World,        // positioned in world coordinates (screen = world - camera)
-	Screen,       // fixed 640x480 overlay: HUD, texts, jauges, voyage icon
-	Target,       // drawing into an offscreen surface (CHTEMP composition)
-};
-
 enum class Entity : unsigned char
 {
 	None,
@@ -51,30 +44,12 @@ enum class Entity : unsigned char
 	Voyage,       // QuickIcon; also rect = start and end points, mode = phase, font = total
 };
 
-struct Item
+struct Item : commands::Command<POINT, RECT, BOOL>
 {
-	enum class Op : unsigned char
-	{
-		SetClip,      // rect
-		DrawPart,     // chDst, channel, pos, rect, mode, mask
-		QuickIcon,    // channel, rank, pos
-		DrawIcon,     // chDst, channel, rank, pos, mode, mask
-		DrawText,     // DrawText(pixmap, pos, text, font) of src/text.h
-		DrawTextCenter, // DrawTextCenter(pixmap, pos, text, font) of src/text.h
-		JaugeDraw,    // snapshot of jauge index: mask = hidden, mode = type, rank = level,
-		              // pos = m_pos, rect = its area (drawn like CJauge::Draw)
-	};
-
-	Op     op;
 	Layer  layer = Layer::Screen;
 	Entity entity = Entity::None;
 	int    index = 0;
-	int    chDst = -1, channel = 0, rank = 0, mode = 0, font = 0;
-	BOOL   mask = FALSE;
-	POINT  pos = {0, 0};    // position as passed to CPixmap (faithful 640x480)
-	POINT  world = {0, 0};  // Layer::World: pos + view (CellHili: pos + camera)
-	RECT   rect = {0, 0, 0, 0};
-	std::string text;
+	POINT  world = {0, 0};  // World: pos + view (CellHili: pos + camera)
 
 	// Visibility rule of Build for this item, evaluated against any view by
 	// Visible() (ROADMAP.md stage 7):
@@ -102,11 +77,6 @@ struct Scene
 // World area, in pixels beyond Build's own view on each side, for which
 // BuildScene also records the items Build would draw at a shifted view
 // (flagged extended). Zero: exactly Build's items.
-struct Coverage
-{
-	int left = 0, right = 0, top = 0, bottom = 0;
-};
-
 // Pure: does not modify decor (const access only).
 void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out,
 				const Coverage& coverage = Coverage());
