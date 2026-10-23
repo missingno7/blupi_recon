@@ -252,12 +252,12 @@ void UpdateFrame(void)
 		}
 	}
 
-#if _EGAMES  // Only Eggbert 2 has the publisher intro screens.
-	if (phase == WM_PHASE_INTRO1 || phase == WM_PHASE_INTRO2)
+	// Port edition branch, from blupi.cpp's _EGAMES block.
+	if (PortEdition() == "eggbert" &&
+		(phase == WM_PHASE_INTRO1 || phase == WM_PHASE_INTRO2))
 	{
 		g_pEvent->IntroStep();
 	}
-#endif
 
 	if (phase == WM_PHASE_INIT)
 	{
@@ -641,7 +641,9 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	g_pEvent->SetFullScreen(g_bFullScreen);
 	g_pEvent->SetMouseType(g_mouseType);
 #if _INTRO
-	g_pEvent->ChangePhase(WM_PHASE_INTRO1);
+	const UINT firstPhase = PortEdition() == "eggbert" ? WM_PHASE_INTRO1 : WM_PHASE_INIT;
+	PortFirstPhaseIndex(g_pEvent, firstPhase);
+	g_pEvent->ChangePhase(firstPhase);
 #else
 	PortFirstPhaseIndex(g_pEvent, WM_PHASE_INIT);
 	g_pEvent->ChangePhase(WM_PHASE_INIT);
@@ -656,7 +658,7 @@ namespace {
 struct Input { long frame; std::string kind; int x = 0, y = 0; };
 struct Options {
     blupi::host::Options host;
-    std::string data, user, trace, soundfont, language, demoLog;
+    std::string data, user, trace, soundfont, language, demoLog, probe;
     long frames = -1, every = 1;
     std::vector<Input> inputs;
     std::vector<std::pair<long, std::string>> shots, dumps;
@@ -666,7 +668,7 @@ void Usage() {
     puts("blupi2 " BLUPI_PORT_VERSION "\n"
          "  --data DIR --user DIR --headless --frames N --color 8|16\n"
          "  --trace FILE --trace-every N --screenshot N:FILE --state-dump N:FILE\n"
-         "  --input FILE --soundfont FILE --language CODE --check-commands --demo-log FILE\n"
+         "  --input FILE --probe FILE --soundfont FILE --language CODE --check-commands --demo-log FILE\n"
          "  --fullscreen --scale N --verbose --version\n"
          "Data is read-only; all game writes go to --user (use build/ for testing).");
 }
@@ -681,6 +683,7 @@ bool Parse(int argc, char** argv, Options& o) {
         else if (a == "--color") { g_portColorDepth = atoi(next()); if (g_portColorDepth != 8 && g_portColorDepth != 16) return false; }
         else if (a == "--trace") o.trace = next();
         else if (a == "--demo-log") o.demoLog = next();
+        else if (a == "--probe") o.probe = next();
         else if (a == "--trace-every") { o.every = atol(next()); if (o.every < 1) return false; }
         else if (a == "--soundfont") o.soundfont = next();
         else if (a == "--language") o.language = next();
@@ -769,6 +772,12 @@ int BlupiMain(int argc, char** argv) {
     if (argc == 2 && (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")) { Usage(); return 0; }
     Options o;
     if (!Parse(argc, argv, o)) { Usage(); return 2; }
+    if (!o.probe.empty()) {
+        FILE* file = fopen(o.probe.c_str(), "r");
+        bool ok = file && PortProbeLoad(file);
+        if (file) fclose(file);
+        if (!ok) return 2;
+    }
     if (!blupi::host::init("Speedy Blupi 2 / Speedy Eggbert 2", LXIMAGE, LYIMAGE, o.host)) return 1;
     if (o.data.empty()) { if (const char* p = getenv("BLUPI2_DATA")) o.data = p; }
     if (o.data.empty()) { blupi::host::message_box("Blupi 2", "Pass --data <SB2 game folder> or set BLUPI2_DATA."); blupi::host::shutdown(); return 1; }
@@ -810,6 +819,7 @@ int BlupiMain(int argc, char** argv) {
             if (g_bQuit) break;
             uint64_t now = blupi::host::now_ns();
             if (o.host.headless || now >= next) {
+                PortProbeApply(frame);
                 PostInput(o, frame); DispatchPosted();
                 if (g_bQuit) break;
                 TimerStep(); int pending = g_timer; DispatchPosted();

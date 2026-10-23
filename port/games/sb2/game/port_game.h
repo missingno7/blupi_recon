@@ -120,6 +120,7 @@ const char* PortLanguageString(unsigned id);
 // A port text (ids from 9000, see LANGUAGES.md): the pack's, or english.
 std::string PortLanguageText(unsigned id, const char* english);
 const std::string& PortEdition();          // "blupi" or "eggbert"
+const char* PortEditionCredit();           // gamer-screen credit; empty for Blupi
 // --export-language: a built-in pack ("de", "eggbert-de") written to path.
 bool        PortLanguageExport(const std::string& which, const std::string& path);
 // The current pack's language variant of the game's code ("de": German layouts).

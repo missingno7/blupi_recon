@@ -10,6 +10,9 @@
 #
 #   BLUPI_LINUX_WORK  work directory (default: ~/blupi-linux)
 #   BLUPI_DATA        game folder (default: assets/Speedy Blupi of this repo)
+#   BLUPI_TEST_DATA_EGGBERT  Eggbert 1 folder (default: assets/eggbert/Game, if present)
+#   BLUPI2_DATA       Eggbert 2 folder (default: assets/eggbert2, if present)
+#   BLUPI2_TEST_DATA_BLUPI  Blupi 2 folder (default: assets/blupi2, if present)
 #
 # Needs CMake, Ninja, a C++17 compiler, rsync and the SDL3 development files
 # (Ubuntu: sudo apt install libsdl3-dev ninja-build).
@@ -21,9 +24,34 @@ DATA=${BLUPI_DATA:-$REPO/assets/Speedy Blupi}
 
 mkdir -p "$WORK"
 rsync -a --delete "$REPO/src" "$REPO/port" "$WORK/"
+mkdir -p "$WORK/games/sb2/src"
+rsync -a --delete "$REPO/games/sb2/src/" "$WORK/games/sb2/src/"
 rsync -a --delete "$DATA/" "$WORK/data/"
 
+# Keep Windows data paths out of the Linux cache. The SB2 tests are optional
+# when their data is absent, just as in the desktop CMake configuration.
+DATA2=${BLUPI2_DATA:-$REPO/assets/eggbert2}
+BLUPI2=${BLUPI2_TEST_DATA_BLUPI:-$REPO/assets/blupi2}
+EGGBERT1=${BLUPI_TEST_DATA_EGGBERT:-$REPO/assets/eggbert/Game}
+EGGBERT2_TEST=
+BLUPI2_TEST=
+EGGBERT1_TEST=
+if [ -d "$EGGBERT1" ]; then
+    rsync -a --delete "$EGGBERT1/" "$WORK/eggbert-data/"
+    EGGBERT1_TEST=$WORK/eggbert-data
+fi
+if [ -d "$DATA2" ]; then
+    rsync -a --delete "$DATA2/" "$WORK/eggbert2-data/"
+    EGGBERT2_TEST=$WORK/eggbert2-data
+fi
+if [ -d "$BLUPI2" ]; then
+    rsync -a --delete "$BLUPI2/" "$WORK/blupi2-data/"
+    BLUPI2_TEST=$WORK/blupi2-data
+fi
+
 cd "$WORK/port"
-BLUPI_DATA="$WORK/data" cmake --preset linux -S .
+BLUPI_DATA="$WORK/data" cmake --preset linux -S . \
+    -DBLUPI2_TEST_DATA="$EGGBERT2_TEST" -DBLUPI2_TEST_DATA_BLUPI="$BLUPI2_TEST" \
+    -DBLUPI_TEST_DATA_EGGBERT="$EGGBERT1_TEST"
 cmake --build "$WORK/build/port-linux" -j 4
 ctest --test-dir "$WORK/build/port-linux" -j 3 --output-on-failure "$@"

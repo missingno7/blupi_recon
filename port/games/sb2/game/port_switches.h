@@ -1,5 +1,6 @@
 // SB2 port values, forced after common/compat/include/port_forced.h.
-// The shared layout/phase table uses Eggbert 2's superset (_EGAMES=1).
+// Shared headers use Eggbert 2's superset layout (_EGAMES=1). The port's
+// event.cpp selects the original edition's phase table and behaviour at runtime.
 // Edition strings come from the data; CD checks are omitted because VFS
 // reads a supplied game folder (ARCHITECTURE.md section 9).
 #ifndef SB2_PORT_SWITCHES_H

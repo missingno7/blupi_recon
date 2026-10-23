@@ -130,3 +130,27 @@ pixels (8,011 displays including startup). SB1's golden files were not regenerat
 [OPEN] No SB2 historical rebuild was run or captured in this task. SB1's pixel-oracle
 results above do not establish SB2 historical pixel equality. SB2 screenshots are local
 runtime evidence under `build/`, listed in [SB2_PORT.md](SB2_PORT.md).
+
+## SB2 M3 edition flows (2026-10-23)
+
+[EVIDENCE] `sb2_{eggbert,blupi}_{tour,editor}{8,16}.trace` add eight local regression
+baselines. The tour enters official world 1, pauses/resumes, returns through player/title
+menus and quits. Eggbert closes at input frame 190; Blupi draws BYE through frame 230,
+then closes on dismissal. The editor tour opens a private mission, scrolls, saves it into
+the user root, enters playtest and returns to the editor. Every display is independently
+replayed by the command checker. These are port regressions, not historical pixel proofs.
+
+[EVIDENCE] Only two existing SB2 baselines changed: `sb2_blupi_attract{8,16}.trace`.
+All 800 checkpoints in each retain exactly the same frame, phase and pixel hash. Their
+state hashes change because Blupi now uses its original 38-phase table: `CEvent::m_index`
+is two lower than in the previous Eggbert superset. Dumps against the retained M2 port
+executable at frames 10, 1000, 4000 and 7500 differ only in that field. Audit evidence:
+`scratch/w-portm3/audit_baselines.py`, `build/w-portm3/baseline-audit/`.
+Eggbert's existing attract traces and all SB1 golden files are unchanged.
+
+[EVIDENCE] Focused tests also check restoration from a real 57,008-byte user save after a
+short walk, read/cache failure recovery, and the 41-tick folder retry. A test-only phase
+probe exercises Eggbert's optional 61-tick intro transitions with copies of the title image
+as placeholder art in the test user root (the shipped `_INTRO=0` folder has no publisher
+images); Blupi rejects those phases even with those files present. This does not establish
+the publisher screens' historical pixels. No original executable was run.

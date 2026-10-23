@@ -286,6 +286,27 @@ foreach(edition eggbert blupi)
                     -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/${name}.trace -DEVERY=10
                     "-DARGS=--color ${depth} --frames 8000" -DUPDATE=${BLUPI2_UPDATE_GOLDEN}
                     -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_golden.cmake)
+            foreach(scenario tour editor)
+                set(name sb2_${edition}_${scenario}${depth})
+                add_test(NAME golden_${name}
+                    COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                        -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}
+                        -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/${name}.trace -DEVERY=5
+                        "-DARGS=--color ${depth} --frames 260 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/sb2_${scenario}.input"
+                        -DSCENARIO=${scenario} -DEDITION=${edition} -DUPDATE=${BLUPI2_UPDATE_GOLDEN}
+                        -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_menu.cmake)
+            endforeach()
+        endforeach()
+        add_test(NAME sb2_${edition}_save
+            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                -DWORK=${CMAKE_CURRENT_BINARY_DIR}/sb2_${edition}_save
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_save.cmake)
+        foreach(case intro read cache)
+            add_test(NAME sb2_${edition}_${case}
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                    -DWORK=${CMAKE_CURRENT_BINARY_DIR}/sb2_${edition}_${case}
+                    -DCASE=${case} -DEDITION=${edition}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_editions.cmake)
         endforeach()
     endif()
 endforeach()

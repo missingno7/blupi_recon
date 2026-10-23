@@ -2,15 +2,15 @@
 
 Decision (docs/SB2.md, "Structural-recovery experiment: decision", 2026-10-23): the SB2 reconstruction is
 STRICT or certified EQUIVALENT for 99.9% (Eggbert 2) and 99.98% (Blupi 2) of game code; the port is now the
-priority. This file is the plan; [ARCHITECTURE.md](ARCHITECTURE.md) section 9 already fixes the layout.
+priority. This file records the milestones; [ARCHITECTURE.md](ARCHITECTURE.md) section 9 fixes the layout.
 
 ## Layout (ARCHITECTURE.md §9)
 
 - `games/sb2/game/`: SB2's port code and its own executable (`blupi2`), linking the same `common/`
   libraries as SB1. No game registry: `common/platform/entry.cpp` calls the game's `BlupiMain`.
-- Shared TUs compiled unchanged from `games/sb2/src/` (never edited for the port): the SB2 counterparts of
-  SB1's `BLUPI_SHARED_TUS` (`button decblock decblupi decdesign decmove decnet decor dectables event jauge
-  menu text`).
+- Eleven TUs compiled unchanged from `games/sb2/src/` (never edited for the port): `button decblock
+  decblupi decdesign decmove decnet decor dectables jauge menu text`. M1/M2 also shared `event.cpp`;
+  M3 derives it in `games/sb2/game/` for runtime edition selection, following SB1's edition principles.
 - Port-owned replacements of SB2's platform TUs, derived from SB1's port files and from SB2's reconstructed
   versions (`games/sb2/src/blupi.cpp, pixmap.cpp, sound.cpp, misc.cpp, movie.cpp, network.cpp`): SB2's
   `CPixmap` and `CSound` have different members (true-colour decor, benchmark, CD audio, `PlayMusic(HWND,int)`).
@@ -36,10 +36,10 @@ Faithful mode first (640x480, original timing and colour depths); enhancements l
 |---|---|
 | M1 build | Done: the mingw-x64 Ninja preset builds `blupi` and `blupi2` (supervisor run, 2026-10-23). |
 | M2 headless | Done: title and all ten attract demos for Eggbert 2 and Blupi 2, in 8 and 16 bpp; four golden traces and the SB2 disk-layout test. `ctest`: 100/100 (95 SB1, 5 SB2). |
-| M3 playable | Open: bounded windowed validation, Linux, packaging, and remaining edition-specific UI/error paths. Resource packs and data-based edition recognition are already implemented. |
+| M3 playable | Windows playable: edition flows, mission/pause/quit, save/load, editor, bounded windowed runs and 116/116 tests pass. Linux gate remains for the supervisor because WSL is denied in the sandbox. Resource packs and data-based edition recognition were already present in M2. |
 
-[EVIDENCE] `games/sb2/CMakeLists.txt` builds `blupi2` using the twelve unchanged historical
-TUs named above, with a separate historical context (no SB1 include paths), the six platform
+[EVIDENCE] At M1/M2, `games/sb2/CMakeLists.txt` built `blupi2` using twelve unchanged historical
+TUs (SB1's counterparts, including `event.cpp`), with a separate historical context (no SB1 include paths), the six platform
 adapters, SB2 tracing/languages, and the existing common libraries. No code moved out of SB1;
 no `common/` behaviour, matching source, manifest, matching tool or acceptance status changed.
 The README ownership table lists both games.
@@ -57,8 +57,8 @@ values for historical negative-index reads and mouse-hotspot overreads were read
 from both originals; only the six values before the Blupi atlas differ by edition, and the
 adapter selects them from `PortEdition()`. No source relies on a modern linker's neighbouring data.
 
-[EVIDENCE] `port_switches.h` compiles the Eggbert 2 superset (`_EGAMES=1`) for its layout and
-phase table, overrides `REQUIRE_CD=0` after including the historical `def.h`, and leaves all
+[EVIDENCE] `port_switches.h` compiles the Eggbert 2 superset (`_EGAMES=1`) for its header layout,
+overrides `REQUIRE_CD=0` after including the historical `def.h`, and leaves all
 language code variants at 0 (SB2 German/French change resource strings only). `VERSION_TEXT`
 is answered at runtime from the edition's title image: Eggbert 2 "Version 1.0", Blupi 2
 "Version 2.2". Four English/German/French resource packs were extracted statically; only
@@ -113,11 +113,83 @@ The worker's Ninja stall was its sandbox's child-process limit; the Makefile bui
 - [EVIDENCE] AVI playback reports disabled and logs once; the historical movie path continues
   without the film. DirectPlay enumerates zero providers, fails session operations, and logs
   once on enumeration. These are the original unavailable-service failure paths.
-- [OPEN] Shared edition code uses Eggbert 2's quit/intro/error flow. Blupi 2's goodbye screen
-  and damaged-folder/CD-retry differences are not yet separately represented. CD validation
-  itself is deliberately omitted (ARCHITECTURE.md section 9).
-- [OPEN] No SB2 historical cross-build pixel comparison, bounded windowed run, Linux/Android
-  validation, save/load/editor tour or audible SB2 music validation was performed for M1/M2.
-  SB1's historical pixel proofs do not establish SB2 historical pixel equality.
+- [EVIDENCE] M3 replaces the shared `event.cpp` with the port derivative described below;
+  both editions now use their own phase table and quit/intro/error behavior. CD validation
+  itself remains deliberately omitted (ARCHITECTURE.md section 9).
+- [OPEN] SB2 historical cross-build pixel comparison, Linux/Android validation, packaging
+  and audible SB2 music validation remain outside the headless gates. SB1's historical
+  pixel proofs do not establish SB2 historical pixel equality.
 - [OPEN] SB2 does not expose SB1's widescreen, interpolation, Display options or settings
   persistence. Those require SB2-specific scene/coupling work after faithful playback.
+
+## M3 edition flows and playability (2026-10-23)
+
+[EVIDENCE] `game/event.cpp` names its historical origin, `games/sb2/src/event.cpp`.
+Its ordinary bodies and both original phase tables remain directly comparable to that file.
+The recognized data edition selects the 38-phase Blupi or 40-phase Eggbert table (plus
+sentinel); a build-time assertion guards each size. This is the reason `CEvent` became
+port-owned; the other eleven shared TUs retain the same headers and compile context.
+The title version and optional gamer-screen credit are edition data in `language.cpp`.
+Blupi has no `by www.epsitec.com` credit. Behavior the data cannot carry uses documented
+runtime edition branches, following SB1's quit branch rather than introducing a game registry.
+
+| Flow | Speedy Blupi 2 | Speedy Eggbert 2 |
+|---|---|---|
+| Quit from title | BYE is drawn; a key/click dismisses it; DOQUIT closes | BYE closes directly |
+| Publisher intro | Both phases absent; timer never runs | Optional 61-tick INTRO1 → INTRO2 → INIT transitions retained |
+| Normal startup | Title (`_INTRO=0`) | Title (`_INTRO=0`, as in the reconstruction) |
+| Background-cache / official-mission read error | INSERT, retry state and countdown retained | Return to title |
+| CD policy | No CD checks; INSERT retries the supplied folder every 41 ticks; Back returns to player selection | No CD checks |
+
+The missing-CD gate is therefore unreachable in normal installed-folder play. Blupi's
+retry path is still reachable for damaged/missing mission or background data; it retries
+that same folder, without drive detection, until the files are repaired or the player uses
+Back. TESTCD is not a startup requirement. Its two historical stores set the same retry
+state, so the port uses one order for both editions. Matching sources retain all original
+CD checks and edition switches unchanged.
+
+[EVIDENCE] Eight new menu/editor golden traces cover both editions at 8/16 bpp, with
+independent rendering-command replay at every display. The tour starts official world 1,
+pauses/resumes, returns through the player and title menus, and exercises each quit flow.
+The editor tour opens and scrolls a private mission, saves it under the user root, enters
+playtest and returns to the editor. Pause checks moving objects and the pause flag:
+the historical `Build` still advances its rendering counter `m_time` while paused.
+
+[EVIDENCE] Two save tests use F3/F4 and an actual 57,008-byte `data/s001-000.blp` in the
+user root. A short manual walk changes the position; loading restores it and the checked
+actor, world, trajectory, moving-object, life and treasure fields. Four failure tests use
+empty user-root overrides (world 1 or the help image), checking both recovery paths and
+Blupi's timer reset/Back button. Two intro tests use `--probe` (test-only phase injection,
+as in SB1): Eggbert advances the phases, Blupi rejects them. Since the shipped folder has
+no intro images, those tests copy title art into the test user root as explicit fixtures.
+They make no claim about the publisher screens' historical pixels.
+
+[EVIDENCE] The two Blupi attract traces change only in state hashes because its table's
+`CEvent::m_index` is two lower. Frame, phase and screen hashes stay equal at all 800
+checkpoints in each depth. Eggbert attract and every SB1 golden file remain unchanged.
+The audit and reason are in [ORACLE.md](ORACLE.md), with local evidence under
+`build/w-portm3/` and the worker report in `scratch/w-portm3/REPORT.md`.
+
+### M3 platform gates
+
+- [EVIDENCE] The mingw-x64 preset configures successfully. Ninja stalls after its glob
+  recheck in this sandbox; it was interrupted and left no running build processes.
+  The documented `build/port-make` fallback builds both games with `-j 4`.
+- [EVIDENCE] `ctest --test-dir build/port-make --output-on-failure` passes **116/116**
+  in 211 seconds (95 SB1, 21 SB2), both golden-update options OFF, with all three requested
+  data roots configured. Log: `build/w-portm3/ctest.log`.
+- [EVIDENCE] Both editions complete 100-frame windowed runs at 16 bpp, navigate the title
+  and player menus into world 1, replay their rendering commands without mismatch, and
+  exit with code 0. Each process has a separate 20-second outer timeout and was closed.
+  Screenshots/logs: `build/w-portm3/windowed-{eggbert,blupi}/`. Blupi `--language de`
+  and `--language fr` also reach world 1 in separate 90-frame headless checks.
+- [EVIDENCE] WSL enumeration is rejected with
+  `Wsl/EnumerateDistros/Service/E_ACCESSDENIED`. Linux execution is unavailable here;
+  directly launching the check also returns `Wsl/Service/CreateInstance/E_ACCESSDENIED`.
+  The supervisor must run `sh port/tools/linux_check.sh`. The script now copies SB2's
+  historical source and both optional SB2 data folders to the case-sensitive workspace,
+  and enables their tests (also Eggbert 1 when its data is present).
+- [OPEN] After the Linux gate: packaging/Android, audible music and a historical
+  SB2 pixel-oracle comparison. Scene extraction, end-of-tick separation, widescreen,
+  interpolation, display-rate presentation and Display options remain a separate
+  enhancement layer with SB2-specific equivalence gates. Faithful mode stays the default.

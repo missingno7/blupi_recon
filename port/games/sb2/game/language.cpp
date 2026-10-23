@@ -74,9 +74,10 @@ const KnownBuild k_builds[] = {
 
 // The editions. IMAGE08\INIT.BLP, the title image, tells them apart; the
 // version is the one their title screen shows (../../../../docs/SB2.md).
-const struct { unsigned long long hash; const char* edition; const char* version; } k_titles[] = {
-    {0x303f9019259f1abaULL, "blupi", "Version 2.2"},
-    {0x8fb3f4b9330a6370ULL, "eggbert", "Version 1.0"},
+// Credit data is from games/sb2/src/event.cpp's DrawButtons _EGAMES block.
+const struct { unsigned long long hash; const char* edition; const char* version; const char* credit; } k_titles[] = {
+    {0x303f9019259f1abaULL, "blupi", "Version 2.2", ""},
+    {0x8fb3f4b9330a6370ULL, "eggbert", "Version 1.0", "by www.epsitec.com"},
 };
 
 const int  kCharBytes = 6;
@@ -421,6 +422,13 @@ std::string PortLanguageName(int index)
 const std::string& PortEdition()
 {
 	return g_edition;
+}
+
+const char* PortEditionCredit()
+{
+	for (const auto& t : k_titles)
+		if (g_edition == t.edition) return t.credit;
+	return k_titles[0].credit;
 }
 
 extern "C" const char* blupi_version_text(void)

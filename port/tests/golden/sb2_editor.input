@@ -1,0 +1,10 @@
+# SB1's editor tour adapted to SB2's phase/button table.
+40 key 13
+70 click 169 430      # private mission screen
+100 click 462 130     # edit -> editor
+130 keydown 39
+140 keyup 39
+160 key 27            # editor -> mission screen (writes user mission)
+190 click 462 130     # reopen editor
+200 click 564 451     # editor's test button
+220 key 27            # stop testing -> editor

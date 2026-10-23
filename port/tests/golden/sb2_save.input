@@ -1,0 +1,14 @@
+# Actual menu save/load through the VFS user root, no gameplay injection.
+40 key 13
+70 click 85 430       # world 1 hub
+100 key 114           # F3: save game
+110 click 300 130     # first save slot
+120 key 13            # save and resume
+121 key 19            # pause at the saved position
+140 key 19            # resume
+141 keydown 39        # short manual walk away from the saved position
+151 keyup 39
+160 key 115           # F4: load game
+170 click 300 130     # first save slot
+180 key 13            # load and resume
+181 key 19            # pause at the restored position

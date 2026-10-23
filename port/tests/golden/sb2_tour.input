@@ -1,0 +1,10 @@
+# SB2 menu smoke check. Button centres: games/sb2/src/event.cpp phase data.
+# World 1 is the official hub mission. Pause uses the historical Pause key.
+40 key 13             # title -> choose player
+70 click 85 430       # single player -> world 1
+100 key 19            # pause
+120 key 19            # resume
+140 key 27            # hub -> choose player
+160 key 27            # choose player -> title
+190 click 560 430     # BYE: Blupi goodbye screen; Eggbert direct exit
+230 key 13            # dismiss Blupi goodbye (Eggbert has already closed)

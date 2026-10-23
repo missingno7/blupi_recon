@@ -22,10 +22,14 @@ else()
         $<$<CXX_COMPILER_ID:GNU>:-fpermissive>
         $<$<CXX_COMPILER_ID:Clang>:-fms-extensions>)
 endif()
-set(SB2_SHARED_TUS button decblock decblupi decdesign decmove decnet decor dectables event jauge menu text)
+set(SB2_SHARED_TUS button decblock decblupi decdesign decmove decnet decor dectables jauge menu text)
 list(TRANSFORM SB2_SHARED_TUS APPEND .cpp)
 list(TRANSFORM SB2_SHARED_TUS PREPEND ${SB2_SRC}/)
 add_library(blupi2_hist OBJECT ${SB2_SHARED_TUS})
+# CEvent's two phase tables/edition flows need runtime selection. This port
+# derivative retains the historical encoding and VFS stdio context below.
+target_sources(blupi2_hist PRIVATE game/event.cpp)
+target_include_directories(blupi2_hist PRIVATE ${BLUPI_COMMON})
 target_link_libraries(blupi2_hist PRIVATE blupi2_hist_context)
 if(MSVC)
     target_compile_options(blupi2_hist PRIVATE /source-charset:.1252 /execution-charset:.1252
@@ -39,7 +43,7 @@ endif()
 add_library(blupi2_game STATIC
     ${BLUPI_COMMON}/compat/src/win32.cpp ${BLUPI_COMMON}/compat/src/hist_stdio.cpp
     game/main.cpp game/pixmap.cpp game/sound.cpp game/misc.cpp
-    game/movie.cpp game/network.cpp game/state_hash.cpp game/language.cpp
+    game/movie.cpp game/network.cpp game/state_hash.cpp game/language.cpp game/probe.cpp
     $<TARGET_OBJECTS:blupi2_hist>)
 target_link_libraries(blupi2_game PRIVATE blupi2_hist_context PUBLIC blupi_platform)
 target_compile_definitions(blupi2_game PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")

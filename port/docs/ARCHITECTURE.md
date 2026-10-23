@@ -371,7 +371,8 @@ Port (`games/sb1/game/sound.cpp` + `common/platform/music.cpp`):
 ## 9. Games, editions and languages
 
 [EVIDENCE] SB2 bring-up (2026-10-23): `games/sb2/` builds the separate desktop executable
-`blupi2`, using its own historical include context and the twelve unchanged SB2 shared TUs.
+`blupi2`, using its own historical include context. M1/M2 compiled twelve SB2 shared TUs;
+M3 keeps eleven unchanged and derives `game/event.cpp` from `games/sb2/src/event.cpp`.
 It links the existing `common/` libraries; no SB1 source or common behaviour changed.
 SB2 uses its historical `SetDecor`/`CDecor::Build` once per logical tick, including Build's
 state changes. The coupling table in section 4 describes SB1's extracted rendering; SB2
@@ -397,5 +398,20 @@ the milestone evidence and the remaining services.
 - **What the port leaves out on purpose:** the CD checks (it reads a game folder or a CD's
   root, `vfs`) and the 1.0/1.1 difference after a background image fails to load (only a
   damaged folder reaches it). The matching targets keep both.
+- **SB2 editions follow the same rule.** [EVIDENCE] `games/sb2/game/event.cpp` owns
+  `CEvent` because its original `_EGAMES` blocks choose two phase tables and behavior
+  that must be selected at runtime in one executable. Both original tables are retained
+  as data (Blupi 38 phases, Eggbert 40, each plus its sentinel). The header context keeps
+  Eggbert's superset layout; the other eleven shared TUs are unchanged. The optional gamer
+  credit is edition text beside the title version in `language.cpp`. Documented behavior
+  branches cover BYE/DOQUIT, publisher phase handling and the cache/read error paths.
+  Blupi displays BYE before closing and has neither publisher phase; Eggbert closes at BYE.
+  Historical `_INTRO=0` still starts both editions at the title. Only test probes enter
+  Eggbert's optional timed intro; its shipped folder omits the intro images.
+  CD checks remain omitted in both editions. Consequently Blupi's INSERT timer retries
+  the supplied folder every 41 ticks, without disc detection; its Back button returns to
+  player selection. Cache/read failures in Eggbert return to the title. The TESTCD retry
+  assigns the same state in both editions (their historical store order has no port-visible
+  effect). Neither source reconstruction nor its build/acceptance status is changed.
 - **Versions.** The port's release version (`VERSION.txt`) is its own; the game's 1.0 and 1.1
   are editions' data, shown on their title screens.
