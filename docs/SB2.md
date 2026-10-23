@@ -531,15 +531,20 @@ SetState), the GetHide/IsHost shared body.
 
 ### Data classification and certificate binding (round 13)
 
-[EVIDENCE] `scratch/w-data4/REPORT.md` classified all 211 data arrays of the SB2 tree against both originals.
-decdesign.cpp's 59 `sb2_design_*` editor arrays are genuine: their payloads are in both executables and SB2
-code references them (e.g. RVA 0x5ffa → 0x4376a8). Five decblock.cpp arrays (`table_36548`, `table_365f0`,
-`table_36980`, `table_369c8`, `table_design_door`) are absent from both originals and unused: removed. 39
-decblock.cpp arrays duplicate editor payloads under SB1-era names; their ownership differs by edition, so they
-stay ([OPEN]). [NEGATIVE] Redirecting decdesign's references to those decblock copies (`scratch/w-data3`) is
-wrong: the original code references the decdesign copies. The verifier could not see this because an
-otherwise unbound data symbol is placed where its first reference points. The relinked `.data` is now 1,056
-bytes longer than the original in both editions ([OPEN]).
+[EVIDENCE] Data ownership (`scratch/w-data4`, `w-data5`, supervisor reads of Eggbert2.exe `.data`): the 39
+editor arrays that decblock.cpp defines under SB1-era names (`table_366b0`, `table_364a0`, ...) and that
+decdesign.cpp duplicated as `sb2_design_*` lie inside decblock.cpp's data contribution, interleaved in source
+order with its genuine tables (`table_design_wind` 0x437650, `table_366b0` 0x4376a8, `table_design_key`
+0x4377b8): as in SB1, decblock.cpp defines them and the editor references them. decdesign.cpp's 39 copies
+are removed and its references use decblock's tables (`scratch/w-data3`'s change; an earlier note here
+called it wrong by reading the SB1-era names as addresses). Five decblock.cpp arrays absent from both
+originals and unused are removed. With table_decor_quart, the atlas tables and these, both editions'
+relinked `.data` has the original's exact size (virtual delta 0), and Blupi 2's `.idata` and `.rsrc` sit at
+their original RVAs. Every function status is unchanged. [OPEN] 20 decdesign-only `sb2_design_*` arrays also
+have addresses inside decblock's range (moving them would change decblock.cpp's declaration context), and the
+`.data` contents still differ in places (Eggbert 2: 325,364 / 363,520 same-offset bytes equal).
+[NEGATIVE] Removing decblock.cpp's copies instead (`scratch/w-data5`) changes GetBlupiInfo's context; a
+subset chosen to keep it is not evidence.
 
 [EVIDENCE] `tools/equivalence_target.py` certificates (`scratch/w-certfix/REPORT.md`) now bind the complete
 payload, each relocation's site, symbol, type, addend and resolved original target, and the proof inputs, but

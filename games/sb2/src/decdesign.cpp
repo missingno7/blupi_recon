@@ -9,94 +9,26 @@
 #include <stdio.h>
 
 // SB2 editor icon tables, read from Eggbert2.exe .data.
-int sb2_design_37528[] = { 1, 153 };
-int sb2_design_37530[] = { 2, 154, 155 };
-int sb2_design_37540[] = { 1, 185 };
-int sb2_design_375c8[] = { 1, 157 };
-int sb2_design_37628[] = { 2, 91, 92 };
-int sb2_design_37410[] = { 14, 10, 2, 3, 4, 5, 6, 7, 8, 9, 1, 11, 12, 13, 14 };
-int sb2_design_37450[] = { 10, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29 };
-int sb2_design_37480[] = { 4, 15, 16, 17, 18 };
-int sb2_design_37498[] = { 2, 73, 22 };
-int sb2_design_374a8[] = { 7, 78, 79, 80, 81, 82, 83, 84 };
-int sb2_design_374c8[] = { 4, 87, 88, 89, 90 };
-int sb2_design_374e0[] = { 2, 85, 86 };
 int sb2_design_374f0[] = { 5, 396, 388, 389, 390, 391 };
 int sb2_design_37508[] = { 3, 398, 399, 400 };
 int sb2_design_375e8[] = { 7, 186, 187, 188, 189, 190, 191, 192 };
-int sb2_design_37608[] = { 5, 193, 194, 195, 196, 197 };
 int sb2_design_375d0[] = { 5, 139, 140, 141, 142, 143 };
-int sb2_design_37548[] = { 7, 41, 42, 43, 44, 45, 46, 47 };
-int sb2_design_37568[] = { 12, 215, 216, 217, 218, 219, 220, 221, 222, 230, 231, 233, 234 };
-int sb2_design_375a0[] = { 8, 223, 224, 225, 226, 227, 228, 229, 232 };
-int sb2_design_376a8[] = { 3, 20, 21, 22 };
-int sb2_design_376b8[] = { 4, 16, 17, 18, 19 };
-int sb2_design_376d0[] = { 3, 23, 24, 25 };
-int sb2_design_376e0[] = { 2, 26, 27 };
-int sb2_design_376f0[] = { 4, 28, 29, 30, 31 };
-int sb2_design_37708[] = { 12, 45, 46, 47, 36, 37, 38, 39, 40, 41, 42, 43, 44 };
 int sb2_design_37740[] = { 4, 66, 67, 68, 69 };
 int sb2_design_37518[] = { 3, 87, 88, 89 };
 int sb2_design_37668[] = { 11, 76, 77, 199, 198, 200, 201, 235, 236, 375, 376, 377 };
 int sb2_design_37698[] = { 3, 403, 401, 402 };
-
-int sb2_design_377b8[] = { 2, 182, 183 };
-
 int sb2_design_37758[] = { 23, 158, 159, 160, 161, 162, 163, 164, 165, 309, 411, 412, 413, 414, 415, 174, 175, 176, 177, 178, 179, 180, 181, 184 };
-
 int sb2_design_377c8[] = { 3, 334, 335, 336 };
-
 int sb2_design_377d8[] = { 20, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440 };
-
 int sb2_design_37a40[] = { 4, 330, 331, 332, 333 };
-
-int sb2_design_37a00[] = { 3, 32, 33, 34 };
-
 int sb2_design_37a10[] = { 10, 2, 4, 79, 84, 143, 219, 230, 246, 341, 396 };
-
-int sb2_design_37620[] = { 1, 68 };
-
-int sb2_design_37638[] = { 4, 126, 129, 132, 135 };
-
-int sb2_design_37650[] = { 4, 110, 114, 118, 122 };
-
 int sb2_design_37830[] = { 2, 378, 384 };
-
-int sb2_design_378f0[] = { 3, 153, 74, 75 };
-
-int sb2_design_37840[] = { 15, 29, 10, 2, 3, 4, 5, 6, 7, 8, 9, 1, 11, 12, 13, 14 };
-
-int sb2_design_37880[] = { 6, 19, 20, 21, 23, 24, 28 };
-
-int sb2_design_378a0[] = { 4, 15, 16, 17, 18 };
-
-int sb2_design_378b8[] = { 7, 78, 79, 80, 81, 82, 83, 84 };
-
-int sb2_design_378d8[] = { 4, 87, 88, 89, 90 };
-
 int sb2_design_37998[] = { 3, 251, 252, 253 };
-
 int sb2_design_37978[] = { 1, 338 };
-
 int sb2_design_379b8[] = { 1, 340 };
-
 int sb2_design_379c0[] = { 1, 361 };
-
-int sb2_design_37960[] = { 4, 157, 109, 108, 107 };
-
 int sb2_design_379a8[] = { 2, 387, 397 };
-
-int sb2_design_379e0[] = { 7, 186, 187, 188, 189, 190, 191, 192 };
-
 int sb2_design_37980[] = { 4, 261, 262, 263, 283 };
-
-int sb2_design_379c8[] = { 5, 139, 140, 141, 142, 143 };
-
-int sb2_design_37900[] = { 7, 41, 42, 43, 44, 45, 46, 47 };
-
-int sb2_design_37920[] = { 8, 215, 216, 217, 218, 219, 220, 230, 231 };
-
-int sb2_design_37948[] = { 5, 226, 227, 228, 229, 232 };
 
 POINT CDecor::ScreenPosToCelPos(POINT pos)
 {
@@ -172,38 +104,38 @@ void CDecor::PlaceDecor1(POINT cel, int index, int fwKeys, BOOL bMix)
 	if (index == 0)
 	{
 		icon = m_bigDecor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_376a8, &m_lastDecorIndexes[0], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_366b0, &m_lastDecorIndexes[0], fwKeys, bMix, TRUE);
 		m_bigDecor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 1)
 	{
 		icon = m_bigDecor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_376b8, &m_lastDecorIndexes[1], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_366c0, &m_lastDecorIndexes[1], fwKeys, bMix, TRUE);
 		m_bigDecor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 2)
 	{
 		icon = m_bigDecor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_376d0, &m_lastDecorIndexes[2], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_366d8, &m_lastDecorIndexes[2], fwKeys, bMix, TRUE);
 		m_bigDecor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 3) m_bigDecor[cel.x][cel.y].icon = 0xcb;
 	if (index == 4)
 	{
 		icon = m_bigDecor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_376e0, &m_lastDecorIndexes[3], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_366e8, &m_lastDecorIndexes[3], fwKeys, bMix, TRUE);
 		m_bigDecor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 5)
 	{
 		icon = m_bigDecor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_376f0, &m_lastDecorIndexes[4], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_366f8, &m_lastDecorIndexes[4], fwKeys, bMix, TRUE);
 		m_bigDecor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 6)
 	{
 		icon = m_bigDecor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37708, &m_lastDecorIndexes[5], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_36710, &m_lastDecorIndexes[5], fwKeys, bMix, TRUE);
 		m_bigDecor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 7)
@@ -242,43 +174,43 @@ void CDecor::PlaceDecor2(POINT cel, int index, int fwKeys, BOOL bMix)
 	if (index == 0)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37410, &m_lastDecorIndexes[10], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_364a0, &m_lastDecorIndexes[10], fwKeys, bMix, TRUE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 1)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37450, &m_lastDecorIndexes[11], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_364b0, &m_lastDecorIndexes[11], fwKeys, bMix, TRUE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 2)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37480, &m_lastDecorIndexes[12], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_364d0, &m_lastDecorIndexes[12], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 3)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37498, &m_lastDecorIndexes[13], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_364e8, &m_lastDecorIndexes[13], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 4)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_374a8, &m_lastDecorIndexes[14], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_364f8, &m_lastDecorIndexes[14], fwKeys, bMix, TRUE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 5)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_374c8, &m_lastDecorIndexes[15], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_36510, &m_lastDecorIndexes[15], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 6)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_374e0, &m_lastDecorIndexes[16], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_36520, &m_lastDecorIndexes[16], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 7) m_decor[cel.x][cel.y].icon = 0xfa;
@@ -295,19 +227,19 @@ void CDecor::PlaceDecor3(POINT cel, int index, int fwKeys, BOOL bMix)
 	if (index == 0)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37528, &m_lastDecorIndexes[20], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_36418, &m_lastDecorIndexes[20], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 1)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37530, &m_lastDecorIndexes[21], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_36458, &m_lastDecorIndexes[21], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 2)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37540, &m_lastDecorIndexes[22], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_36488, &m_lastDecorIndexes[22], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 3) m_decor[cel.x][cel.y].icon = rand() % 2 ? 0x11c : 0x12d;
@@ -318,13 +250,13 @@ void CDecor::PlaceDecor3(POINT cel, int index, int fwKeys, BOOL bMix)
 	if (index == 8)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_375c8, &m_lastDecorIndexes[23], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_365d8, &m_lastDecorIndexes[23], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 9)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37628, &m_lastDecorIndexes[24], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_design_marine, &m_lastDecorIndexes[24], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	AdaptBorder(cel);
@@ -359,7 +291,7 @@ void CDecor::PlaceDecor4(POINT cel, int index, int fwKeys, BOOL bMix)
 	if (index == 3)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37608, &m_lastDecorIndexes[33], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_365d0, &m_lastDecorIndexes[33], fwKeys, bMix, TRUE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 4) m_decor[cel.x][cel.y].icon = 0x105;
@@ -372,19 +304,19 @@ void CDecor::PlaceDecor4(POINT cel, int index, int fwKeys, BOOL bMix)
 	if (index == 6)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37548, &m_lastDecorIndexes[35], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_36538, &m_lastDecorIndexes[35], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 7)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37568, &m_lastDecorIndexes[37], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_36550, &m_lastDecorIndexes[37], fwKeys, bMix, TRUE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 8)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_375a0, &m_lastDecorIndexes[38], fwKeys, bMix, TRUE);
+		::PlaceDecor(&icon, table_36570, &m_lastDecorIndexes[38], fwKeys, bMix, TRUE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 9) m_decor[cel.x][cel.y].icon = 0xd6;
@@ -461,19 +393,19 @@ void CDecor::PlaceDecor5(POINT cel, int index, int fwKeys, BOOL bMix)
 	if (index == 3)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37620, &m_lastDecorIndexes[40], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_design_lava, &m_lastDecorIndexes[40], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 4)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37638, &m_lastDecorIndexes[41], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_design_fan, &m_lastDecorIndexes[41], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 5)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_37650, &m_lastDecorIndexes[42], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_design_wind, &m_lastDecorIndexes[42], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 6) m_decor[cel.x][cel.y].icon = 0x175;
@@ -516,33 +448,33 @@ void CDecor::PlaceDecor6(POINT cel, int index, int fwKeys, BOOL bMix)
 	int iconLift, rank, icon, distX, distY, type;
 	if (!bMix || !IsValidCel(cel)) return;
 	iconLift = m_iconLift;
-	pTable = sb2_design_378f0;
-	if (iconLift == 0) pTable = sb2_design_37840;
-	if (iconLift == 1) pTable = sb2_design_37880;
-	if (iconLift == 2) pTable = sb2_design_378a0;
-	if (iconLift == 3) pTable = sb2_design_37840;
-	if (iconLift == 4) pTable = sb2_design_378b8;
-	if (iconLift == 5) pTable = sb2_design_378d8;
-	if (iconLift == 6) pTable = sb2_design_378b8;
+	pTable = table_368f8;
+	if (iconLift == 0) pTable = table_36848;
+	if (iconLift == 1) pTable = table_36888;
+	if (iconLift == 2) pTable = table_368a8;
+	if (iconLift == 3) pTable = table_36848;
+	if (iconLift == 4) pTable = table_368c0;
+	if (iconLift == 5) pTable = table_368e0;
+	if (iconLift == 6) pTable = table_368c0;
 	if (iconLift == 7) pTable = sb2_design_37998;
-	if (iconLift == 20) pTable = sb2_design_378f0;
-	if (iconLift == 21) pTable = sb2_design_378f0;
-	if (iconLift == 22) pTable = sb2_design_378f0;
+	if (iconLift == 20) pTable = table_368f8;
+	if (iconLift == 21) pTable = table_368f8;
+	if (iconLift == 22) pTable = table_368f8;
 	if (iconLift == 23) pTable = sb2_design_37978;
 	if (iconLift == 24) pTable = sb2_design_37978;
 	if (iconLift == 25) pTable = sb2_design_379b8;
 	if (iconLift == 26) pTable = sb2_design_379b8;
 	if (iconLift == 27) pTable = sb2_design_379c0;
-	if (iconLift == 28) pTable = sb2_design_37960;
+	if (iconLift == 28) pTable = table_36968;
 	if (iconLift == 40) pTable = sb2_design_379a8;
 	if (iconLift == 41) pTable = sb2_design_379a8;
-	if (iconLift == 42) pTable = sb2_design_379e0;
-	if (iconLift == 43) pTable = sb2_design_379e0;
+	if (iconLift == 42) pTable = table_365a8;
+	if (iconLift == 43) pTable = table_365a8;
 	if (iconLift == 44) pTable = sb2_design_37980;
-	if (iconLift == 45) pTable = sb2_design_379c8;
-	if (iconLift == 46) pTable = sb2_design_37900;
-	if (iconLift == 47) pTable = sb2_design_37920;
-	if (iconLift == 48) pTable = sb2_design_37948;
+	if (iconLift == 45) pTable = table_36530;
+	if (iconLift == 46) pTable = table_36908;
+	if (iconLift == 47) pTable = table_36928;
+	if (iconLift == 48) pTable = table_36950;
 
 	rank = m_liftEnd;
 	if (rank != -1)
@@ -1119,14 +1051,14 @@ void CDecor::PlaceDecor8(POINT cel, int index, int fwKeys, BOOL bMix)
 		if (rank != -1)
 		{
 			icon = m_moveObject[rank].icon;
-			for (i = 0; i < sb2_design_37a00[0]; i++)
+			for (i = 0; i < table_369c0[0]; i++)
 			{
-				if (icon == sb2_design_37a00[i+1]) m_lastDecorIndexes[73] = i;
+				if (icon == table_369c0[i+1]) m_lastDecorIndexes[73] = i;
 			}
 			m_lastDecorIndexes[73]++;
-			if (m_lastDecorIndexes[73] >= sb2_design_37a00[0]) m_lastDecorIndexes[73] = 0;
+			if (m_lastDecorIndexes[73] >= table_369c0[0]) m_lastDecorIndexes[73] = 0;
 		}
-		icon = sb2_design_37a00[m_lastDecorIndexes[73]+1];
+		icon = table_369c0[m_lastDecorIndexes[73]+1];
 		MoveObjectDelete(cel);
 		rank = MoveObjectFree();
 		if (rank == -1) return;
@@ -1349,7 +1281,7 @@ void CDecor::PlaceDecor10(POINT cel, int index, int fwKeys, BOOL bMix)
 	if (index == 5)
 	{
 		icon = m_decor[cel.x][cel.y].icon;
-		::PlaceDecor(&icon, sb2_design_377b8, &m_lastDecorIndexes[90], fwKeys, bMix, FALSE);
+		::PlaceDecor(&icon, table_design_key, &m_lastDecorIndexes[90], fwKeys, bMix, FALSE);
 		m_decor[cel.x][cel.y].icon = (short)icon;
 	}
 	if (index == 6)
