@@ -39,6 +39,7 @@
 #include "platform/music.h"
 #include "platform/host.h"
 #include "platform/vfs.h"
+#include "presentation/timing.h"
 
 #include <new>
 #include <string>
@@ -573,45 +574,6 @@ static void PortPresentWide(double alpha, int width)
 	PortPixmapWideEnd(g_pPixmap);
 	PortPixmapWidePresent();
 }
-
-// Presentation timing, logged every 5 s with --verbose: presents per second,
-// the cost of drawing a presented frame (render: scene to back buffer or wide
-// target) and of handing it to the display (present: conversion, texture
-// upload, SDL_RenderPresent including the wait for vsync), and of a game tick.
-struct PortPerf
-{
-	uint64_t since = 0;
-	long     presents = 0, ticks = 0, firstFrame = 0;
-	uint64_t render = 0, renderMax = 0, present = 0, presentMax = 0, tick = 0, tickMax = 0;
-
-	void Tick(uint64_t ns)
-	{
-		ticks++;
-		tick += ns;
-		if (ns > tickMax) tickMax = ns;
-	}
-
-	void Present(uint64_t renderNs, uint64_t presentNs, uint64_t now, long frame)
-	{
-		if (since == 0) { since = now; firstFrame = frame; }
-		presents++;
-		render += renderNs;
-		present += presentNs;
-		if (renderNs > renderMax) renderMax = renderNs;
-		if (presentNs > presentMax) presentMax = presentNs;
-		if (now - since < 5000000000ull) return;
-		const double seconds = (now - since) / 1e9;
-		char text[240];
-		snprintf(text, sizeof(text),
-				 "perf: %.0f presents/s (render avg %.2f max %.2f ms, present avg %.2f max %.2f ms), "
-				 "%.1f game frames/s (tick avg %.2f max %.2f ms), view %d",
-				 presents / seconds, render / 1e6 / presents, renderMax / 1e6, present / 1e6 / presents,
-				 presentMax / 1e6, (frame - firstFrame) / seconds, ticks ? tick / 1e6 / ticks : 0.0,
-				 tickMax / 1e6, PortViewWidth());
-		blupi::host::log_debug(text);
-		*this = PortPerf();
-	}
-};
 
 // World area the scene records around the frame: the interpolation margin,
 // and with widescreen the extra width on either side (a view clamped at a
@@ -1843,8 +1805,7 @@ int BlupiMain(int argc, char** argv)
 			TimerStep();
 			perf.Tick(blupi::host::now_ns() - tickStart);
 			lastTick = now;
-			nextTick += interval;
-			if (nextTick <= now) nextTick = now + interval;  // missed ticks are dropped
+			nextTick = PortNextTick(nextTick, now, interval);
 		}
 		lastTimer = g_timer;
 		DispatchPosted();
@@ -1931,13 +1892,12 @@ int BlupiMain(int argc, char** argv)
 			// Display rate: the latest frame and the current cursor every loop
 			// iteration; SDL_RenderPresent waits for the display (vsync).
 			const uint64_t t0 = blupi::host::now_ns();
-			double alpha = (double)(t0 - lastTick) / (double)interval;
-			PortPresentNow(alpha < 1.0 ? alpha : 1.0);
+			PortPresentNow(PortFrameAlpha(t0, lastTick, interval));
 			const uint64_t t1 = blupi::host::now_ns();
 			PortPixmapPresentIfDirty();
 			const uint64_t t2 = blupi::host::now_ns();
 			presents++;
-			perf.Present(t1 - t0, t2 - t1, t2, frame);
+			perf.Present(t1 - t0, t2 - t1, t2, frame, PortViewWidth());
 			if (!blupi::host::presents_with_vsync())
 			{
 				now = blupi::host::now_ns();

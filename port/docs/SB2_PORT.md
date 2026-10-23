@@ -121,8 +121,8 @@ The worker's Ninja stall was its sandbox's child-process limit; the Makefile bui
 - [OPEN] SB2 historical cross-build pixel comparison, Linux/Android validation, packaging
   and audible SB2 music validation remain outside the headless gates. SB1's historical
   pixel proofs do not establish SB2 historical pixel equality.
-- [OPEN] SB2 does not expose SB1's widescreen, interpolation, Display options or settings
-  persistence. M4a supplies the scene/coupling split; presentation enhancements are M4b.
+- [EVIDENCE] M4b below supplies SB1's widescreen, interpolation, display-rate presentation,
+  Display options and independent settings persistence, on M4a's scene/coupling split.
 
 ## M3 edition flows and playability (2026-10-23)
 
@@ -253,12 +253,78 @@ manifests and `port/tests/golden/` are unchanged. No original executable was run
 was written, no commit was made, and no game/build process remained after the gates.
 Worker report: `scratch/w-portm4a/REPORT.md`.
 
-[OPEN] M4b must extend coverage/culling to the wider view (only Build's own set may be
-faithful), pair scenes and interpolate visual positions, capture the tick's UI and
-present stored frames at display rate, then add SB1's Display options/settings flow.
-M4a accepts only zero Coverage and DrawView at alpha 1, 640 wide; other requests fail
-explicitly. No M4b option is exposed. Keep simulation camera, sound pan, activation,
-pause semantics, RNG/particle spawns and all EndOfTick effects at the original tick rate.
-Add SB2's wide/interpolation/presentation gates and retain every current golden trace.
-Linux and Ninja supervisor reruns remain required in this sandbox; historical SB2 pixel
+[EVIDENCE] M4b below extends this seam to wider coverage and visual interpolation,
+captured UI and display-rate presentation, with independent equivalence gates. Linux
+and Ninja supervisor reruns remain required in this sandbox; historical SB2 pixel
 comparison and Android/packaging/audible music validation remain separate work.
+
+## M4b presentation and Display options (2026-10-23)
+
+[EVIDENCE] SB2 extends SB1's scene/view and presentation path. Coverage expands all
+Build passes, including rear tiles 384/385, big-decor offsets, the extra mover families,
+lifts and editor path endpoints. Each extra item carries Build's original visibility
+rule and is flagged `extended` relative to the faithful frame. FlattenScene skips it;
+DrawView reevaluates that rule for the presented view. EndOfTick still visits only the
+original view: extra drops/lightning/voyages never gain state, sound, network or RNG
+effects from presentation. The simulation camera, sound pan, activation and pause
+semantics are unchanged.
+
+[EVIDENCE] PairScenes matches entity/index/occurrence, interpolating visual world and
+voyage positions plus the camera; animation/HUD values are the current tick's. Phase
+changes and camera jumps greater than 64 pixels snap the whole scene; individual jumps
+and new entities snap individually. The current shake is applied to the interpolated
+camera. Wide placement/parallax follow SB1: centred, clamped to the world, with the HUD
+on a centred 640-wide layer. The editor keeps its toolbar on the left; its documented
+`editor_wide.cpp` derivative of SB2 `BuildDown`/`BuildMove`/`ScreenPosToCelPos` retains
+all eleven tools, world bounds and wide-edge scroll input handling.
+
+[EVIDENCE] SetDecor captures the tick's scene/background and DrawButtons commands once.
+Presentation draws that stored frame and cursor between ticks, with optional
+interpolation, without changing the game's primary frame used by traces. SB2 uses the
+existing presentation target even at width 640; intermediate views, options and cursors
+never replace the faithful primary surface between ticks. `--check-presentation`
+(also enabled by `--check-view`) checks both primary pixels and simulation state across
+each presentation. `--present
+tick|display`, `--interpolate`, `--wide off|auto|W|16:9`, `--integer-scale`, and the
+Display options screen follow SB1. Defaults keep the faithful 640x480 view and no
+interpolation; monitor-rate presentation repeats the stored frame as in SB1. The
+original tick schedule drops missed ticks. `--present tick` selects one presentation
+per logical frame.
+
+[EVIDENCE] Both games build the same `common/ui/options_screen.cpp` (posted messages,
+native buttons/fonts and presentation overlay), `common/ui/settings.cpp` (JSON) and
+`common/presentation/timing.h` (tick/drop rule, alpha, diagnostics). SB1's entry and
+settings name are unchanged. SB2's entry is at (70,411), below its original colour-depth
+buttons, and opens the same Display options flow from either settings phase. SB2
+preferences are `blupi2-sdl3.json`, under `Epsitec/Speedy Blupi 2 SDL3` by default or
+`--user`; the saved data folder and language are loaded on later launches. Explicit
+flags override saved values for one run. Headless runs load/save no preferences. Port text uses
+the language callback's English fallback when the SB2 pack has no translated port text.
+
+[EVIDENCE] Sixty golden variants (reference, rerender, present, interp, wide) reuse all
+twelve faithful attract/tour/editor traces across both editions and depths, with updates
+disabled. Wide attract/editor variants also compare the centred region to the faithful
+back buffer using Build's original visibility set. Four `presentation_sb2_*` tests
+compare every frame with Build on the effects fixture at 21:9 with three presentations
+per tick, check options input/state isolation, exercise a side-area editor deletion,
+and prove alpha 0/0.5/1 changes presented pixels while retaining identical faithful
+traces. `sb2_view` checks occurrence pairing, phase/teleport snaps, visibility boundaries
+and world-edge placement. Two `preferences_sb2_*` tests use SDL dummy drivers and bounded
+desktop loops to test options persistence, data-folder reload and command-line precedence.
+The script input forms `viewmove`, `viewclick`, `viewrightclick` use presentation
+coordinates through the live host-input route for small editor checks; ordinary scripts
+keep their existing historical coordinates. State fixtures remain exclusively `--probe`.
+
+[EVIDENCE] M4b Windows status: **done**. The mingw-x64 preset configures with all requested
+data roots and both golden-update options OFF. Ninja repeats the sandbox glob-recheck
+stall and was interrupted; no build process remained. The documented `build/port-make`
+fallback builds both games with `-j 4`. The final serial suite passes **199/199** in
+**1,288.69 seconds** (95 SB1, 104 SB2); log: `build/w-portm4b/ctest-final.log`.
+The effects/reference runs each check 90 views and 480 presentations, with zero
+command/view/state/primary mismatches. All existing golden files are unchanged, as are
+matching sources, tools and manifests. `git diff --check` passes. No original executable
+was run, no game data was written, no commit was made and no game/build process remains.
+
+[OPEN] Supervisor Ninja/Linux reruns, historical SB2 pixel comparison, Android/packaging
+and audible music remain separate gates. Local M4b gate results and the handoff are in
+`scratch/w-portm4b/REPORT.md`.

@@ -146,8 +146,8 @@ add_library(blupi_game STATIC
     games/sb1/game/probe.cpp
     games/sb1/game/end_of_tick.cpp
     games/sb1/game/editor_wide.cpp
-    games/sb1/game/options_screen.cpp
-    games/sb1/game/settings.cpp
+    common/ui/options_screen.cpp
+    common/ui/settings.cpp
     games/sb1/game/language.cpp
     $<TARGET_OBJECTS:blupi_hist>)
 target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform)

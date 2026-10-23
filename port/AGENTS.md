@@ -32,10 +32,10 @@ Layering inside `port/`:
   visibility rule; never draw them in the faithful frame.
 - Test-only state injection goes through `--probe` (`games/sb1/game/probe.cpp`), never through gameplay
   code paths.
-- Port UI (the Display options screen, `games/sb1/game/options_screen.cpp`) is a presentation layer:
+- Port UI (the shared Display options screen, `common/ui/options_screen.cpp`) is a presentation layer:
   drawn over the tick's frame when presenting, never into the game's frame or screen. It uses
   its own posted messages, handled before the window procedure. Port settings live in
-  `blupi-sdl3.json` (`games/sb1/game/settings.h`) and must never change the simulation.
+  `blupi-sdl3.json` (SB1) or `blupi2-sdl3.json` (SB2), using `common/ui/settings.h`, and must never change the simulation.
 - Input the original cannot map (the wide editor's world, which no longer lies under its
   toolbar) may be handled only by a documented port derivative of the historical handler
   (`games/sb1/game/editor_wide.cpp`, routed by `PortEditorMouse`). Everywhere else, input in UI

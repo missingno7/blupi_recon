@@ -2,7 +2,7 @@
 // numbers and strings, read leniently (unknown keys are ignored) and written
 // whole.
 
-#include "game/settings.h"
+#include "ui/settings.h"
 
 #include <cctype>
 #include <cstdio>

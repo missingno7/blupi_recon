@@ -268,9 +268,38 @@ endif()
 add_executable(test_sb2_layout test_sb2_layout.cpp)
 target_link_libraries(test_sb2_layout PRIVATE blupi2_hist_context)
 add_test(NAME sb2_layout COMMAND test_sb2_layout)
+add_executable(test_sb2_view test_sb2_view.cpp)
+target_link_libraries(test_sb2_view PRIVATE blupi2_hist_context blupi2_game)
+add_test(NAME sb2_view COMMAND test_sb2_view)
 set(BLUPI2_TEST_DATA "$ENV{BLUPI2_DATA}" CACHE PATH "Eggbert 2 data root for SB2 golden tests")
 set(BLUPI2_TEST_DATA_BLUPI "" CACHE PATH "Blupi 2 data root for SB2 golden tests")
 option(BLUPI2_UPDATE_GOLDEN "Rewrite only the SB2 golden traces" OFF)
+# Optional presentation modes use the existing faithful traces as their oracle.
+# Updating any golden is deliberately disabled for these variants.
+function(sb2_mode_goldens name data every args script)
+    foreach(mode reference rerender present interp wide)
+        if(mode STREQUAL "reference")
+            set(extra "--reference")
+        elseif(mode STREQUAL "rerender")
+            set(extra "--render-repeat 3")
+        elseif(mode STREQUAL "present")
+            set(extra "--present display --present-repeat 3")
+        elseif(mode STREQUAL "interp")
+            set(extra "--interpolate --check-view --present-repeat 3")
+        else()
+            set(extra "--wide 16:9 --interpolate --check-view --present-repeat 3")
+            if(name MATCHES "attract|editor")
+                string(APPEND extra " --check-wide")
+            endif()
+        endif()
+        add_test(NAME golden_${name}_${mode}
+            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${data}
+                -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}_${mode}
+                -DGOLDEN=${CMAKE_CURRENT_SOURCE_DIR}/golden/${name}.trace -DEVERY=${every}
+                "-DARGS=${args} ${extra}" -DSCENARIO=${scenario} -DEDITION=${edition}
+                -DUPDATE=OFF -P ${CMAKE_CURRENT_SOURCE_DIR}/${script})
+    endforeach()
+endfunction()
 foreach(edition eggbert blupi)
     if(edition STREQUAL "eggbert")
         set(sb2_data "${BLUPI2_TEST_DATA}")
@@ -297,6 +326,7 @@ foreach(edition eggbert blupi)
                         -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_scene.cmake)
             endforeach()
             set(name sb2_${edition}_attract${depth})
+            sb2_mode_goldens(${name} "${sb2_data}" 10 "--color ${depth} --frames 8000" sb2_golden.cmake)
             add_test(NAME golden_${name}
                 COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
                     -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}
@@ -305,6 +335,9 @@ foreach(edition eggbert blupi)
                     -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_golden.cmake)
             foreach(scenario tour editor)
                 set(name sb2_${edition}_${scenario}${depth})
+                sb2_mode_goldens(${name} "${sb2_data}" 5
+                    "--color ${depth} --frames 260 --input ${CMAKE_CURRENT_SOURCE_DIR}/golden/sb2_${scenario}.input"
+                    sb2_menu.cmake)
                 add_test(NAME golden_${name}
                     COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
                         -DWORK=${CMAKE_CURRENT_BINARY_DIR}/golden_${name}
@@ -314,6 +347,16 @@ foreach(edition eggbert blupi)
                         -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_menu.cmake)
             endforeach()
         endforeach()
+        foreach(depth 8 16)
+            add_test(NAME presentation_sb2_${edition}_${depth}
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                    -DWORK=${CMAKE_CURRENT_BINARY_DIR}/presentation_sb2_${edition}_${depth}
+                    -DDEPTH=${depth} -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_presentation.cmake)
+        endforeach()
+        add_test(NAME preferences_sb2_${edition}
+            COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
+                -DWORK=${CMAKE_CURRENT_BINARY_DIR}/preferences_sb2_${edition}
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_preferences.cmake)
         add_test(NAME sb2_${edition}_save
             COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:blupi2> -DDATA=${sb2_data}
                 -DWORK=${CMAKE_CURRENT_BINARY_DIR}/sb2_${edition}_save

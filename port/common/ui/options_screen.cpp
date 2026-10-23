@@ -15,7 +15,7 @@
 #include "misc.h"
 
 #include "game/port_game.h"
-#include "game/settings.h"
+#include "ui/settings.h"
 
 #include <cstring>
 
@@ -36,7 +36,7 @@ enum : UINT
 	MSG_LAST,
 };
 
-// Button sprites (CHBUTTON icon numbers as in the phase table of src/event.cpp).
+// Button sprites (CHBUTTON icon numbers as in the phase table of each game's event.cpp).
 constexpr int kIconLeft = 0x32, kIconRight = 0x33, kIconOk = 0x12, kIconDisplay = 4;
 
 struct Control
@@ -61,8 +61,9 @@ const Control kControls[] =
 };
 constexpr int kControlCount = sizeof(kControls) / sizeof(kControls[0]);
 
-// The entry on the game's settings screen: the empty lower-left panel.
-constexpr int kEntryX = 70, kEntryY = 330;
+// Entry placement is game data: SB1's empty lower-left panel; SB2's bottom
+// row (its lower-left panel contains the original colour-depth controls).
+int s_entryX = 70, s_entryY = 330;
 
 CPixmap*      s_pixmap = NULL;
 CSound*       s_sound = NULL;
@@ -133,14 +134,16 @@ void Changed()
 }  // namespace
 
 void PortOptionsInit(CPixmap* pixmap, CSound* sound, PortSettings* settings, void (*apply)(),
-					 bool windowChoice)
+					 bool windowChoice, int entryX, int entryY)
 {
+	s_entryX = entryX;
+	s_entryY = entryY;
 	s_windowChoice = windowChoice;
 	s_pixmap = pixmap;
 	s_sound = sound;
 	s_settings = settings;
 	s_apply = apply;
-	s_entry.Create(NULL, pixmap, sound, POINT{kEntryX, kEntryY}, 0, FALSE, MSG_OPEN);
+	s_entry.Create(NULL, pixmap, sound, POINT{s_entryX, s_entryY}, 0, FALSE, MSG_OPEN);
 	int icon = kIconDisplay;
 	s_entry.SetIconMenu(&icon, 1);
 	for (int i = 0; i < kControlCount; i++)
@@ -250,7 +253,7 @@ void PortOptionsDraw()
 	if (!s_open)
 	{
 		s_entry.Draw();
-		Text(kEntryX + 50, kEntryY + 12, 9000, "Display options", FONTWHITE);
+		Text(s_entryX + 50, s_entryY + 12, 9000, "Display options", FONTWHITE);
 		return;
 	}
 

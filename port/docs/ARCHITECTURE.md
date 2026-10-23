@@ -383,9 +383,36 @@ M4a extends SB1's scene/end-of-tick split to SB2: `game/scene.cpp` derives from 
 The normal `SetDecor` builds the scene, applies EndOfTick, flattens it, then draws buttons
 and the cursor once per tick. `--reference` retains the unchanged historical Build as the
 test oracle. Scene commands and per-frame state/pixels are checked against that path;
-`--check-view` checks alpha 1 at 640 wide. Interpolation, widescreen, display-rate redraw
-and Display options remain M4b and require their own equivalence gates. [SB2_PORT.md](SB2_PORT.md) records
-the milestone evidence and the remaining services.
+`--check-view` checks alpha 1 at 640 wide. M4b adds SB1's optional interpolation,
+widescreen and captured-UI display-rate presentation. The coupling table in section 4
+still applies: SB2's drop stores, lightning audio/network effects and voyage RNG/spawns
+are made only by EndOfTick at the original view and tick rate, including when extended
+items are presented. [SB2_PORT.md](SB2_PORT.md) records the milestone gates and limits.
+
+[EVIDENCE] Both games now compile `common/ui/options_screen.cpp` and
+`common/ui/settings.cpp`. The shared options framework uses each game's original
+buttons, fonts, phase constants and language callbacks, with the entry position passed
+by its adapter. SB2's entry is at (70,411), below its colour-depth controls; SB1 retains
+(70,330). The overlay receives its own posted messages before the game and draws only
+when presenting. JSON settings are host I/O; SB1 keeps `blupi-sdl3.json` and SB2 uses
+`blupi2-sdl3.json` in `Epsitec/Speedy Blupi 2 SDL3` (or `--user`). Headless runs use
+defaults/flags and never load or save preferences. Both loops use
+`common/presentation/timing.h` for the same fixed tick/drop rule, presentation alpha
+and diagnostics. No historical TU changed ownership.
+
+[EVIDENCE] SB2 presents through the existing separate target at width 640 as well as
+wide widths, so intermediate positions and the options overlay never replace its
+faithful primary surface between ticks. Its `--check-presentation` (also active with
+`--check-view`) checks game state and primary pixels across every presentation. SB1's
+existing presentation behavior is retained.
+
+[EVIDENCE] Scene visibility and entity identity remain game-owned. SB2 expands every
+Build tile/mover pass, including its rear tiles and additional mover families, tagging
+extra items `extended`; faithful replay skips them. Pairing, snap rules, world-edge
+placement, parallax and the HUD's centred frame follow SB1. The wide editor anchors its
+toolbar at the left and routes world input through an SB2 `BuildDown`/`BuildMove`
+derivative, retaining all eleven tools and rejecting cells outside the world. Simulation
+camera/clamps, activation, sound pan and pause behavior remain historical.
 
 [EVIDENCE] Both games consume `common/scene/commands.h`: only command values, layer/coverage
 types, primitive replay and faithful list traversal moved there. It includes no game or

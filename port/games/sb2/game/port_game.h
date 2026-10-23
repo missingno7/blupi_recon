@@ -90,7 +90,7 @@ void     EndOfTick(CDecor& decor);
 // screens. apply is called after every change of the settings.
 // windowChoice: offer window or full screen (desktop; Android is always full screen).
 void     PortOptionsInit(CPixmap* pixmap, CSound* sound, PortSettings* settings, void (*apply)(),
-                         bool windowChoice);
+                         bool windowChoice, int entryX = 70, int entryY = 330);
 void     PortOptionsPhase(unsigned int phase);  // every frame: shows or closes it
 bool     PortOptionsVisible();   // the entry button or the screen is shown
 bool     PortOptionsOpen();      // the screen is shown

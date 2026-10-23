@@ -74,8 +74,8 @@ struct Scene
 	std::vector<Item> items;
 };
 
-// M4a records exactly Build's items. The reserved Coverage argument must be
-// zero; extending it and flagging extra items belongs to M4b.
+// Coverage records extra presentation items, flagged extended; FlattenScene
+// skips them, retaining exactly SB2 Build's own set and order.
 // Pure: does not modify decor (const access only).
 void BuildScene(const CDecor& decor, RECT rect, POINT mousePos, Scene& out,
 				const Coverage& coverage = Coverage());
@@ -88,16 +88,70 @@ void FlattenScene(const Scene& scene, CPixmap* pixmap);
 // of the given size at view.
 bool Visible(const Item& item, POINT ref, POINT view, int width, int height);
 
-// M4a supports the faithful view only. Motion and ViewSpec keep SB1's API
-// shape for M4b; no interpolation, coverage extension or wider view yet.
+// Interpolation (ROADMAP.md stage 7), visual only. For each item of the
+// current scene, where it was in the previous one: the same entity identity
+// (entity, index, occurrence) on the world layer, or the voyage icon. An item
+// without a counterpart, or that moved more than kSnapDistance, starts where
+// it is (snap). The whole scene snaps when the phase changed or the camera
+// moved more than kSnapDistance.
+constexpr int kSnapDistance = 64;
+constexpr int kInterpolationMargin = 2 * kSnapDistance;  // Coverage needed around the view
+
 struct Motion
 {
 	bool valid = false;
 	POINT cameraFrom = {0, 0};
-	std::vector<POINT> from;
+	std::vector<POINT> from;   // per item of the current scene (world, or pos for Screen)
 };
-struct ViewSpec { int width = LXIMAGE; };
+
+void PairScenes(const Scene& prev, const Scene& curr, Motion& out);
+
+// Draws the scene as seen at alpha in [0, 1] between the previous tick
+// (alpha 0, positions from motion) and this one (alpha 1). Positions and the
+// camera are interpolated; sprites, animation frames, HUD and texts are the
+// current tick's. The camera shake of the current tick is added on top of the
+// interpolated camera. Items are kept or dropped by Build's own rules
+// evaluated at the drawn view, and the parallax background is drawn for that
+// view. With motion == NULL or alpha == 1, at the faithful size, it issues
+// exactly FlattenScene's calls (--check-view).
+//
+// Widescreen (ROADMAP.md stage 8): a wider view keeps the simulation camera's
+// 640x480 frame and shows more of the world around it, centred on it and
+// clamped to the world; a world narrower than the view is centred, the rest
+// left unpainted. The HUD and texts stay in the centred 640x480 frame; a
+// voyage icon travels from the object's place in the view to its HUD counter.
+// The parallax background is placed by the view camera.
+//
+// The editor places its world the same way and puts its screen layer (the
+// toolbar, the caption) at the view's left edge instead (uiLeft); the port
+// routes the mouse between the two (game/main.cpp, editor_wide.cpp).
+struct ViewSpec
+{
+	int  width = LXIMAGE;        // view width (the target is width x LYIMAGE)
+	bool cullAtFrame = false;    // test: Build's rules at the frame (--check-wide)
+	bool uiAtFrame = false;      // test: the screen layer with the frame (--check-wide)
+	bool uiLeft = false;         // the screen layer at the view's left edge (the editor)
+};
+
+// Screen x of the screen layer in a view of that width: the centred frame, or
+// the left edge (uiLeft). The mouse's coordinates are relative to it.
+inline int FrameOffset(int width, bool uiLeft)
+{
+	return uiLeft ? 0 : (width - LXIMAGE) / 2;
+}
+
+// Where the simulation frame lies in a view: the view camera and the frame's
+// x offset in it (0 at the faithful size).
+struct ViewPlacement
+{
+	POINT camera;   // world position of the view's left/top corner (shaken)
+	int   frameX;   // screen x of the frame's left edge
+	int   left, right;  // screen columns that show the world
+};
+ViewPlacement PlaceView(const Scene& scene, POINT view, int width);
+
 void DrawView(const Scene& scene, const Motion* motion, double alpha, CPixmap* pixmap,
 			  const ViewSpec& spec = ViewSpec());
-} // namespace blupi::scene
+}  // namespace blupi::scene
+
 #endif
