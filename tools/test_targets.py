@@ -95,6 +95,47 @@ class TargetAcceptanceTests(unittest.TestCase):
 
 
 class TargetEquivalenceTests(unittest.TestCase):
+    @staticmethod
+    def relocation_receipt():
+        return [dict(offset=7, oracle_offset=9, type='DIR32', symbol='table', addend=4,
+                     resolved_symbol_va='0x00436000', effective_target_va='0x00436004',
+                     target_va='0x00436004', object_section='.data', oracle_section='.data',
+                     object_offset=120, data_size=16, verified=True, status='STRICT',
+                     reason='initialized data bytes verified')]
+
+    def test_relocation_binding_ignores_only_data_placement_without_mutating_receipt(self):
+        before = self.relocation_receipt()
+        after = self.relocation_receipt()
+        after[0]['object_offset'] += 328
+        self.assertEqual(equiv.relocation_binding(before), equiv.relocation_binding(after))
+        self.assertEqual(before[0]['object_offset'], 120)
+        self.assertEqual(after[0]['object_offset'], 448)
+        # Companion data targets follow the same rule; their own relocation
+        # sites and identities remain bound recursively.
+        nested = [dict(companion_relocations=before)]
+        shifted = [dict(companion_relocations=after)]
+        self.assertEqual(equiv.relocation_binding(nested), equiv.relocation_binding(shifted))
+        shifted[0]['companion_relocations'][0]['symbol'] = 'another_table'
+        self.assertNotEqual(equiv.relocation_binding(nested), equiv.relocation_binding(shifted))
+        with self.assertRaisesRegex(ValueError, 'unrecognized object_offset'):
+            equiv.relocation_binding([dict(object_offset=1, symbol='unknown')])
+
+    def test_relocation_binding_keeps_every_other_proof_fact(self):
+        before = self.relocation_receipt()
+        expected = equiv.hashed(equiv.relocation_binding(before))
+        for field, value in before[0].items():
+            if field == 'object_offset':
+                continue
+            with self.subTest(field=field):
+                changed = self.relocation_receipt()
+                changed[0][field] = not value if isinstance(value, bool) else (
+                    value + 1 if isinstance(value, int) else value + '-changed')
+                self.assertNotEqual(expected, equiv.hashed(equiv.relocation_binding(changed)))
+        self.assertNotEqual(expected, equiv.hashed(equiv.relocation_binding([])))
+        extended = self.relocation_receipt()
+        extended[0]['future_proof_fact'] = 1
+        self.assertNotEqual(expected, equiv.hashed(equiv.relocation_binding(extended)))
+
     def test_declarations_are_target_local_and_keep_absolute_rvas(self):
         for name in targets.names():
             target = targets.load(name)

@@ -52,6 +52,25 @@ def hashed(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
 
+def relocation_binding(value):
+    """Bind resolved identities, not placement of their data in a COFF section.
+
+    resolve_sites must first verify its complete, unmodified receipt. Its
+    object_offset is the section-relative location used to read a data target,
+    which can move when unrelated definitions are removed. Keep every other
+    fact (including nested companion relocations), and reject an unfamiliar use
+    of that field rather than silently omitting future proof inputs.
+    """
+    if isinstance(value, dict):
+        if 'object_offset' in value:
+            require({'object_section', 'oracle_section', 'data_size', 'target_va'} <= value.keys(),
+                    'unrecognized object_offset in relocation receipt')
+        return {k: relocation_binding(v) for k, v in value.items() if k != 'object_offset'}
+    if isinstance(value, list):
+        return [relocation_binding(v) for v in value]
+    return value
+
+
 def difference_ranges(differences):
     """Enumerate offsets compactly; complete payload hashes bind byte values."""
     ranges = []
@@ -1019,12 +1038,15 @@ def check(target, manifest, comparison, evidence_objects, out_dir, write=False):
             require(status == 'STRICT' and all(r['verified'] for r in rows), f'{name}: unresolved relocation {rows}')
             rr.extend(dict(r, oracle_offset=sites[offset]) for r in rows)
         checks['verified_relocations'] = len(rr)
-        checks['relocations_sha256'] = hashed(rr)
+        checks['relocations_sha256'] = hashed(relocation_binding(rr))
+        # Retain the full fresh resolver evidence, including COFF placement,
+        # outside the pinned certificate so layout changes remain reviewable.
+        (out/(name+'-relocations.json')).write_text(json.dumps(rr, indent=2)+'\n', encoding='utf-8')
         dependencies = {coff.sym_by_index[r.symbol_index].name:certified_entries[coff.sym_by_index[r.symbol_index].name]
                         for r in f.relocs if coff.sym_by_index[r.symbol_index].name in certified_entries}
         if dependencies:
             checks['previously_proved_equivalent_callee_entries'] = dependencies
-        current = dict(schema=1, status='EQUIVALENT', target=target.name, declaration=entry,
+        current = dict(schema=2, status='EQUIVALENT', target=target.name, declaration=entry,
                        scope='static-local-equivalence', assumptions=ASSUMPTIONS,
                        payload_sha256=hashed(dict(bytes=f.data.hex(), relocations=[
                            [r.offset-f.start,r.typ,coff.sym_by_index[r.symbol_index].name] for r in f.relocs])),

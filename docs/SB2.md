@@ -523,6 +523,24 @@ Eggbert 1 functions at their original RVA (oracle order: 235). [OPEN] Its `.text
 Outside both tiers: Eggbert 2's CreateSoundBuffer (DX7 descriptor, line 64), SetDemo (owner ambiguous with
 SetState), the GetHide/IsHost shared body.
 
+### Data classification and certificate binding (round 13)
+
+[EVIDENCE] `scratch/w-data4/REPORT.md` classified all 211 data arrays of the SB2 tree against both originals.
+decdesign.cpp's 59 `sb2_design_*` editor arrays are genuine: their payloads are in both executables and SB2
+code references them (e.g. RVA 0x5ffa → 0x4376a8). Five decblock.cpp arrays (`table_36548`, `table_365f0`,
+`table_36980`, `table_369c8`, `table_design_door`) are absent from both originals and unused: removed. 39
+decblock.cpp arrays duplicate editor payloads under SB1-era names; their ownership differs by edition, so they
+stay ([OPEN]). [NEGATIVE] Redirecting decdesign's references to those decblock copies (`scratch/w-data3`) is
+wrong: the original code references the decdesign copies. The verifier could not see this because an
+otherwise unbound data symbol is placed where its first reference points. The relinked `.data` is now 1,056
+bytes longer than the original in both editions ([OPEN]).
+
+[EVIDENCE] `tools/equivalence_target.py` certificates (`scratch/w-certfix/REPORT.md`) now bind the complete
+payload, each relocation's site, symbol, type, addend and resolved original target, and the proof inputs, but
+no longer the COFF placement of unrelated data in the object (which had made unrelated data fixes invalidate
+BlupiStep's certificate). All 39 SB2 certificates were re-issued; six negative controls (payload mutation,
+relocation retargeted, changed addend, ...) are rejected. SB1's checker and certificates are unchanged.
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten

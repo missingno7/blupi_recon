@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "status": "EQUIVALENT",
   "target": "sb2/blupi/de",
   "declaration": {
@@ -30,7 +30,7 @@
   "payload_sha256": "37ba64eec898b8399a13a9ec8144b3990644b0aceebe8907737e6060c7999725",
   "oracle_sha256": "6e5f7867a606d9581e7c9b710648a3b91b7d2c71c290148bb2eceaefe66d5442",
   "oracle_function_sha256": "c9b923726dea17198b9036f94671b99da97f1f62300e501b8afae035b1f0f2b1",
-  "checker_sha256": "fa74892f3f93d6fb2d0e1a09f32721efb53aacfb88aa49a752d105a23f3dfacb",
+  "checker_sha256": "29be3ea4b7d713dfe3c9ce85e84b6491076ad436cbbcdda59da0be5ec7afc054",
   "comparator_sha256": "e5f128d8f4fed1aba7371f03397a154f76b3d2d72b8dee874b167bff83bf2323",
   "comparator_wrapper_sha256": "ae663881d257785e3f7f6729080c0982e5b25034cd870988bfa2330d3b5ef2dc",
   "capstone_version": "5.0.3",
@@ -135,6 +135,6 @@
     "object_padding_bytes": 10,
     "oracle_padding_bytes": 10,
     "verified_relocations": 247,
-    "relocations_sha256": "02a2c0d7bef4b625f45e2e53ffe396beab8a0c0362db564af00e1465bf167a05"
+    "relocations_sha256": "21823cc9e54eb7aa120dfffc09ebdc1f04e2f89be7a4bf5ed708398f3476f605"
   }
 }

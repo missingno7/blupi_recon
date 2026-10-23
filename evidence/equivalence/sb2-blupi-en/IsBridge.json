@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "status": "EQUIVALENT",
   "target": "sb2/blupi/en",
   "declaration": {
@@ -30,7 +30,7 @@
   "payload_sha256": "49198bc49275d819d2131468ed661ce355586fe278469b346d1d95da884f4977",
   "oracle_sha256": "dfe139edd78182296b549d1a0bb79bf41fed473e13147a327028c8d003c6ab30",
   "oracle_function_sha256": "3f6457dd8f344126bf303c69024835704e3e5717a8348713be8cf60ff89e8905",
-  "checker_sha256": "fa74892f3f93d6fb2d0e1a09f32721efb53aacfb88aa49a752d105a23f3dfacb",
+  "checker_sha256": "29be3ea4b7d713dfe3c9ce85e84b6491076ad436cbbcdda59da0be5ec7afc054",
   "comparator_sha256": "e5f128d8f4fed1aba7371f03397a154f76b3d2d72b8dee874b167bff83bf2323",
   "comparator_wrapper_sha256": "ae663881d257785e3f7f6729080c0982e5b25034cd870988bfa2330d3b5ef2dc",
   "capstone_version": "5.0.3",
