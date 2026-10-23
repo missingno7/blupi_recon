@@ -1069,11 +1069,13 @@
       "rva": "0x00014d90",
       "size": 80,
       "tu": "games/sb2/src/decblupi.cpp",
-      "withdrawn": {
-        "reason": "[EVIDENCE] TU context (msvc5kb BLUPI-CTX-03): source unchanged; CDecor::BlupiStep, defined earlier in decblupi.cpp, now holds SB2's own body (9,187/9,211 instructions aligned, scratch/w-blupistep/REPORT.md) instead of SB1's, which changes the front-end IDs of every later definition. This function had matched only with SB1's BlupiStep in front of it.",
-        "evidence": "scratch/w-blupistep/REPORT.md peer-residues.json",
-        "date": "2026-10-22"
-      }
+      "withdrawal_history": [
+        {
+          "reason": "[EVIDENCE] TU context (msvc5kb BLUPI-CTX-03): source unchanged; CDecor::BlupiStep, defined earlier in decblupi.cpp, now holds SB2's own body (9,187/9,211 instructions aligned, scratch/w-blupistep/REPORT.md) instead of SB1's, which changes the front-end IDs of every later definition. This function had matched only with SB1's BlupiStep in front of it.",
+          "evidence": "scratch/w-blupistep/REPORT.md peer-residues.json",
+          "date": "2026-10-22"
+        }
+      ]
     },
     {
       "symbol": "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
@@ -1560,6 +1562,12 @@
       "rva": "0x0001ca00",
       "size": 80,
       "tu": "games/sb2/src/decor.cpp"
+    },
+    {
+      "symbol": "??0CEvent@@QAE@XZ",
+      "rva": "0x0001ca50",
+      "size": 352,
+      "tu": "games/sb2/src/event.cpp"
     },
     {
       "symbol": "??1CEvent@@QAE@XZ",
@@ -2562,6 +2570,18 @@
       "rva": "0x00028890",
       "size": 960,
       "tu": "games/sb2/src/pixmap.cpp"
+    },
+    {
+      "symbol": "?CheckWorld1@CEvent@@IAEHXZ",
+      "rva": "0x00028c50",
+      "size": 16,
+      "tu": "games/sb2/src/event.cpp",
+      "status": "folded",
+      "into": {
+        "symbol": "?Flush@CPixmap@@QAEHXZ",
+        "rva": "0x00028c50",
+        "tu": "games/sb2/src/pixmap.cpp"
+      }
     },
     {
       "symbol": "?Flush@CPixmap@@QAEHXZ",

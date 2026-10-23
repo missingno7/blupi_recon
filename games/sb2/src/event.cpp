@@ -1140,7 +1140,8 @@ CEvent::CEvent()
 	m_pDemoBuffer = NULL;
 	m_demoTime = 0;
 	m_keyPress = 0;
-	ZeroMemory(m_menuDecor, sizeof(m_menuDecor));
+	for (int i = 0; i < 20; i++)
+		m_menuDecor[i] = 0;
 	m_menuDecor[11] = 1;
 }
 

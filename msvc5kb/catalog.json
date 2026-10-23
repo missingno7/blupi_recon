@@ -3021,6 +3021,11 @@
           "counts": "2124/2124 queue+colour, 593/593 penalty vectors, 13/13 demotions, 9/9 stack histories; 11/14 registered source micros"
         },
         {
+          "ref": "blupi_recon:docs/SB2.md, blocker repair; scratch/b2-blockers/REPORT.md",
+          "tier": "PROVEN",
+          "counts": "Blupi 2 ChangePhase: SP3 diagnostic control equals target RTM function bytes and symbolic relocations. SP3 allocation replay preserves output with 616/616 model checks: early zero22/-65 is selected before PLAY9/-78; later PLAY8/-63 does not explain that earlier choice. Direct RTM allocation internals and the oracle's compiler history were not observed. Detailed per-use/per-cost logging timed out at 180 seconds; lighter logging completed."
+        },
+        {
           "ref": "blupi_recon:scratch/sol-ccp/FINDINGS.md, 1. First unexplained compiler-stage divergence; 2. Every reference, block cost and the final gap; 3. Cuts, interference and rematerialization",
           "tier": "PROVEN",
           "counts": "Fresh release/eGames literal ledgers distinguish the 13-point gap from the inherited flag one-point gap; later split component cannot be substituted for early PLAY9. Native oracle allocation history is not uniquely established."
@@ -4851,6 +4856,68 @@
         "flags": "/W3 /GX /O2 /ML /Gd /Gy",
         "compiles": "5 verify runs (11 TUs each) + 3 probes",
         "outcome": "dx5sdk headers are the best fit for every SB2 TU but sound's DSBUFFERDESC size; no strict gain from changing SDKs",
+        "doc_ref": "docs/SB2.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SB2-02",
+      "section": "scheduling",
+      "tier": "PROVEN",
+      "scope": "SB2 CEvent constructor, VC5 RTM and SP3 /W3 /GX /O2 /ML /Gd /Gy, canonical DX5 headers",
+      "applies": { "opt": ["O2"] },
+      "title": "A counted zero-fill loop changes intrinsic setup order compared with ZeroMemory",
+      "symptoms": { "any": ["reorder_only"] },
+      "symptom": "CEvent::CEvent differs only in the count/zero/address setup before REP STOSD.",
+      "construct": "Replace ZeroMemory(m_menuDecor, sizeof(m_menuDecor)) with for (int i = 0; i < 20; i++) m_menuDecor[i] = 0; keep the following m_menuDecor[11] = 1 store.",
+      "explanation": "VC5 lowers the real array-clearing loop to the same REP STOSD operation, but emits the address setup before the count and zero setup. Both SB2 original constructors require that order. The prior direct intrinsic emitted count, zero, address. Equivalent clearing operations need not produce the same instruction order; the loop's intermediate scheduler graph was not traced.",
+      "experiment": "scratch/b2-blockers/event-loop.cpp through fnprobe and full verify --tu on both SB2 targets, then identity audit and canonical --accept.",
+      "not_when": "Only this fixed-size constructor clear has been measured. No general loop-to-memset rule or SB1 transfer is claimed. Earlier memset address/cast/count spellings were inert (scratch/w-small/REPORT.md).",
+      "matching_effect": "Constructor becomes STRICT, 352 verifier bytes including padding and eight verified relocations in each edition. Every other event function's emitted code bytes stay unchanged, and every other full-build status/location/size is preserved. Generated local-label names can change without changing their verified bindings.",
+      "evidence": [{
+        "ref": "blupi_recon:docs/SB2.md, blocker repair; games/sb2/src/event.cpp; scratch/b2-blockers/REPORT.md",
+        "tier": "PROVEN",
+        "counts": "One natural source candidate; one RTM function probe, two complete candidate verification builds, canonical Eggbert acceptance and Blupi regression build; zero identity conflicts."
+      }],
+      "keywords": "SB2 CEvent constructor zero clear memset ZeroMemory loop intrinsic lea ecx edi scheduling",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "CEvent::CEvent",
+        "tu": "games/sb2/src/event.cpp",
+        "flags": "/W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": "one probe + two candidate full builds + canonical gates",
+        "outcome": "STRICT in both SB2 editions; transfer to SB1 is untested",
+        "doc_ref": "docs/SB2.md"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-SB2-03",
+      "section": "context",
+      "tier": "PROVEN",
+      "scope": "SB2 decblupi.cpp, canonical DX5 headers, VC5 RTM and SP3 /W3 /GX /O2 /ML /Gd /Gy",
+      "applies": { "opt": ["O2"] },
+      "title": "Natural trajectory source forms recover the setter while parameter reuse preserves its adjacent query",
+      "symptoms": { "any": ["regalloc_only", "reorder_only"] },
+      "symptom": "SetMoveTraj evaluates X/8 before 13*Y and emits memory OR; the oracle evaluates Y first and uses load/OR/store. A prior natural context candidate fixes the setter but regresses Blupi IsMoveTraj.",
+      "construct": "Use POINT cel for IsOutWater's cell lookup and used int size / BYTE *p locals in the two counted trajectory-clearing loops. In IsMoveTraj, convert its by-value pos parameter directly instead of introducing POINT cel; preserve its guard and mask expression. Leave SetMoveTraj unchanged.",
+      "explanation": "The prior measured natural body profile adds +1/+2/+2 frontend entities before the setter (BLUPI-CTX-03). Reusing the query's parameter changes the operand's symbol identity and removes its cell local. A normal compile now preserves the previously STRICT Blupi query while retaining the setter gain in both editions. No compiler state is forced and no unused declarations are present.",
+      "experiment": "scratch/b2-continue/trajectory.py pos, then full verify --tu for both editions, crossmap --audit --candidates on both candidate results, canonical integration and Eggbert --accept, and canonical Blupi verify.",
+      "not_when": "This is a measured SB2 source/context combination, not a general parameter-reuse rule or a uniquely recovered historical spelling. Eggbert IsMoveTraj remains MISMATCH. Scalar-coordinate and early-return query alternatives fail Blupi's existing match. Cached filename pointer in DrawButtons regresses Eggbert; explicit GetBlupiInfo bitmask locals are inert. SB1 transfer is untested.",
+      "matching_effect": "SetMoveTraj becomes STRICT at Blupi 0x14d80 and Eggbert 0x14d90: 80 verifier bytes each, no relocations, unique raw-exact placement. Every other full-build status/location/size stays unchanged; every previously STRICT/FOLDED decblupi body retains its raw bytes. Exactly one shared withdrawal is reactivated.",
+      "evidence": [{
+        "ref": "blupi_recon:docs/SB2.md, trajectory repair; games/sb2/src/decblupi.cpp; scratch/b2-continue/REPORT.md; scratch/w-ctxprofile/REPORT.md",
+        "tier": "PROVEN",
+        "counts": "Three trajectory candidates and two follow-up candidates compiled serially for both editions; two full candidate gates, two canonical gates, both identity audits with zero conflicts."
+      }],
+      "keywords": "SB2 SetMoveTraj IsMoveTraj IsOutWater FlushBalleTraj FlushMoveTraj POINT parameter local context symbol identity",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "CDecor::SetMoveTraj, CDecor::IsMoveTraj",
+        "tu": "games/sb2/src/decblupi.cpp",
+        "flags": "/W3 /GX /O2 /ML /Gd /Gy",
+        "compiles": "ten focused candidate compiles plus four complete verification builds",
+        "outcome": "80 STRICT bytes recovered in each SB2 edition with no existing matches lost; SB1 transfer untested",
         "doc_ref": "docs/SB2.md"
       },
       "legacy_ids": []

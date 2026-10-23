@@ -1,8 +1,12 @@
 # Speedy Blupi 2 / Speedy Eggbert 2: matching
 
-Status (2026-10-23, round 3): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
+Status (2026-10-23, blocker repair): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
 target with its own oracle, source tree `games/sb2/src/` and manifest `games/sb2/recon.json`.
-Accepted: **445 STRICT + 11 FOLDED functions, 135,648 / 172,992 game `.text` bytes (78.4%)**: engine 25,344, application 5,408, game logic 104,896 (round 1: 23,408 bytes, 13.5%). The same tree also verifies **Speedy Blupi 2** (`sb2/blupi/en`, `_EGAMES=0`): 452 STRICT + 6 FOLDED, 121,296 / 173,072 bytes (70.1%). The SB1 targets, certificates and relinked image are unchanged.
+Accepted: **447 STRICT + 12 FOLDED functions, 136,080 / 172,992 game `.text` bytes (78.7%)**.
+**Speedy Blupi 2** (`sb2/blupi/en`, `_EGAMES=0`) has **449 STRICT + 5 FOLDED accepted functions,
+121,712 / 173,072 bytes (70.3%)**. Its complete comparator report finds 454 STRICT + 6 FOLDED,
+121,728 bytes; the extra 16 unique bytes have an unproven shared owner. Both complete regression gates
+pass, including historical sound paths. SB1's fresh report is unchanged (127,456 bytes; certificates pass).
 
 ```powershell
 .\.pyenv\python.exe tools\verify.py --target sb2/eggbert/en             # clean build + strict report
@@ -55,9 +59,10 @@ derived from Eggbert 2's (`oracle/sb2-blupi-en`, 446/449 game functions located;
 0x1000-0x2b410). The unchanged SB2 tree verifies 106,512 / 173,072 of its bytes STRICT before any
 edition switch.
 
-[EVIDENCE] With the edition switches below, `verify.py --target sb2/blupi/en` passes (exit 0):
+[EVIDENCE] The initial integration of the edition switches below passed with
 **452 STRICT + 6 FOLDED functions, 121,296 / 173,072 game `.text` bytes (70.1%)**, and Speedy Eggbert 2's
-results stay identical function by function (`scratch/sb2/samestatus.py`: 0 differing). Real differences
+results stayed identical function by function (`scratch/sb2/samestatus.py`: 0 differing). These were
+complete comparator totals, not accepted coverage; current accepted totals are above. Real differences
 found in Blupi 2's code and data, each under `#if _EGAMES` (worker reports `scratch/w-b2app`,
 `scratch/w-b2event`):
 - No timed publisher intro: `CEvent::m_introTime` is absent (`new CEvent` pushes 0x9be0, Eggbert 2
@@ -78,10 +83,11 @@ six symbols that LINK 5.00 keeps as the STRICT owner of a body Eggbert 2's linke
 
 [OPEN] Nine accepted Eggbert 2 functions differ on Blupi 2 only in operand or register order and are
 excluded there: `GetBlupiInfo`, `IsBridge`, `IsDoor`, `IsTeleporte`, `IsOutWater` (and the already
-withdrawn `IsDeepWater`, `SetMoveTraj`), `BltFast(int,int,POINT,RECT,int)`, `MouseBackDraw`,
+withdrawn `IsDeepWater`), `BltFast(int,int,POINT,RECT,int)`, `MouseBackDraw`,
 `DrawButtons`, `ChangePhase`. Diagnostic extra declarations make each of the decblupi/pixmap ones equal,
 so they are declaration-context residues of the RTM compiler on the same source, not code differences
-(section 8); the c2trace tools are calibrated for SP3's c2.exe, so their windows are not yet measured.
+(section 8). RTM expression tracing is now calibrated; measured windows and the remaining allocation
+boundary are recorded there.
 
 ## 2. Oracle, inventory and identifications
 
@@ -118,7 +124,7 @@ Accepted unique bytes per TU (`tools/target_coverage.py` counts them by group):
 | decmove.cpp | 42 |  | 17,616 |
 | decnet.cpp | 7 |  | 1,120 |
 | decor.cpp | 25 |  | 12,032 |
-| event.cpp | 86 |  | 37,680 |
+| event.cpp | 87 | 1 | 38,032 |
 | jauge.cpp | 10 |  | 560 |
 | menu.cpp | 7 | 1 | 480 |
 | misc.cpp | 11 | 1 | 3,872 |
@@ -128,15 +134,16 @@ Accepted unique bytes per TU (`tools/target_coverage.py` counts them by group):
 | sound.cpp | 26 | 3 | 3,552 |
 | text.cpp | 7 |  | 640 |
 
-Not yet STRICT (about 37,500 oracle bytes): `CDecor::BlupiStep` 35,449 (SB2 body in the tree: 9,187/9,211
+Not yet STRICT on Eggbert 2: `CDecor::BlupiStep` 35,449 (SB2 body in the tree: 9,187/9,211
 instructions aligned, 20 residue regions: operand order in the wind cell expressions, two constant
 initialisation orders, literal 1/10 promotion in the vertigo and Jeep edge guards, one `test` operand
-order; `scratch/w-blupistep/REPORT.md`); twelve small decblupi predicates and `MoveObjectSort` (operand-order context);
-`CEvent::CEvent` (one scheduling position); `CSound::CreateSoundBuffer` (line 64); withdrawn functions
-below.
+order; `scratch/w-blupistep/REPORT.md`); `MoveObjectSort` (operand-order context),
+`CSound::CreateSoundBuffer` (descriptor size and line 64), and the four withdrawn functions below.
+`CEvent::CEvent` is now STRICT in both editions (blocker repair below).
 
 Withdrawn from the gate (declaration context, section 8; source unchanged, each with evidence in the
-manifest): `CDecor::IsWorld`, `IsDeepWater`, `SetMoveTraj`, `IsMoveTraj`, `IsVentillo` (1,040 bytes).
+manifest): `CDecor::IsWorld`, `IsDeepWater`, `IsMoveTraj`, `IsVentillo` (960 bytes).
+`SetMoveTraj` has been re-accepted in both editions (trajectory repair below).
 Withdrawn earlier and re-accepted after later genuine context: `MouseMove` (twice), `BltFast`,
 `NetAscenseurSynchro`, `GetBlupiInfo`, `IsLave`, `IsRessort`, `IsVentillo` (once). `MouseMove` and
 `BltFast` returned in round 3 once inherited SB1 definitions that SB2 does not have (`CButton::Redraw`,
@@ -222,7 +229,7 @@ was possible without breaking an accepted function.
 Policy: the SB2 headers move towards authenticity: a declaration is added when an SB2 body that is
 proven to exist needs it (never as filler). A function that matched only through SB1's header entity
 count and breaks is withdrawn with its window as evidence (it may return: `MouseMove` broke, then
-matched again after later genuine declarations). 1,488 bytes are withdrawn now; every integration that caused a withdrawal gained more than it cost
+matched again after later genuine declarations). 1,040 bytes are withdrawn on Eggbert 2; every integration that caused a withdrawal gained more than it cost
 (the smallest: the SB2 `BlupiStep` body, net +700 bytes, because the new context also matched ten
 other functions). The full sb2-decomp declaration set
 (+31 CDecor methods) breaks four accepted functions, so sb2-decomp's header is not SB2's either.
@@ -261,8 +268,9 @@ variants (nested guards, conditional snapshots, comma assignments) are inert or 
 
 [EVIDENCE] Round 5 (`scratch/w-ctxprofile/REPORT.md`): three body respellings after `IsOutWater` (a
 `POINT cel` in IsOutWater, pointer loops in the two trajectory flushers; +1/+2/+2 entities) make
-`SetMoveTraj` and `IsMoveTraj` STRICT on Eggbert 2 with every other function kept (192 bytes). Not
-integrated: the flusher forms change nothing but the entity count, and Blupi 2 loses `IsMoveTraj`. On
+`SetMoveTraj` and `IsMoveTraj` STRICT on Eggbert 2 with every other function kept (192 bytes). That
+candidate was not integrated because Blupi 2 loses `IsMoveTraj`; the later trajectory repair below
+preserves the SetMoveTraj gain in both editions while retaining Blupi's IsMoveTraj. On
 Blupi 2 (RTM tools, below) `SetBalleTraj` and `SetMoveTraj` have the same decisive comparator sign at
 every uniform shift in ±4096 while needing opposite choices, so a positional difference between them
 is required in the 2001 source.
@@ -272,6 +280,111 @@ address table, 4,539 hash and 884 comparator calls observed live, zero mispredic
 operand-order residues are each removed by a diagnostic uniform shift per TU (decblock +65, pixmap +32,
 event +28, decblupi positional +92/+96/+101/+112); `ChangePhase`'s residue is register allocation and
 no comparator choice changes it.
+
+### BlupiStep with the corrected model (round 6, `scratch/w-stepwind/REPORT.md`)
+
+[EVIDENCE] The two editions' originals differ in the wind block: Eggbert 2 (0xa850) computes the cell
+index from `end.x` before `end.y`, Blupi 2 (0xa840, 35,452 bytes; the inherited 35,449 was corrected from
+its RET at 0x132bb) computes y first, **as our source does**. Our SP3 and RTM compiles of BlupiStep are
+byte-identical and have the same 37 context-sensitive comparator decisions (window [-3,0]). Aligned:
+Eggbert 2 9,187/9,211 instructions in 20 regions, Blupi 2 9,199/9,212 in 14.
+- Wind: a key-order decision on `end` (ID 33613; decisive bit 8). Keeping `this` and the later locals
+  fixed, every `end` ID in 33608..33747 gives the current (Blupi 2) order, so no reordering of the early
+  locals can give Eggbert 2's; a +179 suffix shift fixes Eggbert 2's wind and the dependent opening (20 → 15
+  regions) and breaks Blupi 2's. One source cannot give both under the same context: Eggbert 2's
+  original differs from Blupi 2's before `end` (source or header context; [OPEN] what).
+- The other residues are not symbol-ID decisions: constant 1/2 order (scheduling), literal 1/10
+  (constant promotion / live-range allocation), the key-mask TEST (unequal operand costs; encoded operand
+  orientation). They remain [OPEN] outside the key model.
+- Stack frame 0x16c in both originals and ours; every retained local's home (`end` at ESP+0x10, ...)
+  matches. [NEGATIVE] sb2-decomp's direct wind index is byte-identical to our `windCell` form;
+  reusing SB1's `tinyPoint` (either assignment order) is worse on both editions. No candidate.
+
+### Speedy Blupi 2 context and ChangePhase (round 6, `scratch/w-b2ctx/REPORT.md`)
+
+[EVIDENCE] Edition-only code: Eggbert 2 has one function Blupi 2 lacks, `IntroStep` (its declaration
+guard is byte-inert, -1 entity in event.cpp); `ChatFlush`/`ChatPop` exist in both (layout offsets
+differ). `CheckWorld1` differs: Blupi 2 checks `data\world001.blp` on the CD; Eggbert 2's
+ChangePhase calls a `mov eax,1; ret` body shared with `CPixmap::Flush`. `def.h` now sets
+`REQUIRE_CD` to `!_EGAMES`, and Eggbert 2's `CheckWorld1` is accepted FOLDED into `Flush` (no new unique
+bytes; every other status unchanged on both targets). No other edition-only declaration was found.
+
+[EVIDENCE] Blupi 2's per-TU profiles (RTM, radius ±4096, all captured decisions held): no uniform shift
+for decblock, decblupi or pixmap; event.cpp allows exactly 32 + 512k (fixes DrawButtons, not
+ChangePhase). A piecewise profile exists only with deltas that change between neighbouring functions
+(decblupi: +189 from IsBridge, 0 at IsSurfWater, +64 from IsDeepWater, −4 from SetMoveTraj), i.e. local
+differences in the 2001 bodies, which no evidence identifies yet.
+
+[EVIDENCE] Blupi 2's ChangePhase is 6,897 bytes (RET at 0x2173e; inventory corrected from the inherited
+6,934). Its residue is constant live-range allocation from the first difference at +0x84: the original
+keeps zero in EDI and WM_PHASE_PLAY in EBX, ours the reverse, with the downstream TEST/CMP and
+PUSH 0/PUSH EBX changes. [NEGATIVE] Five alternative spellings of the Blupi-only retry/read paths
+keep that first difference (`scratch/w-b2ctx/*/candidate.diff`). [OPEN] The source or context behind
+the allocator's choice.
+
+### Blocker repair (2026-10-23)
+
+[EVIDENCE] `CEvent::CEvent` is STRICT at Blupi 2 RVA 0x1ca40 and Eggbert 2 RVA 0x1ca50:
+352 verifier bytes each, including padding and eight verified relocations. A counted loop clearing
+the 20 `m_menuDecor` elements lowers to the oracle's `lea edi; mov ecx,20; xor eax,eax; rep stosd`
+setup. The inherited `ZeroMemory` call emitted count/zero/address order. Only the constructor's
+emitted body changes in either TU; every other function keeps its status, location and size. The
+candidate passed both complete gates and the identity audit before canonical integration and
+`--accept`. This is a source-form repair, not declaration filler (KB `BLUPI-SB2-02`).
+
+[EVIDENCE] A fresh Blupi 2 gate initially failed because the newly accepted Eggbert `CheckWorld1`
+was translated as `Flush` at 0x28ca0. Its Blupi override now requires its own STRICT 128-byte body
+at 0x1fbd0. `IsWorld`, `IsMoveTraj` and `IsVentillo` (880 bytes) are STRICT in Blupi 2 and are
+reactivated there with explicit `withdrawn: null` overrides; Eggbert's withdrawals remain intact.
+Five further proofs (592 bytes) are target-local `accepted_functions` in targets.json: `CJauge`'s
+constructor, `ChatFlush`, `ChatPop`, `CreateSoundBuffer` and `MoveObjectSort`. The first three were
+lost in address translation; the last two still mismatch on Eggbert. Target-local records use
+Blupi RVAs directly and enter the ordinary relocation/size/status regression gate.
+
+[EVIDENCE] `target_coverage.py` and `crossmap.py` now use the effective target manifest, including
+translation, exclusions and local proofs. Previously they read Eggbert's base addresses and counts
+for Blupi. Cross-map generation now uses the registry's game-code boundary, since derived oracles
+need not have summary.json. Four focused regression tests in `tools/test_targets.py` cover the CD
+body override, withdrawal isolation and enforcement, local RVA/proof enforcement, and projected
+coverage. No comparator or equivalence verifier was changed.
+
+[EVIDENCE] Final complete builds pass without an INCOMPLETE sound gate. Blupi's identity audit has
+259 consistent callers and 747 consistent calls; Eggbert's has 251 and 989, with zero conflicts.
+SB1's fresh gate passes both equivalence certificates and has zero function-status/location/size
+differences from its stored report. Detailed receipts: `scratch/b2-blockers/REPORT.md`.
+
+[EVIDENCE] Blupi's `ChangePhase` body and symbolic relocations are identical under a controlled SP3
+compile and the target RTM compile. The existing SP3 allocation tracer therefore provides a useful
+diagnostic control without claiming an RTM internal trace. Its unmodified replay reproduces the
+body and passes 616/616 model checks: early zero (22 references) sorts at -65 before PLAY
+(9 references) at -78, takes EBX, and PLAY later splits to 8 references/-63 and takes EDI. This is
+the same 13-point priority boundary known in SB1 (`BLUPI-ALLOC-01`), not a declaration-key decision.
+The detailed per-use/per-cost trace hit its bounded timeout; the lighter trace completed and reaped
+its process. [OPEN] A natural source form that produces the original lifetime/allocation is still
+unknown; `ChangePhase` remains MISMATCH. This round adds no BlupiStep matching claim.
+
+### Trajectory repair (2026-10-23 continuation)
+
+[EVIDENCE] `SetMoveTraj` is now STRICT in both editions: Blupi RVA 0x14d80, Eggbert RVA 0x14d90,
+80 verifier bytes each, one unique raw-exact hit and no relocations. The integrated source uses a
+cell POINT in `IsOutWater`, size/pointer clearing loops in both trajectory flushers, and converts
+the by-value `pos` parameter directly to cell coordinates in `IsMoveTraj`. Every local is used;
+there are no extra declarations, edition switches or compiler controls. The setter body itself
+is unchanged. These source forms reproduce its required Y-index-first, load/OR/store sequence.
+
+[EVIDENCE] Reusing `pos` resolves the earlier candidate's Blupi IsMoveTraj regression. Every other
+full-build function retains its status, location and size in both editions, and all previously
+STRICT/FOLDED decblupi bodies retain their raw bytes. Eggbert IsMoveTraj remains MISMATCH; this is
+an 80-byte gain per edition, not the earlier candidate's 192-byte Eggbert gain. Both complete gates
+and pre-acceptance identity audits pass (zero conflicts). Canonical `--accept` reactivates exactly
+SetMoveTraj and retains its withdrawal history. Evidence: `scratch/b2-continue/REPORT.md`,
+`receipt.json`; KB `BLUPI-SB2-03`.
+
+[NEGATIVE] Two alternatives for IsMoveTraj (scalar coordinates and an early-return guard) retain
+the new setter match but lose Blupi's query match. A cached filename pointer changes DrawButtons'
+body and loses its Eggbert match; explicit GetBlupiInfo mask locals are inert. None is integrated.
+[OPEN] The historical spellings are not uniquely recovered by these equal-byte results. The
+remaining BlupiStep, ChangePhase, DrawButtons and smaller residues are still unresolved.
 
 ### DirectX header environment (round 5)
 
@@ -306,7 +419,7 @@ include override (`scratch/sb2/sdkverify.py`, 26 runs in `scratch/w-sdkenv/suite
 - `crossmap.py --audit [--candidates] [--results PATH]`: callers of each symbol in SB1 must call the SB2
   address; calls of STRICT functions must land on the same-named SB1 function, a documented rename
   (`source_correspondence`) or a shared body the run locates under that name.
-- `target_coverage.py`: accepted unique bytes per group (`coverage_groups` in the manifest).
+- `target_coverage.py`: accepted unique bytes per group (`coverage_groups` in the effective target manifest).
 - `fnprobe.py --target`; `buildpath.py` folder mode with a sandbox fallback.
 - Limitations: STRICT placement by unique bytes cannot name a renamed/split body without a compiled
   caller (the audit catches it); fold ownership flips with the set of compiled callers (cmpfunc is
@@ -327,17 +440,18 @@ shared engine source file would need per-game headers anyway. Revisit when SB2's
 
 ## 12. Next targets (estimated bytes)
 
-1. **Declaration/TU context** (structural; unlocks most of what is left): `BlupiStep` (35.4 KB, 20
-   regions), the withdrawn 1.5 KB, the decblupi predicates and `MoveObjectSort` (about 2 KB). Collect
-   `ctxpredict.py` windows for every sensitive function, then reconstruct the genuine SB2 header method
-   sets/order and include lists that satisfy them; sb2-decomp's header is not it (section 8).
-2. **`Build`** (5 KB): a stack-slot allocation investigation like SB1's (msvc5kb `BLUPI-ALLOC-16`).
-3. Small items: the CEvent constructor's scheduling, `CreateSoundBuffer`'s line, the owners of shared
-   bodies (0x28100, 0x28cf0, 0x28d00), `GetDoors(short*)` → `BYTE*`.
-4. [HYPOTHESIS] SB2's ChangePhase/TreatEventBase became STRICT with SB2's authentic forms where SB1's
-   stayed EQUIVALENT; SB1's two residues may deserve a look with the same approach (SB1 work, not SB2).
-5. `sb2/blupi/en`: the nine RTM context residues (about 15 KB with `DrawButtons` and `ChangePhase`):
-   genuine 2001 declaration/body differences at the measured positions (section 8); `ChangePhase` needs
-   an allocation trace.
-6. Eggbert 2's header environment: DX5 plus DX7 `dsound.h` is what its data says (section 8); it needs
-   genuine context for GetBlupiInfo/SetBalleTraj/IsBalleTraj and the source of line 64 in sound.cpp.
+1. **BlupiStep**: 35,452 original body bytes / 14 diagnostic regions on Blupi 2; 35,449 / 20 on
+   Eggbert 2. Remaining constant scheduling/promotion and key-mask operand orientation need authentic
+   source evidence; Eggbert also has the different wind order. The measured windows are in section 8.
+2. **Blupi 2's ChangePhase and DrawButtons**: 6,912 and 7,648 verifier bytes. ChangePhase needs the
+   source of the now-observed constant allocation boundary; DrawButtons needs genuine declaration
+   context. Neither is strict, despite the original-style constructor loop now matching beside them.
+3. **Blupi 2's smaller residues**: GetBlupiInfo, IsBridge, IsDoor, IsTeleporte, IsOutWater, BltFast and
+   MouseBackDraw; IsDeepWater remains withdrawn. Eggbert retains four withdrawals and
+   its MoveObjectSort residue. Existing negative probes constrain new source hypotheses.
+4. **Eggbert 2's sound environment**: DX5 plus DX7 dsound.h matches its data evidence, but needs genuine
+   context for GetBlupiInfo/SetBalleTraj/IsBalleTraj and line 64. Blupi 2's sound helper is now accepted
+   separately with its existing DX5 descriptor and line 63.
+5. **Identity/ownership**: the 16-byte GetHide/IsHost shared body (Blupi 0x28150 / Eggbert 0x28100)
+   remains outside acceptance. CEvent::SetDemo has no compiled caller and stays ambiguous. Build and
+   CEvent's constructor are resolved and are no longer matching targets.

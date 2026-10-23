@@ -5098,7 +5098,10 @@ BOOL CDecor::IsDeepWater(POINT pos)
 
 BOOL CDecor::IsOutWater(POINT pos)
 {
-	int icon = m_decor[(pos.x + DIMBLUPIX / 2) / DIMOBJX][(pos.y + DIMBLUPIY / 2) / DIMOBJY].icon;
+	POINT cel;
+	cel.x = (pos.x + DIMBLUPIX / 2) / DIMOBJX;
+	cel.y = (pos.y + DIMBLUPIY / 2) / DIMOBJY;
+	int icon = m_decor[cel.x][cel.y].icon;
 	if (icon == 91 || icon == 92) return FALSE;
 	return IsPassIcon(icon);
 }
@@ -5144,7 +5147,9 @@ BOOL CDecor::IsBlocIcon(int icon)
 
 void CDecor::FlushBalleTraj()
 {
-	for (int i = 0; i < sizeof(m_balleTraj); i++) m_balleTraj[i] = 0;
+	int size = sizeof(m_balleTraj);
+	BYTE *p = m_balleTraj;
+	for (int i = 0; i < size; i++) *p++ = 0;
 }
 
 void CDecor::SetBalleTraj(POINT cel)
@@ -5168,7 +5173,9 @@ BOOL CDecor::IsBalleTraj(POINT pos)
 
 void CDecor::FlushMoveTraj()
 {
-	for (int i = 0; i < sizeof(m_moveTraj); i++) m_moveTraj[i] = 0;
+	int size = sizeof(m_moveTraj);
+	BYTE *p = m_moveTraj;
+	for (int i = 0; i < size; i++) *p++ = 0;
 }
 
 void CDecor::SetMoveTraj(POINT cel)
@@ -5182,14 +5189,13 @@ void CDecor::SetMoveTraj(POINT cel)
 
 BOOL CDecor::IsMoveTraj(POINT pos)
 {
-	POINT cel;
-	cel.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
-	cel.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
-	if (IsValidCel(cel))
+	pos.x = (pos.x + DIMOBJX / 2) / DIMOBJX;
+	pos.y = (pos.y + DIMOBJY / 2) / DIMOBJY;
+	if (IsValidCel(pos))
 	{
-		int num = cel.y * (TRAJBYTEX);
-		num += cel.x / 8;
-		int num2 = cel.x & 7;
+		int num = pos.y * (TRAJBYTEX);
+		num += pos.x / 8;
+		int num2 = pos.x & 7;
 		return m_moveTraj[num] & (1 << num2);
 	}
 	return FALSE;

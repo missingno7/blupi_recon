@@ -340,3 +340,30 @@ Added corpus evidence to BLUPI-REG-11: a member toggle uses EAX with rotor EDX u
 SET and preference return 435db5. Added pooled-constant corpus evidence to BLUPI-ALLOC-17, distinguishing the
 688-byte STRICT BlupiCreate control from the version-adjusted, relocation-masked phase dispatcher. These do not
 validate a new SB1 source fix. Full provenance, limits and reproduction: [PLANET_ORACLE.md](PLANET_ORACLE.md).
+
+## SB2 constructor and allocation control (2026-10-23)
+
+[EVIDENCE] `BLUPI-SB2-02`: the 20-element clearing loop produces the required address/count/zero
+setup before REP STOSD where ZeroMemory did not. CEvent's constructor is STRICT in Blupi 2 (RTM)
+and Eggbert 2 (SP3), 352 verifier bytes each including padding, eight relocations and EH companions.
+Every other emitted event body is unchanged; both full gates and identity audits pass. This rule's
+SB1 transfer status stays unverified. Evidence: [SB2.md](SB2.md), `scratch/b2-blockers/REPORT.md`.
+
+[EVIDENCE] Added SB2 evidence to `BLUPI-ALLOC-01`: Blupi 2 ChangePhase is byte/relocation-identical
+under the SP3 diagnostic control and RTM target compile. A non-perturbing SP3 replay passes 616/616
+model checks and observes zero22/-65 before PLAY9/-78, followed by PLAY8/-63. No RTM internal trace,
+oracle compiler history or new strict ChangePhase match is claimed. Detailed logging hit the 180-second
+bound; the lighter trace completed and all compiler processes were reaped.
+
+## SB2 trajectory continuation (2026-10-23)
+
+[EVIDENCE] `BLUPI-SB2-03`: the earlier natural cell/pointer-loop context candidate now preserves
+Blupi IsMoveTraj by converting its by-value position parameter directly. SetMoveTraj becomes STRICT
+in both editions (80 bytes each, unique raw-exact placement, no relocations); every other full-build
+status/location/size and previously matched decblupi body stays unchanged. Both full candidate gates,
+identity audits and canonical gates pass; acceptance reactivates exactly this setter. SB1 transfer
+is untested. Evidence: [SB2.md](SB2.md), `scratch/b2-continue/REPORT.md` and `receipt.json`.
+
+[NEGATIVE] Scalar-cell and early-return query alternatives lose Blupi IsMoveTraj; a cached filename
+pointer loses Eggbert DrawButtons; GetBlupiInfo local bitmask accumulators are inert. These remain
+scratch candidates. No new strict claim is made for those functions or the large remaining blockers.

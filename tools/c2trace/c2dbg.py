@@ -7,7 +7,10 @@ import ctypes, ctypes.wintypes as W, shutil, time, hashlib, json
 from pathlib import Path
 
 K = ctypes.WinDLL("kernel32", use_last_error=True)
-import profiles
+try:
+    import profiles
+except ModuleNotFoundError:   # imported as the c2trace package (tools/histlink.py)
+    from . import profiles
 C2 = str(profiles.get().c2)
 C2_SHA256 = profiles.get().sha256
 ROOT = Path(__file__).resolve().parents[2]

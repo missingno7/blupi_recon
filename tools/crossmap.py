@@ -95,11 +95,11 @@ def audit(dst, src_name, src_spec, candidates: bool = False, results: Path | Non
     work = ROOT / "build" / "targets" / dst.slug
     pairs = {int(r["src_rva"], 16): int(r["dst_rva"], 16) for r in load_rows(work / "crossmap.csv")}
     by_dst = {d: s for s, d in pairs.items()}
-    src_manifest = json.loads((ROOT / src_spec["manifest"]).read_text(encoding="utf-8"))
+    src_manifest = targets.load(src_name).manifest()
     src_at = {a["symbol"]: int(str(a["rva"]), 0) for a in src_manifest.get("accepted_functions", [])
               if a.get("status") != "folded" and not a.get("withdrawn")}
     src_name_at = {v: k for k, v in src_at.items()}
-    dst_manifest = json.loads(dst.manifest_path.read_text(encoding="utf-8"))
+    dst_manifest = dst.manifest()
     renamed = {item["symbol"]: item["source_symbol"] for item in dst_manifest.get("source_correspondence", [])}
     src_oracle = ROOT / src_spec.get("oracle", "oracle")
     c_src = direct_calls(pefile.PE(str(ROOT / src_spec["exe"])), load_rows(src_oracle / "functions.csv"))
@@ -183,7 +183,7 @@ def main() -> int:
     src_tu = {int(r["rva"], 16): r["tu"] for r in load_rows(src_oracle / "tu_map.csv")}
     dst_rows = load_rows(dst.oracle_dir / "functions.csv")
     dst_game = [r for r in dst_rows if r["kind"] == "game"]
-    manifest = json.loads((ROOT / src_spec["manifest"]).read_text(encoding="utf-8"))
+    manifest = targets.load(src_name).manifest()
     src_symbol = {int(str(a["rva"]), 0): a["symbol"] for a in manifest.get("accepted_functions", [])
                   if a.get("status", "strict") != "folded"}
 
@@ -229,7 +229,7 @@ def main() -> int:
             s, kind = items[0]
             anchor[d] = (tus.pop(), kind, s)
     game_rvas = sorted(int(r["rva"], 16) for r in dst_game)
-    dst_manifest = json.loads(dst.manifest_path.read_text(encoding="utf-8"))
+    dst_manifest = dst.manifest()
     accepted = {int(str(a["rva"]), 0): ("folded" if a.get("status") == "folded" else "strict")
                 for a in dst_manifest.get("accepted_functions", []) if not a.get("withdrawn")}
     size = {int(r["rva"], 16): int(r["size"]) for r in dst_rows}
@@ -253,8 +253,7 @@ def main() -> int:
             out_rows.append((rva, size[rva], "", "unplaced", "", accepted.get(rva, "none"), ""))
     for r in dst_rows:
         rva = int(r["rva"], 16)
-        if r["kind"] != "game" and rva >= int(json.loads((dst.oracle_dir / "summary.json").read_text())
-                                              ["game_text_end"], 16):
+        if r["kind"] != "game" and rva >= dst.game_text_end:
             out_rows.append((rva, size[rva], "crt", "inventory", "", "none",
                              "[EVIDENCE] after the import thunks that end the game objects"))
     with (dst.oracle_dir / "tu_map.csv").open("w", newline="", encoding="utf-8") as stream:

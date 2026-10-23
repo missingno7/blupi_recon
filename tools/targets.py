@@ -33,6 +33,7 @@ class Target:
     defines: list[str] = field(default_factory=list)
     game_text_end: int = 0x238B0
     accepted_overrides: dict[str, dict[str, Any]] = field(default_factory=dict)
+    accepted_functions: list[dict[str, Any]] = field(default_factory=list)
     status: str = "active"
     oracle_dir: Path | None = None        # own inventory (tools/derive_target.py); None: oracle/
     address_map: dict[str, Any] | None = None
@@ -121,10 +122,18 @@ class Target:
                     forced.append(dict(item, rva=rva))
             manifest["forced_locations"] = forced
             manifest["equivalent_functions"] = []   # proofs against the primary executable
+        # Target-local proofs already use this executable's RVAs. They can cover
+        # bodies absent, unlocated or still mismatching in the base target.
+        local_keys = {(item["symbol"], item["tu"]) for item in self.accepted_functions}
+        manifest["accepted_functions"] = [item for item in manifest.get("accepted_functions", [])
+                                          if (item["symbol"], item["tu"]) not in local_keys]
+        manifest["accepted_functions"].extend(copy.deepcopy(self.accepted_functions))
         for item in manifest.get("accepted_functions", []):
             override = self.accepted_overrides.get(item["symbol"])
             if override:
-                for key in ("rva", "size", "status", "into"):
+                # A sibling target can prove a body still withdrawn in the base manifest.
+                # Its explicit withdrawn: null override reactivates only this target.
+                for key in ("rva", "size", "status", "into", "withdrawn"):
                     if key in override:
                         item[key] = override[key]
                 if override.get("status") == "strict":
@@ -163,6 +172,7 @@ def load(name: str | None = None) -> Target:
                   manifest_path=ROOT / spec["manifest"], defines=list(spec.get("defines", [])),
                   game_text_end=int(end, 0) if isinstance(end, str) else int(end),
                   accepted_overrides=dict(spec.get("accepted_overrides", {})),
+                  accepted_functions=list(spec.get("accepted_functions", [])),
                   status=spec.get("status", "active"), oracle_dir=oracle_dir, address_map=address_map,
                   toolchain_tree=spec.get("toolchain_tree"), build_path=spec.get("build_path"))
 

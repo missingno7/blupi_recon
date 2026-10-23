@@ -13,7 +13,6 @@ accepted (excluded or unproven).
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 
 import targets
@@ -36,7 +35,7 @@ def main() -> int:
     targets.add_argument(ap)
     args = ap.parse_args()
     target = targets.load(args.target)
-    manifest = json.loads(target.manifest_path.read_text(encoding="utf-8"))
+    manifest = target.manifest()
     start, end = 0x1000, target.game_text_end
     groups = manifest.get("coverage_groups", {})
     group_of = {tu: name for name, tus in groups.items() for tu in tus}

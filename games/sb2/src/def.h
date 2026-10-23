@@ -16,7 +16,7 @@
 #define _SE				FALSE	// TRUE eGames Special Edition
 
 
-#define REQUIRE_CD		TRUE
+#define REQUIRE_CD		!_EGAMES	// SB2: Speedy Eggbert 2 checks no CD (its CheckWorld1 returns TRUE)
 #define DREAM_IN_SB2	TRUE
 #define MAXGAMER	8
 #define MAXNETPLAYER	4

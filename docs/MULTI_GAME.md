@@ -38,8 +38,12 @@ Two goals, kept apart:
 | `sb1/blupi/fr` | 127,456 / 141,488 | strings only |
 | `sb1/eggbert/en`, `fr` | 123,120 / 141,328 | `_EGAMES`; WindowProc and DoInit excluded ([EGGBERT.md](EGGBERT.md)) |
 | `sb1/eggbert/de`, `es`, `it`, `pt` | 123,120 / 141,328 | also `LANGUAGE_DE` (de), `LANGUAGE_ACCENTS`, `LANGUAGE_ES` (es), `LANGUAGE_PT` (pt) |
-| `sb2/eggbert/en` | 135,648 / 172,992 | own tree `games/sb2/src/`; 445 STRICT, 11 FOLDED; engine, application and game logic ([SB2.md](SB2.md)) |
-| `sb2/blupi/en` | 121,296 / 173,072 | same tree, `_EGAMES=0`, VC5 RTM + LINK 5.00; 452 STRICT, 6 FOLDED; nine RTM context residues excluded ([SB2.md](SB2.md)) |
+| `sb2/eggbert/en` | 136,080 / 172,992 | accepted: 447 STRICT, 12 FOLDED; own tree `games/sb2/src/` ([SB2.md](SB2.md)) |
+| `sb2/blupi/en` | 121,712 / 173,072 | accepted: 449 STRICT, 5 FOLDED; same tree, `_EGAMES=0`, VC5 RTM + LINK 5.00; comparator total 121,728 ([SB2.md](SB2.md)) |
+
+SB2 accepted totals use the effective target manifest. Blupi-only proofs live in targets.json's
+`accepted_functions`, already in that target's RVAs; `accepted_overrides` may explicitly clear an
+inherited withdrawal with `withdrawn: null`. Both kinds are checked by the ordinary regression gate.
 
 `tools/verify.py` without `--target` is the primary target, byte-identical to its report before the
 registry existed. `--target <id>` verifies another one on the same `src/`; targets with their own
