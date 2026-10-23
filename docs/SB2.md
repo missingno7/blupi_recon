@@ -449,6 +449,27 @@ left to explain Blupi 2's declaration-context residues.
 spellings: the SB2 forms give SB1 the opposite zero/PLAY allocation, and SB2's toggle form widens
 TreatEventBase's register residue from 8 to 14 bytes (no losses elsewhere on the nine SB1 targets).
 
+### Whole-image relink and context solvers (round 10)
+
+[EVIDENCE] `tools/relink.py --target sb2/eggbert/en|sb2/blupi/en` links the verifier's objects with the
+target's own linker (Eggbert 2: SP3 LINK 5.10; Blupi 2: RTM LINK 5.00, without `--historical-host`), CRT and
+DX5 libraries, in oracle TU order with `/OPT:REF,ICF` (`scratch/w-relink/REPORT.md`). Both link with no
+unresolved or duplicate symbols; the accepted-function gate passes; the import tables have the original
+seven DLLs, order and symbol sets. Accepted functions at their original RVA: Eggbert 2 310/463, Blupi 2
+339/455 (manifest TU order: 39; no ICF: 15/14). `.text` and `.rdata` keep their original RVAs and sizes;
+`.data` is 9,792 bytes short in both (owner unknown, [OPEN]); `.rsrc` is absent (no SB2 resource script;
+Eggbert 2's second Rich entry matches CVTRES 5.00.1668, [HYPOTHESIS]). SB1's default relink is unchanged
+(`557ca92e…`).
+
+[NEGATIVE] Context solvers over natural, byte-neutral respellings (`scratch/w-solve-decblupi`,
+`w-solve-pixmap`): our compiles of decblupi.cpp and pixmap.cpp are byte-identical under SP3 and RTM and every
+respelling shifts both compilers equally, but the two ORIGINALS differ in operand/register order for seven
+decblupi predicates (IsWorld needs about +187 more entities on Eggbert 2 than Blupi 2; IsBridge, IsDoor,
+IsTeleporte, IsOutWater about +90..+130 more on Blupi 2) and for BltFast/MouseBackDraw. Natural respellings
+reach −5..+10, so no shared source satisfies both editions: the 2001 and 2004 sources differ by roughly
+100–200 front-end entities before these functions (consistent with code the linker strips, which leaves no
+trace in the binaries). Removing pixmap's nine bodiless inherited methods is inert.
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten

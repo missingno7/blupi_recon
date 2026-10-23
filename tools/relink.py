@@ -17,7 +17,6 @@ import sys
 import pefile
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ORACLE = ROOT / "assets/Speedy Blupi/BLUPI.EXE"
 LINKERS = {
     "sp3": Path(r"C:\tools\msvc5_sp3\VC\BIN\LINK.EXE"),
     "7255": Path(r"C:\tools\msvc5_link_ce_beta1_7255\bin\link.exe"),
@@ -26,32 +25,87 @@ LINKERS = {
     "1197": Path(r"C:\tools\msvc5_link_psdk1197\bin\LINK.EXE"),
     "7351": Path(r"C:\tools\msvc5_link_ce200_7351\bin\link.exe"),
 }
-VC = Path(r"C:\tools\msvc5_sp3\VC")
-DX = Path(r"C:\tools\dx5sdk\LIB")  # DX5 SDK: oracle GUIDs (docs/TOOLCHAIN.md)
-LIBRARIES = [VC / "LIB" / (s + ".lib") for s in
-             ("kernel32", "user32", "gdi32", "winmm")]
-# Oracle import descriptors are in this order; the 5.10 linker's IAT order is
-# independently sorted by DLL. Actual full-image order still needs a clean link.
-LIBRARIES += [DX / (s + ".lib") for s in ("dsound", "ddraw", "dplayx")]  # dxguid.lib was not linked (network.cpp INITGUID)
-# Oracle hint/name records put game imports before the later LIBC imports.
-# Keep explicit import libraries first; LINK rescans them after loading LIBC.
-LIBRARIES += [VC / "LIB/LIBC.LIB", VC / "LIB/OLDNAMES.LIB"]
 
 
-def build_resources(out):
-    """Compile src/res/blupi.rc with the VC5 resource compiler (LINK converts the .res with CVTRES 5.00.1668)."""
-    rc = VC.parent / "SHAREDIDE/BIN/RC.EXE"
-    res = out / "blupi.res"
+def build_resources(out, rc_source, vc_root):
+    """Compile a target's source resource script; LINK runs its matching CVTRES."""
+    rc = vc_root.parent / "SHAREDIDE/BIN/RC.EXE"
+    res = out / (rc_source.stem + ".res")
     temp = ROOT / "build/tmp"
     temp.mkdir(parents=True, exist_ok=True)
     system = os.environ.get("SystemRoot", r"C:\Windows")
-    env = dict(SystemRoot=system, TMP=str(temp), TEMP=str(temp), INCLUDE=f"{VC / 'INCLUDE'};{VC / 'MFC/INCLUDE'}",
-               PATH=os.pathsep.join(map(str, [rc.parent, VC / "BIN", Path(system) / "System32", Path(system)])))
-    run = subprocess.run([str(rc), "/r", "/fo", str(res), "blupi.rc"], cwd=ROOT / "src/res", env=env,
+    env = dict(SystemRoot=system, TMP=str(temp), TEMP=str(temp), INCLUDE=f"{vc_root / 'INCLUDE'};{vc_root / 'MFC/INCLUDE'}",
+               PATH=os.pathsep.join(map(str, [rc.parent, vc_root / "BIN", Path(system) / "System32", Path(system)])))
+    run = subprocess.run([str(rc), "/r", "/fo", str(res), rc_source.name], cwd=rc_source.parent, env=env,
                          capture_output=True, text=True, encoding="mbcs", errors="replace")
     if run.returncode:
         raise SystemExit("RC failed: " + run.stdout + run.stderr)
     return res
+
+
+def parse_number(value):
+    return int(value, 0) if isinstance(value, str) else int(value)
+
+
+def toolchain_roots(tree_name):
+    sys.path.insert(0, str(ROOT / "tools"))
+    import msvc
+    tree = msvc.resolve_tree(tree_name).resolve()
+    _compiler_bin, vc_root, shared_bin, _ = msvc.tool_layout(tree, None)
+    return tree, vc_root, shared_bin
+
+
+def linker_path(selection, target_tree, vc_root):
+    if selection == "rtm":
+        if target_tree.lower() == "rtm":
+            return vc_root / "BIN" / "LINK.EXE"
+        _tree, rtm_vc, _shared = toolchain_roots("rtm")
+        return rtm_vc / "BIN" / "LINK.EXE"
+    return LINKERS[selection]
+
+
+def target_libraries(manifest, vc_root):
+    """Use the target compiler tree's CRT and the SDK named by its include path."""
+    libraries = [vc_root / "LIB" / (s + ".lib") for s in
+                 ("kernel32", "user32", "gdi32", "winmm")]
+    dx_lib_dirs = []
+    for include in manifest["toolchain"].get("include_dirs", []):
+        path = Path(include)
+        if path.name.lower() == "include":
+            candidate = path.parent / "LIB"
+            if candidate.is_dir() and candidate not in dx_lib_dirs:
+                dx_lib_dirs.append(candidate)
+    if not dx_lib_dirs:
+        dx_lib_dirs = [Path(r"C:\tools\dx5sdk\LIB")]
+    # DX5 SDK: oracle GUIDs (docs/TOOLCHAIN.md); network.cpp defines INITGUID.
+    libraries += [dx_lib_dirs[0] / (s + ".lib") for s in ("dsound", "ddraw", "dplayx")]
+    # Explicit game import libraries precede LIBC, as in the SB1 proven link.
+    libraries += [vc_root / "LIB" / "LIBC.LIB", vc_root / "LIB" / "OLDNAMES.LIB"]
+    return libraries
+
+
+def rich_header(path):
+    """Decode a PE Rich header as static provenance; never use it as link input."""
+    data = Path(path).read_bytes()
+    pe_offset = int.from_bytes(data[0x3c:0x40], "little") if len(data) >= 0x40 else 0
+    rich = data.rfind(b"Rich", 0, pe_offset)
+    if rich < 0 or rich + 8 > len(data):
+        return None
+    key = int.from_bytes(data[rich + 4:rich + 8], "little")
+    dans = None
+    for pos in range(rich - 4, 0x3f, -4):
+        if int.from_bytes(data[pos:pos + 4], "little") ^ key == 0x536e6144:
+            dans = pos
+            break
+    entries = []
+    if dans is not None:
+        # DanS is followed by three zero dwords, then encoded compid/count pairs.
+        for pos in range(dans + 16, rich, 8):
+            comp = int.from_bytes(data[pos:pos + 4], "little") ^ key
+            count = int.from_bytes(data[pos + 4:pos + 8], "little") ^ key
+            entries.append(dict(comp_id=f"0x{comp:08x}", count=count))
+    return dict(offset=rich, key=f"0x{key:08x}", dans_offset=dans,
+                entries=entries)
 
 
 def digest(path):
@@ -73,9 +127,10 @@ def read_map(path):
     return result
 
 
-def oracle_order(units):
+def oracle_order(units, target):
     first = {}
-    with (ROOT / "oracle/tu_map.csv").open(newline="", encoding="utf-8-sig") as stream:
+    inventory = ((target.oracle_dir / "tu_map.csv") if target.oracle_dir else ROOT / "oracle/tu_map.csv")
+    with inventory.open(newline="", encoding="utf-8-sig") as stream:
         for row in csv.DictReader(stream):
             first[row["tu"]] = min(first.get(row["tu"], 1 << 32), int(row["rva"], 0))
     # Atlas data is one oracle band at RVA 0x78dd8..0x7b25f, immediately
@@ -104,8 +159,25 @@ def image_info(pe):
                           for s in pe.sections], imports=imports(pe))
 
 
+def import_comparison(oracle, candidate):
+    before, after = imports(oracle), imports(candidate)
+    by_before = {item["dll"].lower(): item for item in before}
+    by_after = {item["dll"].lower(): item for item in after}
+    shared = sorted(by_before.keys() & by_after.keys())
+    sets = {dll: set(by_before[dll]["names"]) == set(by_after[dll]["names"]) for dll in shared}
+    orders = {dll: by_before[dll]["names"] == by_after[dll]["names"] for dll in shared}
+    return dict(oracle_dll_order=[item["dll"] for item in before],
+                candidate_dll_order=[item["dll"] for item in after],
+                dll_order_equal=[item["dll"].lower() for item in before] ==
+                                [item["dll"].lower() for item in after],
+                oracle_import_count=sum(len(item["names"]) for item in before),
+                candidate_import_count=sum(len(item["names"]) for item in after),
+                symbol_sets_equal_by_dll=sets, symbol_order_equal_by_dll=orders)
+
+
 def layout_report(oracle, candidate, map_symbols, manifest):
     result = dict(oracle=image_info(oracle), candidate=image_info(candidate))
+    result["import_comparison"] = import_comparison(oracle, candidate)
     result["sections"] = []
     candidate_sections = {s.Name: s for s in candidate.sections}
     for section in oracle.sections:
@@ -121,6 +193,11 @@ def layout_report(oracle, candidate, map_symbols, manifest):
         else:
             item["missing"] = True
         result["sections"].append(item)
+    oracle_names = {s.Name for s in oracle.sections}
+    result["candidate_only_sections"] = [dict(name=s.Name.rstrip(b"\0").decode(),
+        rva=s.VirtualAddress, virtual_size=s.Misc_VirtualSize, raw_size=s.SizeOfRawData,
+        raw_offset=s.PointerToRawData, characteristics=s.Characteristics)
+        for s in candidate.sections if s.Name not in oracle_names]
     by_name = {}
     for symbol in map_symbols:
         by_name.setdefault(symbol["name"], []).append(symbol)
@@ -130,13 +207,38 @@ def layout_report(oracle, candidate, map_symbols, manifest):
             continue
         names = by_name.get(accepted["symbol"], [])
         if len(names) == 1:
-            original = int(accepted["rva"], 0)
+            original = parse_number(accepted["rva"])
             rva = names[0]["va"] - candidate.OPTIONAL_HEADER.ImageBase
+            exact_at_linked = (candidate.get_data(rva, accepted["size"]) ==
+                               oracle.get_data(original, accepted["size"]))
+            exact_at_original = (candidate.get_data(original, accepted["size"]) ==
+                                 oracle.get_data(original, accepted["size"]))
             shifts.append(dict(tu=accepted["tu"], name=accepted["symbol"], oracle_rva=original,
                                linked_rva=rva, delta=rva-original,
-                               byte_exact=candidate.get_data(rva, accepted["size"]) ==
-                               oracle.get_data(original, accepted["size"])))
+                               byte_exact_at_linked_rva=exact_at_linked,
+                               byte_exact_at_original_rva=exact_at_original))
     result["accepted_function_layout"] = shifts
+    result["accepted_function_summary"] = dict(
+        manifest_count=len(manifest.get("accepted_functions", [])),
+        uniquely_mapped=len(shifts),
+        at_original_rva=sum(item["delta"] == 0 for item in shifts),
+        byte_exact_at_linked_rva=sum(item["byte_exact_at_linked_rva"] for item in shifts),
+        byte_exact_at_original_rva=sum(item["byte_exact_at_original_rva"] for item in shifts),
+        delta_histogram={str(delta): sum(item["delta"] == delta for item in shifts)
+                         for delta in sorted({item["delta"] for item in shifts})})
+    oracle_rsrc = next((s for s in oracle.sections if s.Name.rstrip(b"\0") == b".rsrc"), None)
+    candidate_rsrc = next((s for s in candidate.sections if s.Name.rstrip(b"\0") == b".rsrc"), None)
+    result["resource_section"] = dict(
+        oracle=(dict(rva=oracle_rsrc.VirtualAddress, virtual_size=oracle_rsrc.Misc_VirtualSize,
+                     raw_size=oracle_rsrc.SizeOfRawData,
+                     sha256=hashlib.sha256(oracle_rsrc.get_data()).hexdigest()) if oracle_rsrc else None),
+        candidate=(dict(rva=candidate_rsrc.VirtualAddress, virtual_size=candidate_rsrc.Misc_VirtualSize,
+                        raw_size=candidate_rsrc.SizeOfRawData,
+                        sha256=hashlib.sha256(candidate_rsrc.get_data()).hexdigest()) if candidate_rsrc else None),
+        byte_equal=(oracle_rsrc.get_data() == candidate_rsrc.get_data()
+                    if oracle_rsrc is not None and candidate_rsrc is not None else
+                    oracle_rsrc is None and candidate_rsrc is None),
+        note="comparison only; original .rsrc bytes are never used as linked input")
     return result
 
 
@@ -153,24 +255,36 @@ def main(argv=None):
     parser.add_argument("--out-dir", type=Path, default=ROOT / "build/relink")
     parser.add_argument("--objects-dir", type=Path, help="reuse objects named as verify.py names them")
     parser.add_argument("--link-only", action="store_true", help="reuse this output directory's objects")
-    parser.add_argument("--linker", choices=LINKERS, default="sp3")
+    parser.add_argument("--linker", choices=sorted(set(LINKERS) | {"rtm"}), default=None)
     parser.add_argument("--historical-host", action="store_true",
                         help="run unmodified SP3 LINK with the VC5 CRT and oracle UTC clock via histlink.py")
     parser.add_argument("--order", choices=("oracle", "manifest", "recorded"))
     parser.add_argument("--standalone", action="store_true",
                         help="build from recorded source settings without reading an oracle or running verification")
-    parser.add_argument("--opt", choices=("ref,icf", "ref,noicf", "noref,noicf"), default="ref,icf")
+    parser.add_argument("--opt", choices=("ref,icf", "ref,noicf", "noref,icf", "noref,noicf"), default="ref,icf")
     parser.add_argument("--library", action="append", default=[], type=Path, help="additional genuine library")
-    parser.add_argument("--oracle", type=Path, default=DEFAULT_ORACLE)
-    parser.add_argument("--no-res", action="store_true", help="omit src/res/blupi.rc (resources)")
+    parser.add_argument("--oracle", type=Path, help="override the selected target's executable oracle")
+    parser.add_argument("--no-res", action="store_true", help="omit the selected source tree's resource script")
     parser.add_argument("--default-libs", action="store_true", help="IDE-style: LIBC/OLDNAMES via the objects' /defaultlib directives, no /nodefaultlib")
     parser.add_argument("--entry", default=None, help="explicit /entry symbol (default: LINK chooses for /subsystem:windows)")
     parser.add_argument("--diagnostic", action="store_true",
                         help="link even when accepted functions regress (layout diagnostics only; the gate stays FAIL)")
+    import targets
+    targets.add_argument(parser)
     args = parser.parse_args(argv)
+    target = targets.load(args.target)
+    if not target.exe.is_file():
+        parser.error(f"target oracle is missing: {target.exe}")
+    target.check_exe()
+    manifest = target.manifest()
+    settings = manifest.get('standalone_link', {})
+    tree, vc_root, shared_bin = toolchain_roots(manifest["toolchain"]["tree"])
+    args.linker = args.linker or ("rtm" if manifest["toolchain"]["tree"].lower() == "rtm" else "sp3")
     args.order = args.order or ('recorded' if args.standalone else 'oracle')
     if args.standalone and args.order == 'oracle':
         parser.error('--standalone cannot use --order oracle')
+    if args.standalone and not all(key in settings for key in ('image_base', 'section_alignment')):
+        parser.error('--standalone requires image_base and section_alignment in the selected manifest')
     if args.historical_host and args.linker != "sp3":
         parser.error("--historical-host requires --linker sp3 (the pinned LINK.EXE)")
     out = args.out_dir.resolve()
@@ -178,7 +292,6 @@ def main(argv=None):
     if not any(out.is_relative_to(ROOT / d) for d in ("build", "scratch")):
         parser.error("--out-dir must be inside build/ or scratch/")
     out.mkdir(parents=True, exist_ok=True)
-    manifest = json.loads((ROOT / "recon.json").read_text(encoding="utf-8"))
     units = manifest["translation_units"]
     obj_dir = args.objects_dir.resolve() if args.objects_dir else out / "objects"
     obj_dir.mkdir(parents=True, exist_ok=True)
@@ -193,7 +306,7 @@ def main(argv=None):
             command = [sys.executable, str(ROOT / "tools/msvc.py"), str(ROOT / source),
                        "--out", str(obj), "--tree", manifest["toolchain"]["tree"],
                        "--cwd", str(ROOT), "--log-dir", str(out / "logs")]
-            for include in [str(ROOT / "src")] + manifest["toolchain"].get("include_dirs", []):
+            for include in [str(ROOT / manifest.get("source_root", "src"))] + manifest["toolchain"].get("include_dirs", []):
                 command += ["--include", include]
             for define in manifest["toolchain"].get("defines", []) + unit.get("defines", []):
                 command += ["--define", define]
@@ -235,6 +348,9 @@ def main(argv=None):
     else:
         import verify
         verify.BUILD = out
+        verify.TARGET = target
+        verify.GAME_TEXT_END = target.game_text_end
+        verify.GAME_TEXT_SIZE = target.game_text_end - verify.ORACLE_TEXT_START
         verify.DEGRADED.clear()
         verify.DEGRADED.update(degraded)
         evidence_objects = verify.compile_crt_evidence(manifest)
@@ -244,8 +360,11 @@ def main(argv=None):
             by_unit, coverage = verify.report(comparison, [u["source"] for u in units])
         (out / "verify.log").write_text(stream.getvalue(), encoding="utf-8")
         regressions = verify.accepted_regressions(manifest, by_unit)
-        import equivalence
-        equivalent = equivalence.check(manifest, comparison, evidence_objects, out)
+        if target.primary:
+            import equivalence
+            equivalent = equivalence.check(manifest, comparison, evidence_objects, out)
+        else:
+            equivalent = dict(status="NOT_APPLICABLE", reason="SB2 target has its own oracle inventory")
         gate = dict(regressions=regressions, degraded=degraded, coverage=coverage,
                     equivalence=equivalent,
                     status="FAIL" if regressions else "INCOMPLETE" if degraded else "PASS")
@@ -257,20 +376,35 @@ def main(argv=None):
         if not args.diagnostic:
             return 1
         print("DIAGNOSTIC LINK: accepted-function gate FAILED; the image is for layout measurement only", flush=True)
-    settings = manifest['standalone_link']
-    ordered = (oracle_order(units) if args.order == 'oracle' else
+    if args.order == 'recorded' and not settings.get('object_order'):
+        parser.error('--order recorded requires standalone_link.object_order in the selected manifest')
+    ordered = (oracle_order(units, target) if args.order == 'oracle' else
                recorded_order(units, settings) if args.order == 'recorded' else units)
-    oracle = None if args.standalone else pefile.PE(str(args.oracle))
+    oracle_path = args.oracle.resolve() if args.oracle else target.exe
+    oracle = None if args.standalone else pefile.PE(str(oracle_path))
     image_base = int(settings['image_base'], 0) if args.standalone else oracle.OPTIONAL_HEADER.ImageBase
     alignment = settings['section_alignment'] if args.standalone else oracle.OPTIONAL_HEADER.SectionAlignment
-    linker = LINKERS[args.linker]
-    libraries = ([l for l in LIBRARIES if l.name.upper() not in ("LIBC.LIB", "OLDNAMES.LIB")] if args.default_libs else LIBRARIES) + args.library
+    linker = linker_path(args.linker, manifest["toolchain"]["tree"], vc_root)
+    libraries = target_libraries(manifest, vc_root)
+    if args.default_libs:
+        libraries = [l for l in libraries if l.name.upper() not in ("LIBC.LIB", "OLDNAMES.LIB")]
+    libraries += args.library
+    image_name = "BLUPI.EXE" if target.primary else target.exe.name
+    image_path = out / image_name
+    map_path = out / (Path(image_name).stem + ".map")
     options = ["/nologo", "/machine:i386", "/subsystem:windows,4.0", *([f"/entry:{args.entry}"] if args.entry else []),
                f"/base:0x{image_base:x}", f"/align:{alignment}",
                "/fixed", "/incremental:no", *([] if args.default_libs else ["/nodefaultlib"]),
                *["/opt:" + s for s in args.opt.split(",")],
-               f"/out:{out / 'BLUPI.EXE'}", f"/map:{out / 'BLUPI.map'}"]
-    res_files = [] if args.no_res else [build_resources(out)]
+               f"/out:{image_path}", f"/map:{map_path}"]
+    resource_script = ROOT / manifest.get("source_root", "src") / "res" / "blupi.rc"
+    if args.no_res:
+        res_files, resource_status = [], "omitted by --no-res"
+    elif resource_script.is_file():
+        res_files = [build_resources(out, resource_script, vc_root)]
+        resource_status = f"{resource_script.relative_to(ROOT)} via target RC + CVTRES"
+    else:
+        res_files, resource_status = [], "no source .rc in target tree; original .rsrc is comparison-only"
     arguments = options + [str(objects[u["source"]]) for u in ordered] + list(map(str, res_files)) + list(map(str, libraries))
     response = out / "link.rsp"
     response.write_text("\n".join(subprocess.list2cmdline([arg]) for arg in arguments) + "\n", encoding="cp1252")
@@ -282,11 +416,12 @@ def main(argv=None):
     temp = ROOT / "build/tmp"
     temp.mkdir(parents=True, exist_ok=True)
     system = os.environ.get("SystemRoot", r"C:\Windows")
-    env = dict(SystemRoot=system, TMP=str(temp), TEMP=str(temp), LIB=str(VC / "LIB"),
-               PATH=os.pathsep.join(map(str, [linker.parent, VC / "BIN", VC.parent / "SHAREDIDE/BIN",
+    env = dict(SystemRoot=system, TMP=str(temp), TEMP=str(temp), LIB=str(vc_root / "LIB"),
+               PATH=os.pathsep.join(map(str, [linker.parent, vc_root / "BIN",
+                                             shared_bin or vc_root.parent / "SHAREDIDE/BIN",
                                              Path(system) / "System32", Path(system)])))
     # Never leave a stale successful image/map after a failed link.
-    for path in (out / "BLUPI.EXE", out / "BLUPI.map", out / "layout.json", out / "image.json"):
+    for path in (image_path, map_path, out / "layout.json", out / "image.json"):
         if path.exists():
             path.unlink()
     if host_report and host_report.exists():
@@ -294,7 +429,12 @@ def main(argv=None):
     run = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True,
                          encoding="mbcs", errors="replace")
     (out / "link.log").write_text(run.stdout + run.stderr, encoding="utf-8")
-    record = dict(command=command, expanded_command=[str(linker)] + arguments,
+    transcript = run.stdout + run.stderr
+    duplicates = sorted(set(re.findall(r"error LNK2005: (.*?)(?: already defined)", transcript)))
+    unresolved = sorted(set(re.findall(r"unresolved external symbol (.*)", transcript)))
+    record = dict(target=target.name, target_oracle=str(oracle_path), oracle_sha256=target.sha256,
+                  linker_selection=args.linker,
+                  command=command, expanded_command=[str(linker)] + arguments,
                   compile_commands=compile_commands, order=[u["source"] for u in ordered],
                   objects={k: dict(path=str(v), sha256=digest(v)) for k, v in objects.items()},
                   canonical_sources={u["source"]: digest(ROOT / u["source"]) for u in units},
@@ -303,45 +443,51 @@ def main(argv=None):
                   linker_sha256=digest(linker), libraries={str(p): digest(p) for p in libraries},
                   degraded=degraded, exit_code=run.returncode, standalone=args.standalone,
                   oracle_read=not args.standalone,
-                  resource_status="omitted" if args.no_res else "src/res/blupi.rc via VC5 RC + CVTRES")
+                  resource_status=resource_status, duplicate_symbols=duplicates,
+                  unresolved_symbols=unresolved)
+    if run.returncode >= 0xC0000000:
+        record["linker_process_status"] = f"NTSTATUS 0x{run.returncode:08x}"
     if host_report:
         record["historical_host"] = dict(report=str(host_report),
             launcher_sha256=digest(ROOT / "tools/histlink.py"),
             **(json.loads(host_report.read_text(encoding="utf-8")) if host_report.is_file() else {}))
     (out / "build.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
-    transcript = run.stdout + run.stderr
     if run.returncode:
         # A source-definition failure can print hundreds of redundant errors.
         # Keep the complete transcript on disk and summarize unique blockers.
         diagnostics = [line for line in transcript.splitlines() if "LNK2001" in line or "warning" in line or "fatal" in line]
-        duplicates = sorted(set(re.findall(r"error LNK2005: (.*?)(?: already defined)", transcript)))
         print(f"link: {len(duplicates)} distinct multiply defined symbols; full log: {out / 'link.log'}")
         print("\n".join(diagnostics), flush=True)
     else:
         print(transcript, end="", flush=True)
     if run.returncode:
-        record["duplicate_symbols"] = duplicates
-        record["unresolved_symbols"] = sorted(set(re.findall(r"unresolved external symbol (.*)", transcript)))
         if oracle is not None:
             record["oracle"] = image_info(oracle)
         (out / "build.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
         # LINK can leave an empty map on LNK1120. It is not a successful layout.
-        for path in (out / "BLUPI.EXE", out / "BLUPI.map"):
+        for path in (image_path, map_path):
             if path.exists():
                 path.unlink()
         return run.returncode
-    candidate = pefile.PE(str(out / "BLUPI.EXE"))
+    candidate = pefile.PE(str(image_path))
     if args.standalone:
         result = image_info(candidate)
-        result['sha256'] = digest(out / 'BLUPI.EXE')
+        result['sha256'] = digest(image_path)
         (out / 'image.json').write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
-        print(f"linked {out / 'BLUPI.EXE'} from source (no oracle read; static inspection only)")
+        print(f"linked {image_path} from source (no oracle read; static inspection only)")
         return 0
-    result = layout_report(oracle, candidate, read_map(out / "BLUPI.map"), manifest)
+    result = layout_report(oracle, candidate, read_map(map_path), manifest)
+    result["target"] = target.name
+    result["oracle_path"] = str(oracle_path)
+    result["linker_selection"] = args.linker
+    result["oracle_sha256"] = target.sha256
+    result["candidate_sha256"] = digest(image_path)
+    result["rich_header"] = dict(oracle=rich_header(oracle_path), candidate=rich_header(image_path))
     (out / "layout.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    print(f"linked {out / 'BLUPI.EXE'} (static inspection only)")
+    print(f"linked {image_path} (static inspection only)")
     for item in result["sections"]:
         print(item)
+    print("accepted function layout:", result["accepted_function_summary"])
     return 0
 
 
