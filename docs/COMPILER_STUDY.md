@@ -603,6 +603,19 @@ SP3 output stays in `build/c2trace`; RTM output uses `build/c2trace-rtm`. New ca
 compiler/target and reject mismatched replays. Rotor, scratch-picker and other allocation observers
 remain calibrated for SP3 only; RTM support covers expression ordering.
 
+[EVIDENCE] Three focused SP3 observers extend this work: `pool_trace.py` checks literal-pooling
+eligibility, `split_trace.py` checks liveness masks and connected-component partitions, and
+`cost_trace.py` checks pressure-weighted priority deltas and independent IR read counts. They use
+`profiles.py`'s SP3 pin and `colour_trace.owned_run`, whose 180-second bound reaps C2 on success or
+failure. Each compares emitted function bytes and named relocations with an unhooked replay of the
+same IL. With `msvc5kb/micros/alloc/pool_eligibility.cpp` and `split_components.cpp`, the eligibility
+checks were 68/68, 1,072/1,072, and 5,322/5,322; component partitions were 18/18, 42/42, 85/85, and
+89/89, with 42, 8,892, 215,052, and 204,774 dataflow fields checked. Cost passes checked
+24/45/9, 17/106/12, 272/1,101/4, and 2,017/140,191/2 pressure/delta/read-count observations.
+Every run had zero model errors and equal native payloads. These SP3 observations use SB2 captures;
+they do not establish SB1 transfer or the upstream cut/adoption decisions. Observer outputs are in
+`build/c2trace/alloc-observers/`.
+
 [EVIDENCE] Surveys now include both direct-swap and merge-sort comparator callers, general tuple
 hashes consume cached child keys, and keyforce gates on per-function processing through the current
 frame. `--legacy-model` on the prediction/window tools retains the earlier direct-swap/recursive-child

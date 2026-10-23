@@ -3011,7 +3011,7 @@
       },
       "symptom": "A lower-reference or negative-priority range gets a saved register first.",
       "construct": "Equal-ref constant webs, an additional real store, or call-crossing locals.",
-      "explanation": "Descriptor +0c is signed pressure/carrying priority; +3c is weighted keep/spill profitability. Insertion compares +0c descending, unsigned definition rank +40 descending, then puts a new exact tie before older nodes. Later deferral can overwrite +0c; refs are not the key.",
+      "explanation": "Descriptor +0c is signed pressure/carrying priority; +3c is weighted keep/spill profitability. Insertion compares +0c descending, unsigned definition rank +40 descending, then puts a new exact tie before older nodes. Later deferral can overwrite +0c; refs are not the key. The independently checked SP3 cost path uses W = 1 << ((uint16(block+0x86)+1)&31) and P = cardinality(native temporary set) + definition-chain length + live-chain nodes whose byte+6 flag has bit 0x10; D=W*P. Observed referenced-node priority updates add D times block benefit, while carried-node updates subtract D. +0x24 reference counts increment independently, including for zero-benefit operands; +0x3c profitability credits use W times operand benefit with separate materialization charges. This cost observer does not reconstruct the upstream cut/adoption choices.",
       "experiment": "Run tools/c2trace/alloc_micros.py constants_equal constants_plus_one call_live; inspect each sort entry's predecision key and checked insertion position. Tool: tools/c2trace/colour_trace.py; micro sources and registered predictions in msvc5kb/micros/alloc.",
       "not_when": "This comparator does not predict which fragments the preceding splitter creates or which deferred node is reconsidered next. Compare the same connected range at the same recost stage: the oracle-ordered literal ChangePhase seed has zero21 +20-85=-65 versus PLAY9 +4-82=-78; the inherited flag control has -66/-67 and independently unwanted Boolean code. Later PLAY8/-63 is not an input to the earlier selection. See BLUPI-ALLOC-14 for guard-order component limits.",
       "evidence": [
@@ -3039,6 +3039,16 @@
           "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs",
           "tier": "PROVEN",
           "counts": "ChangePhase tie sweep: 104 identity placements x 2 flips, none gives the oracle; the zero-first decision is quantity-driven (BLUPI-ALLOC-16/17)"
+        },
+        {
+          "ref": "blupi_recon:tools/c2trace/cost_trace.py",
+          "tier": "PROVEN",
+          "counts": "Pinned VC5 SP3 c2.exe 7303 SHA-256 e75aecaf4073b0817ffb638cae5fff636b2e2d1a090daabf8f68dbc954515fae. SB2 captures: micro 24 pressure / 45 delta / 9 read-count checks; split micro 17/106/12; ChangePhase passes 10 and 14 272/1,101/4; BlupiStep pass 1 2,017/140,191/2. Zero errors and equal function bytes plus named relocations to unhooked replays. SB1 transfer is not validated by these runs."
+        },
+        {
+          "ref": "blupi_recon:msvc5kb/micros/alloc/pool_eligibility.cpp; msvc5kb/micros/alloc/split_components.cpp",
+          "tier": "PROVEN",
+          "counts": "The standalone source micros exercise simple and call/loop pressure cases under the pinned SP3 profile; outputs stay in ignored build/c2trace/alloc-observers."
         }
       ],
       "keywords": "global register allocation priority score cost sort tie definition rank pressure",
@@ -3348,14 +3358,24 @@
       },
       "symptom": "A large unbound live set does not cause a cut until one additional range is physically committed.",
       "construct": "Reduced App::Test with zero stores, repeated PLAY tests, a Search result and 472-byte table lookup; extend a real old-phase value across the calls with consumer calls.",
-      "explanation": "After processing the definition list, P=physical/chosen+local temporaries+max(definition additions, read additions). Other unbound globals are not counted one each. P>capacity evicts temporaries until equality; equality requests a cut unless tuple+12 flag01 is set. The selected LR is committed/excluded from its own cuts. Call clobbers contribute three definitions. The parallel restricted counter tracks BYTE-capable registers {eax,ecx,edx,ebx}, not callee-saved registers; flag80 and the three-register follow-up concern byte capacity.",
+      "explanation": "After processing the definition list, P=physical/chosen+local temporaries+max(definition additions, read additions). Other unbound globals are not counted one each. P>capacity evicts temporaries until equality; equality requests a cut unless tuple+12 flag01 is set. The selected LR is committed/excluded from its own cuts. Call clobbers contribute three definitions. The parallel restricted counter tracks BYTE-capable registers {eax,ecx,edx,ebx}, not callee-saved registers; flag80 and the three-register follow-up concern byte capacity. Downstream, 0x43837a solves liveness for batches of at most 32 ranges, one bit per range: back_out[b]=OR(back_in[successors]); back_in[b]=U[b]|(back_out[b]&~K[b]); forward_in[b]=back_in[b]&OR(forward_out[predecessors]); forward_out[b]=back_out[b]&(G[b]|(forward_in[b]&~K[b])). G/U/K are block fields +0x2c/+0x30/+0x34. The backward pass starts from +0x38; forward_in starts at zero and forward_out at G&back_out; converged masks go to +0x24/+0x28. With a nonzero stack argument, the auxiliary pass solves aux_in[b]=A[b]|(aux_out[b]&~H[b]) and aux_out[b]=OR(aux_in[successors]), starting from A and writing aux_out to +0x50; it does not change the range masks. This validates the dataflow stage for supplied masks, not which upstream pressure/adoption decision selected each cut bit.",
       "experiment": "Compile micros/clique_table.cpp and four_nonconstant_live.cpp with micros.py, then replay with pressure_trace.py. Check actual incoming counters/IL against the independent operand-list transition, cut request and computed forced/excluded set. No micro program is executed. Tool: tools/c2trace/colour_trace.py --cuts.",
-      "not_when": "This is a per-instruction model from actual incoming state, not full C++-to-IL prediction. Arbitrary local-temp evictions, every alias/edge mutation and full 439619 propagation are not dynamically covered. Reading flags as saved-register pressure is incorrect: 4931c0 is byte-capable, 4931c8 non-byte-capable.",
+      "not_when": "This is a per-instruction model from actual incoming state, not full C++-to-IL prediction. Arbitrary local-temp evictions, every alias/edge mutation and full 439619 propagation are not dynamically covered. The new liveness checks begin with the native G/U/K masks and do not reconstruct upstream cut/adoption choices. Reading flags as saved-register pressure is incorrect: 4931c0 is byte-capable, 4931c8 non-byte-capable.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/ALLOCATOR.md#pressure-cuts-and-saved-colours-round-2-evidence",
           "tier": "PROVEN",
           "counts": "945/945 tested pressure/cut IL steps; 6/9 registered source micros; ChangePhase not STRICT"
+        },
+        {
+          "ref": "blupi_recon:tools/c2trace/split_trace.py",
+          "tier": "PROVEN",
+          "counts": "Pinned VC5 SP3 C2: dataflow fields matched 42/42 on the micro, 8,892/8,892 on ChangePhase, 215,052/215,052 on BlupiStep, and 204,774/204,774 on the rejected snapshot control. Corresponding partition checks were 18/18, 42/42, 85/85, and 89/89; zero model errors and equal native payloads. This is SB2 live evidence; SB1 transfer and upstream cut/adoption remain open."
+        },
+        {
+          "ref": "blupi_recon:msvc5kb/micros/alloc/split_components.cpp",
+          "tier": "PROVEN",
+          "counts": "Standalone call/loop-pressure micro; 42/42 liveness fields and 18/18 predicted endpoint partitions."
         }
       ],
       "keywords": "global pressure cut call clobber max definition read committed byte register capacity",
@@ -3389,14 +3409,19 @@
       },
       "symptom": "Adding braces or moving a declaration does not shorten a pooled literal, while moving the last real index use changes allocation throughout the function.",
       "construct": "Compare clique_live with zero_scope and capture_condition; then compare clique_table with table_index_dies.",
-      "explanation": "Literal pooling is function-wide. A later real zero read can keep the same virtual constant component alive after the scope of an earlier source store ends. A local index crossing calls occupies a saved colour; moving its last actual store/lookup before those calls removes that occupancy. Given EBX penalty+100 and EDI penalty0, exposing EDI to early zero changes its colour and preserves EBX for PLAY without requiring a queue-key inversion.",
+      "explanation": "Literal interning is by value/tag and is not partitioned by source scope or instruction distance; eligibility is a separate tuple predicate. A pooled range's later connectivity comes from per-bit live-in/live-out endpoints in active blocks. At 0x438544, the splitter unions corresponding endpoints across CFG edges and joins a block's own in/out endpoints only when its +0x34 cut/kill bit is clear. Thus braces do not end a range; component boundaries follow the native masks and cut/kill bits, not a maximum instruction gap or raw use-count threshold. The new checks validate endpoint partitions but do not reconstruct which upstream adoption/cut decision sets those bits. A later real zero read can keep the same virtual constant component alive after the scope of an earlier source store ends. A local index crossing calls occupies a saved colour; moving its last actual store/lookup before those calls removes that occupancy. Given EBX penalty+100 and EDI penalty0, exposing EDI to early zero changes its colour and preserves EBX for PLAY without requiring a queue-key inversion.",
       "experiment": "Run micros.py clique_live zero_scope capture_condition clique_table table_index_dies; compare raw function payloads and selected index/zero intervals. Game positive control index_store_early.cpp tests the same lifetime condition with fnprobe and colour_trace. Tool: tools/c2trace/colour_trace.py --cuts.",
-      "not_when": "Do not move observable state writes merely to improve bytes. ChangePhase's oracle stores m_index late and retains the EDI index; its early-store control is excluded as original source. Declaration/source identity changes can still affect upstream web or queue history; no universal declaration-order independence is asserted.",
+      "not_when": "Do not move observable state writes merely to improve bytes. ChangePhase's oracle stores m_index late and retains the EDI index; its early-store control is excluded as original source. Declaration/source identity changes can still affect upstream web or queue history; no universal declaration-order independence is asserted. The endpoint model does not say how pressure/adoption selected the incoming cut masks.",
       "evidence": [
         {
           "ref": "blupi_recon:docs/ALLOCATOR.md#pressure-cuts-and-saved-colours-round-2-evidence",
           "tier": "PROVEN",
           "counts": "945/945 tested pressure/cut IL steps; 6/9 registered source micros; ChangePhase not STRICT"
+        },
+        {
+          "ref": "blupi_recon:tools/c2trace/pool_trace.py; tools/c2trace/split_trace.py",
+          "tier": "PROVEN",
+          "counts": "VC5 SP3 tuple eligibility returns are checked live; pool_trace records native interning events, while the by-value/tag table behavior comes from static C2 inspection. split_trace independently checks endpoint connectivity: partitions match 18/18 micro, 42/42 ChangePhase, 85/85 BlupiStep, and 89/89 rejected-snapshot parents, with zero model errors and native payload equality. SB1 transfer and upstream cut selection are unverified."
         }
       ],
       "keywords": "lifetime scope pooled zero index last use saved register rematerialize",
@@ -4277,14 +4302,19 @@
       },
       "symptom": "Reordering pure phase comparisons swaps weighted constant priorities without selecting either constant.",
       "construct": "Two side-effect-free PLAY/PLAYTEST comparisons in an initial AND guard and a final OR guard.",
-      "explanation": "Guard enumeration changes which pooled literal is live but unused across short-circuit blocks. In STRICT EventButtons, reversing both pairs exchanges PLAY/PLAYTEST priorities -155/-156 to -156/-155 at 40ee1d, with benefit -1 and two references each. The literal comparisons remain immediate. This is connected-range cost accounting, not a queue tie-break.",
+      "explanation": "Guard enumeration changes which pooled literal is live but unused across short-circuit blocks. In STRICT EventButtons, reversing both pairs exchanges PLAY/PLAYTEST priorities -155/-156 to -156/-155 at 40ee1d, with benefit -1 and two references each. The literal comparisons remain immediate. The checked SP3 multiplier is D=W*P, where W is the loop-region weight and P is the native temporary-set cardinality plus definition-chain length plus flagged live-chain nodes; referenced-node priority adds D times block benefit and carried-node priority subtracts D. This is connected-range cost accounting, not a queue tie-break. Whether changed costs reach a value still depends on the splitter's live endpoints and cut/kill masks; the cost observer does not identify upstream mask selection.",
       "experiment": "Inspect native per-block costs in the same connected component and recost stage before comparing priorities or predicting pooling; see BLUPI-ALLOC-01.",
-      "not_when": "Reversing only ChangePhase final guard does not reach its early PLAY9/zero21 component: priorities stay -69/-71 on that canonical seed. Do not conflate this seed with oracle-ordered -78/-65 or claim guard order alone provides a profitable near-tie.",
+      "not_when": "Reversing only ChangePhase final guard does not reach its early PLAY9/zero21 component: priorities stay -69/-71 on that canonical seed. Do not conflate this seed with oracle-ordered -78/-65 or claim guard order alone provides a profitable near-tie. The new pressure/cost replay confirms the priority arithmetic in sampled SB2 TUs; it does not test a new source guard rewrite or prove SB1 transfer.",
       "evidence": [
         {
           "ref": "blupi_recon:scratch/sol-poscpdb/FINDINGS.md, E1: guard order changes costs, but does not imply pooling",
           "tier": "PROVEN",
           "counts": "Two EventButtons baseline/control captures: four literal-byte differences, 161/165 aligned, 606 checks each. Micro priorities swap -5/-7 to -7/-5. ChangePhase transfer worsens 32 -> 34 masked differences, 2021 -> 2019/2029 aligned; rejected."
+        },
+        {
+          "ref": "blupi_recon:tools/c2trace/cost_trace.py; tools/c2trace/split_trace.py",
+          "tier": "PROVEN",
+          "counts": "Pinned SP3 SB2 validation checked 272 pressure factors, 1,101 priority deltas, and four independent read counts in ChangePhase passes 10/14 with zero errors and native payload equality. The adjacent splitter observer checks which component endpoints remain connected; upstream cut/adoption choices stay open."
         }
       ],
       "keywords": "guard order short circuit connected component range constant cost PLAY PLAYTEST ChangePhase",
@@ -4317,7 +4347,7 @@
       },
       "symptom": "Two values with equal stack-reference weight swap homes; their paired boundary reloads are emitted in the other order.",
       "construct": "Two loop-entry values (Y remainder A, Y quotient B) reloaded together at one loop boundary after a group split.",
-      "explanation": "0x40fbfa mode 1 emits boundary reloads in ascending fragment ID. Fragments are popped from the LIFO range free list 0x493230 by the first group split (0x437e67/0x438544), one per member in ascending LR order. The list is batched: 0x41a6f8 drops (refs < 2 via 0x4375fe, single-use copies via 0x41a86c) on top of the 0x41ccbc LEA batch, each popping in descending ID, so the member walked first gets the higher ID inside one batch. Web LR IDs follow expression-descriptor order (0x416a40), and descriptors are numbered when early C2 (0x42127d) interns an expression. Interning A's expression (NEG of the remainder) before B's quotient makes A's web precede B's, B pops the lower ID, B is reloaded first, and the 0x4367f0 strict-overtake history puts B in the earlier home.",
+      "explanation": "0x40fbfa mode 1 emits boundary reloads in ascending fragment ID. Fragments are popped from the LIFO range free list 0x493230 by the first group split (0x437e67/0x438544), one per member in ascending LR order. The validated component rule creates per-range live-in/live-out endpoints, unions them across CFG edges, and joins same-block endpoints only when the +0x34 cut/kill bit is clear; each graph component becomes a range fragment. The split observer compares endpoint membership, not recycled numeric LR IDs, so it establishes this partition rule without independently proving free-list IDs or the upstream cut/adoption choice. The list is batched: 0x41a6f8 drops (refs < 2 via 0x4375fe, single-use copies via 0x41a86c) on top of the 0x41ccbc LEA batch, each popping in descending ID, so the member walked first gets the higher ID inside one batch. Web LR IDs follow expression-descriptor order (0x416a40), and descriptors are numbered when early C2 (0x42127d) interns an expression. Interning A's expression (NEG of the remainder) before B's quotient makes A's web precede B's, B pops the lower ID, B is reloaded first, and the 0x4367f0 strict-overtake history puts B in the earlier home.",
       "experiment": "Trace drops, the first split's members/free-list top and children (tools/c2trace/freelist.py trace), then test counts with forced drops (freelist.py force). If counts are robust, change which expression is interned first: write the value's plain expression as its own statement where it first appears.",
       "not_when": "Spelling, literal sign/shift forms, term order, inline helpers and 1-128 declarations before the function left the counts (26 top entries, B at member 28) unchanged; folding part of the adjustment into the first statement re-folds to SUB-from-constant and keeps the old order.",
       "evidence": [
@@ -4330,6 +4360,11 @@
           "ref": "blupi_recon@caccec1:docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs",
           "tier": "PROVEN",
           "counts": "blind recovery: 10 generic rewrites of the statements carrying y%DIMOBJY and y/DIMOBJY in the pre-fix source, exactly one 0 bytes (the fix); `= 0 - y%64 + 2; -= DIMOBJY` stays 8 bytes (folds to 2 - y%64) (BLUPI-ALLOC-16)"
+        },
+        {
+          "ref": "blupi_recon:tools/c2trace/split_trace.py; msvc5kb/micros/alloc/split_components.cpp",
+          "tier": "PROVEN",
+          "counts": "Pinned SP3 endpoint partitions match 18/18 on the call/loop micro, 42/42 on ChangePhase, 85/85 on BlupiStep, and 89/89 on the rejected snapshot control. These checks do not compare recycled fragment IDs or infer the upstream cut/adoption model."
         }
       ],
       "keywords": "free list LIFO fragment id boundary reload order stack home equal weight overtake expression interning descriptor order split statement Build",
@@ -4493,6 +4528,58 @@
         "compiles": 30,
         "outcome": "priority model exact; function MISMATCH (32 bytes), gap has no source route found",
         "doc_ref": "docs/RESIDUAL_CAUSES.md, Methodology test: hidden compiler inputs"
+      },
+      "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-ALLOC-18",
+      "section": "register-allocation",
+      "tier": "PROVEN",
+      "scope": "Pinned VC5 SP3 C2 predicate; live validation on SB2 Blupi and Eggbert captures; SB1 transfer unverified",
+      "applies": {
+        "opt": [
+          "O2"
+        ]
+      },
+      "title": "Integer literal pooling eligibility is a tuple predicate before splitting and costing",
+      "symptoms": {
+        "any": [
+          "immediate_differs",
+          "regalloc_only"
+        ]
+      },
+      "symptom": "A literal read pools according to its C2 tuple and operand shape; scope, distance, raw use count, and final instruction form do not decide this predicate.",
+      "construct": "Integer-literal reads in copy, compare, arithmetic, shift, call-argument, and store tuples, especially zero operands and fixed compare-result descriptors.",
+      "explanation": "At pinned VC5 SP3 C2 RVA 0x4156b6, reject opcodes {4,6,8,10,11,0x25..0x2b,0xa3,0xc1,0xca,0xcb,0x109,0x13c,0x14c}. Opcode 1 is additionally rejected when read 0 is integer literal zero and write 0 is tag 1 with descriptor kind other than 2. Opcode 0x2f is rejected when read 1 is integer literal zero and read 0 is tag 1 with kind other than 2. Opcodes 0x2d/0x32 are rejected when write 0 is tag 1 and names fixed descriptor 0x494938 or 0x4948e8. Other tuples pass. Caller 0x414ba6 first checks tuple byte+9 mask 0x01; integer tag 7 uses this predicate, and tags 3/4 use it with tuple-kind exclusions 13/16. Literal interning at 0x417fb7 uses 64 buckets by value&63 and compares full value plus tag; this predicate does not inspect type/signedness. The tag-1 kind-2 placeholder is distinct from temporary and physical call-result descriptors, and a tag-6 memory compare does not take the zero exception even if later codegen emits TEST.",
+      "experiment": "Use c2trace.py capture-micro with msvc5kb/micros/alloc/pool_eligibility.cpp, then run tools/c2trace/pool_trace.py CAPTURE *; repeat on an SP3 ChangePhase or BlupiStep capture with its matching --target to compare every native predicate return and hooked/unhooked function payloads.",
+      "not_when": "Static control-flow inspection covers the complete rejected-opcode table, but the C++ micros do not isolate every internal opcode; dynamic coverage is limited to tuples present in the captured TUs. The observer records interning events but does not independently model the full intern-table search. This stage does not predict connected components, cut selection, profitability, priority, or physical-register availability. An unchanged literal argument (opcode 0x0d) passes regardless of distance or use count, so the earlier four-use suppression diagnostic is not a source rule.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:tools/c2trace/pool_trace.py",
+          "tier": "PROVEN",
+          "counts": "Pinned c2.exe SP3 7303 SHA-256 e75aecaf4073b0817ffb638cae5fff636b2e2d1a090daabf8f68dbc954515fae; eligibility model matched 68/68 micro, 1,072/1,072 ChangePhase, and 5,322/5,322 BlupiStep native returns. All three hooked objects matched unhooked bytes and named relocations; zero model errors. The full static table is broader than dynamic micro coverage."
+        },
+        {
+          "ref": "blupi_recon:msvc5kb/micros/alloc/pool_eligibility.cpp",
+          "tier": "PROVEN",
+          "counts": "Standalone C++ cases for zero tests, memory reads, logical-not, local initialization, zero arguments/stores, nonzero operators, loops, branches, and lexical braces; 68/68 native eligibility checks."
+        },
+        {
+          "ref": "blupi_recon:docs/COMPILER_STUDY.md#c2-tracing-compiler-profiles-2026-10-23",
+          "tier": "PROVEN",
+          "counts": "Records integrated SP3 observer scope and the distinction between observed tuple eligibility and open upstream cut/adoption decisions; SB1 transfer remains unvalidated."
+        }
+      ],
+      "keywords": "literal pooling eligibility tuple zero compare copy opcode 0x4156b6 interning 0x417fb7 C2 SP3",
+      "blupi_status": "transferred-unverified",
+      "blupi_evidence": {
+        "function": "CEvent::ChangePhase; CDecor::BlupiStep; allocation micros",
+        "rva": "C2 0x4156b6; caller 0x414ba6; interning 0x417fb7",
+        "tu": "games/sb2/src/event.cpp; games/sb2/src/decblupi.cpp; msvc5kb/micros/alloc",
+        "flags": "VC5 SP3 /W3 /GX /O2 /ML /Gd /Gy; pinned C2 SHA-256 e75aecaf4073b0817ffb638cae5fff636b2e2d1a090daabf8f68dbc954515fae",
+        "compiles": 4,
+        "outcome": "predicate model matches the sampled SB2 native returns; no source candidate; SB1 transfer untested",
+        "doc_ref": "docs/COMPILER_STUDY.md#c2-tracing-compiler-profiles-2026-10-23"
       },
       "legacy_ids": []
     },
