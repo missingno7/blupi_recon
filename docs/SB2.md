@@ -2,7 +2,7 @@
 
 Status (2026-10-23, blocker repair): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
 target with its own oracle, source tree `games/sb2/src/` and manifest `games/sb2/recon.json`.
-Accepted: **447 STRICT + 12 FOLDED functions, 136,080 / 172,992 game `.text` bytes (78.7%)**.
+Accepted: **447 STRICT + 12 FOLDED functions, 136,080 / 172,992 game `.text` bytes (78.7%)**, plus 5 EQUIVALENT (1,200 bytes).
 **Speedy Blupi 2** (`sb2/blupi/en`, `_EGAMES=0`) has **449 STRICT + 5 FOLDED accepted functions,
 121,712 / 173,072 bytes (70.3%)**. Its complete comparator report finds 454 STRICT + 6 FOLDED,
 121,728 bytes; the extra 16 unique bytes have an unproven shared owner. Both complete regression gates
@@ -477,6 +477,26 @@ IsTeleporte, IsOutWater about +90..+130 more on Blupi 2) and for BltFast/MouseBa
 reach −5..+10, so no shared source satisfies both editions: the 2001 and 2004 sources differ by roughly
 100–200 front-end entities before these functions (consistent with code the linker strips, which leaves no
 trace in the binaries). Removing pixmap's nine bodiless inherited methods is inert.
+
+### EQUIVALENT tier and data (round 11)
+
+[EVIDENCE] A separate EQUIVALENT tier, as SB1's (docs/STANDALONE.md), certifies functions whose remaining
+differences are operand or register order that natural source cannot fix for both editions
+(`tools/equivalence_target.py`, `games/sb2/recon.json` `target_equivalent_functions`, certificates in
+`evidence/equivalence/sb2-*`; `scratch/w-equiv/REPORT.md`). Blupi 2 en/de/fr: DrawButtons, GetBlupiInfo,
+IsBridge, IsDoor, IsTeleporte, IsDeepWater, IsOutWater, BltFast(int,int,POINT,RECT,int), MouseBackDraw:
+9 functions / 8,944 bytes each. Eggbert 2: IsWorld, IsDeepWater, IsMoveTraj, IsVentillo, MoveObjectSort:
+5 functions / 1,200 bytes. They stay comparator MISMATCH and add zero STRICT bytes; every normal
+`verify.py`/`relink.py` run re-proves the regions (symbolic proofs, liveness, branch alignment, relocations)
+and checks the pinned certificates; a changed payload is rejected. SB1's checker and certificates are
+untouched. [OPEN] ChangePhase (Blupi 2) and BlupiStep need loop/register invariants.
+
+[EVIDENCE] `table_decor_quart` (decblock.cpp) has 7,056 entries in SB2 (441 icons × 16, all values read from
+both executables; SB1 has 3,792). With it the relinked `.data` is 3,296 bytes short instead of 9,792
+(`scratch/w-data/REPORT.md`); every function status is unchanged. [OPEN] The owner of the remaining bytes.
+
+[NEGATIVE] The decblock/decmove solver (`scratch/w-solve-decblock`) found GetBlupiInfo and MoveObjectSort
+need opposite contexts in the two editions, like the decblupi and pixmap predicates.
 
 ### DirectX header environment (round 5)
 

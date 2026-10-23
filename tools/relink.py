@@ -64,9 +64,10 @@ def linker_path(selection, target_tree, vc_root):
     return LINKERS[selection]
 
 
-def target_libraries(manifest, vc_root):
-    """Use the target compiler tree's CRT and the SDK named by its include path."""
-    libraries = [vc_root / "LIB" / (s + ".lib") for s in
+def target_libraries(manifest, vc_root, library_vc_root=None):
+    """Use the target linker's CRT and the SDK named by its include path."""
+    library_vc_root = library_vc_root or vc_root
+    libraries = [library_vc_root / "LIB" / (s + ".lib") for s in
                  ("kernel32", "user32", "gdi32", "winmm")]
     dx_lib_dirs = []
     for include in manifest["toolchain"].get("include_dirs", []):
@@ -80,7 +81,7 @@ def target_libraries(manifest, vc_root):
     # DX5 SDK: oracle GUIDs (docs/TOOLCHAIN.md); network.cpp defines INITGUID.
     libraries += [dx_lib_dirs[0] / (s + ".lib") for s in ("dsound", "ddraw", "dplayx")]
     # Explicit game import libraries precede LIBC, as in the SB1 proven link.
-    libraries += [vc_root / "LIB" / "LIBC.LIB", vc_root / "LIB" / "OLDNAMES.LIB"]
+    libraries += [library_vc_root / "LIB" / "LIBC.LIB", library_vc_root / "LIB" / "OLDNAMES.LIB"]
     return libraries
 
 
@@ -279,7 +280,9 @@ def main(argv=None):
     manifest = target.manifest()
     settings = manifest.get('standalone_link', {})
     tree, vc_root, shared_bin = toolchain_roots(manifest["toolchain"]["tree"])
-    args.linker = args.linker or ("rtm" if manifest["toolchain"]["tree"].lower() == "rtm" else "sp3")
+    default_linker = ("rtm" if manifest["toolchain"]["tree"].lower() == "rtm" or
+                      target.name.startswith("sb1/eggbert/") else "sp3")
+    args.linker = args.linker or default_linker
     args.order = args.order or ('recorded' if args.standalone else 'oracle')
     if args.standalone and args.order == 'oracle':
         parser.error('--standalone cannot use --order oracle')
@@ -363,6 +366,9 @@ def main(argv=None):
         if target.primary:
             import equivalence
             equivalent = equivalence.check(manifest, comparison, evidence_objects, out)
+        elif target.name.startswith('sb2/'):
+            import equivalence_target
+            equivalent = equivalence_target.check(target, manifest, comparison, evidence_objects, out)
         else:
             equivalent = dict(status="NOT_APPLICABLE", reason="SB2 target has its own oracle inventory")
         gate = dict(regressions=regressions, degraded=degraded, coverage=coverage,
@@ -385,7 +391,10 @@ def main(argv=None):
     image_base = int(settings['image_base'], 0) if args.standalone else oracle.OPTIONAL_HEADER.ImageBase
     alignment = settings['section_alignment'] if args.standalone else oracle.OPTIONAL_HEADER.SectionAlignment
     linker = linker_path(args.linker, manifest["toolchain"]["tree"], vc_root)
-    libraries = target_libraries(manifest, vc_root)
+    library_vc_root = vc_root
+    if args.linker == "rtm" and manifest["toolchain"]["tree"].lower() != "rtm":
+        _tree, library_vc_root, _shared = toolchain_roots("rtm")
+    libraries = target_libraries(manifest, vc_root, library_vc_root)
     if args.default_libs:
         libraries = [l for l in libraries if l.name.upper() not in ("LIBC.LIB", "OLDNAMES.LIB")]
     libraries += args.library
@@ -397,9 +406,11 @@ def main(argv=None):
                "/fixed", "/incremental:no", *([] if args.default_libs else ["/nodefaultlib"]),
                *["/opt:" + s for s in args.opt.split(",")],
                f"/out:{image_path}", f"/map:{map_path}"]
-    resource_candidates = [ROOT / manifest.get("source_root", "src") / "res" / "blupi.rc"]
-    if not target.primary:
+    source_root = ROOT / manifest.get("source_root", "src")
+    resource_candidates = [source_root / "res" / f"{target.slug}.rc"]
+    if source_root != ROOT / "src":
         resource_candidates.insert(0, ROOT / "games/sb2/res" / f"{target.slug}.rc")
+    resource_candidates.append(source_root / "res" / "blupi.rc")
     resource_script = next((candidate for candidate in resource_candidates if candidate.is_file()), None)
     if args.no_res:
         res_files, resource_status = [], "omitted by --no-res"

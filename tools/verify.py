@@ -495,6 +495,9 @@ def main() -> int:
             # the certificates are proofs against the primary target's executable
             import equivalence
             equivalence.check(manifest, comparison, evidence_objects, BUILD)
+        elif TARGET.name.startswith('sb2/'):
+            import equivalence_target
+            equivalence_target.check(TARGET, manifest, comparison, evidence_objects, BUILD)
         if regressions:
             print("\nAccepted-function regression(s):")
             for error in regressions:

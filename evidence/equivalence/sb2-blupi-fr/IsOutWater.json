@@ -1,0 +1,360 @@
+{
+  "schema": 1,
+  "status": "EQUIVALENT",
+  "target": "sb2/blupi/fr",
+  "declaration": {
+    "name": "IsOutWater",
+    "symbol": "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z",
+    "rva": "0x14b50",
+    "size": 80,
+    "tu": "games/sb2/src/decblupi.cpp",
+    "returns_value": true,
+    "regions": [
+      [
+        "0x0",
+        "0x31",
+        "0x0",
+        "0x2f"
+      ]
+    ],
+    "certificate": "evidence/equivalence/sb2-blupi-fr/IsOutWater.json"
+  },
+  "scope": "static-local-equivalence",
+  "assumptions": [
+    "Memory accessed by either body is valid ordinary RAM, stable during each proof region; no MMIO, concurrency or asynchronous register/flags observation.",
+    "The active callee stack frame is disjoint from pointed-to objects and outputs; distinct fields of an output POINT do not overlap.",
+    "Calls follow the declared x86 ABI (stack arguments and ECX this); arithmetic flags and other scratch registers are not hidden arguments or return values.",
+    "Equivalence covers defined memory effects, branch outcomes, ABI-preserved registers and declared return values. Calls retain their targets/arguments except for the separately proved pure SortGetType call commutation; timing, pure-helper invocation order and dead stack spills are excluded.",
+    "Relocation checks establish symbol/data identity under the comparator binding model; they do not assert equivalence of otherwise unmatched callees."
+  ],
+  "payload_sha256": "f8a8c44e437a586cdd5acbb5a7c5bf51e45ac810ca27aa03c1fd71070457e3f7",
+  "oracle_sha256": "acad0730b90a50acf05898d8c0bb524f28a9a5f45fa07451ccda0403d085723d",
+  "oracle_function_sha256": "301aacacf6e40dff76dc92e6ee3eccfaaf11a4a3be1e35252979b090c2bafadb",
+  "checker_sha256": "4a0099a667d18763c6ba7ac22e7a7afdc237fd14463d7b145addfe1771d6aad1",
+  "comparator_sha256": "e5f128d8f4fed1aba7371f03397a154f76b3d2d72b8dee874b167bff83bf2323",
+  "comparator_wrapper_sha256": "ae663881d257785e3f7f6729080c0982e5b25034cd870988bfa2330d3b5ef2dc",
+  "capstone_version": "5.0.3",
+  "crt_library_sha256": "4ae22c6f35a87c55c453ad388ada649ea3ba190614be3d1ab95935ba0faa7416",
+  "inventory_sha256": {
+    "functions.csv": "60e1094c795f7841a6d05fcd225641bfb738d459be78839da1cc331dde2bda6a",
+    "tu_map.csv": "87a32efa880769341647be4c386aa015bfa13225dfc286e8c5ee7968c7df3aa4"
+  },
+  "crt_target_identity": {
+    "_strchr": {
+      "va": "0x42c1f0",
+      "size": 188,
+      "body_sha256": "6979c6178f67a389b905ed0e7c5328630a49bc83d5660fb2758fd6de07864049",
+      "proof": "unique complete raw-identical relocation-free CRT library body"
+    }
+  },
+  "checks": {
+    "regions": [
+      {
+        "object_window": [
+          "0x0",
+          "0x31"
+        ],
+        "oracle_window": [
+          "0x0",
+          "0x2f"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "1b45cdac4b833d6dad370df7e705e778d3ee7e7c932adb02d39ef51b689d1d52"
+      }
+    ],
+    "nonrelocation_differences": [
+      [
+        "0x3",
+        8,
+        4
+      ],
+      [
+        "0x11",
+        8,
+        12
+      ],
+      [
+        "0x12",
+        139,
+        193
+      ],
+      [
+        "0x13",
+        240,
+        248
+      ],
+      [
+        "0x14",
+        141,
+        6
+      ],
+      [
+        "0x15",
+        66,
+        141
+      ],
+      [
+        "0x16",
+        30,
+        4
+      ],
+      [
+        "0x17",
+        153,
+        128
+      ],
+      [
+        "0x18",
+        131,
+        141
+      ],
+      [
+        "0x19",
+        226,
+        52
+      ],
+      [
+        "0x1a",
+        63,
+        128
+      ],
+      [
+        "0x1b",
+        3,
+        141
+      ],
+      [
+        "0x1c",
+        194,
+        66
+      ],
+      [
+        "0x1d",
+        193,
+        30
+      ],
+      [
+        "0x1e",
+        248,
+        153
+      ],
+      [
+        "0x1f",
+        6,
+        131
+      ],
+      [
+        "0x20",
+        193,
+        226
+      ],
+      [
+        "0x21",
+        254,
+        63
+      ],
+      [
+        "0x22",
+        6,
+        3
+      ],
+      [
+        "0x23",
+        141,
+        194
+      ],
+      [
+        "0x24",
+        4,
+        193
+      ],
+      [
+        "0x25",
+        128,
+        248
+      ],
+      [
+        "0x26",
+        141,
+        6
+      ],
+      [
+        "0x27",
+        4,
+        141
+      ],
+      [
+        "0x28",
+        128,
+        4
+      ],
+      [
+        "0x29",
+        141,
+        176
+      ],
+      [
+        "0x2a",
+        20,
+        15
+      ],
+      [
+        "0x2b",
+        134,
+        191
+      ],
+      [
+        "0x2c",
+        15,
+        68
+      ],
+      [
+        "0x2d",
+        191,
+        65
+      ],
+      [
+        "0x2e",
+        68,
+        16
+      ],
+      [
+        "0x2f",
+        81,
+        131
+      ],
+      [
+        "0x30",
+        16,
+        248
+      ],
+      [
+        "0x31",
+        131,
+        91
+      ],
+      [
+        "0x32",
+        248,
+        116
+      ],
+      [
+        "0x33",
+        91,
+        15
+      ],
+      [
+        "0x34",
+        116,
+        131
+      ],
+      [
+        "0x35",
+        15,
+        248
+      ],
+      [
+        "0x36",
+        131,
+        92
+      ],
+      [
+        "0x37",
+        248,
+        116
+      ],
+      [
+        "0x38",
+        92,
+        10
+      ],
+      [
+        "0x39",
+        116,
+        80
+      ],
+      [
+        "0x3a",
+        10,
+        232
+      ],
+      [
+        "0x3b",
+        80,
+        17
+      ],
+      [
+        "0x3c",
+        232,
+        0
+      ],
+      [
+        "0x3f",
+        0,
+        94
+      ],
+      [
+        "0x40",
+        0,
+        194
+      ],
+      [
+        "0x41",
+        94,
+        8
+      ],
+      [
+        "0x42",
+        194,
+        0
+      ],
+      [
+        "0x43",
+        8,
+        51
+      ],
+      [
+        "0x44",
+        0,
+        192
+      ],
+      [
+        "0x45",
+        51,
+        94
+      ],
+      [
+        "0x46",
+        192,
+        194
+      ],
+      [
+        "0x47",
+        94,
+        8
+      ],
+      [
+        "0x48",
+        194,
+        0
+      ],
+      [
+        "0x49",
+        8,
+        144
+      ],
+      [
+        "0x4a",
+        0,
+        144
+      ]
+    ],
+    "differing_bytes": 57,
+    "outside_region_instructions_checked": 11,
+    "object_padding_bytes": 5,
+    "oracle_padding_bytes": 7,
+    "verified_relocations": 1,
+    "relocations_sha256": "e1f3644d7a53100eb092898eddfaf0024999bf13a1e0d9bd9fed6c08c3f4d742"
+  }
+}

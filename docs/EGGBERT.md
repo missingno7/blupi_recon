@@ -69,8 +69,11 @@ reconstruction builds both, and what it means for the port. Static reads only (2
   `GetCharWidth` and `DrawChar`.
 - [OPEN] `ChangePhase` carries the primary target's residue (it first differs at the same offset),
   so its 1.1 changes are written but not byte-proven.
-- [OPEN] `tools/relink.py` is specific to the 1.0 layout. A whole-image relink of 1.1 needs it
-  generalised (RTM linker, its order and resources).
+- [EVIDENCE] `tools/relink.py --target` relinks every 1.1 target with its own linker, order and generated
+  resource script (`src/res/sb1-*.rc`, `tools/make_rc.py --target`; `scratch/w-sb1relink/REPORT.md`): no
+  unresolved or duplicate symbols; Speedy Eggbert 1: 235/408 accepted functions at their original RVA,
+  `.rsrc` equal except 71 timestamp fields; German/French Speedy Blupi: 394/412, `.rsrc` raw exact.
+  [OPEN] Full `.text`/`.data` image equality.
 
 ## What it means for the port
 

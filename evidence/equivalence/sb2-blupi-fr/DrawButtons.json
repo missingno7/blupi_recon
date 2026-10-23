@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "status": "EQUIVALENT",
+  "target": "sb2/blupi/fr",
+  "declaration": {
+    "name": "DrawButtons",
+    "symbol": "?DrawButtons@CEvent@@QAEHXZ",
+    "rva": "0x1d7d0",
+    "size": 7648,
+    "tu": "games/sb2/src/event.cpp",
+    "returns_value": true,
+    "regions": [
+      [
+        "0x1b1b",
+        "0x1b2b",
+        "0x1b1b",
+        "0x1b2b"
+      ]
+    ],
+    "certificate": "evidence/equivalence/sb2-blupi-fr/DrawButtons.json"
+  },
+  "scope": "static-local-equivalence",
+  "assumptions": [
+    "Memory accessed by either body is valid ordinary RAM, stable during each proof region; no MMIO, concurrency or asynchronous register/flags observation.",
+    "The active callee stack frame is disjoint from pointed-to objects and outputs; distinct fields of an output POINT do not overlap.",
+    "Calls follow the declared x86 ABI (stack arguments and ECX this); arithmetic flags and other scratch registers are not hidden arguments or return values.",
+    "Equivalence covers defined memory effects, branch outcomes, ABI-preserved registers and declared return values. Calls retain their targets/arguments except for the separately proved pure SortGetType call commutation; timing, pure-helper invocation order and dead stack spills are excluded.",
+    "Relocation checks establish symbol/data identity under the comparator binding model; they do not assert equivalence of otherwise unmatched callees."
+  ],
+  "payload_sha256": "37ba64eec898b8399a13a9ec8144b3990644b0aceebe8907737e6060c7999725",
+  "oracle_sha256": "acad0730b90a50acf05898d8c0bb524f28a9a5f45fa07451ccda0403d085723d",
+  "oracle_function_sha256": "c9b923726dea17198b9036f94671b99da97f1f62300e501b8afae035b1f0f2b1",
+  "checker_sha256": "4a0099a667d18763c6ba7ac22e7a7afdc237fd14463d7b145addfe1771d6aad1",
+  "comparator_sha256": "e5f128d8f4fed1aba7371f03397a154f76b3d2d72b8dee874b167bff83bf2323",
+  "comparator_wrapper_sha256": "ae663881d257785e3f7f6729080c0982e5b25034cd870988bfa2330d3b5ef2dc",
+  "capstone_version": "5.0.3",
+  "crt_library_sha256": "4ae22c6f35a87c55c453ad388ada649ea3ba190614be3d1ab95935ba0faa7416",
+  "inventory_sha256": {
+    "functions.csv": "60e1094c795f7841a6d05fcd225641bfb738d459be78839da1cc331dde2bda6a",
+    "tu_map.csv": "87a32efa880769341647be4c386aa015bfa13225dfc286e8c5ee7968c7df3aa4"
+  },
+  "crt_target_identity": {
+    "_strchr": {
+      "va": "0x42c1f0",
+      "size": 188,
+      "body_sha256": "6979c6178f67a389b905ed0e7c5328630a49bc83d5660fb2758fd6de07864049",
+      "proof": "unique complete raw-identical relocation-free CRT library body"
+    }
+  },
+  "checks": {
+    "regions": [
+      {
+        "object_window": [
+          "0x1b1b",
+          "0x1b2b"
+        ],
+        "oracle_window": [
+          "0x1b1b",
+          "0x1b2b"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "3420234c9788fc52a087f694fb93d7c498c848c709c2172ddbb7ebc8dff4d7ce"
+      }
+    ],
+    "nonrelocation_differences": [
+      [
+        "0x1b1b",
+        141,
+        43
+      ],
+      [
+        "0x1b1c",
+        132,
+        205
+      ],
+      [
+        "0x1b1d",
+        12,
+        141
+      ],
+      [
+        "0x1b1e",
+        144,
+        132
+      ],
+      [
+        "0x1b1f",
+        0,
+        12
+      ],
+      [
+        "0x1b20",
+        0,
+        144
+      ],
+      [
+        "0x1b22",
+        139,
+        0
+      ],
+      [
+        "0x1b23",
+        140,
+        0
+      ],
+      [
+        "0x1b24",
+        36,
+        139
+      ],
+      [
+        "0x1b26",
+        0,
+        36
+      ],
+      [
+        "0x1b27",
+        0,
+        140
+      ],
+      [
+        "0x1b29",
+        43,
+        0
+      ],
+      [
+        "0x1b2a",
+        197,
+        0
+      ]
+    ],
+    "differing_bytes": 13,
+    "outside_region_instructions_checked": 2368,
+    "object_padding_bytes": 10,
+    "oracle_padding_bytes": 10,
+    "verified_relocations": 247,
+    "relocations_sha256": "02a2c0d7bef4b625f45e2e53ffe396beab8a0c0362db564af00e1465bf167a05"
+  }
+}

@@ -1,0 +1,465 @@
+{
+  "schema": 1,
+  "status": "EQUIVALENT",
+  "target": "sb2/blupi/en",
+  "declaration": {
+    "name": "IsTeleporte",
+    "symbol": "?IsTeleporte@CDecor@@QAEHUtagPOINT@@@Z",
+    "rva": "0x14960",
+    "size": 128,
+    "tu": "games/sb2/src/decblupi.cpp",
+    "returns_value": true,
+    "regions": [
+      [
+        "0x19",
+        "0x6b",
+        "0x19",
+        "0x6a"
+      ]
+    ],
+    "certificate": "evidence/equivalence/sb2-blupi-en/IsTeleporte.json"
+  },
+  "scope": "static-local-equivalence",
+  "assumptions": [
+    "Memory accessed by either body is valid ordinary RAM, stable during each proof region; no MMIO, concurrency or asynchronous register/flags observation.",
+    "The active callee stack frame is disjoint from pointed-to objects and outputs; distinct fields of an output POINT do not overlap.",
+    "Calls follow the declared x86 ABI (stack arguments and ECX this); arithmetic flags and other scratch registers are not hidden arguments or return values.",
+    "Equivalence covers defined memory effects, branch outcomes, ABI-preserved registers and declared return values. Calls retain their targets/arguments except for the separately proved pure SortGetType call commutation; timing, pure-helper invocation order and dead stack spills are excluded.",
+    "Relocation checks establish symbol/data identity under the comparator binding model; they do not assert equivalence of otherwise unmatched callees."
+  ],
+  "payload_sha256": "eb54f6fdf57649c1a93196b1763b71f01a6efc15d50d494576fdfe321f3cf0a2",
+  "oracle_sha256": "dfe139edd78182296b549d1a0bb79bf41fed473e13147a327028c8d003c6ab30",
+  "oracle_function_sha256": "bef9e233abb4ca73e96cc17e17349f30c4483f03869c2fd2faab55bef01465c6",
+  "checker_sha256": "4a0099a667d18763c6ba7ac22e7a7afdc237fd14463d7b145addfe1771d6aad1",
+  "comparator_sha256": "e5f128d8f4fed1aba7371f03397a154f76b3d2d72b8dee874b167bff83bf2323",
+  "comparator_wrapper_sha256": "ae663881d257785e3f7f6729080c0982e5b25034cd870988bfa2330d3b5ef2dc",
+  "capstone_version": "5.0.3",
+  "crt_library_sha256": "4ae22c6f35a87c55c453ad388ada649ea3ba190614be3d1ab95935ba0faa7416",
+  "inventory_sha256": {
+    "functions.csv": "60e1094c795f7841a6d05fcd225641bfb738d459be78839da1cc331dde2bda6a",
+    "tu_map.csv": "87a32efa880769341647be4c386aa015bfa13225dfc286e8c5ee7968c7df3aa4"
+  },
+  "crt_target_identity": {
+    "_strchr": {
+      "va": "0x42c1f0",
+      "size": 188,
+      "body_sha256": "6979c6178f67a389b905ed0e7c5328630a49bc83d5660fb2758fd6de07864049",
+      "proof": "unique complete raw-identical relocation-free CRT library body"
+    }
+  },
+  "checks": {
+    "regions": [
+      {
+        "object_window": [
+          "0x19",
+          "0x6b"
+        ],
+        "oracle_window": [
+          "0x19",
+          "0x6a"
+        ],
+        "boolean_atoms": 6,
+        "exhaustive_boolean_assignments": 64,
+        "symbolic_outcomes_sha256": "9f4b8250d3309b8591041dc6d32a54fc24af814d50b7b038d8abf92ac19aa001"
+      }
+    ],
+    "nonrelocation_differences": [
+      [
+        "0x18",
+        90,
+        89
+      ],
+      [
+        "0x1a",
+        124,
+        68
+      ],
+      [
+        "0x21",
+        239,
+        232
+      ],
+      [
+        "0x26",
+        76,
+        75
+      ],
+      [
+        "0x2e",
+        68,
+        67
+      ],
+      [
+        "0x30",
+        255,
+        192
+      ],
+      [
+        "0x32",
+        64,
+        63
+      ],
+      [
+        "0x33",
+        129,
+        61
+      ],
+      [
+        "0x34",
+        255,
+        0
+      ],
+      [
+        "0x35",
+        0,
+        25
+      ],
+      [
+        "0x36",
+        25,
+        0
+      ],
+      [
+        "0x38",
+        0,
+        125
+      ],
+      [
+        "0x39",
+        125,
+        56
+      ],
+      [
+        "0x3a",
+        56,
+        153
+      ],
+      [
+        "0x3b",
+        139,
+        131
+      ],
+      [
+        "0x3c",
+        198,
+        226
+      ],
+      [
+        "0x3d",
+        153,
+        63
+      ],
+      [
+        "0x3e",
+        131,
+        3
+      ],
+      [
+        "0x3f",
+        226,
+        194
+      ],
+      [
+        "0x40",
+        63,
+        139
+      ],
+      [
+        "0x41",
+        3,
+        248
+      ],
+      [
+        "0x42",
+        194,
+        139
+      ],
+      [
+        "0x43",
+        193,
+        198
+      ],
+      [
+        "0x44",
+        248,
+        153
+      ],
+      [
+        "0x45",
+        6,
+        131
+      ],
+      [
+        "0x46",
+        141,
+        226
+      ],
+      [
+        "0x47",
+        4,
+        63
+      ],
+      [
+        "0x48",
+        128,
+        3
+      ],
+      [
+        "0x49",
+        141,
+        194
+      ],
+      [
+        "0x4a",
+        52,
+        193
+      ],
+      [
+        "0x4b",
+        128,
+        248
+      ],
+      [
+        "0x4c",
+        139,
+        6
+      ],
+      [
+        "0x4d",
+        199,
+        193
+      ],
+      [
+        "0x4e",
+        153,
+        255
+      ],
+      [
+        "0x4f",
+        131,
+        6
+      ],
+      [
+        "0x50",
+        226,
+        141
+      ],
+      [
+        "0x51",
+        63,
+        4
+      ],
+      [
+        "0x52",
+        3,
+        128
+      ],
+      [
+        "0x53",
+        194,
+        141
+      ],
+      [
+        "0x54",
+        193,
+        4
+      ],
+      [
+        "0x55",
+        248,
+        128
+      ],
+      [
+        "0x56",
+        6,
+        141
+      ],
+      [
+        "0x57",
+        141,
+        20
+      ],
+      [
+        "0x58",
+        4,
+        135
+      ],
+      [
+        "0x59",
+        176,
+        102
+      ],
+      [
+        "0x5a",
+        102,
+        139
+      ],
+      [
+        "0x5b",
+        139,
+        68
+      ],
+      [
+        "0x5c",
+        68,
+        81
+      ],
+      [
+        "0x5d",
+        65,
+        16
+      ],
+      [
+        "0x5e",
+        16,
+        102
+      ],
+      [
+        "0x5f",
+        102,
+        61
+      ],
+      [
+        "0x60",
+        61,
+        74
+      ],
+      [
+        "0x61",
+        74,
+        1
+      ],
+      [
+        "0x62",
+        1,
+        124
+      ],
+      [
+        "0x63",
+        124,
+        14
+      ],
+      [
+        "0x64",
+        14,
+        102
+      ],
+      [
+        "0x65",
+        102,
+        61
+      ],
+      [
+        "0x66",
+        61,
+        77
+      ],
+      [
+        "0x67",
+        77,
+        1
+      ],
+      [
+        "0x68",
+        1,
+        127
+      ],
+      [
+        "0x69",
+        127,
+        8
+      ],
+      [
+        "0x6a",
+        8,
+        15
+      ],
+      [
+        "0x6b",
+        15,
+        191
+      ],
+      [
+        "0x6c",
+        191,
+        192
+      ],
+      [
+        "0x6d",
+        192,
+        95
+      ],
+      [
+        "0x6e",
+        95,
+        94
+      ],
+      [
+        "0x6f",
+        94,
+        194
+      ],
+      [
+        "0x70",
+        194,
+        8
+      ],
+      [
+        "0x71",
+        8,
+        0
+      ],
+      [
+        "0x72",
+        0,
+        95
+      ],
+      [
+        "0x73",
+        95,
+        131
+      ],
+      [
+        "0x74",
+        131,
+        200
+      ],
+      [
+        "0x75",
+        200,
+        255
+      ],
+      [
+        "0x76",
+        255,
+        94
+      ],
+      [
+        "0x77",
+        94,
+        194
+      ],
+      [
+        "0x78",
+        194,
+        8
+      ],
+      [
+        "0x79",
+        8,
+        0
+      ],
+      [
+        "0x7a",
+        0,
+        144
+      ]
+    ],
+    "differing_bytes": 78,
+    "outside_region_instructions_checked": 20,
+    "object_padding_bytes": 5,
+    "oracle_padding_bytes": 6,
+    "verified_relocations": 0,
+    "relocations_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  }
+}

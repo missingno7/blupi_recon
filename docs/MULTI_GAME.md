@@ -38,8 +38,8 @@ Two goals, kept apart:
 | `sb1/blupi/fr` | 127,456 / 141,488 | strings only |
 | `sb1/eggbert/en`, `fr` | 123,120 / 141,328 | `_EGAMES`; WindowProc and DoInit excluded ([EGGBERT.md](EGGBERT.md)) |
 | `sb1/eggbert/de`, `es`, `it`, `pt` | 123,120 / 141,328 | also `LANGUAGE_DE` (de), `LANGUAGE_ACCENTS`, `LANGUAGE_ES` (es), `LANGUAGE_PT` (pt) |
-| `sb2/eggbert/en` | 136,080 / 172,992 | accepted: 447 STRICT, 12 FOLDED; own tree `games/sb2/src/` ([SB2.md](SB2.md)) |
-| `sb2/blupi/en` | 121,712 / 173,072 | accepted: 449 STRICT, 5 FOLDED; same tree, `_EGAMES=0`, VC5 RTM + LINK 5.00; comparator total 121,728 ([SB2.md](SB2.md)) |
+| `sb2/eggbert/en` | 136,080 / 172,992 | accepted: 447 STRICT, 12 FOLDED, 5 EQUIVALENT (1,200 B); own tree `games/sb2/src/` ([SB2.md](SB2.md)) |
+| `sb2/blupi/en` | 121,712 / 173,072 | accepted: 449 STRICT, 5 FOLDED, 9 EQUIVALENT (8,944 B); same tree, `_EGAMES=0`, VC5 RTM + LINK 5.00; comparator total 121,728 ([SB2.md](SB2.md)) |
 | `sb2/blupi/de`, `fr` | 121,712 / 173,072 | as `sb2/blupi/en`: `.text` and `.data` identical to English, the language is in `.rsrc` only ([SB2.md](SB2.md)) |
 
 SB2 accepted totals use the effective target manifest. Blupi-only proofs live in targets.json's

@@ -3102,5 +3102,620 @@
       "source_symbol": "??1CPixmap@@QAE@XZ",
       "evidence": "[EVIDENCE] SB1's destructor body is SB2's release method at 0x281b0; SB2's ~CPixmap (0x281a0) is a tail jump to it, called by FinishObjects; CPixmap::Create (0x28250) also calls 0x281b0. The method name is a [HYPOTHESIS]."
     }
-  ]
+  ],
+  "target_equivalent_functions": {
+    "sb2/blupi/en": [
+      {
+        "name": "DrawButtons",
+        "symbol": "?DrawButtons@CEvent@@QAEHXZ",
+        "rva": "0x1d7d0",
+        "size": 7648,
+        "tu": "games/sb2/src/event.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x1b1b",
+            "0x1b2b",
+            "0x1b1b",
+            "0x1b2b"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-en/DrawButtons.json"
+      },
+      {
+        "name": "GetBlupiInfo",
+        "symbol": "?GetBlupiInfo@CDecor@@QAEXPAH000@Z",
+        "rva": "0x5960",
+        "size": 80,
+        "tu": "games/sb2/src/decblock.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0xc",
+            "0x1a",
+            "0xc",
+            "0x1a"
+          ],
+          [
+            "0x2c",
+            "0x3e",
+            "0x2c",
+            "0x3e"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-en/GetBlupiInfo.json"
+      },
+      {
+        "name": "IsBridge",
+        "symbol": "?IsBridge@CDecor@@QAEHUtagPOINT@@PAU2@@Z",
+        "rva": "0x147c0",
+        "size": 208,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0xc8",
+            "0x0",
+            "0xc8"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-en/IsBridge.json"
+      },
+      {
+        "name": "IsDoor",
+        "symbol": "?IsDoor@CDecor@@QAEHUtagPOINT@@PAU2@@Z",
+        "rva": "0x14890",
+        "size": 208,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x41",
+            "0x65",
+            "0x41",
+            "0x68"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-en/IsDoor.json"
+      },
+      {
+        "name": "IsTeleporte",
+        "symbol": "?IsTeleporte@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14960",
+        "size": 128,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x19",
+            "0x6b",
+            "0x19",
+            "0x6a"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-en/IsTeleporte.json"
+      },
+      {
+        "name": "IsDeepWater",
+        "symbol": "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14b00",
+        "size": 80,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0x2e",
+            "0x0",
+            "0x2c"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-en/IsDeepWater.json"
+      },
+      {
+        "name": "IsOutWater",
+        "symbol": "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14b50",
+        "size": 80,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0x31",
+            "0x0",
+            "0x2f"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-en/IsOutWater.json"
+      },
+      {
+        "name": "BltFast",
+        "symbol": "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z",
+        "rva": "0x28e10",
+        "size": 240,
+        "tu": "games/sb2/src/pixmap.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x33",
+            "0x3f",
+            "0x33",
+            "0x3f"
+          ],
+          [
+            "0x6b",
+            "0x73",
+            "0x6b",
+            "0x73"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-en/BltFast.json"
+      },
+      {
+        "name": "MouseBackDraw",
+        "symbol": "?MouseBackDraw@CPixmap@@QAEXXZ",
+        "rva": "0x29f30",
+        "size": 272,
+        "tu": "games/sb2/src/pixmap.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0x8b",
+            "0x91",
+            "0x8b",
+            "0x90"
+          ],
+          [
+            "0xc3",
+            "0xc9",
+            "0xc2",
+            "0xc7"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-en/MouseBackDraw.json"
+      }
+    ],
+    "sb2/blupi/de": [
+      {
+        "name": "DrawButtons",
+        "symbol": "?DrawButtons@CEvent@@QAEHXZ",
+        "rva": "0x1d7d0",
+        "size": 7648,
+        "tu": "games/sb2/src/event.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x1b1b",
+            "0x1b2b",
+            "0x1b1b",
+            "0x1b2b"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-de/DrawButtons.json"
+      },
+      {
+        "name": "GetBlupiInfo",
+        "symbol": "?GetBlupiInfo@CDecor@@QAEXPAH000@Z",
+        "rva": "0x5960",
+        "size": 80,
+        "tu": "games/sb2/src/decblock.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0xc",
+            "0x1a",
+            "0xc",
+            "0x1a"
+          ],
+          [
+            "0x2c",
+            "0x3e",
+            "0x2c",
+            "0x3e"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-de/GetBlupiInfo.json"
+      },
+      {
+        "name": "IsBridge",
+        "symbol": "?IsBridge@CDecor@@QAEHUtagPOINT@@PAU2@@Z",
+        "rva": "0x147c0",
+        "size": 208,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0xc8",
+            "0x0",
+            "0xc8"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-de/IsBridge.json"
+      },
+      {
+        "name": "IsDoor",
+        "symbol": "?IsDoor@CDecor@@QAEHUtagPOINT@@PAU2@@Z",
+        "rva": "0x14890",
+        "size": 208,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x41",
+            "0x65",
+            "0x41",
+            "0x68"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-de/IsDoor.json"
+      },
+      {
+        "name": "IsTeleporte",
+        "symbol": "?IsTeleporte@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14960",
+        "size": 128,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x19",
+            "0x6b",
+            "0x19",
+            "0x6a"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-de/IsTeleporte.json"
+      },
+      {
+        "name": "IsDeepWater",
+        "symbol": "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14b00",
+        "size": 80,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0x2e",
+            "0x0",
+            "0x2c"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-de/IsDeepWater.json"
+      },
+      {
+        "name": "IsOutWater",
+        "symbol": "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14b50",
+        "size": 80,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0x31",
+            "0x0",
+            "0x2f"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-de/IsOutWater.json"
+      },
+      {
+        "name": "BltFast",
+        "symbol": "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z",
+        "rva": "0x28e10",
+        "size": 240,
+        "tu": "games/sb2/src/pixmap.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x33",
+            "0x3f",
+            "0x33",
+            "0x3f"
+          ],
+          [
+            "0x6b",
+            "0x73",
+            "0x6b",
+            "0x73"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-de/BltFast.json"
+      },
+      {
+        "name": "MouseBackDraw",
+        "symbol": "?MouseBackDraw@CPixmap@@QAEXXZ",
+        "rva": "0x29f30",
+        "size": 272,
+        "tu": "games/sb2/src/pixmap.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0x8b",
+            "0x91",
+            "0x8b",
+            "0x90"
+          ],
+          [
+            "0xc3",
+            "0xc9",
+            "0xc2",
+            "0xc7"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-de/MouseBackDraw.json"
+      }
+    ],
+    "sb2/blupi/fr": [
+      {
+        "name": "DrawButtons",
+        "symbol": "?DrawButtons@CEvent@@QAEHXZ",
+        "rva": "0x1d7d0",
+        "size": 7648,
+        "tu": "games/sb2/src/event.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x1b1b",
+            "0x1b2b",
+            "0x1b1b",
+            "0x1b2b"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-fr/DrawButtons.json"
+      },
+      {
+        "name": "GetBlupiInfo",
+        "symbol": "?GetBlupiInfo@CDecor@@QAEXPAH000@Z",
+        "rva": "0x5960",
+        "size": 80,
+        "tu": "games/sb2/src/decblock.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0xc",
+            "0x1a",
+            "0xc",
+            "0x1a"
+          ],
+          [
+            "0x2c",
+            "0x3e",
+            "0x2c",
+            "0x3e"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-fr/GetBlupiInfo.json"
+      },
+      {
+        "name": "IsBridge",
+        "symbol": "?IsBridge@CDecor@@QAEHUtagPOINT@@PAU2@@Z",
+        "rva": "0x147c0",
+        "size": 208,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0xc8",
+            "0x0",
+            "0xc8"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-fr/IsBridge.json"
+      },
+      {
+        "name": "IsDoor",
+        "symbol": "?IsDoor@CDecor@@QAEHUtagPOINT@@PAU2@@Z",
+        "rva": "0x14890",
+        "size": 208,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x41",
+            "0x65",
+            "0x41",
+            "0x68"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-fr/IsDoor.json"
+      },
+      {
+        "name": "IsTeleporte",
+        "symbol": "?IsTeleporte@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14960",
+        "size": 128,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x19",
+            "0x6b",
+            "0x19",
+            "0x6a"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-fr/IsTeleporte.json"
+      },
+      {
+        "name": "IsDeepWater",
+        "symbol": "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14b00",
+        "size": 80,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0x2e",
+            "0x0",
+            "0x2c"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-fr/IsDeepWater.json"
+      },
+      {
+        "name": "IsOutWater",
+        "symbol": "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14b50",
+        "size": 80,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0x31",
+            "0x0",
+            "0x2f"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-fr/IsOutWater.json"
+      },
+      {
+        "name": "BltFast",
+        "symbol": "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z",
+        "rva": "0x28e10",
+        "size": 240,
+        "tu": "games/sb2/src/pixmap.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x33",
+            "0x3f",
+            "0x33",
+            "0x3f"
+          ],
+          [
+            "0x6b",
+            "0x73",
+            "0x6b",
+            "0x73"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-fr/BltFast.json"
+      },
+      {
+        "name": "MouseBackDraw",
+        "symbol": "?MouseBackDraw@CPixmap@@QAEXXZ",
+        "rva": "0x29f30",
+        "size": 272,
+        "tu": "games/sb2/src/pixmap.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0x8b",
+            "0x91",
+            "0x8b",
+            "0x90"
+          ],
+          [
+            "0xc3",
+            "0xc9",
+            "0xc2",
+            "0xc7"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-blupi-fr/MouseBackDraw.json"
+      }
+    ],
+    "sb2/eggbert/en": [
+      {
+        "name": "IsWorld",
+        "symbol": "?IsWorld@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14090",
+        "size": 272,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0x59",
+            "0x0",
+            "0x5b"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-eggbert-en/IsWorld.json"
+      },
+      {
+        "name": "IsDeepWater",
+        "symbol": "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14b10",
+        "size": 80,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x0",
+            "0x2e",
+            "0x0",
+            "0x2c"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-eggbert-en/IsDeepWater.json"
+      },
+      {
+        "name": "IsMoveTraj",
+        "symbol": "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14de0",
+        "size": 112,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x3a",
+            "0x64",
+            "0x3a",
+            "0x62"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-eggbert-en/IsMoveTraj.json"
+      },
+      {
+        "name": "IsVentillo",
+        "symbol": "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z",
+        "rva": "0x14f40",
+        "size": 496,
+        "tu": "games/sb2/src/decblupi.cpp",
+        "returns_value": true,
+        "regions": [
+          [
+            "0x47",
+            "0x6d",
+            "0x47",
+            "0x6b"
+          ],
+          [
+            "0x174",
+            "0x1a6",
+            "0x172",
+            "0x1a4"
+          ]
+        ],
+        "certificate": "evidence/equivalence/sb2-eggbert-en/IsVentillo.json"
+      },
+      {
+        "name": "MoveObjectSort",
+        "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+        "rva": "0x19920",
+        "size": 240,
+        "tu": "games/sb2/src/decmove.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0x80",
+            "0xa0",
+            "0x80",
+            "0xa0"
+          ]
+        ],
+        "pure_callee": "?SortGetType@@YAHH@Z",
+        "certificate": "evidence/equivalence/sb2-eggbert-en/MoveObjectSort.json"
+      }
+    ]
+  }
 }

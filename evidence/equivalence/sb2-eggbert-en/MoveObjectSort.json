@@ -1,0 +1,121 @@
+{
+  "schema": 1,
+  "status": "EQUIVALENT",
+  "target": "sb2/eggbert/en",
+  "declaration": {
+    "name": "MoveObjectSort",
+    "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+    "rva": "0x19920",
+    "size": 240,
+    "tu": "games/sb2/src/decmove.cpp",
+    "returns_value": false,
+    "regions": [
+      [
+        "0x80",
+        "0xa0",
+        "0x80",
+        "0xa0"
+      ]
+    ],
+    "pure_callee": "?SortGetType@@YAHH@Z",
+    "certificate": "evidence/equivalence/sb2-eggbert-en/MoveObjectSort.json"
+  },
+  "scope": "static-local-equivalence",
+  "assumptions": [
+    "Memory accessed by either body is valid ordinary RAM, stable during each proof region; no MMIO, concurrency or asynchronous register/flags observation.",
+    "The active callee stack frame is disjoint from pointed-to objects and outputs; distinct fields of an output POINT do not overlap.",
+    "Calls follow the declared x86 ABI (stack arguments and ECX this); arithmetic flags and other scratch registers are not hidden arguments or return values.",
+    "Equivalence covers defined memory effects, branch outcomes, ABI-preserved registers and declared return values. Calls retain their targets/arguments except for the separately proved pure SortGetType call commutation; timing, pure-helper invocation order and dead stack spills are excluded.",
+    "Relocation checks establish symbol/data identity under the comparator binding model; they do not assert equivalence of otherwise unmatched callees."
+  ],
+  "payload_sha256": "084d9ac33a911363e80ad02e6d86851b8d17eedf41df1f3fb8555214f78553a7",
+  "oracle_sha256": "e6b2ac0ca8624d2b2fb483c8d96c9aadfa4ab5ccea4d39aa8f75ef7f465d7d8d",
+  "oracle_function_sha256": "b7348d7c64ba37404ee5720f7ef237adc691a326aa0fd7fd65d31f2ffce02a2a",
+  "checker_sha256": "4a0099a667d18763c6ba7ac22e7a7afdc237fd14463d7b145addfe1771d6aad1",
+  "comparator_sha256": "e5f128d8f4fed1aba7371f03397a154f76b3d2d72b8dee874b167bff83bf2323",
+  "comparator_wrapper_sha256": "ae663881d257785e3f7f6729080c0982e5b25034cd870988bfa2330d3b5ef2dc",
+  "capstone_version": "5.0.3",
+  "crt_library_sha256": "3b5f43e920c37c8da086b0d3ef0396e6517d44fcdcb4e7d03a6058620bc13ee3",
+  "inventory_sha256": {
+    "functions.csv": "bc0fe28fb064732585acec74afec6cdb13a2e62013346f2eff2b5b60cb548df5",
+    "tu_map.csv": "547034ed5dde1d33cef336fa78b82ec47b231dd9f66b8173e6372cd9e3c2a7cd"
+  },
+  "crt_target_identity": {},
+  "checks": {
+    "regions": [
+      {
+        "object_window": [
+          "0x80",
+          "0xa0"
+        ],
+        "oracle_window": [
+          "0x80",
+          "0xa0"
+        ],
+        "boolean_atoms": 0,
+        "exhaustive_boolean_assignments": 1,
+        "symbolic_outcomes_sha256": "7ea6d4bfe3ea06c33ef56cd5f0160c97e1252fd6e231c3de0296876ad8c3962d"
+      }
+    ],
+    "nonrelocation_differences": [
+      [
+        "0x82",
+        67,
+        3
+      ],
+      [
+        "0x83",
+        208,
+        80
+      ],
+      [
+        "0x87",
+        80,
+        232
+      ],
+      [
+        "0x88",
+        232,
+        68
+      ],
+      [
+        "0x8c",
+        0,
+        15
+      ],
+      [
+        "0x8d",
+        15,
+        191
+      ],
+      [
+        "0x8e",
+        191,
+        77
+      ],
+      [
+        "0x8f",
+        11,
+        0
+      ],
+      [
+        "0x9f",
+        248,
+        199
+      ]
+    ],
+    "differing_bytes": 9,
+    "outside_region_instructions_checked": 72,
+    "object_padding_bytes": 6,
+    "oracle_padding_bytes": 6,
+    "pure_callee_identity": {
+      "symbol": "?SortGetType@@YAHH@Z",
+      "rva": "0x198f0",
+      "size": 48,
+      "body_sha256": "9f5d65e9ebc237a882e0836007a59de95f26e370b1aab1aca7def842c1506868",
+      "theorem": "F(x)=1 for x in {2,3,96,97}; F(12)=2; F(x)=3 otherwise. Total, read-only stack argument, no external effects."
+    },
+    "verified_relocations": 2,
+    "relocations_sha256": "056472295b48c9f8fae0d5d5c421b4206ada87f95b8924e5fb999396eb113ac8"
+  }
+}

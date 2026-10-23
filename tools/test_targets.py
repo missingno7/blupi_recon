@@ -7,13 +7,14 @@ from dataclasses import replace
 import io
 import json
 from pathlib import Path
-import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
 import target_coverage
 import targets
 import verify
+import equivalence_target as equiv
 
 
 class TargetAcceptanceTests(unittest.TestCase):
@@ -70,15 +71,16 @@ class TargetAcceptanceTests(unittest.TestCase):
                     dict(accepted_functions=[accepted]), {proof['tu']: [function]})), 1)
 
     def test_coverage_applies_location_size_and_exclusion_overrides(self):
-        temp_root = targets.ROOT / 'build' / 'tmp'
-        temp_root.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(dir=temp_root, prefix='target-test-') as folder:
-            manifest_path = Path(folder) / 'manifest.json'
-            manifest_path.write_text(json.dumps(dict(
+        manifest_path = targets.ROOT / 'build' / 'w-equiv-coverage-test.json'
+        contents = json.dumps(dict(
                 toolchain={}, translation_units=[], accepted_functions=[
                     dict(symbol='retained', rva='0x1000', size=16, tu='game.cpp'),
                     dict(symbol='excluded', rva='0x1040', size=16, tu='game.cpp')
-                ])), encoding='utf-8')
+                ]))
+        original_read = Path.read_text
+        def read(path, *args, **kwargs):
+            return contents if path == manifest_path else original_read(path, *args, **kwargs)
+        with patch.object(Path, 'read_text', read):
             target = replace(self.blupi, manifest_path=manifest_path, address_map=None,
                              game_text_end=0x1100, accepted_functions=[], accepted_overrides={
                                  'retained': dict(rva='0x10f0', size=32),
@@ -90,6 +92,89 @@ class TargetAcceptanceTests(unittest.TestCase):
             total = next(line.split() for line in output.getvalue().splitlines()
                          if line.strip().startswith('total'))
             self.assertEqual(total, ['total', '1', 'STRICT', '0', 'FOLDED', '16', 'bytes', '(6.2%)'])
+
+
+class TargetEquivalenceTests(unittest.TestCase):
+    def test_declarations_are_target_local_and_keep_absolute_rvas(self):
+        for name in targets.names():
+            target = targets.load(name)
+            entries = equiv.declarations(target, target.manifest())
+            if name.startswith('sb1/'):
+                self.assertEqual(entries, [])
+                continue
+            expected = 5 if name == 'sb2/eggbert/en' else 9
+            self.assertEqual(len(entries), expected)
+            self.assertTrue(all(target.slug in e['certificate'] for e in entries))
+            # Translation never applies to the namespaced target records.
+            translated = replace(target, address_map={
+                'code': [['0x400000', '0x500000', 0x10000]], 'data': []})
+            self.assertEqual(equiv.declarations(translated, translated.manifest()), entries)
+
+    def test_equivalent_cannot_satisfy_strict_acceptance(self):
+        entry = equiv.declarations(targets.load('sb2/blupi/en'), targets.load('sb2/blupi/en').manifest())[0]
+        for status in ('MISMATCH', 'EQUIVALENT'):
+            row = dict(name=entry['symbol'], status=status, code_size=entry['size'], matches=[dict(rva=entry['rva'])])
+            self.assertEqual(len(verify.accepted_regressions(
+                dict(accepted_functions=[entry]), {entry['tu']: [row]})), 1)
+
+    def test_coverage_keeps_strict_line_identical(self):
+        target = targets.load('sb2/blupi/en')
+        lines = []
+        for present in (False, True):
+            manifest = target.manifest()
+            if not present:
+                manifest.pop('target_equivalent_functions')
+            output = io.StringIO()
+            with patch.object(targets, 'load', return_value=target), \
+                    patch.object(target, 'manifest', return_value=manifest), \
+                    patch('sys.argv', ['target_coverage.py']), redirect_stdout(output):
+                self.assertEqual(target_coverage.main(), 0)
+            lines.append(output.getvalue().splitlines())
+        self.assertEqual(lines[0], lines[1][:-1])
+        self.assertIn('9 functions', lines[1][-1])
+        self.assertIn('8,944 bytes', lines[1][-1])
+
+    @staticmethod
+    def function(payload):
+        return SimpleNamespace(data=bytes.fromhex(payload), relocs=[], start=0)
+
+    def test_address_associativity_and_dead_scratch_register(self):
+        # (ECX + EDX) - EBX == (ECX - EBX) + EDX modulo 2**32.
+        a = self.function('8d0411 2bc3 c3')
+        b = bytes.fromhex('2bcb 8d0411 c3')
+        _, receipt = equiv.structure(a, b, [(0,5,0,5)], True)
+        self.assertEqual(receipt['regions'][0]['exhaustive_boolean_assignments'], 1)
+
+    def test_live_scratch_register_difference_fails(self):
+        a = self.function('8d0411 2bc3 51 58 c3')
+        b = bytes.fromhex('2bcb 8d0411 51 58 c3')
+        with self.assertRaisesRegex(ValueError, 'unequal symbolic effects'):
+            equiv.structure(a, b, [(0,5,0,5)], True)
+
+    def test_live_flags_difference_fails(self):
+        a = self.function('8d0411 2bc3 7400 c3')
+        b = bytes.fromhex('2bcb 8d0411 7400 c3')
+        with self.assertRaisesRegex(ValueError, 'unequal symbolic effects'):
+            equiv.structure(a, b, [(0,5,0,5)], True)
+
+    def test_region_boundaries_and_unproved_instructions_fail(self):
+        a = self.function('8d0411 2bc3 c3')
+        with self.assertRaisesRegex(ValueError, 'non-instruction boundary'):
+            equiv.structure(a, a.data, [(1,5,1,5)], True)
+        with self.assertRaisesRegex(ValueError, 'opcode|instruction count'):
+            equiv.structure(a, bytes.fromhex('8d0411 2bc3 90 c3'), [(0,5,0,5)], True)
+
+    def test_reordered_outputs_require_disjoint_fields(self):
+        pointer = ('input', 'pointer')
+        writes = [(pointer,4,1), (equiv.add((pointer,1),(4,1)),4,2)]
+        self.assertEqual(equiv.disjoint_writes(writes), equiv.disjoint_writes(list(reversed(writes))))
+        with self.assertRaisesRegex(ValueError, 'non-alias proof'):
+            equiv.disjoint_writes([(pointer,4,1), (equiv.add((pointer,1),(2,1)),4,2)])
+
+    def test_unknown_or_impure_calls_are_rejected(self):
+        a = self.function('e800000000 c3')
+        with self.assertRaisesRegex(ValueError, 'purity theorem'):
+            equiv.structure(a, a.data, [(0,5,0,5)], True)
 
 
 if __name__ == '__main__':
