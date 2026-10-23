@@ -304,10 +304,7 @@ BOOL CPixmap::Flush()
 	return TRUE;
 }
 
-BOOL CPixmap::GetTrueColorBack()
-{
-	return m_bTrueColorBack;
-}
+
 
 BOOL CPixmap::GetTrueColorDecor()
 {
@@ -345,6 +342,11 @@ BOOL CPixmap::InitSysPalette()
 }
 
 // Indique si l'on utilise une palette.
+
+BOOL CPixmap::GetTrueColorBack()
+{
+	return m_bTrueColorBack;
+}
 
 BOOL CPixmap::IsPalette()
 {
@@ -612,6 +614,29 @@ int CPixmap::SearchColor(int red, int green, int blue)
 
 
 // Cache une image contenant des icônes.
+
+BOOL CPixmap::BackgroundCache(int channel, char* pFilename, POINT totalDim, POINT iconDim, BOOL bUsePalette)
+{	
+	BOOL decor;
+	char file[100];
+
+	decor = strstr(pFilename, "blupi") != pFilename &&
+		strstr(pFilename, "element") != pFilename &&
+		strstr(pFilename, "explo") != pFilename &&
+		strstr(pFilename, "object") != pFilename;
+	if (!bUsePalette && ((decor && m_bTrueColorBack) || (!decor && m_bTrueColorDecor)))
+	{
+		strcpy(file, "image16\\");
+		strcat(file, pFilename);
+		if (Cache(channel, file, totalDim, iconDim, FALSE))
+		{
+			return TRUE;
+		}
+	}
+	strcpy(file, "image08\\");
+	strcat(file, pFilename);
+	return Cache(channel, file, totalDim, iconDim, bUsePalette);
+}
 
 BOOL CPixmap::Cache(int channel, char *pFilename, POINT totalDim, POINT iconDim,
 					BOOL bUsePalette)
@@ -1586,28 +1611,7 @@ int CPixmap::Benchmark()
 	return time;
 }
 
-BOOL CPixmap::BackgroundCache(int channel, char* pFilename, POINT totalDim, POINT iconDim, BOOL bUsePalette)
-{	
-	BOOL decor;
-	char file[100];
 
-	decor = strstr(pFilename, "blupi") != pFilename &&
-		strstr(pFilename, "element") != pFilename &&
-		strstr(pFilename, "explo") != pFilename &&
-		strstr(pFilename, "object") != pFilename;
-	if (!bUsePalette && ((decor && m_bTrueColorBack) || (!decor && m_bTrueColorDecor)))
-	{
-		strcpy(file, "image16\\");
-		strcat(file, pFilename);
-		if (Cache(channel, file, totalDim, iconDim, FALSE))
-		{
-			return TRUE;
-		}
-	}
-	strcpy(file, "image08\\");
-	strcat(file, pFilename);
-	return Cache(channel, file, totalDim, iconDim, bUsePalette);
-}
 
 void CPixmap::SetBenchmarkSuccess(BOOL bSuccess)
 {
