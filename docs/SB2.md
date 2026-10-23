@@ -259,6 +259,47 @@ does not; that candidate stays in `scratch/w-step2` and the tree keeps the 9,187
 variants (nested guards, conditional snapshots, comma assignments) are inert or worse
 (`scratch/w-step2/REPORT.md`).
 
+[EVIDENCE] Round 5 (`scratch/w-ctxprofile/REPORT.md`): three body respellings after `IsOutWater` (a
+`POINT cel` in IsOutWater, pointer loops in the two trajectory flushers; +1/+2/+2 entities) make
+`SetMoveTraj` and `IsMoveTraj` STRICT on Eggbert 2 with every other function kept (192 bytes). Not
+integrated: the flusher forms change nothing but the entity count, and Blupi 2 loses `IsMoveTraj`. On
+Blupi 2 (RTM tools, below) `SetBalleTraj` and `SetMoveTraj` have the same decisive comparator sign at
+every uniform shift in ±4096 while needing opposite choices, so a positional difference between them
+is required in the 2001 source.
+
+[EVIDENCE] VC5 RTM's c2 uses the same key and hash algebra as SP3 (`scratch/w-rtmtrace/REPORT.md`:
+address table, 4,539 hash and 884 comparator calls observed live, zero mispredictions). Blupi 2's ten
+operand-order residues are each removed by a diagnostic uniform shift per TU (decblock +65, pixmap +32,
+event +28, decblupi positional +92/+96/+101/+112); `ChangePhase`'s residue is register allocation and
+no comparator choice changes it.
+
+### DirectX header environment (round 5)
+
+[EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten
+DirectPlay GUIDs that DX5's `dplay.h` defines under `INITGUID`, in header order, and neither has
+IID_IDirectPlay4/4A, which DX6, 6.1 and 7 define unconditionally: **both editions used DX5's `dplay.h`**.
+`CreateSoundBuffer` passes a 0x24-byte DSBUFFERDESC in Eggbert 2 (DX7 `dsound.h`, `guid3DAlgorithm`) and
+0x14 in Blupi 2 (DX5/6/6.1, or DX7 with `DIRECTSOUND_VERSION` < 0x700); Eggbert 2 logs line 64, Blupi 2
+line 63 (ours: 63). DDSURFACEDESC, DPSESSIONDESC2, DPNAME and the joystick structures have the same size
+in every SDK. Neither imports DirectInput.
+
+[EVIDENCE] Front-end entities per header, relative to DX5, in a game-logic TU: `ddraw.h` +385 (DX6) /
++690 (DX7), `d3dtypes.h` +138 / +257, `dplay.h` +270 / +270, `dsound.h` 0 / +12; `decor.h` pulls
+sound.h, pixmap.h and network.h, so every game-logic TU sees all of them. Full verifier runs with a scratch
+include override (`scratch/sb2/sdkverify.py`, 26 runs in `scratch/w-sdkenv/suite.json`, gains/losses by
+`scratch/sb2/gainloss.py`):
+- No SDK, `DIRECTDRAW_VERSION`, `DIRECT3D_VERSION`, `DIRECTSOUND_VERSION` or `D3D_OVERLOADS` setting keeps
+  every STRICT function of either target. DX5 stays the reproducing configuration of both.
+- Blupi 2 with DX7 `ddraw.h` over DX5: +8,864 bytes (DrawButtons, BltFast, MouseBackDraw, IsBridge,
+  IsDoor, IsTeleporte, IsDeepWater, IsOutWater), −2,336 (QuickIcon, MouseMove, CreateSoundBuffer, eight
+  decblupi predicates). Whole DX7 is similar. [HYPOTHESIS] Blupi 2's remaining residues are a different
+  entity count before these functions (2001 headers or bodies), which DX7's `ddraw.h` happens to
+  approximate; the GUID table rules out a whole DX6/DX7 SDK with the current `network.cpp`.
+- Eggbert 2 with DX7 `dsound.h` over DX5 (the only combination consistent with all of its data): −272
+  bytes (GetBlupiInfo, SetBalleTraj, IsBalleTraj), +80 (SetMoveTraj); `CreateSoundBuffer` then differs
+  only by its line (63 vs 64). [OPEN] Eggbert 2's extra line before line 64 of sound.cpp; adopting this
+  environment needs genuine context for the three functions first.
+
 ## 9. Tools and limitations
 
 - `verify.py`: `source_root`, own-manifest `--accept`, folded owners in the game's tree.
@@ -295,5 +336,8 @@ shared engine source file would need per-game headers anyway. Revisit when SB2's
    bodies (0x28100, 0x28cf0, 0x28d00), `GetDoors(short*)` → `BYTE*`.
 4. [HYPOTHESIS] SB2's ChangePhase/TreatEventBase became STRICT with SB2's authentic forms where SB1's
    stayed EQUIVALENT; SB1's two residues may deserve a look with the same approach (SB1 work, not SB2).
-5. `sb2/blupi/en`: the nine RTM context residues above (about 15 KB with `DrawButtons` and
-   `ChangePhase`); a c2trace calibration for VC5 RTM's c2.exe would let `ctxwindows.py` measure them.
+5. `sb2/blupi/en`: the nine RTM context residues (about 15 KB with `DrawButtons` and `ChangePhase`):
+   genuine 2001 declaration/body differences at the measured positions (section 8); `ChangePhase` needs
+   an allocation trace.
+6. Eggbert 2's header environment: DX5 plus DX7 `dsound.h` is what its data says (section 8); it needs
+   genuine context for GetBlupiInfo/SetBalleTraj/IsBalleTraj and the source of line 64 in sound.cpp.

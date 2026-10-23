@@ -1,20 +1,23 @@
-"""Minimal WOW64 debugger that runs MSVC 5.0 SP3 c2.exe (pass 2) on captured IL files and traces its temp-register
-assignment. Toolchain analysis only: nothing on disk is modified and the traced run writes a normal object file.
+"""Bounded WOW64 replay of pinned VC5 SP3 or RTM C2 on captured IL.
 
-Known c2.exe SP3 addresses (docs/COMPILER_STUDY.md, round 4):
-  0x42a918  just after the per-function rotor reset (one hit per compiled function)
-  0x435c37  assign(temp=ecx, tuple=edx): gives a temp its register (preference, rotor, first free)
-  0x435f38  set(reg=ecx, lr=edx): records the chosen register
-  0x491120  rotor pointer into the register list at 0x491100 (eax, ecx, edx)
+SP3 rotor/scratch APIs remain calibrated only for SP3; RTM supports expression
+windows. Breakpoints are the only mutations in observer runs. Children are reaped.
 """
-import ctypes, ctypes.wintypes as W, shutil
+import ctypes, ctypes.wintypes as W, shutil, time, hashlib, json
 from pathlib import Path
 
 K = ctypes.WinDLL("kernel32", use_last_error=True)
-C2 = r"C:\tools\msvc5_sp3\VC\BIN\c2.exe"
+import profiles
+C2 = str(profiles.get().c2)
+C2_SHA256 = profiles.get().sha256
 ROOT = Path(__file__).resolve().parents[2]
 FUNC_MARK, ASSIGN, SET = 0x42a918, 0x435c37, 0x435f38
 ROTOR, ROTOR_LIST, ROTOR_FLAG = 0x491120, 0x491100, 0x48fb60
+
+def apply_profile(profile):
+    global C2, C2_SHA256
+    C2, C2_SHA256 = str(profile.c2), profile.sha256
+
 REG = {1: "eax", 2: "ecx", 3: "edx", 4: "ebx", 5: "esp", 6: "ebp", 7: "esi", 8: "edi"}
 
 
@@ -62,6 +65,11 @@ for _name, _res, _args in [
         ("CloseHandle", W.BOOL, [W.HANDLE])]:
     getattr(K, _name).restype, getattr(K, _name).argtypes = _res, _args
 
+K.TerminateProcess.argtypes = [W.HANDLE, W.UINT]
+K.WaitForSingleObject.argtypes = [W.HANDLE, W.DWORD]
+K.DebugActiveProcessStop.argtypes = [W.DWORD]
+K.GetExitCodeProcess.argtypes = [W.HANDLE, ctypes.POINTER(W.DWORD)]
+
 DBG_CONTINUE, DBG_NOT_HANDLED = 0x00010002, 0x80010001
 WATCH_RW = False  # True: hardware watchpoints trigger on reads as well as writes
 BP_CODES = {0x80000003, 0x4000001F}   # native / WOW64 breakpoint
@@ -103,6 +111,12 @@ def run(capdir: Path, breakpoints, on_hit, watch=(), on_watch=None):
     """Run c2.exe on the IL captured in CAPDIR (flags.txt + IL files). ON_HIT(proc, ctx, addr) runs at each software
     breakpoint before the instruction executes (it may change memory); WATCH lists up to four addresses for 4-byte
     hardware write watchpoints, reported through ON_WATCH(proc, ctx, index). Returns the object path."""
+    if hashlib.sha256(Path(C2).read_bytes()).hexdigest() != C2_SHA256:
+        raise RuntimeError('Wrong C2: selected hook addresses are SHA-256 pinned')
+    capdir = capdir.resolve()
+    if not capdir.is_relative_to(profiles.get().work):
+        raise ValueError('Debugger work must stay in the selected compiler build directory')
+    profiles.check_capture(capdir)
     flags = (capdir / "flags.txt").read_text().strip()
     il_prefix = flags.split("-il ")[1].split()[0]
     work = capdir / "run"
@@ -111,18 +125,20 @@ def run(capdir: Path, breakpoints, on_hit, watch=(), on_watch=None):
     for f in capdir.glob(stem + "*"):
         shutil.copy(f, work / f.name)
     obj = capdir / "trace.obj"
+    obj.unlink(missing_ok=True)
+    (capdir / 'replay-receipt.json').unlink(missing_ok=True)
     parts = flags.split()
     parts[parts.index("-il") + 1] = str(work / stem)
     parts = [p if not p.startswith("-Fo") else "-Fo" + str(obj) for p in parts]
     tmp = ROOT / "build/tmp"
     tmp.mkdir(parents=True, exist_ok=True)
     env = {"MSC_CMD_FLAGS": " ".join(parts), "SystemRoot": r"C:\Windows", "TMP": str(tmp), "TEMP": str(tmp),
-           "PATH": r"C:\tools\msvc5_sp3\VC\BIN;C:\tools\msvc5_sp3\SHAREDIDE\BIN;C:\Windows\System32"}
+           "PATH": str(Path(C2).parent) + ";" + str(Path(C2).parents[2] / "SHAREDIDE/BIN") + r";C:\Windows\System32"}
     envblock = "".join(f"{k}={v}\0" for k, v in env.items()) + "\0"
     si, pi = SI(), PI()
     si.cb = ctypes.sizeof(SI)
     if not K.CreateProcessW(C2, ctypes.create_unicode_buffer(f'"{C2}"'), None, None, False,
-                            0x2 | 0x400, ctypes.create_unicode_buffer(envblock), None, ctypes.byref(si), ctypes.byref(pi)):
+                            0x2 | 0x400, ctypes.create_unicode_buffer(envblock), ctypes.create_unicode_buffer(str(work)), ctypes.byref(si), ctypes.byref(pi)):
         raise OSError(ctypes.get_last_error())
     proc = Process(pi.hProcess)
     orig, rearm, armed = proc.orig, {}, False
@@ -139,13 +155,25 @@ def run(capdir: Path, breakpoints, on_hit, watch=(), on_watch=None):
         K.Wow64SetThreadContext(ht, ctypes.byref(ctx))
         K.CloseHandle(ht)
 
+    deadline = time.monotonic() + 180
+    exited = False
     try:
         while True:
-            K.WaitForDebugEvent(ctypes.byref(ev), 0xFFFFFFFF)
+            if time.monotonic() > deadline:
+                raise TimeoutError('c2 replay exceeded 180 seconds')
+            if not K.WaitForDebugEvent(ctypes.byref(ev), 1000):
+                if ctypes.get_last_error() == 121:
+                    continue
+                raise OSError(ctypes.get_last_error())
             status = DBG_CONTINUE
             if ev.Code == 5:  # EXIT_PROCESS_DEBUG_EVENT
                 K.ContinueDebugEvent(ev.Pid, ev.Tid, DBG_CONTINUE)
+                exited = True
                 break
+            if ev.Code in (2, 3, 6):  # CREATE_THREAD hThread; CREATE_PROCESS/LOAD_DLL hFile
+                handle = ctypes.c_void_p.from_buffer(ev, 16).value
+                if handle:
+                    K.CloseHandle(handle)
             if ev.Code == 1:
                 ec, addr = ev.Exc.Code, ev.Exc.Addr or 0
                 if ec in BP_CODES and not armed:  # loader breakpoint: the image is mapped now
@@ -165,11 +193,15 @@ def run(capdir: Path, breakpoints, on_hit, watch=(), on_watch=None):
                     ht, ctx = context(ev.Tid, 0x10007)
                     ctx.Eip = addr
                     proc.wr(addr, orig[addr])
-                    on_hit(proc, ctx, addr)
+                    try:
+                        on_hit(proc, ctx, addr)
+                    except BaseException:
+                        K.CloseHandle(ht)
+                        raise
                     if addr in proc.oneshot:
                         proc.oneshot.discard(addr)
                         del orig[addr]
-                    else:
+                    elif addr in orig:
                         ctx.EFlags |= 0x100  # single-step, then re-arm
                         rearm[ev.Tid] = addr
                     commit(ht, ctx)
@@ -187,8 +219,21 @@ def run(capdir: Path, breakpoints, on_hit, watch=(), on_watch=None):
                     status = DBG_NOT_HANDLED
             K.ContinueDebugEvent(ev.Pid, ev.Tid, status)
     finally:
+        if not exited:
+            K.TerminateProcess(pi.hProcess, 1)
+            K.DebugActiveProcessStop(pi.pid)
+        if K.WaitForSingleObject(pi.hProcess, 10000) != 0:
+            raise RuntimeError('c2 child did not terminate')
+        code = W.DWORD()
+        K.GetExitCodeProcess(pi.hProcess, ctypes.byref(code))
         K.CloseHandle(pi.hThread)
         K.CloseHandle(pi.hProcess)
+    if not obj.is_file() and not code.value:
+        raise RuntimeError('c2 replay produced no object')
+    if code.value:
+        raise RuntimeError('c2 replay exited with code %d' % code.value)
+    (capdir / 'replay-receipt.json').write_text(json.dumps(dict(pid=pi.pid,c2_sha256=C2_SHA256,
+        exit_code=code.value,waited_for_exit=True,cwd=str(work),object=str(obj)),indent=2)+'\n')
     return obj
 
 
@@ -196,6 +241,7 @@ def assigns(capdir: Path, perturb=None):
     """Trace every temp assignment. Returns (functions, obj): functions is a list (compile order) of lists of dicts
     {path: 'pref'|'rotor'|'first', op, lr, reg, rotor, pref}. PERTURB=(function, assign, slots) shifts the rotor
     pointer by SLOTS just before that assignment (diagnostic only)."""
+    profiles.require_sp3('rotor assignment')
     funcs = []
 
     def hit(p, ctx, addr):
@@ -222,15 +268,16 @@ def assigns(capdir: Path, perturb=None):
     return funcs, obj
 
 
-SCRATCH = 0x42b2c4                     # pick(liveset=ecx, byteonly=edx): code-generation scratch register
+SCRATCH = 0x42b2c4
 SCRATCH_LAST, SCRATCH_N = 0x4911a8, 0x4911a4
-SCRATCH_EXITS = (0x42b3a6, 0x42b3b9)   # eax = chosen register (rotating exits)
-SCRATCH_FALLBACK = 0x46c46c            # no register found
+SCRATCH_EXITS = (0x42b3a6, 0x42b3b9)
+SCRATCH_FALLBACK = 0x46c46c
 
 
 def scratches(capdir: Path, perturb=None):
     """Trace every scratch pick. Returns (functions, obj); per function a list of dicts {last, n, byte, reg}.
     PERTURB=(function, pick, slots) shifts the last-pick index by SLOTS before that pick (diagnostic only)."""
+    profiles.require_sp3('scratch picker')
     funcs = []
 
     def hit(p, ctx, addr):

@@ -1,4 +1,7 @@
-"""c2trace: trace MSVC 5.0 SP3 c2.exe temp-register assignment for one function (diagnostic only, never a match).
+"""c2trace: trace pinned MSVC 5.0 SP3/RTM c2.exe temp-register assignment for one function (diagnostic only, never a match).
+
+  Common options: --compiler {sp3,rtm} --target GAME/EDITION/LANGUAGE
+  Rotor diagnostics remain SP3 only.
 
   c2trace.py build-stub                         build the /B2 pass-2 stand-in (VC6 tree) into build/c2trace/stub
   c2trace.py capture NAME src/X.cpp[=cand.cpp]  compile a recon TU (recon.json settings) and keep its c2 input
@@ -11,7 +14,8 @@
 The rotor model and the c2.exe addresses are documented in docs/COMPILER_STUDY.md (round 4). Captures live in
 build/c2trace/cap/NAME. SYMBOL is a substring of the decorated name. Run one command at a time (host safety).
 """
-import json, shutil, subprocess, sys
+import argparse, json, shutil, subprocess, sys
+import profiles
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -26,49 +30,80 @@ PY = sys.executable
 VC6 = Path(r"C:\tools\msvc6_rtm")
 
 
+def configure(compiler=None, target=None):
+    global WORK, STUB
+    profile = profiles.configure(compiler, target)
+    c2dbg.apply_profile(profile)
+    WORK, STUB = profile.work, profile.work / 'stub/c2stub.exe'
+    return profile
+
+
 def build_stub():
     (WORK / "stub").mkdir(parents=True, exist_ok=True)
     obj = WORK / "stub" / "c2stub.obj"
     subprocess.run([PY, str(ROOT / "tools/msvc.py"), str(HERE / "c2stub.c"), "--tree", "vc6", "--out", str(obj),
-                    "--log-dir", str(WORK / "stub/logs"), "--flag", "/O1"], check=True)
+                    "--log-dir", str(WORK / "stub/logs"), "--flag", "/O1", "--define", 'C2_DEFAULT_PATH="' + str(profiles.get().c2).replace('\\', '/').replace('"', '') + '"'], check=True)
     env = {"PATH": f"{VC6 / 'COMMON/MSDEV98/BIN'};{VC6 / 'VC98/BIN'};C:\\Windows\\System32",
-           "LIB": str(VC6 / "VC98/LIB"), "SystemRoot": r"C:\Windows"}
+           "LIB": str(VC6 / "VC98/LIB"), "SystemRoot": r"C:\Windows",
+           "TMP": str(ROOT / "build/tmp"), "TEMP": str(ROOT / "build/tmp")}
     subprocess.run([str(VC6 / "VC98/BIN/LINK.EXE"), "/nologo", "/subsystem:console", f"/out:{STUB}", str(obj),
                     "kernel32.lib"], check=True, env=env, cwd=str(WORK / "stub"))
+    profiles.stamp(STUB.parent)
     print(STUB)
+
+
+def capture_dir(name, kind='cap'):
+    cap = (WORK / kind / name).resolve()
+    if not cap.is_relative_to((WORK / kind).resolve()) or cap == (WORK / kind).resolve():
+        raise ValueError('Capture must be below the compiler work directory')
+    return cap
 
 
 def _keep(name):
     il = STUB.parent / "il"
-    cap = WORK / "cap" / name
+    cap = capture_dir(name)
     shutil.rmtree(cap, ignore_errors=True)
     shutil.copytree(il, cap)
+    profiles.stamp(cap)
     print(cap)
 
 
 def _fresh_il():
     if not STUB.is_file():
         sys.exit("run `c2trace.py build-stub` first")
-    il = STUB.parent / "il"
+    profiles.get().verify()
+    profiles.check_capture(STUB.parent, check_target=False)
+    il = (STUB.parent / "il").resolve()
+    if not il.is_relative_to(WORK.resolve()):
+        raise ValueError("IL directory outside compiler work directory")
     shutil.rmtree(il, ignore_errors=True)
     il.mkdir()
 
 
 def capture(name, unit):
     _fresh_il()
-    r = subprocess.run([PY, str(ROOT / "tools/fnprobe.py"), unit, "?", "0x1000", "--name", "c2trace",
-                        "--extra-flag=/B2" + str(STUB)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    import fnprobe
+    fnprobe.TARGET = profiles.target()
+    fnprobe.EXE = fnprobe.TARGET.exe if fnprobe.TARGET else ROOT / 'assets/Speedy Blupi/BLUPI.EXE'
+    canonical, _, candidate = unit.partition('=')
+    canonical = canonical.replace('\\', '/')
+    source = (ROOT / (candidate or canonical)).resolve()
+    folder = WORK / 'capture'
+    folder.mkdir(parents=True, exist_ok=True)
+    fnprobe.compile_unit(canonical, source, folder, ['/B2' + str(STUB)], tree=profiles.get().name)
     if not (STUB.parent / "il" / "flags.txt").is_file():
-        sys.exit(r.stdout[-1500:])
+        sys.exit("C2 stub did not capture flags")
     _keep(name)
 
 
 def capture_micro(name, src):
     _fresh_il()
-    cmd = [PY, str(ROOT / "tools/msvc.py"), src, "--tree", "sp3", "--out", str(WORK / f"{name}.obj"),
+    cmd = [PY, str(ROOT / "tools/msvc.py"), src, "--tree", profiles.get().name, "--out", str(WORK / f"{name}.obj"),
            "--log-dir", str(WORK / "logs")]
     for f in ["/W3", "/GX", "/O2", "/ML", "/Gd", "/Gy", "/B2" + str(STUB)]:
         cmd += ["--flag", f]
+    for d in profiles.target().defines if profiles.target() else []:
+        cmd += ['--define',d]
     subprocess.run(cmd, check=True)
     _keep(name)
 
@@ -159,7 +194,13 @@ def main(argv):
     if not argv or argv[0] in ("-h", "--help"):
         print(__doc__)
         return
+    parser = argparse.ArgumentParser(add_help=False)
+    profiles.add_arguments(parser)
+    options, argv = parser.parse_known_args(argv)
+    configure(options.compiler, options.target)
     cmd, args = argv[0], argv[1:]
+    if cmd in ('assigns', 'shift', 'map'):
+        profiles.require_sp3(cmd)
     if cmd == "build-stub":
         build_stub()
     elif cmd == "capture":

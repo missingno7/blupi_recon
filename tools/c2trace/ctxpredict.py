@@ -1,4 +1,4 @@
-"""Predict VC5 SP3 expression-order windows from ONE diagnostic IL capture.
+"""Predict VC5 SP3/RTM expression-order windows from ONE diagnostic IL capture.
 
 Examples (run with the repo's .pyenv/python.exe):
   tools/c2trace/ctxpredict.py src/decmove.cpp MoveObjectSort
@@ -12,7 +12,13 @@ explicit context; all generated files stay in this repository.
 """
 from pathlib import Path
 import argparse,hashlib,json,os,subprocess,sys
-from hashmodel import fold,hash16
+from hashmodel import fold
+import hashmodel, profiles, c2trace
+LEGACY_MODEL = False
+
+def hash16(t,delta=0):
+    return hashmodel.hash16(t,delta,legacy=LEGACY_MODEL)
+
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
@@ -43,18 +49,20 @@ def bounds(x,n,limit):
     return dict(lo=lo,hi=hi,left=n-lo,right=hi-n,
                 left_censored=lo==floor,right_censored=hi==limit)
 
-def decisions(data,func,delta=0,limit=1024):
+def decisions(data,func,delta=0,limit=1024,main_only=False):
     found={}
     for i,x in enumerate(data):
         if func not in x['function']:continue
-        if x['caller']!='0x4058e1':continue
+        # RTM BltFast's residue occurs only in the merge-sort comparator.
+        # The SP3 tool's direct-swap-only filter would miss it entirely.
+        if (main_only or LEGACY_MODEL) and x['caller']!=hex(profiles.get().swap_return):continue
         a,b=x['left'],x['right']
         if (a['key']>>16)!=(b['key']>>16) or not a['key'] or not b['key']:continue
         symbols=sorted({(s['id'],s['name']) for s in leaves(a)+leaves(b)})
         if not symbols:continue
         if all(comparison(x,n)==comparison(x,delta) for n in range(-limit,limit+1)):continue
         # Retain different phases even when symbol dependencies coincide.
-        sig=(tuple(symbols),a['key']>>16,a['key']^b['key'],hash16(a),hash16(b))
+        sig=((None if LEGACY_MODEL else x['caller']),tuple(symbols),a['key']>>16,a['key']^b['key'],hash16(a),hash16(b))
         if sig in found:continue
         found[sig]=dict(trace_index=i,function=x['function'],caller=x['caller'],
             symbols=[dict(id=n,name=s,shifted_id=n+delta) for n,s in symbols],
@@ -65,38 +73,44 @@ def decisions(data,func,delta=0,limit=1024):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__,formatter_class=argparse.RawDescriptionHelpFormatter)
+    profiles.add_arguments(p)
+    p.add_argument('--legacy-model',action='store_true',help='old direct-swap-only, recursive-child model for comparison')
     p.add_argument('tu');p.add_argument('function');p.add_argument('--capture')
     p.add_argument('--micro',action='store_true');p.add_argument('--sdk',default='dx5sdk')
     p.add_argument('--include',action='append',default=[])
     p.add_argument('--flag',action='append',default=[]);p.add_argument('--define',action='append',default=[])
     p.add_argument('--delta',type=int,default=0);p.add_argument('--radius',type=int,default=1024)
     p.add_argument('--json',type=Path);a=p.parse_args()
+    global LEGACY_MODEL
+    LEGACY_MODEL=a.legacy_model
+    profile=c2trace.configure(a.compiler,a.target)
     name=a.capture or 'sympredict-'+hashlib.sha256((a.tu+'|'+a.function).encode()).hexdigest()[:12]
     if not a.capture:
         if a.micro:
-            sys.path.insert(0,str(ROOT/'tools/c2trace'));import c2trace
+            sys.path.insert(0,str(ROOT/'tools/c2trace'))
             c2trace._fresh_il()
             src=Path(a.tu).resolve()
-            cmd=[sys.executable,str(ROOT/'tools/msvc.py'),str(src),'--out',str(ROOT/'build/c2trace/predict'/('predict-'+name+'.obj')),
-                 '--log-dir',str(ROOT/'build/c2trace/predict/logs'),'--include',str(src.parent),'--include',str(Path('C:/tools')/a.sdk/'INCLUDE')]
+            cmd=[sys.executable,str(ROOT/'tools/msvc.py'),str(src),'--tree',profile.name,'--out',str(profile.work/'predict'/('predict-'+name+'.obj')),
+                 '--log-dir',str(profile.work/'predict/logs'),'--include',str(src.parent),'--include',str(Path('C:/tools')/a.sdk/'INCLUDE')]
             for i in a.include:cmd+=['--include',i]
             for f in ['/W3','/GX','/O2','/ML','/Gd','/Gy','/B2'+str(c2trace.STUB)]+a.flag:cmd+=['--flag',f]
-            for d in a.define:cmd+=['--define',d]
+            for d in ((profiles.target().defines if profiles.target() else [])+a.define):cmd+=['--define',d]
             subprocess.run(cmd,check=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
             c2trace._keep(name)
         else:
-            subprocess.run([sys.executable,str(ROOT/'tools/c2trace/c2trace.py'),'capture',name,a.tu],check=True)
-    trace=ROOT/'build/c2trace/order'/(name+'-order.json')
+            subprocess.run([sys.executable,str(ROOT/'tools/c2trace/c2trace.py'),'capture',name,a.tu]+profiles.cli_args(),check=True)
+    trace=profile.work/'order'/(name+'-order.json')
     if not trace.exists() or not a.capture:
         env=os.environ.copy();env['SYMNUM_FUNCTION']=a.function
-        subprocess.run([sys.executable,str(HERE/'trace_order.py'),name],check=True,env=env)
+        subprocess.run([sys.executable,str(HERE/'trace_order.py'),name]+profiles.cli_args(),check=True,env=env)
     data=json.loads(trace.read_text())
-    meta=ROOT/'build/c2trace/order'/(name+'-functions.json')
+    meta=profile.work/'order'/(name+'-functions.json')
     functions=json.loads(meta.read_text()) if meta.exists() else {x['function']:{} for x in data}
     functions={k:v for k,v in functions.items() if a.function in k}
     if not functions:raise SystemExit('Requested function was not observed; check its name and emission/inlining.')
     rows=decisions(data,a.function,a.delta,a.radius)
-    cap=ROOT/'build/c2trace/cap'/name
+    cap=profile.work/'cap'/name
+    profiles.check_capture(cap)
     gl=next(cap.glob('*gl')).read_bytes()
     # Record 0x11: version/mode fields then the raw next front-end number.
     fe_end=int.from_bytes(gl[7:11],'little') if gl[:1]==b'\x11' else None
@@ -108,7 +122,7 @@ def main():
             for r in f.relocs:
                 s=coff.sym_by_index[r.symbol_index].name
                 if '$S'in s:static_symbols[s]=int(s.rsplit('$S',1)[1])
-    result=dict(tu=a.tu,function=a.function,capture=name,next_frontend_id=fe_end,delta=a.delta,
+    result=dict(compiler=profile.name,c2_sha256=profile.sha256,legacy_model=LEGACY_MODEL,tu=a.tu,function=a.function,capture=name,next_frontend_id=fe_end,delta=a.delta,
         function_counters=functions,static_symbols=static_symbols,
         scope='Uniform shift of real symbol IDs; fixed IR topology, costs and c2 allocation history.',
         decisions=rows,limits=['Comparator windows are not strict byte-match windows.',

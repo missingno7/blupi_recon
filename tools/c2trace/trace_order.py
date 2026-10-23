@@ -1,9 +1,11 @@
 """Observe c2's expression-order comparator; no debuggee mutations except breakpoints."""
 from pathlib import Path
-import sys,json,struct,os
+import sys,json,struct,os,argparse
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'tools/c2trace'))
 import c2dbg
+import keyforce
+import profiles
 SELECTORS=[os.environ['SYMNUM_FUNCTION']] if 'SYMNUM_FUNCTION' in os.environ else ['MoveObjectSort','MockeryDetect','IsDeepWater','IsVentillo','Target']
 
 def cstr(p,a): return p.rd(a,180).split(b'\0')[0].decode('ascii','replace') if a else ''
@@ -39,25 +41,34 @@ def tree(p,a,depth=0):
         d['inputs']=children
     return d
 
-for name in sys.argv[1:]:
-    out=[]
-    functions={}
-    def hit(p,c,a):
-        f=p.u32(0x48fb48)
-        s=p.u32(f)
-        fn=cstr(p,p.u32(s+24))
-        if a==0x42491e:
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    profiles.add_arguments(parser)
+    parser.add_argument('names',nargs='+')
+    args=parser.parse_args()
+    profile=keyforce.configure(args.compiler,args.target)
+    for name in args.names:
+        out=[]
+        functions={}
+        def hit(p,c,a):
+            f=p.u32(profile.frame)
+            s=p.u32(f)
+            fn=cstr(p,p.u32(s+24))
+            if a==profile.function:
+                if any(x in fn for x in SELECTORS):
+                    functions[fn]=dict(frontend_id=p.u32(s+40),next_backend_id=p.u32(profile.next_symbol))
+                    p.arm(profile.compare)
+                elif profile.compare in p.orig:
+                    p.wr(profile.compare,p.orig.pop(profile.compare))
+                return
             if any(x in fn for x in SELECTORS):
-                functions[fn]=dict(frontend_id=p.u32(s+40),next_backend_id=p.u32(0x491050))
-                p.arm(0x408d58)
-            elif 0x408d58 in p.orig:
-                p.wr(0x408d58,p.orig.pop(0x408d58))
-            return
-        if any(x in fn for x in SELECTORS):
-            out.append(dict(function=fn,caller=hex(p.u32(c.Esp)),left=tree(p,c.Ecx),right=tree(p,c.Edx)))
-    c2dbg.run(ROOT/'build/c2trace/cap'/name,[0x42491e],hit)
-    out_dir=ROOT/'build/c2trace/order'; out_dir.mkdir(parents=True,exist_ok=True)
-    dest=out_dir/(name+'-order.json')
-    dest.write_text(json.dumps(out,indent=1))
-    (out_dir/(name+'-functions.json')).write_text(json.dumps(functions,indent=1))
-    print(name,len(out),'comparisons',dest.name)
+                out.append(dict(function=fn,caller=hex(p.u32(c.Esp)),left=tree(p,c.Ecx),right=tree(p,c.Edx)))
+        keyforce.replay(profile.work/'cap'/name,[profile.function],hit)
+        out_dir=profile.work/'order'; out_dir.mkdir(parents=True,exist_ok=True)
+        dest=out_dir/(name+'-order.json')
+        dest.write_text(json.dumps(out,indent=1))
+        (out_dir/(name+'-functions.json')).write_text(json.dumps(functions,indent=1))
+        print(name,len(out),'comparisons',dest.name)
+
+if __name__ == "__main__":
+    main()

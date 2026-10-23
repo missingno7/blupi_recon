@@ -2282,6 +2282,11 @@
           "ref": "blupi_recon:docs/SYMBOL_ORDER.md",
           "tier": "PROVEN",
           "counts": "60/60 held-out predictions (MoveObjectSort 109-236/365-492, MockeryDetect 142-397 bad, IsDeepWater bit 0x40, IsVentillo bit 0x100, 2 micro TUs, 4 CButton suffixes)"
+        },
+        {
+          "ref": "blupi_recon:docs/SB2.md section 8; docs/COMPILER_STUDY.md; tools/c2trace/validate.py --compiler rtm",
+          "tier": "PROVEN",
+          "counts": "VC5 RTM c2 (11.00.7022): key/hash routines normalized-identical to SP3 (comparator 0x4046cc, key 0x407f5c, hash 0x40801a); 4,539 hash + 884 comparator returns observed live with 0 mispredictions; ten SB2 Blupi residues removed by predicted shifts. Surveys must include the merge-sort caller, and general tuple hashes use cached child keys."
         }
       ],
       "keywords": "declaration count symbol id hash expression key operand order window include order context probes c1xx counter",

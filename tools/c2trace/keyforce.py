@@ -1,12 +1,11 @@
-"""SB1 SP3 expression comparator diagnostic; forced objects are NEVER source.
+"""Pinned VC5 SP3/RTM expression comparator diagnostic; forced objects are NEVER source.
 
 Run sequentially with .pyenv/python.exe. capture uses a private copy of the
 existing c2stub and tools/fnprobe.py -> tools/msvc.py. trace/force use c2dbg.
-Diff counts use fnprobe's relocation-masked comparison against BLUPI.EXE;
+Diff counts use fnprobe's relocation-masked comparison against the selected target;
 zero here is NOT STRICT. JSON includes aligned residue regions.
 """
 import argparse
-import ctypes
 import hashlib
 import json
 from pathlib import Path
@@ -16,17 +15,44 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-sys.path[:0] = [str(ROOT / 'tools'), str(ROOT / 'tools/c2trace')]
+sys.path[:0] = [str(ROOT / 'tools'), str(HERE)]
 import c2dbg
 import cmpfunc
 import fnprobe
 import pefile
 import residues
+import c2trace
+import profiles
 
-COMPARE, FUNCTION, CURRENT = 0x408d58, 0x4280e8, 0x495f1c
-SHA = 'e75aecaf4073b0817ffb638cae5fff636b2e2d1a090daabf8f68dbc954515fae'
-TARGETS = {'TreatEventBase': (0x1d230, 6616), 'DrawButtons': (0x16f70, 7419),
-           'ChangePhase': (0x19310, 6919), '?Build@CDecor@@': (0x4350, 3866)}
+# Diagnostic extents retained from the SP3 tool and scratch/w-rtmtrace/REPORT.md.
+# These include unresolved bodies absent from the accepted manifest. They are
+# relocation-masked analysis coordinates, never acceptance bindings.
+DIAGNOSTICS = {
+    'sb1/blupi/us': {'TreatEventBase': (0x1d230, 6616), 'DrawButtons': (0x16f70, 7419),
+        'ChangePhase': (0x19310, 6919), '?Build@CDecor@@': (0x4350, 3866)},
+    'sb2/blupi/en': {'GetBlupiInfo': (0x5960,80), 'IsBridge': (0x147c0,208),
+        'IsDoor': (0x14890,208), 'IsTeleporte': (0x14960,128), 'IsDeepWater': (0x14b00,80),
+        'IsOutWater': (0x14b50,80), 'SetMoveTraj': (0x14d80,80),
+        '?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z': (0x28e10,240),
+        'MouseBackDraw': (0x29f30,272), 'DrawButtons': (0x1d7d0,7648),
+        '?ChangePhase@CEvent@@': (0x1fc50,6912)},
+}
+
+COMPARE = profiles.get().compare
+FUNCTION = profiles.get().function
+CURRENT = profiles.get().current
+FRAME = profiles.get().frame
+SHA = profiles.get().sha256
+
+
+def configure(compiler=None, target=None):
+    global COMPARE, FUNCTION, CURRENT, FRAME, SHA
+    profile = c2trace.configure(compiler, target)
+    COMPARE, FUNCTION, CURRENT, FRAME, SHA = (profile.compare, profile.function,
+        profile.current, profile.frame, profile.sha256)
+    fnprobe.TARGET = profiles.target()
+    fnprobe.EXE = fnprobe.TARGET.exe if fnprobe.TARGET else ROOT / 'assets/Speedy Blupi/BLUPI.EXE'
+    return profile
 
 
 def write(path, value):
@@ -34,38 +60,31 @@ def write(path, value):
 
 
 def verify_compiler():
-    data = Path(c2dbg.C2).read_bytes()
-    if hashlib.sha256(data).hexdigest() != SHA:
-        raise RuntimeError('Wrong c2; breakpoint addresses are pinned to SP3')
-    pe = pefile.PE(data=data)
-    # Comparator, function prologue, current-symbol write and subsequent call.
-    for va, expected in [(COMPARE, '8b410c8b4a0c3bc17207'),
-                         (FUNCTION, '51535556578bf9'),
-                         (0x453391, '890d1c5f4900'),
-                         (0x4533c4, '8b0d1c5f4900e8194dfdff')]:
-        if pe.get_data(va - pe.OPTIONAL_HEADER.ImageBase, len(bytes.fromhex(expected))) != bytes.fromhex(expected):
-            raise RuntimeError('c2 address signature mismatch at %x' % va)
-    return SHA
+    return profiles.get().verify()
 
 
 def capture(name, unit):
-    cap = ROOT / 'build/c2trace/keyforce' / name
+    verify_compiler()
+    profiles.check_capture(c2trace.STUB.parent, check_target=False)
+    cap = c2trace.capture_dir(name, 'keyforce')
     if cap.exists():
         raise FileExistsError(cap)
     cap.mkdir(parents=True)
     stub = cap / 'c2stub.exe'
-    shutil.copyfile(ROOT / 'build/c2trace/stub/c2stub.exe', stub)
+    shutil.copyfile(c2trace.STUB, stub)
     (cap / 'il').mkdir()
     canonical, _, source = unit.partition('=')
+    canonical = canonical.replace('\\', '/')
     source = (ROOT / (source or canonical)).resolve()
-    obj = fnprobe.compile_unit(canonical, source, cap, ['/B2' + str(stub)])
+    obj = fnprobe.compile_unit(canonical, source, cap, ['/B2' + str(stub)], tree=profiles.get().name)
     for f in (cap / 'il').iterdir():
         shutil.copyfile(f, cap / f.name)
     meta = dict(unit=canonical, source=str(source), source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                 object=str(obj), c2_sha256=verify_compiler(), diagnostic_only=True,
                 headers={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
-                         for p in (ROOT / 'src').glob('*.h')})
+                         for p in source.parent.glob('*.h')})
     write(cap / 'capture.json', meta)
+    profiles.stamp(cap)
     print(cap, flush=True)
 
 
@@ -75,6 +94,10 @@ def symbol(p, ptr, seed):
     ident = p.u32(ptr + 40)
     text = p.rd(p.u32(ptr + 24), 200).split(b'\0')[0].decode('ascii', 'replace')
     return dict(id=ident, name=text, domain='back_end_symbol' if ident >= seed else 'front_end_symbol')
+
+
+def function_symbol(p, seed):
+    return symbol(p, p.u32(p.u32(FRAME)), seed)
 
 
 def tree(p, ptr, seed, depth=0, seen=()):
@@ -194,50 +217,9 @@ def describe(t):
 
 
 def replay(cap, breakpoints, hit):
-    """Use c2dbg and independently retain/wait the child handle, even on error."""
+    """Pinned, bounded replay; c2dbg synchronously reaps the child on every exit."""
     verify_compiler()
-    K = c2dbg.K
-    create = K.CreateProcessW
-    child = []
-    K.OpenProcess.restype = ctypes.c_void_p
-    K.OpenProcess.argtypes = [ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
-    K.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
-    K.TerminateProcess.argtypes = [ctypes.c_void_p, ctypes.c_uint]
-    errors = []
-
-    def created(*args):
-        ok = create(*args)
-        if ok:
-            pi = ctypes.cast(args[-1], ctypes.POINTER(c2dbg.PI)).contents
-            h = K.OpenProcess(0x100001, False, pi.pid)
-            if h:
-                child.append(h)
-        return ok
-
-    def safe_hit(*args):
-        if errors:
-            return
-        try:
-            hit(*args)
-        except BaseException as exc:
-            errors.append(exc)
-
-    K.CreateProcessW = created
-    try:
-        obj = c2dbg.run(cap, breakpoints, safe_hit)
-    finally:
-        K.CreateProcessW = create
-        for h in child:
-            if K.WaitForSingleObject(h, 0) == 258:
-                K.TerminateProcess(h, 1)
-            if K.WaitForSingleObject(h, 10000) != 0:
-                raise RuntimeError('c2 child did not terminate')
-            K.CloseHandle(h)
-    if errors:
-        raise errors[0]
-    if not child or not obj.is_file():
-        raise RuntimeError('c2 child handle/object missing')
-    return obj
+    return c2dbg.run(cap, breakpoints, hit)
 
 
 def seed_of(cap):
@@ -254,9 +236,10 @@ def trace(cap, selectors):
 
     def hit(p, c, addr):
         if addr == FUNCTION:
-            s = symbol(p, c.Ecx, seed)
-            s['next_backend_id'] = p.u32(0x491050)
-            s['current_pointer_agrees'] = p.u32(CURRENT) == c.Ecx
+            s = function_symbol(p, seed)
+            s['next_backend_id'] = p.u32(profiles.get().next_symbol)
+            s['current_pointer_agrees'] = p.u32(CURRENT) == p.u32(p.u32(FRAME))
+            s['frame_pointer_agrees'] = p.u32(FRAME) == c.Ecx
             active[0] = any(x in s['name'] for x in selectors)
             funcs.append(s)
             if active[0]:
@@ -266,7 +249,7 @@ def trace(cap, selectors):
             return
         if not active[0]:
             return
-        s = symbol(p, p.u32(CURRENT), seed)
+        s = function_symbol(p, seed)
         if not any(x in s['name'] for x in selectors):
             raise ValueError('current function pointer disagrees with function gate')
         left, right = tree(p, c.Ecx, seed), tree(p, c.Edx, seed)
@@ -299,7 +282,23 @@ def trace(cap, selectors):
 
 
 def target(selector):
-    return next(v for k, v in TARGETS.items() if k in selector or selector in k)
+    selected = profiles.target() or profiles.targets.load()
+    known = [v for k,v in DIAGNOSTICS.get(selected.name, {}).items() if k in selector or selector in k]
+    if len(known) == 1:
+        return known[0]
+    # manifest() intentionally removes excluded functions; use the independent
+    # inventory/base manifest plus target coordinate overrides for diagnostics.
+    manifest = json.loads(selected.manifest_path.read_text())
+    rows = [x.copy() for x in manifest['accepted_functions']
+            if x['symbol'] == selector or selector in x['symbol']]
+    if len(rows) != 1:
+        raise ValueError('No unique known oracle coordinates for ' + selector)
+    row = rows[0]
+    rva = int(str(row['rva']), 0)
+    if selected.address_map:
+        rva = selected.translate(0x400000 + rva, 'code') - 0x400000
+    override = selected.accepted_overrides.get(row['symbol'], {})
+    return int(str(override.get('rva',rva)),0), override.get('size',row['size'])
 
 
 def compare(obj, selector):
@@ -337,7 +336,7 @@ def force(cap, selector, indices, forced=None):
             state['forced'].append(state['index'])
             return
         if addr == FUNCTION:
-            s = symbol(p, c.Ecx, data['seed'])
+            s = function_symbol(p, data['seed'])
             state['active'] = selector in s['name']
             if state['active']:
                 state['index'] = -1
@@ -400,14 +399,22 @@ def force(cap, selector, indices, forced=None):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.epilog = 'Common options (any position): --compiler {sp3,rtm} --target GAME/EDITION/LANGUAGE'
     sub = p.add_subparsers(dest='command', required=True)
     s = sub.add_parser('capture'); s.add_argument('name'); s.add_argument('unit')
     s = sub.add_parser('trace'); s.add_argument('name'); s.add_argument('function', nargs='+')
     s = sub.add_parser('list'); s.add_argument('name'); s.add_argument('function'); s.add_argument('--equal-cost', action='store_true'); s.add_argument('--events', help='event-index ranges A-B[,C-D] (one source region in each pass)')
     s = sub.add_parser('force'); s.add_argument('name'); s.add_argument('function'); s.add_argument('indices', nargs='+', type=int); s.add_argument('--result', type=int, choices=(-1, 0, 1))
     s = sub.add_parser('predict'); s.add_argument('name'); s.add_argument('function'); s.add_argument('index', type=int); s.add_argument('--radius', type=int, default=1024)
-    a = p.parse_args()
-    cap = ROOT / 'build/c2trace/keyforce' / a.name
+    # Accept profile options before or after the subcommand.
+    options = argparse.ArgumentParser(add_help=False)
+    profiles.add_arguments(options)
+    common, rest = options.parse_known_args()
+    a = p.parse_args(rest)
+    configure(common.compiler, common.target)
+    cap = c2trace.capture_dir(a.name, 'keyforce')
+    if a.command != 'capture':
+        profiles.check_capture(cap)
     if a.command == 'capture':
         capture(a.name, a.unit)
     elif a.command == 'trace':

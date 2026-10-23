@@ -1,6 +1,10 @@
 /* Pass-2 stand-in for cl.exe /B2: copy the IL files named by -il to %C2STUB_OUT%, record the arguments,
    then run the real c2.exe with the same arguments so the compile completes normally. */
 #include <windows.h>
+#ifndef C2_DEFAULT_PATH
+#define C2_DEFAULT_PATH "C:/tools/msvc5_sp3/VC/BIN/c2.exe"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -25,7 +29,7 @@ int main(int argc, char **argv)
 		strcpy(strrchr(dir, '\\') + 1, "il");
 		out = dir;
 	}
-	if (real == NULL) real = "C:\\tools\\msvc5_sp3\\VC\\BIN\\c2.exe";
+	if (real == NULL) real = C2_DEFAULT_PATH;
 	if (il == NULL && getenv("MSC_CMD_FLAGS") != NULL) {
 		static char flags[8192];
 		char *p;
@@ -62,7 +66,10 @@ int main(int argc, char **argv)
 	memset(&si, 0, sizeof(si));
 	si.cb = sizeof(si);
 	if (!CreateProcess(NULL, cmd, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) return 3;
-	WaitForSingleObject(pi.hProcess, INFINITE);
+	if (WaitForSingleObject(pi.hProcess, 180000) != WAIT_OBJECT_0) {
+        TerminateProcess(pi.hProcess, 1);
+        WaitForSingleObject(pi.hProcess, INFINITE);
+    }
 	GetExitCodeProcess(pi.hProcess, &code);
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);

@@ -590,3 +590,31 @@ The 4-byte residue is a Pentium scheduling swap (`sbb edi,edi` vs the vtable loa
 `dwFlags = dwFlags != 0`, `!!dwFlags`, ternary arguments and a local flag fold away (old ebx/esi allocation); the
 if-only form keeps a branch. Lesson: a setcc whose source stays in a callee-saved register points to an if/else
 assignment of a variable, not to an expression.
+
+### C2 tracing compiler profiles (2026-10-23)
+
+[EVIDENCE] `tools/c2trace/profiles.py` pins VC5 SP3 (the default) and RTM by whole-C2 SHA-256,
+instruction signatures and a shared address table. `c2trace.py`, `ctxpredict.py`, `ctxwindows.py`,
+`trace_order.py` and `keyforce.py` accept `--compiler sp3|rtm` and `--target GAME/EDITION/LANGUAGE`.
+A target supplies its toolchain and edition defines; an explicit compiler overrides that toolchain.
+For example, `ctxwindows.py games/sb2/src/pixmap.cpp --target sb2/blupi/en` selects RTM and `_EGAMES=0`.
+Build the corresponding stub first with `c2trace.py build-stub --compiler rtm`.
+SP3 output stays in `build/c2trace`; RTM output uses `build/c2trace-rtm`. New captures record the
+compiler/target and reject mismatched replays. Rotor, scratch-picker and other allocation observers
+remain calibrated for SP3 only; RTM support covers expression ordering.
+
+[EVIDENCE] Surveys now include both direct-swap and merge-sort comparator callers, general tuple
+hashes consume cached child keys, and keyforce gates on per-function processing through the current
+frame. `--legacy-model` on the prediction/window tools retains the earlier direct-swap/recursive-child
+model for comparison. Fresh SP3 decblupi/pixmap surveys changed from 26/10 to 33/13 context-sensitive
+functions; 18/4 existing intersections narrowed, all from merge-sort coverage. The cached-child fix
+caused no further window changes in these two surveys. Full decision/window changes and reasons are
+in `scratch/w-c2rtm/REPORT.md` and its JSON evidence. Fresh integrated RTM surveys reproduce every
+decision and window of all four prior TU surveys, including the nine Blupi 2 residues.
+
+[EVIDENCE] `validate.py --compiler rtm --target sb2/blupi/en` combines static signature/algebra checks
+with an unforced live hash/comparator-return observer. SP3 and RTM each pass 4,539 hash returns and 884
+comparator returns with zero errors and identical emitted function bytes. Replays are bounded to 180
+seconds, reap their child on failure as well as success, and retain successful replay receipts.
+These are compiler-analysis checks and conditional comparator windows, not STRICT game-match proofs;
+preserving every comparator decision is not necessary for preserving object bytes.
