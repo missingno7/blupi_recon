@@ -256,9 +256,9 @@ def phase_trace(label, unit, function, native_tree):
 def cross_version():
     """Scan existing SB1 Display probes; do not attribute absent hits to compilers."""
     paths = [ROOT / 'assets/Speedy Blupi/BLUPI.EXE',
-             Path('C:/tools/download/openeggbert/Speedy_Blupi_Demo/exe/Blupi.exe'),
-             Path('C:/tools/download/eggbert/zip/egames.exe'),
-             Path('C:/tools/download/openeggbert/Speedy_Blupi_II/exe/BLUPI.EXE')]
+             ROOT / 'assets/downloads/openeggbert/Speedy_Blupi_Demo/exe/Blupi.exe',
+             ROOT / 'assets/downloads/eggbert/zip/egames.exe',
+             ROOT / 'assets/downloads/openeggbert/Speedy_Blupi_II/exe/BLUPI.EXE']
     functions = {tree: next(f for f in Coff(ROOT / f'build/fnprobe/planet-sb1-{tree}/pixmap.obj').functions()
                             if f.name == '?Display@CPixmap@@QAEHXZ') for tree in ('sp3', 'rtm')}
     rows = []

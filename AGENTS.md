@@ -35,7 +35,9 @@ same `src/`:
 
 Hard rules:
 - `assets/` is immutable original material; `external/` holds read-only reference repos
-  (planetblupi, sb2-decomp, free-eggbert). Never modify, clean or commit either.
+  (planetblupi, sb2-decomp, free-eggbert). Never modify, clean or commit either. Every original game binary or
+  download belongs in `assets/` (downloaded editions in `assets/downloads/`, e.g. the 1998 demo), never in
+  `C:\tools`, which holds only toolchains and tools.
 - Never execute any original executable: BLUPI.EXE, EGAMES.EXE, Eggbert2.exe and every language build,
   installers and launchers (UNWISE.EXE, gbrowser.exe, setup), or programs from the ISOs. Per the user's
   2026-10-19 runtime authorization, rebuilt game executables may be smoke-tested

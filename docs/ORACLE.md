@@ -59,7 +59,7 @@ The PE resource tree has 31 `RT_STRING` blocks with 329 nonempty neutral-languag
 
 ## [EVIDENCE] eGames "Speedy Eggbert" builds (second oracle family, 2026-10-18)
 
-Downloaded with the owner's approval, analysed statically only, stored outside the repo in `C:\tools\download\eggbert\`
+Downloaded with the owner's approval, analysed statically only, stored in the ignored `assets\downloads\eggbert\` (moved from `C:\tools\download` on 2026-10-24)
 (archive.org `speedy-eggbert-egames`: zip md5 eea7da256778be7a9e62885f8eb6017f, ISO md5 972f6d09b6bf9fb045f6644df74176e7,
 both matching the published hashes). Scripts: scratch/research/egfind.py, egcmp.py.
 
@@ -80,7 +80,7 @@ both matching the published hashes). Scripts: scratch/research/egfind.py, egcmp.
 ## [EVIDENCE] Speedy Blupi 1998 demo and Speedy Blupi 2 (2026-10-18)
 
 From drive.openeggbert.com `Blupi/Games/Speedy_Blupi_(Windows)/` (owner-approved download, static analysis only, stored in
-`C:\tools\download\openeggbert\`). `Speedy_Blupi_I.7z` contains a `BLUPI.EXE` identical to our oracle (SHA-256 be6de5a2...).
+`assets\downloads\openeggbert\`, moved from `C:\tools\download` on 2026-10-24). `Speedy_Blupi_I.7z` contains a `BLUPI.EXE` identical to our oracle (SHA-256 be6de5a2...).
 - **Demo** `Blupi.exe` (533,504 B, link 1998-06-18 21:29, linker 5.00, no Rich header): an earlier source revision.
   343/408 accepted functions are byte-identical (relocations masked) and 65 differ. DoInit allocates `new CDecor` with
   **0x258d4**. TreatEventBase has no rank-0 (build-official-missions) cheat block; the matcher goes straight to rank 1, so
