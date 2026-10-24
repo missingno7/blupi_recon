@@ -61,3 +61,11 @@ dependencies (this candidate).
 - [HYPOTHESIS] That the original SB1 source contained these eight methods (dead), their bodies and the tail view.
   Only their contribution keys (size, relocation count) and positions enter ICF.
 - [OPEN] Import order, Rich count, ChangePhase, TreatEventBase.
+
+## Cross-build check (2026-10-24, `scratch/w-deadpop` in the main checkout)
+
+[NEGATIVE] This eight-helper population is a US-only fit: under Speedy Eggbert 1's own linker (VC5 RTM LINK 5.00)
+it places 261/408 functions. Its `IsBalleTraj`/`IsMoveTraj` bodies (160 bytes) come from sb2-decomp's decompilation;
+SB2's proven 112-byte bodies give the wrong `_strncnt` survivor. A six-method SB2-proven population fits all nine
+images but is statistically weak and changes two existing payloads. See docs/SB1_CLOSURE.md on `sb2-matching`. This
+branch remains a reference for the mechanism, not a source proposal.
