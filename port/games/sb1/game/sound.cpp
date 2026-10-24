@@ -97,6 +97,15 @@ BOOL CSound::CreateBufferFromWaveFile(int dwBuf, char *pFileName)
 	// Is this a stereo or mono file?
 	BOOL bStereo = wavHdr.wChnls > 1 ? TRUE : FALSE;
 
+	// CreateSoundBuffer rejected invalid secondary-buffer sizes and PCM block
+	// alignment. These header values must be checked before allocating samples.
+	if ( dwSize < 4 || dwSize > 0x0fffffff ||
+	     wavHdr.wBlkAlign != (bStereo ? 2 : 1)*wavHdr.BitsPerSample/8 )
+	{
+		fclose(pFile);
+		return FALSE;
+	}
+
 	// Read the data for the wave file (the historical ReadData read exactly
 	// dwSize bytes after the 44-byte header and failed on a short read).
 	std::vector<uint8_t> data(dwSize);

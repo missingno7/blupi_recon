@@ -86,3 +86,13 @@ is needed, and 2 means malformed inputs or a git/tool error. Inspect the JSON di
 in human review: hash updates and dispositions are review records, not signatures.
 Impact mode can clear a lexical-only edit while `--check` still requires refreshing
 its snapshot hash; such an edit needs no semantic equivalence disposition.
+
+## Round 2 evidence (2026-10-25)
+
+F391 now has bounded SB1 editor-handler evidence; F461 has offline production
+mixer/PCM evidence. Audio contract fixes were reviewed for every dependent edge,
+with hash refreshes limited to the three changed audio/CSound files. F349/F352/F353
+and F393/F422 retain their explicit failure/device/heap gaps. F472 records rebuilt
+SB1 US save interchange in one scenario at both depths; its evidence retains the
+earlier DIFFERENT timer-race receipt. See [SB1_SAVE.md](../oracle/SB1_SAVE.md).
+These receipts do not extend to all states, languages, devices or allocations.

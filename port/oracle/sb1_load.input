@@ -1,0 +1,13 @@
+# Consumer: start hub, F4 first slot, then identical bounded continuation.
+# Run for 160 timer ticks / 171 Display calls. Compare indices 111..170:
+# input frame 100 affects display 111 (first timer tick has display index 11).
+40 key 13
+70 click 85 430
+80 key 115
+90 click 300 130
+100 key 13
+110 keydown 39
+125 keyup 39
+130 keydown 17
+132 keyup 17
+150 key 19

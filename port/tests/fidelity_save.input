@@ -1,0 +1,13 @@
+# F3/F4 menu navigation; a bounded manual walk, no gameplay injection.
+40 key 13
+70 click 85 430
+85 keydown 39
+95 keyup 39
+100 key 114
+110 click 300 130
+120 key 13
+140 keydown 39
+155 keyup 39
+160 key 115
+170 click 300 130
+180 key 13

@@ -1,0 +1,9 @@
+# Producer: world-1 hub, bounded walk, first slot, then bounded proxy WM_CLOSE.
+# Run for 130 timer ticks / 141 Display calls. No original executable may run.
+40 key 13
+70 click 85 430
+85 keydown 39
+95 keyup 39
+100 key 114
+110 click 300 130
+120 key 13

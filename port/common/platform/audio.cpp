@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 
 #include <cmath>
+#include <climits>
 #include <mutex>
 #include <vector>
 
@@ -61,6 +62,11 @@ void SDLCALL feed(void*, SDL_AudioStream* stream, int additional, int)
                 g_mix[i * 2 + 1] += v.frames[v.pos * 2 + 1] * v.gainR;
                 v.pos++;
             }
+            if (v.pos >= total)
+            {
+                if (v.loop && total != 0) v.pos = 0;
+                else v.playing = false;
+            }
         }
     }
     blupi::music::render_mix(g_mix.data(), frames, k_rate);
@@ -104,6 +110,13 @@ void shutdown()
 
 int create_buffer(const uint8_t* pcm, size_t bytes, int frequency, int bitsPerSample, int channels)
 {
+    // The historical secondary buffers are mono/stereo 8/16-bit PCM. Reject
+    // malformed frames rather than silently treating every other depth as S16
+    // or allowing SDL's broader channel/rate support to accept invalid input.
+    if (!pcm || bytes == 0 || bytes > INT_MAX ||
+        (bitsPerSample != 8 && bitsPerSample != 16) ||
+        (channels != 1 && channels != 2) || frequency < 100 || frequency > 100000 ||
+        bytes % (channels * (bitsPerSample / 8)) != 0) return -1;
     SDL_AudioSpec src = {bitsPerSample == 8 ? SDL_AUDIO_U8 : SDL_AUDIO_S16LE, channels, frequency};
     SDL_AudioSpec dst = {SDL_AUDIO_F32, 2, k_rate};
     Uint8* out = nullptr;
@@ -153,12 +166,14 @@ void rewind(int id)
 
 void set_volume(int id, int hundredthsDb)
 {
+    if (hundredthsDb < -10000 || hundredthsDb > 0) return;
     std::lock_guard<std::mutex> guard(g_lock);
     if (Voice* v = voice(id)) { v->volume = hundredthsDb; update_gains(*v); }
 }
 
 void set_pan(int id, int hundredthsDb)
 {
+    if (hundredthsDb < -10000 || hundredthsDb > 10000) return;
     std::lock_guard<std::mutex> guard(g_lock);
     if (Voice* v = voice(id)) { v->pan = hundredthsDb; update_gains(*v); }
 }
