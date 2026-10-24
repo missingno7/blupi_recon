@@ -9,26 +9,26 @@
 #include <stdio.h>
 
 // SB2 editor icon tables, read from Eggbert2.exe .data.
-int sb2_design_374f0[] = { 5, 396, 388, 389, 390, 391 };
-int sb2_design_37508[] = { 3, 398, 399, 400 };
-int sb2_design_375e8[] = { 7, 186, 187, 188, 189, 190, 191, 192 };
-int sb2_design_375d0[] = { 5, 139, 140, 141, 142, 143 };
-int sb2_design_37740[] = { 4, 66, 67, 68, 69 };
-int sb2_design_37518[] = { 3, 87, 88, 89 };
-int sb2_design_37668[] = { 11, 76, 77, 199, 198, 200, 201, 235, 236, 375, 376, 377 };
-int sb2_design_37698[] = { 3, 403, 401, 402 };
-int sb2_design_37758[] = { 23, 158, 159, 160, 161, 162, 163, 164, 165, 309, 411, 412, 413, 414, 415, 174, 175, 176, 177, 178, 179, 180, 181, 184 };
-int sb2_design_377c8[] = { 3, 334, 335, 336 };
-int sb2_design_377d8[] = { 20, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440 };
-int sb2_design_37a40[] = { 4, 330, 331, 332, 333 };
-int sb2_design_37a10[] = { 10, 2, 4, 79, 84, 143, 219, 230, 246, 341, 396 };
-int sb2_design_37830[] = { 2, 378, 384 };
-int sb2_design_37998[] = { 3, 251, 252, 253 };
-int sb2_design_37978[] = { 1, 338 };
-int sb2_design_379b8[] = { 1, 340 };
-int sb2_design_379c0[] = { 1, 361 };
-int sb2_design_379a8[] = { 2, 387, 397 };
-int sb2_design_37980[] = { 4, 261, 262, 263, 283 };
+extern int sb2_design_374f0[];
+extern int sb2_design_37508[];
+extern int sb2_design_375e8[];
+extern int sb2_design_375d0[];
+extern int sb2_design_37740[];
+extern int sb2_design_37518[];
+extern int sb2_design_37668[];
+extern int sb2_design_37698[];
+extern int sb2_design_37758[];
+extern int sb2_design_377c8[];
+extern int sb2_design_377d8[];
+extern int sb2_design_37a40[];
+extern int sb2_design_37a10[];
+extern int sb2_design_37830[];
+extern int sb2_design_37998[];
+extern int sb2_design_37978[];
+extern int sb2_design_379b8[];
+extern int sb2_design_379c0[];
+extern int sb2_design_379a8[];
+extern int sb2_design_37980[];
 
 POINT CDecor::ScreenPosToCelPos(POINT pos)
 {

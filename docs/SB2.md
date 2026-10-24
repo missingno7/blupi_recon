@@ -641,6 +641,28 @@ at their original RVAs (functions at original RVA 85 -> 87, same-offset `.text` 
 callbacks: there the same change moves an ICF survivor (GetHide/GetNbSessions) and the whole image gets worse
 (docs/LAYOUT_ORDER.md).
 
+### Round 15: `.data` contribution order (2026-10-24, `scratch/w-dataorder/REPORT.md`)
+
+[EVIDENCE] Rules confirmed with 40 micro TUs on SP3 and RTM: ordinary initialized writable data follows definition
+order (also after functions; file-static numeric tables are not deferred like BLUPI-LAY-04's functions);
+explicit all-zero initializers go to `.bss`, while a nonzero array keeps its zero tail in `.data`; literal
+COMDATs follow function emission and LINK pools identical literals at the earlier object's contribution.
+
+[EVIDENCE] Both originals hold one 39,216-byte numeric band (Eggbert 2 `0x4364c8`, Blupi 2 `0x4354d0`) with
+decblock.cpp's 99 tables, the 40 animation tables that dectables.cpp defined, the 20 decdesign-only editor arrays,
+`table_adapt_fromage` and the vehicle speed table that decor.cpp kept as a function-local static, in an order
+visible in both executables. decblock.cpp now defines all of them in that order (values and lengths unchanged,
+no padding); their users declare them `extern`. The relinked band equals the original byte for byte in both
+editions, and event.cpp's 290,820-byte table contribution (whose 14,023-byte zero tail is the "zero block" seen in
+round 14) now sits at its original address. Same-offset `.data`: Eggbert 2 325,365 -> 346,879 / 363,520, Blupi 2
+312,427 -> 345,641 / 349,184. All four SB2 targets keep every function status (0 differing) and every certificate.
+[HYPOTHESIS] The original names of the speed array and of the band's TU are not recovered (the C# port's
+Tables.cs and sb2-decomp's dectables.cpp give the semantic ancestry, not the filename).
+
+[OPEN] The literal `"ab"` precedes decblock's first literal in both originals but is first used by
+`CEvent::OutputNetDebug`; the later literal bands drift by 4-24 bytes from there. `.data` virtual size is 32 bytes
+over the original in both editions.
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten

@@ -10,13 +10,7 @@
 #include <sound.h>
 #include <network.h>
 
-int table_adapt_fromage[] =
-{
-	-1, 265, 264, 268, 267, 273, 271, 275, 266, 272,
-	270, 274, 269, 277, 276, 278, -1, 286, 285, 289,
-	288, 294, 292, 296, 287, 293, 291, 295, 290, 298,
-	297, 299
-};
+extern int table_adapt_fromage[];
 
 POINT CDecor::VoyageGetPosVie(int nbVies)
 {
@@ -160,7 +154,7 @@ void CDecor::VoyageStep()
 
 void CDecor::VoyageDraw()
 {
-	static int speed[] = { -8, -6, -4, 0, 4, 6, 8 };
+	extern int speed[];
 	if (m_voyageIcon != -1)
 	{
 		int phase = m_voyagePhase;
