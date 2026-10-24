@@ -91,16 +91,7 @@ void     EndOfTick(CDecor& decor);
 // windowChoice: offer window or full screen (desktop; Android is always full screen).
 void     PortOptionsInit(CPixmap* pixmap, CSound* sound, PortSettings* settings, void (*apply)(),
                          bool windowChoice, int entryX = 70, int entryY = 330);
-void     PortOptionsPhase(unsigned int phase);  // every frame: shows or closes it
-bool     PortOptionsVisible();   // the entry button or the screen is shown
-bool     PortOptionsOpen();      // the screen is shown
-// Input for it; true when the event is not for the game.
-bool     PortOptionsMouse(unsigned int message, uintptr_t wParam, intptr_t lParam);
-bool     PortOptionsKey(unsigned int message, uintptr_t wParam);
-void     PortOptionsHover(intptr_t lParam);   // after the game's WM_MOUSEMOVE: the cursor sprite
-bool     PortOptionsCommand(unsigned int message);   // its buttons' posted messages
-void     PortOptionsDraw();      // into the back buffer, after the frame
-void     PortOptionsSync();      // settings changed elsewhere (Alt+Enter)
+#include "ui/options_events.h"
 
 // Editor input over the side areas of a wide view (editor_wide.cpp); pos in
 // frame coordinates, outside the frame.

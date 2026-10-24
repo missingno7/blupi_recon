@@ -43,6 +43,7 @@
 #include "platform/host.h"
 #include "platform/vfs.h"
 #include "presentation/timing.h"
+#include "app/launcher.h"
 
 #include <new>
 #include <string>
@@ -1138,476 +1139,127 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 // Host paths from here on; historical fopen above remains VFS-routed.
 #undef fopen
 
-namespace {
-struct Input { long frame; std::string kind; int x = 0, y = 0; };
-struct Options {
-    blupi::host::Options host;
-    std::string data, user, trace, soundfont, demoLog, probe;
-    std::string displayLog, displayDumpDir;
-    long displayDumpEvery = 0;
-    long frames = -1, every = 1;
-    std::vector<Input> inputs;
-    std::vector<std::pair<long, std::string>> shots, dumps;
-    bool commands = false, reference = false, checkScene = false, checkView = false, checkWide = false;
-    PortSettings settings;
-    bool setWide = false, setInterpolate = false, setPresent = false, setFullscreen = false;
-    bool setScale = false, setIntegerScale = false, setLanguage = false;
-    int presentRepeat = 0;
-    double screenshotAlpha = -1.0;
-};
-void Usage() {
-    puts("blupi2 " BLUPI_PORT_VERSION "\n"
-         "  --data DIR --user DIR --headless --frames N --color 8|16\n"
-         "  --trace FILE --trace-every N --screenshot N:FILE --state-dump N:FILE\n"
-         "  --input FILE --probe FILE --soundfont FILE --language CODE --check-commands --demo-log FILE\n"
-         "  --display-log FILE  raw back-buffer hash at every Display (cross-build oracle)\n"
-         "  --display-dump DIR:N  raw frame file at every Nth Display\n"
-         "  --reference         historical Build (test oracle)\n"
-         "  --check-scene       compare const scene commands with historical Build\n"
-         "  --check-view        compare DrawView at alpha 1 with FlattenScene\n"
-         "  --check-presentation compare game state and faithful primary across presents\n"
-         "  --wide off|auto|W|16:9 --interpolate --present tick|display --integer-scale\n"
-         "  --render-repeat N --present-repeat N --check-wide --screenshot-alpha A\n"
-         "  --fullscreen --windowed --scale N --verbose --version\n"
-         "Data is read-only; all game writes go to --user (use build/ for testing).");
-}
-bool Parse(int argc, char** argv, Options& o) {
-    for (int i = 1; i < argc; ++i) {
-        std::string a = argv[i];
-        auto next = [&]() -> const char* { return i+1 < argc ? argv[++i] : ""; };
-        if (a == "--data") o.data = next();
-        else if (a == "--user") o.user = next();
-        else if (a == "--headless") o.host.headless = true;
-        else if (a == "--frames") o.frames = atol(next());
-        else if (a == "--color") { g_portColorDepth = atoi(next()); if (g_portColorDepth != 8 && g_portColorDepth != 16) return false; }
-        else if (a == "--trace") o.trace = next();
-        else if (a == "--display-log") { o.displayLog = next(); if (o.displayLog.empty()) return false; }
-        else if (a == "--display-dump") {
-            std::string v = next(); size_t colon = v.rfind(':');
-            if (colon == std::string::npos || colon == 0) return false;
-            o.displayDumpDir = v.substr(0, colon);
-            char* end = nullptr;
-            o.displayDumpEvery = strtol(v.c_str() + colon + 1, &end, 10);
-            if (o.displayDumpEvery <= 0 || !end || *end) return false;
-        }
-        else if (a == "--demo-log") o.demoLog = next();
-        else if (a == "--probe") o.probe = next();
-        else if (a == "--trace-every") { o.every = atol(next()); if (o.every < 1) return false; }
-        else if (a == "--soundfont") o.soundfont = next();
-        else if (a == "--language") { o.settings.language = next(); o.setLanguage = true; }
-        else if (a == "--fullscreen") { o.settings.fullscreen = true; o.setFullscreen = true; }
-        else if (a == "--windowed") { o.settings.fullscreen = false; o.setFullscreen = true; }
-        else if (a == "--integer-scale") { o.settings.integerScale = true; o.setIntegerScale = true; }
-        else if (a == "--scale") { o.settings.scale = atoi(next()); o.setScale = true; if (o.settings.scale < 1 || o.settings.scale > 8) return false; }
-        else if (a == "--verbose") blupi::host::set_verbose(true);
-        else if (a == "--check-commands") o.commands = true;
-        else if (a == "--reference") o.reference = true;
-        else if (a == "--check-scene") o.checkScene = true;
-        else if (a == "--check-view") o.checkView = true;
-        else if (a == "--check-presentation") g_bCheckPresentation = true;
-        else if (a == "--screenshot-alpha") o.screenshotAlpha = atof(next());
-		else if (a == "--interpolate") { o.settings.interpolate = true; o.setInterpolate = true; }
-		else if (a == "--check-wide") o.checkWide = true;
-		else if (a == "--wide")
-		{
-			std::string v = next();
-			o.setWide = true;
-			if (v == "auto" || v == "off")
-			{
-				o.settings.widescreen = v == "auto";
-				g_wideWidth = 0;
-				continue;
-			}
-			o.settings.widescreen = false;
-			size_t colon = v.find(':');
-			if (colon != std::string::npos && atoi(v.c_str() + colon + 1) <= 0) return false;
-			int width = colon == std::string::npos ? atoi(v.c_str())
-						: (LYIMAGE * atoi(v.c_str()) + atoi(v.c_str() + colon + 1) - 1) / atoi(v.c_str() + colon + 1);
-			width = (width + 1) & ~1;   // even: the frame is centred on whole pixels
-			if (width < LXIMAGE || width > 4 * LXIMAGE) return false;
-			g_wideWidth = width == LXIMAGE ? 0 : width;
-		}
-		else if (a == "--render-repeat") g_renderRepeat = atoi(next());
-		else if (a == "--present")
-		{
-			std::string mode = next();
-			if (mode == "tick") o.settings.displayRate = false;
-			else if (mode == "display") o.settings.displayRate = true;
-			else return false;
-			o.setPresent = true;
-		}
-		else if (a == "--present-repeat") o.presentRepeat = atoi(next());
-        else if (a == "--screenshot" || a == "--state-dump") {
-            std::string v = next(); size_t colon = v.find(':');
-            if (colon == std::string::npos) return false;
-            auto p = std::make_pair(atol(v.substr(0, colon).c_str()), v.substr(colon+1));
-            if (a == "--screenshot") o.shots.push_back(p); else o.dumps.push_back(p);
-        } else if (a == "--input") {
-            FILE* f = fopen(next(), "r"); if (!f) return false;
-            char line[256], kind[16];
-            while (fgets(line, sizeof(line), f)) {
-                Input in;
-                if (line[0] == '#' || sscanf(line, "%ld %15s %d %d", &in.frame, kind, &in.x, &in.y) < 3) continue;
-                in.kind = kind;
-                if (in.kind != "key" && in.kind != "keydown" && in.kind != "keyup" && in.kind != "click" && in.kind != "move" &&
-                    in.kind != "viewclick" && in.kind != "viewmove" && in.kind != "viewrightclick") { fclose(f); return false; }
-                o.inputs.push_back(in);
-            }
-            fclose(f);
-        } else return false;
-    }
-    // An unattended run always has a finite end, including on bad options/data.
-    return (!o.host.headless || o.frames >= 0) && o.presentRepeat >= 0 && g_renderRepeat >= 0;
-}
-LPARAM MousePos(int x, int y)
+
+// Game-specific bridge to the common launcher. Historical-derived bodies above
+// retain their own headers, object order, message handling and presentation glue.
+int BlupiMain(int argc, char** argv)
 {
-	return MAKELPARAM(x, y);
-}
+    using blupi::app::Options;
+    blupi::app::Game game{};
+    game.name = "blupi2-sdl3"; game.title = "Speedy Blupi 2 / Speedy Eggbert 2";
+    game.dataTitle = game.title;
+    game.dataEnvironment = "BLUPI2_DATA";
+    game.settingsFile = "blupi2-sdl3.json"; game.userApp = "Speedy Blupi 2 SDL3";
+    game.settings = &g_settings; game.settingsPath = &g_settingsPath;
+    game.quit = &g_bQuit; game.timer = &g_timer; game.arrowHeld = g_portArrowHeld;
+    game.recognizesData = [](const std::string& root) {
+        return blupi::app::RecognizesData(root, "data/bench.blp");
+    };
 
-WPARAM MouseKeys(const blupi::host::Event& e)
-{
-	WPARAM w = 0;
-	if (e.leftDown) w |= MK_LBUTTON;
-	if (e.rightDown) w |= MK_RBUTTON;
-	if (e.shift) w |= MK_SHIFT;
-	if (e.control) w |= MK_CONTROL;
-	return w;
-}
-
-// Host event -> the window messages Windows would have delivered.
-void TranslateHostEvent(const blupi::host::Event& e)
-{
-	using blupi::host::EventType;
-	switch (e.type)
-	{
-	case EventType::Quit:
-		WindowProc(WM_CLOSE, 0, 0);
-		break;
-	case EventType::FocusGained:
-		WindowProc(WM_ACTIVATEAPP, 1, 0);
-		break;
-	case EventType::FocusLost:
-		WindowProc(WM_ACTIVATEAPP, 0, 0);
-		break;
-	case EventType::KeyDown:
-		if (PortOptionsKey(WM_KEYDOWN, (WPARAM)e.key)) break;
-		if (e.key == VK_LEFT || e.key == VK_RIGHT)
-		{
-			const bool right = e.key == VK_RIGHT;
-			if (PortEditorScrollBlocked(right)) break;
-			g_portArrowHeld[right] = true;
-		}
-		WindowProc(WM_KEYDOWN, (WPARAM)e.key, (LPARAM)(1 | (e.repeat ? (1 << 30) : 0)));
-		// TranslateMessage: control characters that become WM_CHAR.
-		if (e.key == VK_BACK || e.key == VK_RETURN || e.key == VK_ESCAPE || e.key == VK_TAB)
-			WindowProc(WM_CHAR, (WPARAM)e.key, 1);
-		break;
-	case EventType::KeyUp:
-		if (PortOptionsKey(WM_KEYUP, (WPARAM)e.key)) break;
-		if (e.key == VK_LEFT || e.key == VK_RIGHT)
-		{
-			const bool right = e.key == VK_RIGHT;
-			if (!g_portArrowHeld[right]) break;   // already released at the editor's edge
-			g_portArrowHeld[right] = false;
-		}
-		WindowProc(WM_KEYUP, (WPARAM)e.key, (LPARAM)(1 | (1 << 30) | (1u << 31)));
-		break;
-	case EventType::Text:
-		if (PortOptionsKey(WM_CHAR, (WPARAM)e.ch)) break;
-		WindowProc(WM_CHAR, (WPARAM)e.ch, 1);
-		break;
-	case EventType::MouseMove:
-	case EventType::MouseDown:
-	case EventType::MouseUp:
-	{
-		UINT message = WM_MOUSEMOVE;
-		if (e.type == EventType::MouseDown) message = e.button == 1 ? WM_LBUTTONDOWN : WM_RBUTTONDOWN;
-		if (e.type == EventType::MouseUp) message = e.button == 1 ? WM_LBUTTONUP : WM_RBUTTONUP;
-		if (PortWideEditor() && !PortOptionsOpen() && e.x >= 0 && e.x < PortViewWidth() && e.y >= 0 && e.y < LYIMAGE)
-		{
-			PortEditorMouse(message, (int)MouseKeys(e), e.x, e.y);
-			break;
-		}
-		if (!e.inside)
-		{
-			// Outside the game's window (the side areas of a wide view in play,
-			// the letterbox): as before.
-			if (!PortMouseInSideArea(PortViewWidth(), e.x, e.y) && message == WM_MOUSEMOVE)
-			{
-				WindowProc(WM_NCMOUSEMOVE, 0, 0);
-			}
-			break;
-		}
-		if (PortOptionsMouse(message, MouseKeys(e), MousePos(e.x, e.y))) break;
-		WindowProc(message, MouseKeys(e), MousePos(e.x, e.y));
-		if (message == WM_MOUSEMOVE) PortOptionsHover(MousePos(e.x, e.y));
-		break;
-	}
-	}
-}
-
-// TranslateMessage for posted key presses (scripted input): the historical
-// message loop turned them into a following WM_CHAR. Unshifted keyboard state.
-// Live keyboard input gets its WM_CHAR from TranslateHostEvent instead.
-int TranslatedChar(WPARAM vk)
-{
-	if (vk == VK_BACK || vk == VK_TAB || vk == VK_RETURN || vk == VK_ESCAPE || vk == VK_SPACE) return (int)vk;
-	if (vk >= '0' && vk <= '9') return (int)vk;
-	if (vk >= 'A' && vk <= 'Z') return (int)(vk - 'A' + 'a');
-	return 0;
-}
-
-void DispatchPosted()
-{
-	PortMessage msg;
-	while (!g_bQuit && PortPopMessage(msg))
-	{
-		if (PortOptionsCommand(msg.message)) continue;
-		if ((msg.message == WM_KEYDOWN || msg.message == WM_KEYUP || msg.message == WM_CHAR) && PortOptionsKey(msg.message, msg.wParam)) continue;   // the port's own buttons
-		// Scripted mouse input meets the port's screen like live input.
-		if ((msg.message == WM_MOUSEMOVE || msg.message == WM_LBUTTONDOWN || msg.message == WM_LBUTTONUP ||
-			 msg.message == WM_RBUTTONDOWN || msg.message == WM_RBUTTONUP) &&
-			PortOptionsMouse(msg.message, msg.wParam, msg.lParam)) continue;
-		WindowProc(msg.message, msg.wParam, msg.lParam);
-		int ch = msg.message == WM_KEYDOWN ? TranslatedChar(msg.wParam) : 0;
-		if (ch != 0 && !g_bQuit) WindowProc(WM_CHAR, (WPARAM)ch, msg.lParam);
-	}
-}
-
-void PostInput(const Options& o, long frame) {
-    for (const Input& in : o.inputs) {
-        if (in.frame != frame) continue;
-        // Presentation-coordinate editor smoke checks use the same route as
-        // live host input; ordinary scripts keep their historical coordinates.
-        if (in.kind == "viewclick" || in.kind == "viewmove" || in.kind == "viewrightclick") {
-            blupi::host::Event e{};
-            e.x = in.x; e.y = in.y;
-            e.inside = in.x >= 0 && in.x < LXIMAGE && in.y >= 0 && in.y < LYIMAGE;
-            e.type = blupi::host::EventType::MouseMove;
-            TranslateHostEvent(e);
-            if (in.kind != "viewmove") {
-                e.button = in.kind == "viewrightclick" ? 3 : 1;
-                e.type = blupi::host::EventType::MouseDown;
-                e.leftDown = e.button == 1; e.rightDown = e.button != 1;
-                TranslateHostEvent(e);
-                e.type = blupi::host::EventType::MouseUp;
-                e.leftDown = e.rightDown = false;
-                TranslateHostEvent(e);
-            }
-            continue;
-        }
-        if (in.kind == "move" || in.kind == "click") {
-            SetCursorPos(in.x, in.y);
-            PostMessage(g_hWnd, WM_MOUSEMOVE, 0, MAKELPARAM(in.x, in.y));
-            if (in.kind == "click") {
-                PostMessage(g_hWnd, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(in.x, in.y));
-                PostMessage(g_hWnd, WM_LBUTTONUP, 0, MAKELPARAM(in.x, in.y));
-            }
-        } else {
-            if (in.kind != "keyup") PostMessage(g_hWnd, WM_KEYDOWN, in.x, 1);
-            if (in.kind != "keydown") PostMessage(g_hWnd, WM_KEYUP, in.x, 1 | (1u<<30) | (1u<<31));
-        }
-    }
-}
-} // namespace
-
-int BlupiMain(int argc, char** argv) {
-    if (argc == 2 && std::string(argv[1]) == "--version") { Usage(); return 0; }
-    if (argc == 2 && (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")) { Usage(); return 0; }
-    Options o;
-    if (!Parse(argc, argv, o)) { Usage(); return 2; }
-    if (!o.probe.empty()) {
-        FILE* file = fopen(o.probe.c_str(), "r");
-        bool ok = file && PortProbeLoad(file);
-        if (file) fclose(file);
-        if (!ok) return 2;
-    }
-	// Port settings (game/settings.h): the file, then this run's options.
-	// Headless runs use defaults and options only, and save nothing.
-	g_bHeadless = o.host.headless;
-	{
-		PortSettings fromFile;
-		if (!g_bHeadless)
-		{
-			std::string user = o.user.empty() ? blupi::host::pref_path("Epsitec", "Speedy Blupi 2 SDL3") : o.user + "/";
-			g_settingsPath = user + "blupi2-sdl3.json";
-			PortSettingsLoad(g_settingsPath.c_str(), fromFile);
-		}
-		PortSettings& s = o.settings;
-		if (!o.setWide) s.widescreen = fromFile.widescreen;
-		if (!o.setInterpolate) s.interpolate = fromFile.interpolate;
-		if (!o.setPresent) s.displayRate = fromFile.displayRate;
-		if (!o.setFullscreen) s.fullscreen = fromFile.fullscreen;
-		if (!o.setScale) s.scale = fromFile.scale;
-		if (!o.setIntegerScale) s.integerScale = fromFile.integerScale;
-		s.dataFolder = fromFile.dataFolder;
-		if (!o.setLanguage) s.language = fromFile.language;
-		g_settings = s;
-	}
-	o.host.fullscreen = g_settings.fullscreen;
-	o.host.scale = g_settings.scale;
-	o.host.integerScale = g_settings.integerScale;
-	o.host.autoWide = g_settings.widescreen && g_wideWidth == 0;
-	o.host.viewWidth = g_wideWidth;
-	g_bInterpolate = g_settings.interpolate && g_settings.displayRate;
-	g_presentDisplayRate = g_settings.displayRate;
     extern const unsigned char g_sb2IconPng[];
     extern const unsigned g_sb2IconPngSize;
-    o.host.iconPng = g_sb2IconPng;
-    o.host.iconPngSize = g_sb2IconPngSize;
-    if (!blupi::host::init("Speedy Blupi 2 / Speedy Eggbert 2", LXIMAGE, LYIMAGE, o.host)) return 1;
-    if (o.data.empty()) { if (const char* p = getenv("BLUPI2_DATA")) o.data = p; }
-    if (o.data.empty()) o.data = g_settings.dataFolder;
-    if (o.data.empty()) { blupi::host::message_box("Blupi 2", "Pass --data <SB2 game folder> or set BLUPI2_DATA."); blupi::host::shutdown(); return 1; }
-    if (o.user.empty()) o.user = blupi::host::pref_path("Epsitec", "Speedy Blupi 2 SDL3");
-    blupi::vfs::set_roots(o.data, o.user);
-    if (blupi::vfs::resolve_read("data/config.def").empty() || blupi::vfs::resolve_read("image08/init.blp").empty()) {
-        blupi::host::message_box("Blupi 2", "SB2 game data not found."); blupi::host::shutdown(); return 1;
-    }
-    g_settings.dataFolder = o.data;
-    PortLanguageInit(g_settings.language);
-    g_appliedLanguage = g_settings.language;
-    blupi::audio::init(!o.host.headless);
-    if (!o.soundfont.empty()) blupi::music::load_soundfont(o.soundfont);
-    else if (!o.host.headless) {
-        const char* env = getenv("BLUPI_SOUNDFONT");
-        if (!env || !blupi::music::load_soundfont(env)) blupi::music::load_soundfont(blupi::host::base_path()+"soundfont.sf2");
-    }
-    FILE* trace = o.trace.empty() ? NULL : fopen(o.trace.c_str(), "w");
-    FILE* demoLog = o.demoLog.empty() ? NULL : fopen(o.demoLog.c_str(), "w");
-    if ((!o.trace.empty() && !trace) || (!o.demoLog.empty() && !demoLog)) {
-        if (trace) fclose(trace);
-        if (demoLog) fclose(demoLog);
-        blupi::audio::shutdown(); blupi::music::shutdown(); blupi::host::shutdown(); return 2;
-    }
-    FILE* displayLog = o.displayLog.empty() ? nullptr : fopen(o.displayLog.c_str(), "w");
-    if (!o.displayLog.empty() && !displayLog) {
-        if (trace) fclose(trace);
-        if (demoLog) fclose(demoLog);
-        blupi::audio::shutdown(); blupi::music::shutdown(); blupi::host::shutdown(); return 2;
-    }
-    PortPixmapSetDisplayCapture(displayLog, o.displayDumpDir.c_str(), o.displayDumpEvery);
-    g_bActive = TRUE;
-    g_bReference = o.reference;
-    g_bCheckScene = o.checkScene;
-    g_bCheckView = o.checkView;
-    g_bCheckWide = o.checkWide && g_wideWidth > 0;
-    PortUpdateCoverage();
-    if (o.commands) PortPixmapEnableCommandCheck();
-    int result = 0;
-    if (!DoInit(NULL, (LPSTR)"", 0)) result = 1;
-    else {
-        PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings, !blupi::host::touch_screen(), 70, 411);
+    game.icon = g_sb2IconPng; game.iconSize = g_sb2IconPngSize;
+    std::string demoLogPath;
+    FILE* demoLog = nullptr;
+    int lastDemo = -1;
+    game.extraUsage = "  --demo-log FILE     record attract-mode demo transitions\n"
+                      "  --check-presentation compare state and primary pixels across presents\n";
+    game.option = [&](const std::string& a, int& i, int argc, char** argv) {
+        if (a == "--check-presentation") { g_bCheckPresentation = true; return 1; }
+        if (a != "--demo-log") return 0;
+        if (i + 1 >= argc) return -1;
+        demoLogPath = argv[++i]; return 1;
+    };
+    // The SB2 harness has always required a finite unattended run.
+    game.validateOptions = [](const Options& o) { return !o.host.headless || o.ticks >= 0; };
+
+    game.configure = [](const Options& o) {
+        g_bHeadless = o.host.headless;
+        g_portColorDepth = o.colorDepth; g_wideWidth = o.wideWidth;
+        g_bReference = o.reference; g_renderRepeat = o.renderRepeat;
+        g_bInterpolate = g_settings.interpolate && g_settings.displayRate;
+        g_presentDisplayRate = g_settings.displayRate;
+        g_bCheckScene = o.checkScene; g_bCheckView = o.checkView;
+        g_bCheckWide = o.checkWide && g_wideWidth > 0;
+        PortUpdateCoverage();
+    };
+    game.initialize = [&](const Options& o) {
+        // SB2 already remembers its effective root when Display options save.
+        g_settings.dataFolder = blupi::vfs::game_root();
+        PortLanguageInit(g_settings.language);
+        g_appliedLanguage = g_settings.language;
+        if (!o.probe.empty()) {
+            FILE* f = fopen(o.probe.c_str(), "r");
+            bool ok = f && PortProbeLoad(f);
+            if (f) fclose(f);
+            if (!ok) return 2;
+        }
+        if (!demoLogPath.empty()) { demoLog = fopen(demoLogPath.c_str(), "w"); if (!demoLog) return 2; }
+        g_hWnd = nullptr; g_bActive = TRUE;
+        if (o.checkCommands) PortPixmapEnableCommandCheck();
+        if (!DoInit(NULL, (LPSTR)"", 0)) return 1;
+        PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings,
+                        !blupi::host::touch_screen(), 70, 411);
         PortPixmapHideCursor(blupi::host::touch_screen());
         Benchmark();
-        const uint64_t interval = (uint64_t)g_timerInterval*1000000;
-        uint64_t next = blupi::host::now_ns()+interval;
-        long frame = 0;
-        int lastDemo = -1;
-        uint64_t lastTick = blupi::host::now_ns();
-        PortPerf perf;
-        while (!g_bQuit && (o.frames < 0 || frame < o.frames)) {
-            blupi::host::Event e;
-            while (!g_bQuit && blupi::host::poll_event(e)) TranslateHostEvent(e);
-            if (g_bQuit) break;
-            for (int right = 0; right < 2; ++right) {
-                if (g_portArrowHeld[right] && PortEditorScrollBlocked(right != 0)) {
-                    g_portArrowHeld[right] = false;
-                    WindowProc(WM_KEYUP, right ? VK_RIGHT : VK_LEFT, (LPARAM)(1 | (1 << 30) | (1u << 31)));
-                }
-            }
-            PortSoundPoll(); DispatchPosted();
-            if (g_bQuit) break;
-            uint64_t now = blupi::host::now_ns();
-            if (o.host.headless || now >= next) {
-                g_drawProbeFrame = frame;
-                PortProbeApply(frame);
-                PostInput(o, frame); DispatchPosted();
-                if (g_bQuit) break;
-                const uint64_t tickStart = blupi::host::now_ns();
-                TimerStep(); perf.Tick(blupi::host::now_ns() - tickStart); lastTick = now; int pending = g_timer; DispatchPosted();
-                if (g_bQuit) break;
-                next = PortNextTick(next, now, interval);
-                if (pending == 1 && g_timer == 0) {
-                    ++frame;
-                    int demo = g_pEvent->*PortEventAccess::m_bDemoPlay ? 300 + g_pEvent->*PortEventAccess::m_demoNumber : -1;
-                    if (demoLog && demo != lastDemo) fprintf(demoLog, "%ld %d\n", frame, demo);
-                    lastDemo = demo;
-                    if (o.host.headless) {
-                        std::vector<float> discard((size_t)(44100*g_timerInterval/1000)*2);
-                        blupi::music::render_mix(discard.data(), (int)discard.size()/2, 44100);
-                    }
-                    if (trace && frame%o.every == 0) fprintf(trace, "%ld %u %016llx %016llx\n", frame, g_pEvent->GetPhase(), (unsigned long long)PortStateHash(), (unsigned long long)PortPixmapScreenHash());
-                    for (const auto& p : o.shots) if (p.first == frame) {
-                        PortPresentNow(o.screenshotAlpha >= 0.0 ? o.screenshotAlpha : 1.0);
-                        if (!PortPixmapWriteScreenBmp(p.second.c_str())) result = 2;
-                    }
-                    for (const auto& p : o.dumps) if (p.first == frame) {
-                        FILE* f = fopen(p.second.c_str(), "w"); if (f) { PortStateDump(f); fclose(f); } else result = 2;
-                    }
-                    for (int i = 0; i < o.presentRepeat; ++i) PortPresentNow(g_bInterpolate ? (i + 1.0) / o.presentRepeat : 1.0);
-                    if (!g_presentDisplayRate && !o.host.headless) PortPresentNow(1.0);
-                }
-            }
-            if (!o.host.headless && blupi::host::fullscreen() != g_settings.fullscreen) {
-                g_settings.fullscreen = blupi::host::fullscreen(); PortOptionsSync(); PortSaveSettings();
-            }
-            if (g_presentDisplayRate && !o.host.headless) {
-                const uint64_t t0 = blupi::host::now_ns();
-                PortPresentNow(PortFrameAlpha(t0, lastTick, interval));
-                const uint64_t t1 = blupi::host::now_ns();
-                PortPixmapPresentIfDirty();
-                const uint64_t t2 = blupi::host::now_ns();
-                perf.Present(t1 - t0, t2 - t1, t2, frame, PortViewWidth());
-                if (!blupi::host::presents_with_vsync()) {
-                    now = blupi::host::now_ns();
-                    uint64_t pause = 4000000;
-                    if (now < next && next - now < pause) pause = next - now;
-                    if (now < next && blupi::host::wait_event(e, pause)) TranslateHostEvent(e);
-                }
-                continue;
-            }
-            PortPixmapPresentIfDirty();
-            now = blupi::host::now_ns();
-            if (!o.host.headless && now < next && blupi::host::wait_event(e, next-now)) TranslateHostEvent(e);
-        }
-    }
-    if (trace) fclose(trace);
-    if (demoLog) fclose(demoLog);
-    long displays, mismatches, first;
-    if (PortPixmapCommandCheckResult(displays, mismatches, first)) {
-        printf("SB2 command check: %ld displays, %ld mismatches (first %ld)\n", displays, mismatches, first);
-        if (!displays || mismatches) result = 3;
-    }
-	if (o.checkScene)
-	{
-		printf("scene check: %ld Build calls compared, %ld mismatches (first at call %ld%s%s)\n",
-			   g_sceneFrames, g_sceneMismatches, g_sceneFirstMismatch,
-			   g_sceneFirstDetail.empty() ? "" : ": ", g_sceneFirstDetail.c_str());
-		if (g_sceneMismatches != 0 || g_sceneFrames == 0) result = 4;
-	}
-	if (o.checkView)
-	{
-		printf("view check: %ld frames compared, %ld mismatches (first at frame %ld)\n",
-			   g_viewFrames, g_viewMismatches, g_viewFirstMismatch);
-		if (g_viewMismatches != 0 || g_viewFrames == 0) result = 5;
-	}
-	if (g_bCheckWide)
-	{
-		printf("wide check: %ld frames compared, %ld clamped frames skipped, %ld mismatches (first at frame %ld)\n",
-			   g_wideFrames, g_wideSkipped, g_wideMismatches, g_wideFirstMismatch);
-		if (g_wideMismatches != 0 || g_wideFrames == 0) result = 6;
-	}
-	if (g_bCheckPresentation || g_bCheckView)
-	{
-		printf("presentation check: %ld presents, %ld state/primary mismatches\n",
-			   g_presentationFrames, g_presentationMismatches);
-		if (g_presentationMismatches != 0 || (g_bCheckPresentation && g_presentationFrames == 0)) result = 7;
-	}
-    FinishObjects();
-    PortPixmapSetDisplayCapture(nullptr, "", 0);
-    if (displayLog) fclose(displayLog);
-    blupi::audio::shutdown(); blupi::music::shutdown(); blupi::host::shutdown();
-    return result;
-}
+        return 0;
+    };
+    game.finish = [&]() { FinishObjects(); if (demoLog) { fclose(demoLog); demoLog = nullptr; } };
+    game.timerStep = TimerStep; game.timerInterval = []() { return g_timerInterval; };
+    game.soundPoll = PortSoundPoll; game.saveSettings = PortSaveSettings;
+    game.prepareTick = [](long frame) { g_drawProbeFrame = frame; PortProbeApply(frame); };
+    game.completedTick = [&](long frame) {
+        int demo = g_pEvent->*PortEventAccess::m_bDemoPlay ? 300 + g_pEvent->*PortEventAccess::m_demoNumber : -1;
+        if (demoLog && demo != lastDemo) fprintf(demoLog, "%ld %d\n", frame, demo);
+        lastDemo = demo;
+    };
+    game.maintenance = []() {
 
+    };
+    game.phase = []() { return g_pEvent ? g_pEvent->GetPhase() : 0u; };
+    game.stateHash = PortStateHash; game.screenHash = PortPixmapScreenHash;
+    game.stateDump = PortStateDump; game.screenshot = PortPixmapWriteScreenBmp;
+    game.present = PortPresentNow; game.presentIfDirty = PortPixmapPresentIfDirty;
+    game.viewWidth = PortViewWidth; game.displayCapture = PortPixmapSetDisplayCapture;
+    game.windowProc = WindowProc;
+
+    game.editorScrollBlocked = PortEditorScrollBlocked;
+    game.wideEditor = PortWideEditor; game.editorMouse = PortEditorMouse;
+    game.mouseInSideArea = PortMouseInSideArea;
+    game.checkResult = [](const Options& o) {
+        int result = 0;
+        long displays, mismatches, first;
+        if (PortPixmapCommandCheckResult(displays, mismatches, first)) {
+            printf("SB2 command check: %ld displays, %ld mismatches (first %ld)\n", displays, mismatches, first);
+            if (!displays || mismatches) result = 3;
+        }
+        if (o.checkScene)
+        {
+            printf("scene check: %ld Build calls compared, %ld mismatches (first at call %ld%s%s)\n",
+                   g_sceneFrames, g_sceneMismatches, g_sceneFirstMismatch,
+                   g_sceneFirstDetail.empty() ? "" : ": ", g_sceneFirstDetail.c_str());
+            if (g_sceneMismatches != 0 || g_sceneFrames == 0) result = 4;
+        }
+        if (o.checkView)
+        {
+            printf("view check: %ld frames compared, %ld mismatches (first at frame %ld)\n",
+                   g_viewFrames, g_viewMismatches, g_viewFirstMismatch);
+            if (g_viewMismatches != 0 || g_viewFrames == 0) result = 5;
+        }
+        if (g_bCheckWide)
+        {
+            printf("wide check: %ld frames compared, %ld clamped frames skipped, %ld mismatches (first at frame %ld)\n",
+                   g_wideFrames, g_wideSkipped, g_wideMismatches, g_wideFirstMismatch);
+            if (g_wideMismatches != 0 || g_wideFrames == 0) result = 6;
+        }
+        if (g_bCheckPresentation || g_bCheckView)
+        {
+            printf("presentation check: %ld presents, %ld state/primary mismatches\n",
+                   g_presentationFrames, g_presentationMismatches);
+            if (g_presentationMismatches != 0 || (g_bCheckPresentation && g_presentationFrames == 0)) result = 7;
+        }
+
+        return result;
+    };
+    return blupi::app::Run(argc, argv, game);
+}

@@ -294,6 +294,24 @@ foreach(game sb1 sb2_eggbert sb2_blupi)
         endforeach()
     endif()
 endforeach()
+
+# Both executables use the same launcher, with game-specific names and extras.
+foreach(target blupi blupi2)
+    if(target STREQUAL "blupi")
+        set(app_name blupi-sdl3)
+        set(data_env BLUPI_DATA)
+        set(extra --export-language)
+    else()
+        set(app_name blupi2-sdl3)
+        set(data_env BLUPI2_DATA)
+        set(extra --demo-log)
+    endif()
+    add_test(NAME launcher_help_${target}
+        COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${target}> -DNAME=${app_name}
+            -DENVIRONMENT=${data_env} -DEXTRA=${extra}
+            -DVERSION_FILE=${PROJECT_SOURCE_DIR}/VERSION.txt
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/launcher_help.cmake)
+endforeach()
 option(BLUPI2_UPDATE_GOLDEN "Rewrite only the SB2 golden traces" OFF)
 # Optional presentation modes use the existing faithful traces as their oracle.
 # Updating any golden is deliberately disabled for these variants.
@@ -391,3 +409,4 @@ foreach(edition eggbert blupi)
         endforeach()
     endif()
 endforeach()
+include(launcher_tests.cmake)

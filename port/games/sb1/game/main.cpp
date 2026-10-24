@@ -40,6 +40,7 @@
 #include "platform/host.h"
 #include "platform/vfs.h"
 #include "presentation/timing.h"
+#include "app/launcher.h"
 
 #include <new>
 #include <string>
@@ -1189,774 +1190,144 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 
 #undef fopen
 
-namespace
-{
-// The player's folder: saves, settings, languages (README: "Your files").
-std::string PortUserFolder()
-{
-	return blupi::host::pref_path("Epsitec", "Speedy Blupi SDL3");
-}
 
-struct ScriptedInput
-{
-	long tick;
-	int  kind;    // 0 click at (x, y), 1 key press, 2 key down, 3 key up, 4 move to (x, y)
-	int  x, y, vk;
-};
-
-struct Options
-{
-	blupi::host::Options host;
-	std::string dataRoot;
-	std::string userRoot;
-	std::string soundFont;
-	bool        version = false;      // --version: print it and exit
-	int         colorDepth = 0;       // 0 = from config.def
-	long        ticks = -1;           // stop after this many WM_UPDATE frames
-	std::string trace;                // per-frame "frame phase statehash screenhash"
-	long        traceEvery = 1;
-	std::vector<std::pair<long, std::string>> stateDumps;
-	std::string displayLog;
-	std::string displayDumpDir;
-	long        displayDumpEvery = 0;
-	bool        checkCommands = false;
-	bool        checkScene = false;
-	PortSettings settings;                   // file values, then the options below
-	bool        setWide = false, setInterpolate = false, setPresent = false;
-	bool        setFullscreen = false, setScale = false, setIntegerScale = false;
-	bool        setLanguage = false;
-	std::string exportLanguage, exportPath;   // --export-language
-	bool        checkView = false;
-	bool        checkWide = false;
-	int         presentRepeat = 0;           // --present-repeat (test)
-	std::string probe;
-	std::vector<std::pair<long, std::string>> screenshots;
-	double      screenshotAlpha = -1.0;      // --screenshot-alpha (test)
-	std::vector<ScriptedInput> inputs;
-	bool        verbose = false;
-};
-
-void Usage()
-{
-	printf(
-		"blupi-sdl3 " BLUPI_PORT_VERSION " [options]\n"
-		"  --data DIR          game root holding DATA/, IMAGE08/, IMAGE16/, SOUND/ (read-only);\n"
-		"                      default: BLUPI_DATA, the folder chosen on the first run (kept\n"
-		"                      in the settings), the program's folder\n"
-		"  --user DIR          writable directory for saves and user missions\n"
-		"  --fullscreen        start in desktop fullscreen (Alt+Enter toggles)\n"
-		"  --scale N           initial window scale (default 2)\n"
-		"  --present display|tick  present at the display rate (default; the game still\n"
-		"                      runs at its 50 ms tick) or only when the game draws (vanilla)\n"
-		"  --interpolate       smooth movement between ticks when presenting at the display\n"
-		"                      rate (visual only; shows the world up to one tick later)\n"
-		"  --wide auto|off|W|A:B  widescreen: auto follows the window shape (4:3 to 21:9);\n"
-		"                      W or A:B is a fixed view W pixels wide (or of aspect A:B at\n"
-		"                      height 480). The world shows more around the 640x480 frame;\n"
-		"                      HUD and menus stay in the centred frame\n"
-		"settings: the window and display options are kept in blupi-sdl3.json in the user\n"
-		"directory and set on the game's settings screen (Display options); the options\n"
-		"above override them for one run.\n"
-		"  --integer-scale     scale only by whole factors\n"
-		"  --color 8|16        override TrueColor from config.def\n"
-		"  --soundfont FILE    SoundFont (.sf2) for the MIDI music; default: BLUPI_SOUNDFONT,\n"
-		"                      then soundfont.sf2 in the user directory or next to the program\n"
-		"  --verbose           log the game's debug output\n"
-		"  --version           print the version and exit\n"
-		"  --language CODE     language pack for this run (us, de, fr; Eggbert: en, de, es,\n"
-		"                      fr, it, pt; or a pack in languages/ of the user folder)\n"
-		"  --export-language WHICH FILE  write a built-in language pack (\"de\", \"eggbert-es\")\n"
-		"                      to FILE as a start for a translation, and exit\n"
-		"test options:\n"
-		"  --headless          no window, no audio device, frames run back to back\n"
-		"  --frames N          exit after N game frames (WM_UPDATE)\n"
-		"  --trace FILE        write 'frame phase state-hash screen-hash' per frame\n"
-		"  --trace-every N     write only every Nth frame (checkpoints)\n"
-		"  --state-dump N:FILE write every hashed state field after frame N\n"
-		"  --display-log FILE  raw back-buffer hash at every Display (cross-build oracle)\n"
-		"  --display-dump DIR:N  raw frame file at every Nth Display\n"
-		"  --check-commands    replay every frame's rendering commands on a second device\n"
-		"                      and require identical pixels (exit code 3 otherwise)\n"
-		"  --render-repeat K   render each tick's frame K extra times (must change nothing)\n"
-		"  --present-repeat K  present each tick's frame K extra times with the cursor (test)\n"
-		"  --reference         historical SetDecor (CDecor::Build and DrawButtons drawing\n"
-		"                      directly) instead of scene + EndOfTick + captured UI\n"
-		"  --check-scene       build the frame scene before CDecor::Build and require the\n"
-		"                      same rendering commands (exit code 4 otherwise)\n"
-		"  --check-view        require the view renderer at alpha 1 to issue the faithful\n"
-		"                      frame's rendering commands (exit code 5 otherwise)\n"
-		"  --check-wide        with --wide: require the centre of the wide view to equal the\n"
-		"                      faithful frame where it is centred (exit code 6 otherwise)\n"
-		"  --screenshot N:FILE write the screen after frame N as a 24-bit BMP\n"
-		"  --screenshot-alpha A  present the view at alpha A (0..1 between the previous\n"
-		"                      tick and frame N) before writing screenshots\n"
-		"  --input FILE        scripted input: lines 'FRAME click|move X Y' or\n"
-		"                      'FRAME key|keydown|keyup VK' (may be given more than once)\n");
-}
-
-bool LoadInputScript(const std::string& path, std::vector<ScriptedInput>& inputs)
-{
-	FILE* file = fopen(path.c_str(), "r");
-	if (file == NULL) return false;
-	char line[200];
-	while (fgets(line, sizeof(line), file))
-	{
-		ScriptedInput in = {};
-		char kind[16] = {};
-		if (line[0] == '#' || sscanf(line, "%ld %15s", &in.tick, kind) != 2) continue;
-		if ((strcmp(kind, "click") == 0 || strcmp(kind, "move") == 0) &&
-			sscanf(line, "%ld %15s %d %d", &in.tick, kind, &in.x, &in.y) == 4)
-		{
-			in.kind = strcmp(kind, "click") == 0 ? 0 : 4;
-			inputs.push_back(in);
-			continue;
-		}
-		in.kind = strcmp(kind, "key") == 0 ? 1 : strcmp(kind, "keydown") == 0 ? 2 : strcmp(kind, "keyup") == 0 ? 3 : -1;
-		if (in.kind > 0 && sscanf(line, "%ld %15s %d", &in.tick, kind, &in.vk) == 3)
-		{
-			inputs.push_back(in);
-		}
-	}
-	fclose(file);
-	return true;
-}
-
-bool ParseOptions(int argc, char** argv, Options& o)
-{
-	for (int i = 1; i < argc; i++)
-	{
-		std::string a = argv[i];
-		auto next = [&]() -> const char* { return i + 1 < argc ? argv[++i] : ""; };
-		if (a == "--data") o.dataRoot = next();
-		else if (a == "--user") o.userRoot = next();
-		else if (a == "--fullscreen") { o.settings.fullscreen = true; o.setFullscreen = true; }
-		else if (a == "--scale") { o.settings.scale = atoi(next()); o.setScale = true; }
-		else if (a == "--integer-scale") { o.settings.integerScale = true; o.setIntegerScale = true; }
-		else if (a == "--color") o.colorDepth = atoi(next());
-		else if (a == "--soundfont") o.soundFont = next();
-		else if (a == "--verbose") o.verbose = true;
-		else if (a == "--headless") o.host.headless = true;
-		else if (a == "--frames") o.ticks = atol(next());
-		else if (a == "--trace") o.trace = next();
-		else if (a == "--trace-every") { o.traceEvery = atol(next()); if (o.traceEvery < 1) o.traceEvery = 1; }
-		else if (a == "--display-log") o.displayLog = next();
-		else if (a == "--check-commands") o.checkCommands = true;
-		else if (a == "--check-scene") o.checkScene = true;
-		else if (a == "--check-view") o.checkView = true;
-		else if (a == "--screenshot-alpha") o.screenshotAlpha = atof(next());
-		else if (a == "--interpolate") { o.settings.interpolate = true; o.setInterpolate = true; }
-		else if (a == "--check-wide") o.checkWide = true;
-		else if (a == "--wide")
-		{
-			std::string v = next();
-			o.setWide = true;
-			if (v == "auto" || v == "off")
-			{
-				o.settings.widescreen = v == "auto";
-				g_wideWidth = 0;
-				continue;
-			}
-			o.settings.widescreen = false;
-			size_t colon = v.find(':');
-			int width = colon == std::string::npos ? atoi(v.c_str())
-						: (LYIMAGE * atoi(v.c_str()) + atoi(v.c_str() + colon + 1) - 1) / atoi(v.c_str() + colon + 1);
-			width = (width + 1) & ~1;   // even: the frame is centred on whole pixels
-			if (width < LXIMAGE || width > 4 * LXIMAGE) return false;
-			g_wideWidth = width == LXIMAGE ? 0 : width;
-		}
-		else if (a == "--reference") g_bReference = true;
-		else if (a == "--render-repeat") g_renderRepeat = atoi(next());
-		else if (a == "--present")
-		{
-			std::string mode = next();
-			if (mode == "tick") o.settings.displayRate = false;
-			else if (mode == "display") o.settings.displayRate = true;
-			else return false;
-			o.setPresent = true;
-		}
-		else if (a == "--present-repeat") o.presentRepeat = atoi(next());
-		else if (a == "--probe") o.probe = next();
-		else if (a == "--display-dump")
-		{
-			std::string v = next();
-			size_t colon = v.rfind(':');
-			if (colon == std::string::npos || colon < 2) return false;
-			o.displayDumpDir = v.substr(0, colon);
-			o.displayDumpEvery = atol(v.substr(colon + 1).c_str());
-		}
-		else if (a == "--state-dump")
-		{
-			std::string v = next();
-			size_t colon = v.find(':');
-			if (colon == std::string::npos) return false;
-			o.stateDumps.push_back({atol(v.substr(0, colon).c_str()), v.substr(colon + 1)});
-		}
-		else if (a == "--screenshot")
-		{
-			std::string v = next();
-			size_t colon = v.find(':');
-			if (colon == std::string::npos) return false;
-			o.screenshots.push_back({atol(v.substr(0, colon).c_str()), v.substr(colon + 1)});
-		}
-		else if (a == "--input")
-		{
-			if (!LoadInputScript(next(), o.inputs)) return false;
-		}
-		else if (a == "--help" || a == "-h") return false;
-		else if (a == "--version") o.version = true;
-		else if (a == "--language") { o.settings.language = next(); o.setLanguage = true; }
-		else if (a == "--export-language")
-		{
-			o.exportLanguage = next();
-			o.exportPath = next();
-		}
-		else if (a == "-nocd") {}  // historical switch, meaningless here
-		else
-		{
-			printf("unknown option: %s\n", a.c_str());
-			return false;
-		}
-	}
-	return true;
-}
-
-bool LooksLikeGameRoot(const std::string& root)
-{
-	if (root.empty()) return false;
-	blupi::vfs::set_roots(root, "");
-	return !blupi::vfs::resolve_read("data\\config.def").empty() &&
-		   !blupi::vfs::resolve_read("image08\\init.blp").empty();
-}
-
-LPARAM MousePos(int x, int y)
-{
-	return MAKELPARAM(x, y);
-}
-
-WPARAM MouseKeys(const blupi::host::Event& e)
-{
-	WPARAM w = 0;
-	if (e.leftDown) w |= MK_LBUTTON;
-	if (e.rightDown) w |= MK_RBUTTON;
-	if (e.shift) w |= MK_SHIFT;
-	if (e.control) w |= MK_CONTROL;
-	return w;
-}
-
-// Host event -> the window messages Windows would have delivered.
-void TranslateHostEvent(const blupi::host::Event& e)
-{
-	using blupi::host::EventType;
-	switch (e.type)
-	{
-	case EventType::Quit:
-		WindowProc(WM_CLOSE, 0, 0);
-		break;
-	case EventType::FocusGained:
-		WindowProc(WM_ACTIVATEAPP, 1, 0);
-		break;
-	case EventType::FocusLost:
-		WindowProc(WM_ACTIVATEAPP, 0, 0);
-		break;
-	case EventType::KeyDown:
-		if (PortOptionsKey(WM_KEYDOWN, (WPARAM)e.key)) break;
-		if (e.key == VK_LEFT || e.key == VK_RIGHT)
-		{
-			const bool right = e.key == VK_RIGHT;
-			if (PortEditorScrollBlocked(right)) break;
-			g_portArrowHeld[right] = true;
-		}
-		WindowProc(WM_KEYDOWN, (WPARAM)e.key, (LPARAM)(1 | (e.repeat ? (1 << 30) : 0)));
-		// TranslateMessage: control characters that become WM_CHAR.
-		if (e.key == VK_BACK || e.key == VK_RETURN || e.key == VK_ESCAPE || e.key == VK_TAB)
-			WindowProc(WM_CHAR, (WPARAM)e.key, 1);
-		break;
-	case EventType::KeyUp:
-		if (PortOptionsKey(WM_KEYUP, (WPARAM)e.key)) break;
-		if (e.key == VK_LEFT || e.key == VK_RIGHT)
-		{
-			const bool right = e.key == VK_RIGHT;
-			if (!g_portArrowHeld[right]) break;   // already released at the editor's edge
-			g_portArrowHeld[right] = false;
-		}
-		WindowProc(WM_KEYUP, (WPARAM)e.key, (LPARAM)(1 | (1 << 30) | (1u << 31)));
-		break;
-	case EventType::Text:
-		if (PortOptionsKey(WM_CHAR, (WPARAM)e.ch)) break;
-		WindowProc(WM_CHAR, (WPARAM)e.ch, 1);
-		break;
-	case EventType::MouseMove:
-	case EventType::MouseDown:
-	case EventType::MouseUp:
-	{
-		UINT message = WM_MOUSEMOVE;
-		if (e.type == EventType::MouseDown) message = e.button == 1 ? WM_LBUTTONDOWN : WM_RBUTTONDOWN;
-		if (e.type == EventType::MouseUp) message = e.button == 1 ? WM_LBUTTONUP : WM_RBUTTONUP;
-		if (PortWideEditor() && !PortOptionsOpen() && e.x >= 0 && e.x < PortViewWidth() && e.y >= 0 && e.y < LYIMAGE)
-		{
-			PortEditorMouse(message, (int)MouseKeys(e), e.x, e.y);
-			break;
-		}
-		if (!e.inside)
-		{
-			// Outside the game's window (the side areas of a wide view in play,
-			// the letterbox): as before.
-			if (!PortMouseInSideArea(PortViewWidth(), e.x, e.y) && message == WM_MOUSEMOVE)
-			{
-				WindowProc(WM_NCMOUSEMOVE, 0, 0);
-			}
-			break;
-		}
-		if (PortOptionsMouse(message, MouseKeys(e), MousePos(e.x, e.y))) break;
-		WindowProc(message, MouseKeys(e), MousePos(e.x, e.y));
-		if (message == WM_MOUSEMOVE) PortOptionsHover(MousePos(e.x, e.y));
-		break;
-	}
-	}
-}
-
-// TranslateMessage for posted key presses (scripted input): the historical
-// message loop turned them into a following WM_CHAR. Unshifted keyboard state.
-// Live keyboard input gets its WM_CHAR from TranslateHostEvent instead.
-int TranslatedChar(WPARAM vk)
-{
-	if (vk == VK_BACK || vk == VK_TAB || vk == VK_RETURN || vk == VK_ESCAPE || vk == VK_SPACE) return (int)vk;
-	if (vk >= '0' && vk <= '9') return (int)vk;
-	if (vk >= 'A' && vk <= 'Z') return (int)(vk - 'A' + 'a');
-	return 0;
-}
-
-void DispatchPosted()
-{
-	PortMessage msg;
-	while (!g_bQuit && PortPopMessage(msg))
-	{
-		if (PortOptionsCommand(msg.message)) continue;   // the port's own buttons
-		// Scripted mouse input meets the port's screen like live input.
-		if ((msg.message == WM_MOUSEMOVE || msg.message == WM_LBUTTONDOWN || msg.message == WM_LBUTTONUP ||
-			 msg.message == WM_RBUTTONDOWN || msg.message == WM_RBUTTONUP) &&
-			PortOptionsMouse(msg.message, msg.wParam, msg.lParam)) continue;
-		// Speedy Eggbert 1 (version 1.1) closes the program where Speedy Blupi
-		// 1.0 shows its goodbye screen: its ChangePhase quits on WM_PHASE_BYE
-		// (src/event.cpp, _EGAMES), as 1.0's does on WM_PHASE_DOQUIT.
-		if (msg.message == WM_PHASE_BYE && PortEdition() == "eggbert") msg.message = WM_PHASE_DOQUIT;
-		WindowProc(msg.message, msg.wParam, msg.lParam);
-		int ch = msg.message == WM_KEYDOWN ? TranslatedChar(msg.wParam) : 0;
-		if (ch != 0 && !g_bQuit) WindowProc(WM_CHAR, (WPARAM)ch, msg.lParam);
-	}
-}
-
-// Posts the scripted messages due before this frame, like the historical
-// smoke-test harness did with PostMessage.
-void PostScriptedInput(const Options& o, long frame)
-{
-	for (const ScriptedInput& in : o.inputs)
-	{
-		if (in.tick != frame) continue;
-		if (in.kind == 0)
-		{
-			LPARAM pos = MousePos(in.x, in.y);
-			PostMessage(g_hWnd, WM_MOUSEMOVE, 0, pos);
-			PostMessage(g_hWnd, WM_LBUTTONDOWN, MK_LBUTTON, pos);
-			PostMessage(g_hWnd, WM_LBUTTONUP, 0, pos);
-		}
-		if (in.kind == 4) PostMessage(g_hWnd, WM_MOUSEMOVE, 0, MousePos(in.x, in.y));
-		if (in.kind == 1 || in.kind == 2)
-		{
-			PostMessage(g_hWnd, WM_KEYDOWN, (WPARAM)in.vk, 1);
-		}
-		if (in.kind == 1 || in.kind == 3)
-		{
-			PostMessage(g_hWnd, WM_KEYUP, (WPARAM)in.vk, (LPARAM)(1 | (1 << 30) | (1u << 31)));
-		}
-	}
-}
-}  // namespace
-
+// Game-specific bridge to the common launcher. Historical-derived bodies above
+// retain their own headers, object order, message handling and presentation glue.
 int BlupiMain(int argc, char** argv)
 {
-	Options o;
-	if (!ParseOptions(argc, argv, o))
-	{
-		Usage();
-		return 2;
-	}
-	if (o.version)
-	{
-		printf("blupi-sdl3 %s\n", BLUPI_PORT_VERSION);
-		return 0;
-	}
-	if (!o.exportLanguage.empty())
-	{
-		bool ok = !o.exportPath.empty() && PortLanguageExport(o.exportLanguage, o.exportPath);
-		printf(ok ? "wrote %s\n" : "no built-in language pack \"%s\" (or cannot write the file)\n",
-			   ok ? o.exportPath.c_str() : o.exportLanguage.c_str());
-		return ok ? 0 : 1;
-	}
-	// Port settings (game/settings.h): the file, then this run's options.
-	// Headless runs use defaults and options only, and save nothing.
-	g_bHeadless = o.host.headless;
-	{
-		PortSettings fromFile;
-		if (!g_bHeadless)
-		{
-			std::string user = o.userRoot.empty() ? PortUserFolder() : o.userRoot + "/";
-			g_settingsPath = user + "blupi-sdl3.json";
-			PortSettingsLoad(g_settingsPath.c_str(), fromFile);
-		}
-		PortSettings& s = o.settings;
-		if (!o.setWide) s.widescreen = fromFile.widescreen;
-		if (!o.setInterpolate) s.interpolate = fromFile.interpolate;
-		if (!o.setPresent) s.displayRate = fromFile.displayRate;
-		if (!o.setFullscreen) s.fullscreen = fromFile.fullscreen;
-		if (!o.setScale) s.scale = fromFile.scale;
-		if (!o.setIntegerScale) s.integerScale = fromFile.integerScale;
-		s.dataFolder = fromFile.dataFolder;
-		if (!o.setLanguage) s.language = fromFile.language;
-		g_settings = s;
-	}
-	o.host.fullscreen = g_settings.fullscreen;
-	o.host.scale = g_settings.scale;
-	o.host.integerScale = g_settings.integerScale;
-	o.host.autoWide = g_settings.widescreen && g_wideWidth == 0;
-	o.host.viewWidth = g_wideWidth;
-	g_bInterpolate = g_settings.interpolate && g_settings.displayRate;
-	g_presentDisplayRate = g_settings.displayRate;
-	if (!blupi::host::init(TITLE, LXIMAGE, LYIMAGE, o.host)) return 1;
-	blupi::host::set_verbose(o.verbose);
-	blupi::host::log_info("Speedy Blupi SDL3 port " BLUPI_PORT_VERSION);
-	{
-		char text[80];
-		snprintf(text, sizeof(text), "view %dx%d", blupi::host::view_width(), LYIMAGE);
-		blupi::host::log_debug(text);
-	}
+    using blupi::app::Options;
+    blupi::app::Game game{};
+    game.name = "blupi-sdl3"; game.title = TITLE;
+    game.dataTitle = "Speedy Blupi 1 / Speedy Eggbert 1";
+    game.dataEnvironment = "BLUPI_DATA";
+    game.settingsFile = "blupi-sdl3.json"; game.userApp = "Speedy Blupi SDL3";
+    game.settings = &g_settings; game.settingsPath = &g_settingsPath;
+    game.quit = &g_bQuit; game.timer = &g_timer; game.arrowHeld = g_portArrowHeld;
+    game.recognizesData = [](const std::string& root) {
+        return blupi::app::RecognizesData(root, "data/demo200.blp");
+    };
 
-	// Locate the read-only game data and the writable user directory.
-	std::vector<std::string> candidates;
-	if (!o.dataRoot.empty()) candidates.push_back(o.dataRoot);
-	if (const char* env = getenv("BLUPI_DATA")) candidates.push_back(env);
-	if (!g_settings.dataFolder.empty()) candidates.push_back(g_settings.dataFolder);
-	candidates.push_back(blupi::host::base_path());
-	for (const std::string& dir : blupi::host::data_dirs()) candidates.push_back(dir);
-	candidates.push_back(".");
-	std::string root;
-	for (const std::string& c : candidates)
-	{
-		if (LooksLikeGameRoot(c)) { root = c; break; }
-		if (!o.dataRoot.empty()) break;  // an explicit --data must be right
-	}
-	// Desktop first run: the player shows where their copy of the game is (its
-	// installed folder, or a folder holding it, like the CD's), and the choice
-	// is kept in the settings file.
-	const char* ask = "Speedy Blupi needs the files of the original game.\n\n"
-					  "Choose the folder where Speedy Blupi is installed: the one that contains "
-					  "DATA, IMAGE08, IMAGE16 and SOUND.";
-	while (root.empty() && o.dataRoot.empty() && !g_bHeadless)
-	{
-		const std::string chosen = blupi::host::choose_folder(TITLE, ask);
-		if (chosen.empty()) break;
-		std::vector<std::string> tries = {chosen};
-		for (const std::string& sub : blupi::host::subdirectories(chosen)) tries.push_back(sub);
-		for (const std::string& c : tries)
-		{
-			if (LooksLikeGameRoot(c)) { root = c; break; }
-		}
-		if (root.empty())
-		{
-			ask = "That folder does not contain the game's files (DATA, IMAGE08, IMAGE16 and SOUND).\n\n"
-				  "Choose the folder where Speedy Blupi is installed.";
-			continue;
-		}
-		PortSettings file;
-		PortSettingsLoad(g_settingsPath.c_str(), file);
-		file.dataFolder = root;
-		g_settings.dataFolder = root;
-		if (!PortSettingsSave(g_settingsPath.c_str(), file))
-		{
-			blupi::host::log_info(("cannot write " + g_settingsPath).c_str());
-		}
-	}
-	if (root.empty())
-	{
-		blupi::host::message_box(TITLE, "Speedy Blupi data not found.\n"
-			"Pass --data <folder containing DATA, IMAGE08, IMAGE16 and SOUND>.");
-		blupi::host::shutdown();
-		return 1;
-	}
-	std::string user = o.userRoot.empty() ? PortUserFolder() : o.userRoot;
-	blupi::vfs::set_roots(root, user);
-	// A CD (Speedy Blupi 1 and 2): the data at its root, SOUND in each language
-	// folder (identical in all of them). The English one is preferred.
-	if (blupi::vfs::resolve_read("sound").empty())
-	{
-		std::string chosen;
-		for (const std::string& sub : blupi::host::subdirectories(root))
-		{
-			blupi::vfs::set_language_root(sub);
-			bool has = !blupi::vfs::resolve_read("sound").empty();
-			blupi::vfs::set_language_root("");
-			if (!has) continue;
-			std::string name = sub.substr(sub.find_last_of("/\\") + 1);
-			for (char& c : name) c = (char)tolower((unsigned char)c);
-			if (chosen.empty() || name == "us" || name == "english") chosen = sub;
-		}
-		blupi::vfs::set_language_root(chosen);
-		if (!chosen.empty()) blupi::host::log_info(("CD layout: language folder " + chosen).c_str());
-	}
-	PortLanguageInit(g_settings.language);
-	g_appliedLanguage = g_settings.language;
-	blupi::audio::init(!o.host.headless);
+    std::string exportLanguage, exportPath;
+    game.extraUsage = "  --export-language WHICH FILE  export a built-in language pack and exit\n"
+                      "  -nocd               accepted historical switch\n";
+    game.option = [&](const std::string& a, int& i, int argc, char** argv) {
+        if (a == "-nocd") return 1;
+        if (a != "--export-language") return 0;
+        if (i + 2 >= argc) return -1;
+        exportLanguage = argv[++i]; exportPath = argv[++i]; return 1;
+    };
+    game.earlyCommand = [&]() {
+        if (exportLanguage.empty()) return -1;
+        bool ok = PortLanguageExport(exportLanguage, exportPath);
+        printf(ok ? "wrote %s\n" : "cannot export language to %s\n", exportPath.c_str());
+        return ok ? 0 : 1;
+    };
 
-	// SoundFont for the MIDI music. Headless runs load one only on request, so
-	// automated runs stay independent of the audio clock.
-	{
-		std::vector<std::string> fonts;
-		if (!o.soundFont.empty()) fonts.push_back(o.soundFont);
-		else if (!o.host.headless)
-		{
-			if (const char* env = getenv("BLUPI_SOUNDFONT")) fonts.push_back(env);
-			fonts.push_back(user + "/soundfont.sf2");
-			fonts.push_back(blupi::host::base_path() + "soundfont.sf2");
-			fonts.push_back("soundfont.sf2");   // Android: the APK asset
-		}
-		for (const std::string& f : fonts)
-		{
-			if (blupi::music::load_soundfont(f))
-			{
-				blupi::host::log_info(("MIDI music: SoundFont " + f).c_str());
-				break;
-			}
-		}
-	}
+    game.configure = [](const Options& o) {
+        g_bHeadless = o.host.headless;
+        g_portColorDepth = o.colorDepth; g_wideWidth = o.wideWidth;
+        g_bReference = o.reference; g_renderRepeat = o.renderRepeat;
+        g_bInterpolate = g_settings.interpolate && g_settings.displayRate;
+        g_presentDisplayRate = g_settings.displayRate;
+        g_bCheckScene = o.checkScene; g_bCheckView = o.checkView;
+        g_bCheckWide = o.checkWide && g_wideWidth > 0;
+        PortUpdateCoverage();
+    };
+    game.initialize = [&](const Options& o) {
+        PortLanguageInit(g_settings.language);
+        g_appliedLanguage = g_settings.language;
+        if (!o.probe.empty()) {
+            FILE* f = fopen(o.probe.c_str(), "r");
+            bool ok = f && PortProbeLoad(f);
+            if (f) fclose(f);
+            if (!ok) return 2;
+        }
 
-	FILE* trace = NULL;
-	if (!o.trace.empty()) trace = fopen(o.trace.c_str(), "w");
-	FILE* displayLog = o.displayLog.empty() ? NULL : fopen(o.displayLog.c_str(), "w");
-	PortPixmapSetDisplayCapture(displayLog, o.displayDumpDir.c_str(), o.displayDumpEvery);
+        g_hWnd = nullptr; g_bActive = TRUE;
+        if (o.checkCommands) PortPixmapEnableCommandCheck();
+        if (!DoInit(NULL, (LPSTR)"", 0)) return 1;
+        PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings,
+                        !blupi::host::touch_screen());
+        PortPixmapHideCursor(blupi::host::touch_screen());
+        Benchmark();
+        return 0;
+    };
+    game.finish = FinishObjects;
+    game.timerStep = TimerStep; game.timerInterval = []() { return g_timerInterval; };
+    game.soundPoll = PortSoundPoll; game.saveSettings = PortSaveSettings;
+    game.prepareTick = [](long frame) { g_portFrame = frame; PortProbeApply(frame); };
+    game.completedTick = [](long) {};
+    game.maintenance = []() {
+        if (g_pEvent != NULL)
+        {
+            const UINT phase = g_pEvent->GetPhase();
+            PortOptionsPhase(phase);
+            // Touch screens: the play controls while the game is played; the
+            // scroll pad in the editor, its buttons made from the game's own
+            // sprites when the editor is entered (the palette in force then).
+            if (blupi::host::touch_screen())
+            {
+                static UINT touchPhase = 0;
+                if (phase == WM_PHASE_BUILD && touchPhase != WM_PHASE_BUILD) PortTouchEditorImages();
+                touchPhase = phase;
+            }
+            blupi::host::set_touch_mode(phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST ? blupi::host::TouchMode::Play
+                                        : phase == WM_PHASE_BUILD ? blupi::host::TouchMode::Editor
+                                                                  : blupi::host::TouchMode::Off);
+            // Android: the on-screen keyboard only while the game asks for text
+            // (the phases whose WM_CHAR handling edits a name, src/event.cpp).
+            if (blupi::host::text_input_on_demand())
+            {
+                blupi::host::set_text_input(phase == WM_PHASE_NAMEGAMER || phase == WM_PHASE_NAMEDESIGN ||
+                                            phase == WM_PHASE_WRITEDESIGN || phase == WM_PHASE_CREATE ||
+                                            phase == WM_PHASE_MULTI);
+            }
+        }
 
-	g_hWnd = NULL;
-	g_bActive = TRUE;  // the window is created focused (WM_ACTIVATEAPP)
+    };
+    game.phase = []() { return g_pEvent ? g_pEvent->GetPhase() : 0u; };
+    game.stateHash = PortStateHash; game.screenHash = PortPixmapScreenHash;
+    game.stateDump = PortStateDump; game.screenshot = PortPixmapWriteScreenBmp;
+    game.present = PortPresentNow; game.presentIfDirty = PortPixmapPresentIfDirty;
+    game.viewWidth = PortViewWidth; game.displayCapture = PortPixmapSetDisplayCapture;
+    game.windowProc = WindowProc;
+    // Eggbert 1 quits where Blupi 1 shows its goodbye screen (historical _EGAMES).
+    game.postedMessage = [](UINT message) {
+        return message == WM_PHASE_BYE && PortEdition() == "eggbert" ? WM_PHASE_DOQUIT : message;
+    };
+    game.editorScrollBlocked = PortEditorScrollBlocked;
+    game.wideEditor = PortWideEditor; game.editorMouse = PortEditorMouse;
+    game.mouseInSideArea = PortMouseInSideArea;
+    game.checkResult = [](const Options& o) {
+        int result = 0;
+        long checkFrames, checkMismatches, checkFirst;
+        if (PortPixmapCommandCheckResult(checkFrames, checkMismatches, checkFirst))
+        {
+            printf("command check: %ld displays replayed, %ld mismatches (first at display %ld)\n",
+                   checkFrames, checkMismatches, checkFirst);
+            if (checkMismatches != 0 || checkFrames == 0) result = 3;
+        }
+        if (o.checkScene)
+        {
+            printf("scene check: %ld Build calls compared, %ld mismatches (first at call %ld%s%s)\n",
+                   g_sceneFrames, g_sceneMismatches, g_sceneFirstMismatch,
+                   g_sceneFirstDetail.empty() ? "" : ": ", g_sceneFirstDetail.c_str());
+            if (g_sceneMismatches != 0 || g_sceneFrames == 0) result = 4;
+        }
+        if (o.checkView)
+        {
+            printf("view check: %ld frames compared, %ld mismatches (first at frame %ld)\n",
+                   g_viewFrames, g_viewMismatches, g_viewFirstMismatch);
+            if (g_viewMismatches != 0 || g_viewFrames == 0) result = 5;
+        }
+        if (g_bCheckWide)
+        {
+            printf("wide check: %ld frames compared, %ld clamped frames skipped, %ld mismatches (first at frame %ld)\n",
+                   g_wideFrames, g_wideSkipped, g_wideMismatches, g_wideFirstMismatch);
+            if (g_wideMismatches != 0 || g_wideFrames == 0) result = 6;
+        }
 
-	g_portColorDepth = o.colorDepth;
-	if (o.checkCommands) PortPixmapEnableCommandCheck();
-	g_bCheckScene = o.checkScene;
-	g_bCheckView = o.checkView;
-	g_bCheckWide = o.checkWide && g_wideWidth > 0;
-	PortUpdateCoverage();
-	if (!o.probe.empty())
-	{
-		FILE* probe = fopen(o.probe.c_str(), "r");
-		if (probe == NULL) { printf("cannot open probe script %s\n", o.probe.c_str()); return 2; }
-		PortProbeLoad(probe);
-		fclose(probe);
-	}
-	if (!DoInit(NULL, (LPSTR)"", 0))
-	{
-		blupi::audio::shutdown();
-		blupi::host::shutdown();
-		return 1;
-	}
-	PortOptionsInit(g_pPixmap, g_pSound, &g_settings, PortApplySettings, !blupi::host::touch_screen());
-	PortPixmapHideCursor(blupi::host::touch_screen());
-
-	Benchmark();
-
-	const uint64_t interval = (uint64_t)g_timerInterval * 1000000ull;
-	uint64_t nextTick = blupi::host::now_ns() + interval;
-	long frame = 0;
-	int lastTimer = 0;
-	long presents = 0;
-	const uint64_t loopStart = blupi::host::now_ns();
-	uint64_t lastTick = loopStart;   // when the latest tick ran (interpolation)
-	PortPerf perf;
-
-	while (!g_bQuit)
-	{
-		blupi::host::Event e;
-		while (!g_bQuit && blupi::host::poll_event(e)) TranslateHostEvent(e);
-		if (g_bQuit) break;
-
-		// The wide editor at a world edge: stop scrolling that way.
-		for (int right = 0; right < 2; right++)
-		{
-			if (g_portArrowHeld[right] && PortEditorScrollBlocked(right != 0))
-			{
-				g_portArrowHeld[right] = false;
-				WindowProc(WM_KEYUP, right ? VK_RIGHT : VK_LEFT, (LPARAM)(1 | (1 << 30) | (1u << 31)));
-			}
-		}
-
-		uint64_t now = blupi::host::now_ns();
-		// Messages already queued (and those they post, e.g. a button's command
-		// after WM_LBUTTONUP) are handled before the timer's WM_UPDATE, as in
-		// the original message loop, where the timer thread posted WM_UPDATE
-		// behind them. [EVIDENCE] cross-build oracle, scripted tour 2026-10-21.
-		PortSoundPoll();
-		DispatchPosted();
-		if (g_bQuit) break;
-		if (o.host.headless || now >= nextTick)
-		{
-			PostScriptedInput(o, frame);
-			PortProbeApply(frame);
-			g_portFrame = frame;
-			DispatchPosted();
-			if (g_bQuit) break;
-			const uint64_t tickStart = blupi::host::now_ns();
-			TimerStep();
-			perf.Tick(blupi::host::now_ns() - tickStart);
-			lastTick = now;
-			nextTick = PortNextTick(nextTick, now, interval);
-		}
-		lastTimer = g_timer;
-		DispatchPosted();
-		if (g_bQuit) break;
-
-		if (lastTimer == 1 && g_timer == 0)  // a WM_UPDATE frame completed
-		{
-			frame++;
-			if (o.host.headless)
-			{
-				// No audio device: advance the synthesizer by one timer interval per
-				// frame so music, and its end-of-song notification, follow game time.
-				static std::vector<float> discard;
-				int frames = 44100 * g_timerInterval / 1000;
-				discard.assign((size_t)frames * 2, 0.0f);
-				blupi::music::render_mix(discard.data(), frames, 44100);
-			}
-			if (trace && frame % o.traceEvery == 0)
-			{
-				fprintf(trace, "%ld %u %016llx %016llx\n", frame, g_pEvent ? g_pEvent->GetPhase() : 0u,
-						(unsigned long long)PortStateHash(),
-						(unsigned long long)PortPixmapScreenHash());
-			}
-			for (const auto& dump : o.stateDumps)
-			{
-				if (dump.first != frame) continue;
-				if (FILE* f = fopen(dump.second.c_str(), "w")) { PortStateDump(f); fclose(f); }
-			}
-			for (const auto& shot : o.screenshots)
-			{
-				if (shot.first != frame) continue;
-				// What is presented: overlays and the wide view included, at
-				// --screenshot-alpha between the ticks (test).
-				PortPresentNow(o.screenshotAlpha >= 0.0 ? o.screenshotAlpha : 1.0);
-				PortPixmapWriteScreenBmp(shot.second.c_str());
-			}
-			if (o.ticks >= 0 && frame >= o.ticks)
-			{
-				WindowProc(WM_CLOSE, 0, 0);
-				break;
-			}
-			// test: with --interpolate at alpha 1/K .. K/K, ending on the faithful frame
-			for (int i = 0; i < o.presentRepeat; i++) PortPresentNow(g_bInterpolate ? (i + 1.0) / o.presentRepeat : 1.0);
-			// Tick-rate presentation ("Frame rate: Original"): once per tick, with
-			// the port's overlays and the wide view.
-			if (!g_presentDisplayRate && !o.host.headless) PortPresentNow(1.0);
-		}
-
-		// Settings changed outside the options screen (Alt+Enter).
-		if (!o.host.headless && blupi::host::fullscreen() != g_settings.fullscreen)
-		{
-			g_settings.fullscreen = blupi::host::fullscreen();
-			PortOptionsSync();
-			PortSaveSettings();
-		}
-		if (g_pEvent != NULL)
-		{
-			const UINT phase = g_pEvent->GetPhase();
-			PortOptionsPhase(phase);
-			// Touch screens: the play controls while the game is played; the
-			// scroll pad in the editor, its buttons made from the game's own
-			// sprites when the editor is entered (the palette in force then).
-			if (blupi::host::touch_screen())
-			{
-				static UINT touchPhase = 0;
-				if (phase == WM_PHASE_BUILD && touchPhase != WM_PHASE_BUILD) PortTouchEditorImages();
-				touchPhase = phase;
-			}
-			blupi::host::set_touch_mode(phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST ? blupi::host::TouchMode::Play
-										: phase == WM_PHASE_BUILD ? blupi::host::TouchMode::Editor
-																  : blupi::host::TouchMode::Off);
-			// Android: the on-screen keyboard only while the game asks for text
-			// (the phases whose WM_CHAR handling edits a name, src/event.cpp).
-			if (blupi::host::text_input_on_demand())
-			{
-				blupi::host::set_text_input(phase == WM_PHASE_NAMEGAMER || phase == WM_PHASE_NAMEDESIGN ||
-											phase == WM_PHASE_WRITEDESIGN || phase == WM_PHASE_CREATE ||
-											phase == WM_PHASE_MULTI);
-			}
-		}
-
-		if (g_presentDisplayRate && !o.host.headless)
-		{
-			// Display rate: the latest frame and the current cursor every loop
-			// iteration; SDL_RenderPresent waits for the display (vsync).
-			const uint64_t t0 = blupi::host::now_ns();
-			PortPresentNow(PortFrameAlpha(t0, lastTick, interval));
-			const uint64_t t1 = blupi::host::now_ns();
-			PortPixmapPresentIfDirty();
-			const uint64_t t2 = blupi::host::now_ns();
-			presents++;
-			perf.Present(t1 - t0, t2 - t1, t2, frame, PortViewWidth());
-			if (!blupi::host::presents_with_vsync())
-			{
-				now = blupi::host::now_ns();
-				uint64_t pause = 4000000;   // no vsync: about 250 presents per second at most
-				if (now < nextTick && nextTick - now < pause) pause = nextTick - now;
-				if (now < nextTick && blupi::host::wait_event(e, pause)) TranslateHostEvent(e);
-			}
-			continue;
-		}
-
-		PortPixmapPresentIfDirty();
-
-		if (!o.host.headless)
-		{
-			now = blupi::host::now_ns();
-			if (now < nextTick && blupi::host::wait_event(e, nextTick - now)) TranslateHostEvent(e);
-		}
-	}
-
-	if (presents > 0)
-	{
-		char text[120];
-		double seconds = (blupi::host::now_ns() - loopStart) / 1e9;
-		snprintf(text, sizeof(text), "presented %ld frames in %.1f s (%.0f per second), %ld game frames",
-				 presents, seconds, presents / seconds, frame);
-		blupi::host::log_info(text);
-	}
-	if (trace) fclose(trace);
-	PortPixmapSetDisplayCapture(NULL, NULL, 0);
-	if (displayLog) fclose(displayLog);
-	int result = 0;
-	long checkFrames, checkMismatches, checkFirst;
-	if (PortPixmapCommandCheckResult(checkFrames, checkMismatches, checkFirst))
-	{
-		printf("command check: %ld displays replayed, %ld mismatches (first at display %ld)\n",
-			   checkFrames, checkMismatches, checkFirst);
-		if (checkMismatches != 0 || checkFrames == 0) result = 3;
-	}
-	if (o.checkScene)
-	{
-		printf("scene check: %ld Build calls compared, %ld mismatches (first at call %ld%s%s)\n",
-			   g_sceneFrames, g_sceneMismatches, g_sceneFirstMismatch,
-			   g_sceneFirstDetail.empty() ? "" : ": ", g_sceneFirstDetail.c_str());
-		if (g_sceneMismatches != 0 || g_sceneFrames == 0) result = 4;
-	}
-	if (o.checkView)
-	{
-		printf("view check: %ld frames compared, %ld mismatches (first at frame %ld)\n",
-			   g_viewFrames, g_viewMismatches, g_viewFirstMismatch);
-		if (g_viewMismatches != 0 || g_viewFrames == 0) result = 5;
-	}
-	if (g_bCheckWide)
-	{
-		printf("wide check: %ld frames compared, %ld clamped frames skipped, %ld mismatches (first at frame %ld)\n",
-			   g_wideFrames, g_wideSkipped, g_wideMismatches, g_wideFirstMismatch);
-		if (g_wideMismatches != 0 || g_wideFrames == 0) result = 6;
-	}
-	blupi::audio::shutdown();
-	blupi::music::shutdown();
-	blupi::host::shutdown();
-	return result;
+        return result;
+    };
+    return blupi::app::Run(argc, argv, game);
 }

@@ -54,4 +54,7 @@ BLUPI_DATA="$WORK/data" cmake --preset linux -S . \
     -DBLUPI2_TEST_DATA="$EGGBERT2_TEST" -DBLUPI2_TEST_DATA_BLUPI="$BLUPI2_TEST" \
     -DBLUPI_TEST_DATA_EGGBERT="$EGGBERT1_TEST"
 cmake --build "$WORK/build/port-linux" -j 4
-ctest --test-dir "$WORK/build/port-linux" -j 3 --output-on-failure "$@"
+# Both desktop entry points use common/app; Android still builds SB1 only.
+"$WORK/build/port-linux/blupi-sdl3" --version
+"$WORK/build/port-linux/blupi2-sdl3" --version
+ctest --test-dir "$WORK/build/port-linux" -j 1 --output-on-failure "$@"

@@ -68,7 +68,7 @@ Each fix has a golden-trace update with the reason recorded here:
    and 255 black and white. The historical primary palette has exactly that. With the fix,
    GDI's nearest-colour mapping is matched as well. The previous [HYPOTHESIS] (nearest palette
    entry, exact match first) is confirmed for this data.
-2. **Message order** (`port/game/main.cpp`, host loop). Queued messages, and those they post
+2. **Message order** (`common/app/launcher.cpp`, host loop). Queued messages, and those they post
    (a button's command after `WM_LBUTTONUP`), are now handled before the timer's `WM_UPDATE`, as
    the original message loop did. Before, a click took effect one frame late.
 3. **TranslateMessage** for posted key presses. The original loop generated `WM_CHAR` for them;
@@ -157,7 +157,7 @@ the publisher screens' historical pixels. No original executable was run.
 
 ## SB2 cross-build capture
 
-`tools/oracle_capture_sb2.ps1` uses `blupi2` and the edition's validated source
+`tools/oracle_capture_sb2.ps1` uses `blupi2-sdl3` and the edition's validated source
 relink. It does not change SB1's `oracle_capture.ps1` defaults. The default data
 folders are `assets/eggbert2` and `assets/blupi2`, selected from `targets.json`.
 The default rebuilds are `build/sb2gate/relink-rsrc-eggbert-en/Eggbert2.exe` and
@@ -211,17 +211,17 @@ Preparation only (copies data, builds the proxy if needed, validates and writes
 `compare.json` with `status=PREPARED`; **launches neither game**):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition eggbert -ColorDepth 16 -PortExe build\port-oracle-make\blupi2.exe -PrepareOnly
-powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition blupi -ColorDepth 8 -PortExe build\port-oracle-make\blupi2.exe -PrepareOnly
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition eggbert -ColorDepth 16 -PortExe build\port-oracle-make\blupi2-sdl3.exe -PrepareOnly
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition blupi -ColorDepth 8 -PortExe build\port-oracle-make\blupi2-sdl3.exe -PrepareOnly
 ```
 
 Supervisor's windowed captures (one at a time; do not touch mouse/keyboard):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition eggbert -ColorDepth 16 -Frames 2200 -PortExe build\port-oracle-make\blupi2.exe
-powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition eggbert -ColorDepth 8 -Frames 2200 -PortExe build\port-oracle-make\blupi2.exe
-powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition blupi -ColorDepth 16 -Frames 2200 -PortExe build\port-oracle-make\blupi2.exe
-powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition blupi -ColorDepth 8 -Frames 2200 -PortExe build\port-oracle-make\blupi2.exe
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition eggbert -ColorDepth 16 -Frames 2200 -PortExe build\port-oracle-make\blupi2-sdl3.exe
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition eggbert -ColorDepth 8 -Frames 2200 -PortExe build\port-oracle-make\blupi2-sdl3.exe
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition blupi -ColorDepth 16 -Frames 2200 -PortExe build\port-oracle-make\blupi2-sdl3.exe
+powershell -ExecutionPolicy Bypass -File port\tools\oracle_capture_sb2.ps1 -Edition blupi -ColorDepth 8 -Frames 2200 -PortExe build\port-oracle-make\blupi2-sdl3.exe
 ```
 
 `-InputScript port\tests\golden\sb2_tour.input` (`-Frames 201` for Eggbert 2, `241`

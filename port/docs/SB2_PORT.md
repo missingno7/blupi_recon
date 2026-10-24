@@ -6,7 +6,7 @@ priority. This file records the milestones; [ARCHITECTURE.md](ARCHITECTURE.md) s
 
 ## Layout (ARCHITECTURE.md §9)
 
-- `games/sb2/game/`: SB2's port code and its own executable (`blupi2`), linking the same `common/`
+- `games/sb2/game/`: SB2's port code and its own executable (`blupi2-sdl3`, target `blupi2`), linking the same `common/`
   libraries as SB1. No game registry: `common/platform/entry.cpp` calls the game's `BlupiMain`.
 - Eleven TUs compiled unchanged from `games/sb2/src/` (never edited for the port): `button decblock
   decblupi decdesign decmove decnet decor dectables jauge menu text`. M1/M2 also shared `event.cpp`;
@@ -77,7 +77,7 @@ cmake --build build/port -j 4
 ctest --test-dir build/port --output-on-failure
 
 # Headless, finite, all writes in build/; original data is only read.
-build/port/blupi2.exe --headless --data assets/eggbert2 --user build/sb2-user --frames 8000 --color 16 --trace build/sb2.trace --demo-log build/sb2-demos.txt --screenshot 10:build/sb2-title.bmp --screenshot 1500:build/sb2-demo.bmp
+build/port/blupi2-sdl3.exe --headless --data assets/eggbert2 --user build/sb2-user --frames 8000 --color 16 --trace build/sb2.trace --demo-log build/sb2-demos.txt --screenshot 10:build/sb2-title.bmp --screenshot 1500:build/sb2-demo.bmp
 ```
 
 `BLUPI2_TEST_DATA` is an optional CMake cache path, initially read from `BLUPI2_DATA`.
@@ -334,10 +334,62 @@ and audible music remain separate gates. Local M4b gate results and the handoff 
 
 - [EVIDENCE] Historical SB2 pixel comparison: `tools/oracle_capture_sb2.ps1` runs each edition's
   rebuilt executable (`build/sb2gate/relink-rsrc-<edition>-en`, gate PASS) under cnc-ddraw against
-  `blupi2 --headless --reference --display-log`. Attract mode (2200 displays), `sb2_tour.input` and
+  `blupi2-sdl3 --headless --reference --display-log`. Attract mode (2200 displays), `sb2_tour.input` and
   `sb2_editor.input` are identical in every display for Eggbert 2 and Blupi 2, at 16 and 8 bpp
   (table and setup in [ORACLE.md](ORACLE.md)). Blupi 2's capture needs the CD layout of its shipped
   config (`CD-Rom=` one folder below the data); the port has no CD check.
-- `blupi2` has its own window and executable icon: SB1's waving pose from SB2's green Blupi sheet
+- `blupi2-sdl3` has its own window and executable icon: SB1's waving pose from SB2's green Blupi sheet
   (`games/sb2/res/`, `tools/make_icon.py --game sb2`), embedded and passed to `host::init`
   (`Options::iconPng`); SB1 keeps `res/icon.png`.
+
+## Shared launcher (2026-10-24)
+
+[EVIDENCE] The CMake target is still `blupi2`; its executable and Windows resource
+name are now `blupi2-sdl3`. Like SB1, non-Debug Windows builds use the GUI subsystem.
+Put it and `SDL3.dll` into either edition's game folder and start it without `--data`.
+`common/app/launcher.cpp` supplies both games' options/help, discovery and chooser,
+user folder, settings precedence, SoundFont lookup, input scripts, message dispatch
+and fixed-tick/presentation loop. `--help` includes the common list plus SB2's
+`--demo-log` and `--check-presentation`; SB1 retains its language export option.
+
+The descriptor uses `BLUPI2_DATA`, `blupi2-sdl3.json`, `Speedy Blupi 2 SDL3`, SB2's
+icon/title, and callbacks into its adapter. Search order is explicit data, environment,
+remembered folder, executable folder, host data directories, current folder, then a
+desktop chooser that saves the choice. Explicit invalid data never falls back.
+`assets/eggbert2` and `assets/blupi2` layouts both satisfy the config/title-file
+recognizer. CD language SOUND subfolders are handled by the same launcher.
+
+SB2's historical-derived adapter, edition logic, scene/view/presentation glue and
+diagnostic result checks remain game-owned, along with finite-headless validation
+and demo-transition logging. Both games now use SB1's script/probe order, no host
+cursor warp, and exit before extra final-frame test presentations. Both capture
+posted keys while Display options is open, matching live input. The four former
+launcher behavior switches are removed.
+`cmake/package_app.cmake` now handles both desktop targets' SDL/SoundFont copies,
+MinGW runtime linkage and portable Linux rpath/library layout. Release scripts carry
+both executables. Android remains SB1 only.
+
+[EVIDENCE] Launcher Windows gate: both games build in `build/port-launcher` with
+VS2022 CMake, MinGW GCC and SDL3 3.4.16, using the documented Makefiles fallback
+after Ninja stalls in the sandbox's compiler check. Serial ctest passes **210/210**
+in **1,410.42 s**, with all edition data roots enabled and no golden changes.
+The five added tests cover help/version and executable-folder discovery for SB1
+and both SB2 editions, including invalid explicit-data precedence. Both release
+PEs use GUI subsystem 2 and their expected resource names. Details and remaining
+platform limits: `scratch/w-launcher/REPORT.md`.
+
+[EVIDENCE] Each game's recognizer now requires its own data marker in addition to
+config/title files: `data/demo200.blp` for SB1 and `data/bench.blp` for SB2. Wrong-game
+folders are rejected before initialization, including executable-folder discovery
+and explicit `--data` with a valid fallback environment. Error and chooser text
+names the requested game family. The marker/variant audit and the explanation of
+each removed launcher policy are in `scratch/w-launcher/REPORT.md`.
+
+[EVIDENCE] Supervisor follow-up gate: **217/217** tests pass serially in
+**1,453.28 s**, including seven added wrong-game and posted-key cases; the previous
+210 tests remain. Every existing golden comparison passes without regeneration.
+The direct finite-harness comparison changes only the number of extra final-frame
+test presentations (9 to 6 for three frames with three repeats); all full trace
+lines remain byte-identical. Ninja again stalls at the compiler ABI check inside
+the sandbox; the same-directory MinGW Makefiles build passes. No policy switch
+remains, no original executable was run, and the report lists all asset variants.

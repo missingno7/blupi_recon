@@ -1,5 +1,5 @@
 // SDL3 host: window, presentation of the 640x480 logical frame, input and
-// time. Free of Win32 names; port/game/main.cpp turns host events into the
+// time. Free of Win32 names; common/app/launcher.cpp turns host events into the
 // window messages the historical CEvent code expects.
 //
 // Keys are reported with Win32 virtual-key numbering because that is the

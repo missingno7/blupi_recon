@@ -152,7 +152,8 @@ port always uses the exclusive-mode formats, which is what full-screen players s
 
 ## 4. Timing and simulation coupling
 
-[EVIDENCE] Historical loop (kept exactly in `games/sb1/game/main.cpp`):
+[EVIDENCE] Historical tick handling (kept in each game's `main.cpp`, scheduled by
+`common/app/launcher.cpp`):
 
 - `timeSetEvent(Timer)` (50 ms) fires `TimerStep`. `TimerStep` posts a single `WM_UPDATE`
   while none is pending (`g_timer` gate), so missed ticks are dropped rather than queued.
@@ -371,10 +372,60 @@ Port (`games/sb1/game/sound.cpp` + `common/platform/music.cpp`):
   sequencer played both or refused the second open (MIDI port in use). The port replaces the
   old song with the restarted one.
 
+## Shared desktop and Android launcher
+
+[EVIDENCE] `common/app/launcher.{h,cpp}` is built once as `blupi_app`, without either
+game's historical forced includes. Both game libraries use it. `common/app` is the
+message boundary and may include the existing declaration-only compat headers;
+`common/platform` and `common/render` still have no compat includes or Win32 names.
+The SDL entry TU also retains its separate, compat-free include context.
+
+`app::Game` supplies executable/window/data-title/environment/settings/user-app names, icon, a
+data recognizer, extra option parser/help, and callbacks into the adapter. Hooks cover
+initialization/cleanup, the window procedure, timer and probe ticks, presentation,
+editor routing and diagnostic capture/results. Settings, quit/timer state and held
+arrows bind to the adapter's existing storage. SB1's quit-message mapping and
+touch/keyboard phase policy stay with SB1; SB2's demo log and presentation check stay
+with SB2. Both games use one script/probe/dispatch and final-presentation order;
+there are no per-game launcher behavior switches. No historical class or phase
+constant enters `common/app`.
+
+The launcher owns common flags/help/version, settings precedence, user directories,
+SoundFont search, scripted input, host-event translation, posted-message dispatch and
+the fixed-tick/drop loop. Data search follows SB1's order: explicit `--data` (failure
+is final), the game's environment variable, remembered settings folder, executable
+folder, host data directories, then current folder. Desktop failure opens the shared
+first-run folder chooser, including immediate subfolders, and saves a valid choice.
+Both games require config/title files plus a per-game marker: SB1's recognizer
+requires `data/demo200.blp`, SB2's requires `data/bench.blp`. This prevents either
+launcher from accepting the other game's installed folder. Chooser and rejection
+messages name the requested game family.
+CD language-folder SOUND lookup is shared too. Headless runs neither load nor save
+preferences. `common/ui/options_events.h` exposes the UI's game-independent event API;
+its object setup and rendering still compile in each game's own context.
+
+`ReadConfig`, `UpdateFrame`, `SetDecor`, `WindowProc`, `DoInit`, `Benchmark`, scene/view
+checks and the `Port*` presentation/editor glue remain per game. They use historical
+objects, phases, layouts and rendering details that differ between SB1 and SB2.
+`cmake/package_app.cmake` supplies both desktop targets' runtime layout: SDL copy,
+SoundFont copy, MinGW static runtimes, non-Debug GUI subsystem, and portable Linux
+`$ORIGIN`/SDL library copy. The `blupi2` target produces `blupi2-sdl3`; `blupi` produces
+`blupi-sdl3`. Android continues to build only SB1 as `libmain.so` and skips desktop
+packaging.
+
+[EVIDENCE] The supervisor-review cleanup removes all four former launcher policy
+fields. Both games queue ordinary script input, apply probes, then dispatch; both
+stop at the frame limit before extra test presentations and never warp the host
+pointer for scripted clicks. Posted keys go through Display options for both,
+matching live-key capture and preventing game input through an open overlay.
+`launcher_options_keys_*` checks trace equality with/without keys behind the open
+overlay, plus a closed-overlay control. Wrong-game tests cover executable-folder
+and explicit-data rejection for all four installed editions.
+
 ## 9. Games, editions and languages
 
 [EVIDENCE] SB2 bring-up (2026-10-23): `games/sb2/` builds the separate desktop executable
-`blupi2`, using its own historical include context. M1/M2 compiled twelve SB2 shared TUs;
+`blupi2-sdl3` (target `blupi2`), using its own historical include context. M1/M2 compiled twelve SB2 shared TUs;
 M3 keeps eleven unchanged and derives `game/event.cpp` from `games/sb2/src/event.cpp`.
 M1-M3 linked the existing `common/` libraries without changing SB1 source or common behaviour.
 M4a extends SB1's scene/end-of-tick split to SB2: `game/scene.cpp` derives from SB2's
@@ -396,7 +447,7 @@ by its adapter. SB2's entry is at (70,411), below its colour-depth controls; SB1
 (70,330). The overlay receives its own posted messages before the game and draws only
 when presenting. JSON settings are host I/O; SB1 keeps `blupi-sdl3.json` and SB2 uses
 `blupi2-sdl3.json` in `Epsitec/Speedy Blupi 2 SDL3` (or `--user`). Headless runs use
-defaults/flags and never load or save preferences. Both loops use
+defaults/flags and never load or save preferences. The shared launcher uses
 `common/presentation/timing.h` for the same fixed tick/drop rule, presentation alpha
 and diagnostics. No historical TU changed ownership.
 

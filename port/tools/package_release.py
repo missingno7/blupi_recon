@@ -38,20 +38,25 @@ def cache_value(build, name):
 def windows():
     build = os.path.join(ROOT, 'build', 'port')
     name = 'speedy-blupi-sdl3-%s-windows-x64' % VERSION
-    exe = os.path.join(build, 'blupi-sdl3.exe')
-    out = subprocess.run([exe, '--version'], capture_output=True, text=True).stdout.strip()
-    if out != 'blupi-sdl3 ' + VERSION:
-        sys.exit('build/port is not version %s (%r): rebuild first' % (VERSION, out))
+    apps = ('blupi-sdl3', 'blupi2-sdl3')
+    for app in apps:
+        out = subprocess.run([os.path.join(build, app + '.exe'), '--version'],
+                             capture_output=True, text=True, check=True).stdout.strip()
+        if out != app + ' ' + VERSION:
+            sys.exit('%s is not version %s (%r): rebuild first' % (app, VERSION, out))
     staging = os.path.join(OUT, 'staging')
     shutil.rmtree(staging, ignore_errors=True)
     os.makedirs(staging)
-    stripped = os.path.join(staging, 'blupi-sdl3.exe')
-    subprocess.run([cache_value(build, 'CMAKE_STRIP') or 'strip', '-o', stripped, exe], check=True)
     files = {
-        'blupi-sdl3.exe': stripped,
         'SDL3.dll': os.path.join(build, 'SDL3.dll'),
         'soundfont.sf2': os.path.join(build, 'soundfont.sf2'),
     }
+    for app in apps:
+        exe = app + '.exe'
+        stripped = os.path.join(staging, exe)
+        subprocess.run([cache_value(build, 'CMAKE_STRIP') or 'strip', '-o', stripped,
+                        os.path.join(build, exe)], check=True)
+        files[exe] = stripped
     texts = {
         'README.txt': os.path.join(PORT, 'release', 'README.txt'),
         'THIRD_PARTY.txt': os.path.join(PORT, 'release', 'THIRD_PARTY.txt'),

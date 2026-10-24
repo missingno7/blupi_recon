@@ -19,6 +19,15 @@ Starting the game
 
 1. Unpack this folder anywhere.
 2. Start blupi-sdl3.exe (Windows) or ./blupi-sdl3 (Linux).
+
+   For Speedy Blupi 2 or Speedy Eggbert 2, start blupi2-sdl3.exe (Windows)
+   or ./blupi2-sdl3 (Linux) instead. Both desktop programs are included.
+   Either program can be placed with SDL3.dll (Windows) or libSDL3.so.0
+   (Linux) in its original game's folder and will find that folder's data.
+   Otherwise the first-run folder chooser asks where your game is installed.
+   The same display and command-line options apply; use --help for the list.
+   SB2 uses BLUPI2_DATA and keeps blupi2-sdl3.json and saves under
+   Epsitec/Speedy Blupi 2 SDL3 (or --user). Android remains SB1 only.
 3. On the first start the game asks for the folder where Speedy Blupi is
    installed: the one that contains DATA, IMAGE08, IMAGE16 and SOUND. A
    folder that contains it (for example the CD) works too. The choice is

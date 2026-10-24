@@ -131,6 +131,13 @@ add_custom_command(OUTPUT ${BLUPI_ICON_INC}
 target_sources(blupi_platform PRIVATE ${BLUPI_ICON_INC})
 target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
 
+# Launcher: no historical context or game headers. Compat declarations are
+# needed only at its message boundary; platform/ still never sees them.
+add_library(blupi_app STATIC common/app/launcher.cpp)
+target_include_directories(blupi_app PUBLIC ${BLUPI_COMMON} PRIVATE ${BLUPI_COMMON}/compat/include)
+target_compile_definitions(blupi_app PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
+target_link_libraries(blupi_app PUBLIC blupi_platform)
+
 # Port-owned replacements of the historical platform TUs, plus the shared
 # historical objects: everything that sees the Win32 compatibility names.
 add_library(blupi_game STATIC
@@ -151,7 +158,7 @@ add_library(blupi_game STATIC
     common/ui/settings.cpp
     games/sb1/game/language.cpp
     $<TARGET_OBJECTS:blupi_hist>)
-target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform)
+target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform blupi_app)
 target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
 target_include_directories(blupi_game PRIVATE ${BLUPI_GAME_DIR})
 
@@ -181,7 +188,6 @@ else()
 endif()
 target_link_libraries(blupi PRIVATE blupi_game SDL3::SDL3)
 if(WIN32)
-    set_target_properties(blupi PROPERTIES WIN32_EXECUTABLE $<NOT:$<CONFIG:Debug>>)
     # The port's icon (res/icon.ico, which SDL also uses for the window) and
     # the version information.
     set(BLUPI_RC_ICON ${CMAKE_CURRENT_SOURCE_DIR}/res/icon.ico)
@@ -190,31 +196,10 @@ if(WIN32)
     set(BLUPI_RC_PRODUCT "Speedy Blupi SDL3 port")
     configure_file(common/platform/blupi_win.rc.in ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_win.rc @ONLY)
     target_sources(blupi PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated/blupi_win.rc)
-    if(MINGW)
-        # The GCC runtimes (libgcc, libstdc++, winpthread) linked in: the
-        # executable needs only SDL3.dll and the system DLLs.
-        target_link_options(blupi PRIVATE -static)
-    endif()
 endif()
 
-# Release layout on Linux: libSDL3.so.0 next to the executable (RUNPATH
-# $ORIGIN) and the GCC runtimes linked in, so the folder runs on other
-# distributions (port/tools/linux_release.sh).
 option(BLUPI_PORTABLE "Linux: SDL3 next to the executable, static C++ runtime" OFF)
-if(BLUPI_PORTABLE AND UNIX AND NOT APPLE AND NOT ANDROID)
-    set_target_properties(blupi PROPERTIES BUILD_WITH_INSTALL_RPATH ON INSTALL_RPATH "$ORIGIN")
-    target_link_options(blupi PRIVATE -static-libgcc -static-libstdc++)
-    add_custom_command(TARGET blupi POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:blupi>/$<TARGET_SONAME_FILE_NAME:SDL3::SDL3-shared>)
-endif()
-
-# Windows: ship SDL3.dll next to the executable (elsewhere the system's SDL3).
-if(WIN32)
-    add_custom_command(TARGET blupi POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:blupi>)
-endif()
+include(cmake/package_app.cmake)
 
 # GeneralUser GS SoundFont for the MIDI music: git submodule third_party/generaluser-gs
 # (shallow, pinned; see third_party/README.md). Without it the game runs without music.
@@ -226,11 +211,7 @@ if(NOT EXISTS ${BLUPI_SOUNDFONT_FILE})
     set(BLUPI_SOUNDFONT_FILE "")
 endif()
 # (Android: the APK carries it as an asset, see port/android/app/build.gradle.)
-if(BLUPI_BUNDLE_SOUNDFONT AND BLUPI_SOUNDFONT_FILE AND NOT ANDROID)
-    add_custom_command(TARGET blupi POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${BLUPI_SOUNDFONT_FILE} $<TARGET_FILE_DIR:blupi>/soundfont.sf2)
-endif()
+blupi_package_app(blupi)
 
 if(NOT ANDROID)
     add_subdirectory(games/sb2)

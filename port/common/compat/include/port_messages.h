@@ -1,5 +1,5 @@
 // Port-only: the posted-message queue behind the compat PostMessage().
-// port/game/main.cpp drains it and dispatches to the game's window procedure.
+// common/app/launcher.cpp drains it and dispatches to the game's window procedure.
 #ifndef BLUPI_PORT_MESSAGES_H
 #define BLUPI_PORT_MESSAGES_H
 

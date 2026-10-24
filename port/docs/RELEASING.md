@@ -4,8 +4,8 @@ A release is three packages built from one commit, each tested before it is pack
 
 | Package | Built on | Contents |
 |---|---|---|
-| `speedy-blupi-sdl3-<version>-windows-x64.zip` | Windows, MinGW-w64 GCC (`mingw-x64` preset) | `blupi-sdl3.exe` (GCC runtimes linked in, stripped), `SDL3.dll`, `soundfont.sf2` |
-| `speedy-blupi-sdl3-<version>-linux-x86_64.tar.gz` | WSL **Ubuntu 22.04** (glibc 2.35) | `blupi-sdl3` (`BLUPI_PORTABLE`: RUNPATH `$ORIGIN`, static libstdc++/libgcc), `libSDL3.so.0` built from SDL 3.4.16 with its backends loaded at run time, `soundfont.sf2` |
+| `speedy-blupi-sdl3-<version>-windows-x64.zip` | Windows, MinGW-w64 GCC (`mingw-x64` preset) | `blupi-sdl3.exe`, `blupi2-sdl3.exe` (GCC runtimes linked in, stripped), `SDL3.dll`, `soundfont.sf2` |
+| `speedy-blupi-sdl3-<version>-linux-x86_64.tar.gz` | WSL **Ubuntu 22.04** (glibc 2.35) | `blupi-sdl3`, `blupi2-sdl3` (`BLUPI_PORTABLE`: RUNPATH `$ORIGIN`, static libstdc++/libgcc), `libSDL3.so.0` built from SDL 3.4.16 with its backends loaded at run time, `soundfont.sf2` |
 | `speedy-blupi-sdl3-<version>-android.apk` | Windows, Gradle `assembleRelease` | arm64-v8a and x86_64, signed with the release key |
 
 Every desktop package also has `README.txt` (the player's guide, `port/release/README.txt`),
@@ -13,6 +13,16 @@ Every desktop package also has `README.txt` (the player's guide, `port/release/R
 reconstruction), `THIRD_PARTY.txt` and the licences of SDL and GeneralUser GS. The APK has the
 same notices under `assets/licenses/`. The README names the source: the public repository at
 the release tag. Game data is never packaged: players use their own copy.
+
+Both desktop programs use `common/app` for discovery, options/help, preferences,
+SoundFont lookup and the main loop. CMake targets remain `blupi` and `blupi2`; the
+single `blupi_package_app` helper in `cmake/package_app.cmake` packages their runtime
+dependencies and selects the Windows GUI subsystem outside Debug. Each can run from
+its original game's folder or use the first-run chooser. Settings and environment
+names are separate (`blupi-sdl3.json`/`BLUPI_DATA`, `blupi2-sdl3.json`/`BLUPI2_DATA`).
+Android still contains SB1 only. The Linux scripts copy SB2's historical source tree
+and enable both SB2 editions' tests when their data is present. Desktop archives now
+carry both executables; `package_release.py windows` verifies both version strings.
 
 ## Version
 

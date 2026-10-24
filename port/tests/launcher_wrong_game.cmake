@@ -1,0 +1,42 @@
+# A different game's valid config/title/marker must fail before adapter init.
+file(MAKE_DIRECTORY "${WORK}/installed/data" "${WORK}/installed/image08" "${WORK}/empty")
+get_filename_component(exe_name "${EXE}" NAME)
+configure_file("${EXE}" "${WORK}/installed/${exe_name}" COPYONLY)
+if(SDL_RUNTIME)
+    configure_file("${SDL_RUNTIME}" "${WORK}/installed/${SDL_NAME}" COPYONLY)
+endif()
+# VFS is case-insensitive; find the original spellings without changing assets.
+file(GLOB_RECURSE inputs LIST_DIRECTORIES false RELATIVE "${WRONG_DATA}" "${WRONG_DATA}/*")
+foreach(input IN LISTS inputs)
+    string(TOLOWER "${input}" lower)
+    if(lower MATCHES "^(data/(config\\.def|demo200\\.blp|bench\\.blp)|image08/init\\.blp)$")
+        configure_file("${WRONG_DATA}/${input}" "${WORK}/installed/${lower}" COPYONLY)
+    endif()
+endforeach()
+foreach(mode explicit executable)
+    set(data_args)
+    if(mode STREQUAL "explicit")
+        # A valid environment root must not rescue the wrong explicit game.
+        set(data_args --data "${WRONG_DATA}")
+        set(environment "${ENVIRONMENT}=${RIGHT_DATA}")
+    else()
+        set(environment "${ENVIRONMENT}=")
+    endif()
+    file(REMOVE "${WORK}/${mode}.trace")
+    execute_process(COMMAND "${CMAKE_COMMAND}" -E env "${environment}"
+        "${WORK}/installed/${exe_name}" --headless --frames 3 --user "${WORK}/${mode}-user"
+        ${data_args} --trace "${WORK}/${mode}.trace"
+        WORKING_DIRECTORY "${WORK}/empty"
+        RESULT_VARIABLE rc OUTPUT_VARIABLE out ERROR_VARIABLE err TIMEOUT 10)
+    file(WRITE "${WORK}/${mode}.log" "${out}${err}")
+    string(FIND "${out}${err}" "${DATA_TITLE} data not found." found)
+    if(NOT rc EQUAL 1 OR found LESS 0 OR EXISTS "${WORK}/${mode}.trace")
+        message(FATAL_ERROR "${mode}: wrong game must be rejected before initialization: ${rc}: ${out}${err}")
+    endif()
+    if(mode STREQUAL "explicit")
+        string(FIND "${out}${err}" "selected folder is not a ${DATA_TITLE} game-data folder" found)
+        if(found LESS 0)
+            message(FATAL_ERROR "Explicit wrong-game error is unclear: ${out}${err}")
+        endif()
+    endif()
+endforeach()

@@ -4,7 +4,7 @@
 # Builds SDL 3.4.16 from source (its video and audio backends are loaded at run
 # time, so one build runs under X11 or Wayland, with PulseAudio, PipeWire's
 # Pulse server or ALSA), then the game with BLUPI_PORTABLE (libSDL3.so.0 next
-# to the executable, GCC runtimes linked in), runs the whole test suite on
+# to both blupi-sdl3 and blupi2-sdl3, GCC runtimes linked in), runs the whole test suite on
 # that build and packs build/release/speedy-blupi-sdl3-<version>-linux-x86_64.tar.gz.
 # Like linux_check.sh it works on a copy in a case-sensitive directory.
 #
@@ -34,8 +34,30 @@ NAME=speedy-blupi-sdl3-$VERSION-linux-x86_64
 
 mkdir -p "$WORK"
 rsync -a --delete "$REPO/src" "$REPO/port" "$WORK/"
+mkdir -p "$WORK/games/sb2/src"
+rsync -a --delete "$REPO/games/sb2/src/" "$WORK/games/sb2/src/"
 rsync -a --delete "$DATA/" "$WORK/data/"
 rsync -a --delete "$SDL/" "$WORK/sdl3-src/"
+
+# Enable each edition's regression suite when its original data is available.
+DATA2=${BLUPI2_DATA:-$REPO/assets/eggbert2}
+BLUPI2=${BLUPI2_TEST_DATA_BLUPI:-$REPO/assets/blupi2}
+EGGBERT1=${BLUPI_TEST_DATA_EGGBERT:-$REPO/assets/eggbert/Game}
+EGGBERT2_TEST=
+BLUPI2_TEST=
+EGGBERT1_TEST=
+if [ -d "$EGGBERT1" ]; then
+    rsync -a --delete "$EGGBERT1/" "$WORK/eggbert-data/"
+    EGGBERT1_TEST=$WORK/eggbert-data
+fi
+if [ -d "$DATA2" ]; then
+    rsync -a --delete "$DATA2/" "$WORK/eggbert2-data/"
+    EGGBERT2_TEST=$WORK/eggbert2-data
+fi
+if [ -d "$BLUPI2" ]; then
+    rsync -a --delete "$BLUPI2/" "$WORK/blupi2-data/"
+    BLUPI2_TEST=$WORK/blupi2-data
+fi
 
 cmake -S "$WORK/sdl3-src" -B "$WORK/build/sdl3" -G Ninja -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX="$WORK/sdl3" -DCMAKE_INSTALL_LIBDIR=lib \
@@ -45,27 +67,30 @@ cmake --install "$WORK/build/sdl3"
 
 B="$WORK/build/release"
 cmake -S "$WORK/port" -B "$B" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DCMAKE_PREFIX_PATH="$WORK/sdl3" -DBLUPI_PORTABLE=ON -DBLUPI_TEST_DATA="$WORK/data"
+    -DCMAKE_PREFIX_PATH="$WORK/sdl3" -DBLUPI_PORTABLE=ON -DBLUPI_TEST_DATA="$WORK/data" \
+    -DBLUPI2_TEST_DATA="$EGGBERT2_TEST" -DBLUPI2_TEST_DATA_BLUPI="$BLUPI2_TEST" \
+    -DBLUPI_TEST_DATA_EGGBERT="$EGGBERT1_TEST"
 cmake --build "$B" -j 4
-ctest --test-dir "$B" -j 3 --output-on-failure
+ctest --test-dir "$B" -j 1 --output-on-failure
 
 OUT="$WORK/package/$NAME"
 rm -rf "$WORK/package"
 mkdir -p "$OUT"
-cp "$B/blupi-sdl3" "$B/libSDL3.so.0" "$B/soundfont.sf2" "$OUT/"
-strip --strip-unneeded "$OUT/blupi-sdl3" "$OUT/libSDL3.so.0"
+cp "$B/blupi-sdl3" "$B/blupi2-sdl3" "$B/libSDL3.so.0" "$B/soundfont.sf2" "$OUT/"
+strip --strip-unneeded "$OUT/blupi-sdl3" "$OUT/blupi2-sdl3" "$OUT/libSDL3.so.0"
 sed -e 's/\r$//' -e "s/@VERSION@/$VERSION/" "$WORK/port/release/README.txt" > "$OUT/README.txt"
 sed 's/\r$//' "$WORK/port/release/THIRD_PARTY.txt" > "$OUT/THIRD_PARTY.txt"
 sed 's/\r$//' "$WORK/port/release/COPYING.txt" > "$OUT/COPYING.txt"
 sed 's/\r$//' "$WORK/sdl3-src/LICENSE.txt" > "$OUT/LICENSE-SDL3.txt"
 sed 's/\r$//' "$WORK/port/third_party/generaluser-gs/documentation/LICENSE.txt" > "$OUT/LICENSE-GeneralUser-GS.txt"
 chmod 0644 "$OUT"/*.txt "$OUT/soundfont.sf2" "$OUT/libSDL3.so.0"
-chmod 0755 "$OUT/blupi-sdl3"
+chmod 0755 "$OUT/blupi-sdl3" "$OUT/blupi2-sdl3"
 mkdir -p "$REPO/build/release"
 tar -C "$WORK/package" --owner=0 --group=0 --numeric-owner -czf "$REPO/build/release/$NAME.tar.gz" "$NAME"
 
 echo "package: build/release/$NAME.tar.gz"
 "$OUT/blupi-sdl3" --version
-echo "needs glibc: $(objdump -T "$OUT/blupi-sdl3" "$OUT/libSDL3.so.0" | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -n 1)"
+"$OUT/blupi2-sdl3" --version
+echo "needs glibc: $(objdump -T "$OUT/blupi-sdl3" "$OUT/blupi2-sdl3" "$OUT/libSDL3.so.0" | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -n 1)"
 echo "libraries:"
-objdump -p "$OUT/blupi-sdl3" "$OUT/libSDL3.so.0" | grep -E 'NEEDED|RUNPATH' | sort -u
+objdump -p "$OUT/blupi-sdl3" "$OUT/blupi2-sdl3" "$OUT/libSDL3.so.0" | grep -E 'NEEDED|RUNPATH' | sort -u

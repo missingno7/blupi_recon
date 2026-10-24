@@ -31,6 +31,7 @@ Current release: **1.1.0** for Windows x64, Linux x86-64 and Android
 | `tests/` | port | Unit tests, music tests, golden traces (`tests/golden/`) |
 | `languages/` | port, generated from the original executables | The built-in language packs (`tools/language_pack.py`; [docs/LANGUAGES.md](docs/LANGUAGES.md)) |
 | `res/` | port, derived from game data | The port's icon: the game's waving Blupi sprite (`icon.png`) and the Windows `icon.ico`, made by `tools/make_icon.py` |
+| `common/app/` | port | SB1/SB2 launcher: options and combined help, discovery/chooser, settings precedence, user folder, SoundFont search, scripted input, host-message dispatch and fixed-tick main loop; adapters supply names and game hooks |
 | `release/` | port | What the packages carry besides the program: the player's `README.txt`, `COPYING.txt` (GPLv3), `THIRD_PARTY.txt` |
 | `VERSION.txt` | port | The release version, read by CMake and the Android build |
 | `oracle/`, `tools/` | port test tooling | Frame-capture `ddraw.dll` proxy for the historical rebuild, capture and diff scripts ([docs/ORACLE.md](docs/ORACLE.md)); not part of the game build |
@@ -86,10 +87,12 @@ gamepad. See [android/README.md](android/README.md).
 
 ## Run
 
-The SB2 desktop bring-up builds `blupi2` beside `blupi-sdl3`. For example:
+The desktop build produces `blupi2-sdl3` beside `blupi-sdl3` (CMake targets `blupi2`
+and `blupi`). Put `blupi2-sdl3.exe` and `SDL3.dll` into a Speedy Eggbert 2 or Speedy
+Blupi 2 folder and run it; release builds open no console. Alternatively:
 
 ```powershell
-build\port\blupi2.exe --headless --data assets\eggbert2 --user build\sb2-user --frames 8000
+build\port\blupi2-sdl3.exe --headless --data assets\eggbert2 --user build\sb2-user --frames 8000
 ```
 
 It also accepts Blupi 2 data (`assets\blupi2`), `--color 8|16`, `--trace`, `--screenshot`, and
@@ -109,7 +112,7 @@ compares its commands with the scene and uses that reference state, and `--check
 widescreen, interpolation, display-rate presentation and Display options flow as SB1.
 Its settings entry is below the original colour-depth controls. Preferences use
 `blupi2-sdl3.json` in `%APPDATA%\Epsitec\Speedy Blupi 2 SDL3\` (or `--user`), with
-`BLUPI2_DATA` or the saved `dataFolder` supplying the data root when `--data` is absent.
+the shared launcher supplying data discovery and a first-run folder chooser, as below.
 Headless runs load/save no preferences; CLI display overrides apply to one run. The default
 view remains faithful 640x480, without interpolation. See the M4b gates in
 [SB2_PORT.md](docs/SB2_PORT.md).
@@ -119,10 +122,17 @@ build\port\blupi-sdl3.exe --data "D:\Prog\blupi_recon\assets\Speedy Blupi"
 ```
 
 `--data` is the installed game folder (`DATA`, `IMAGE08`, `IMAGE16`, `SOUND`); it is only read.
-Without it the port tries `BLUPI_DATA`, the folder kept in the settings file, the executable's
-folder and the current one. When none holds the game, a desktop build asks for the folder (a
+Both games build `common/app/launcher.cpp`: common options/help, user folder, SoundFont
+lookup, scripted input, host-message dispatch and the fixed-tick main loop. Their historical
+adapters and presentation remain in each game's `main.cpp`.
+Without `--data` the launcher tries `BLUPI_DATA` (SB1) or `BLUPI2_DATA` (SB2), the folder kept
+in that game's settings file, the executable's folder, `host::data_dirs()` and the current
+folder. Recognition also checks the game's marker (`data/demo200.blp` for SB1,
+`data/bench.blp` for SB2), so the other game's folder is rejected. An invalid explicit
+`--data` fails without falling back. When none holds the game,
+a desktop build asks for the folder (a
 message, then the system's folder dialog; a folder that contains the game, like the CD, works
-too) and keeps the choice as `dataFolder` in `blupi-sdl3.json`.
+too) and keeps the choice as `dataFolder` in `blupi-sdl3.json` or `blupi2-sdl3.json`.
 Saves, player info, user missions and recorded demos go to `--user DIR` (default: the SDL pref
 path `%APPDATA%\Epsitec\Speedy Blupi SDL3\`); a file there shadows the game file of the same
 name, so a custom `data\config.def` can be placed in the user folder. `--color 8|16` overrides
