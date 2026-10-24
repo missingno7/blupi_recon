@@ -1,5 +1,9 @@
 # June 1998 Speedy Blupi demo
 
+[POLICY 2026-10-24] The demo is evidence for the retail SB1 reconstruction, not a completion target. Demo work
+must name the unresolved retail problem it addresses, the evidence expected, how it would change the retail
+reconstruction, what would falsify it and when to stop; matching unrelated demo code is out of scope.
+
 [EVIDENCE] `sb1/blupi/demo` is the tenth SB1 target, an earlier source revision rather than a retail
 language. The static oracle is `assets/downloads/openeggbert/Speedy_Blupi_Demo/exe/Blupi.exe`
 (owner-approved openeggbert download, see docs/ORACLE.md), 533,504 bytes, SHA-256
