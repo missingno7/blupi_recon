@@ -83,6 +83,19 @@ still does not recover API identities. June has no Rich header, so it cannot dec
 loaded modules** or original TU partition. Full byte counts, source-gate failures, model boundaries
 and process cleanup receipts are in `scratch/w-demo10/REPORT.md` and its JSON evidence.
 
+## Dead-import source search (2026-10-24, `scratch/w-deadimports/REPORT.md`)
+
+[EVIDENCE] Encounter windows pinned by COFF symbol index in all three links: the KERNEL32 reference after misc.obj's
+`CreateDirectoryA` (symbol 128, `AddUserPath`) up to the KERNEL32 null; the USER32 pair after movie.obj's
+`InvalidateRect` (symbol 30) and before pixmap.obj's `GetClientRect` (symbol 251 retail / 241 June); the last three
+USER32 after sound.obj's `wsprintfA` (symbol 21, `ReadData`). 608 KERNEL32 and 524 USER32 archive APIs are absent
+from every SB1 image; neither SB2 executable imports any USER32 function SB1 lacks.
+
+[NEGATIVE] No attested source fills all six. Later Epsitec code can fill the first two windows (Colobot
+`DisplayError`: OutputDebugStringA; DX7 `FlipToGDISurface`: RedrawWindow/DrawMenuBar; Blupimania2 capture wrappers:
+SetCapture/ReleaseCapture), but each breaks the ICF survivors of another image; nothing attested supplies the last
+three USER32 references. 18 real links, every existing US/Eggbert payload unchanged.
+
 ## Open items and the next evidence for each
 
 | Open item | Next evidence that could decide it |
