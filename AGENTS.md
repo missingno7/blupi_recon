@@ -28,10 +28,18 @@ same `src/`:
   inventory (`oracle/<target>/`, from `tools/derive_target.py`) go through `tools/cmpfunc_target.py`.
 - SB2 (`sb2/eggbert/en`) is a separate game: its own tree `games/sb2/src/`, manifest `games/sb2/recon.json`
   and inventory `oracle/sb2-eggbert-en/` (docs/SB2.md). Speedy Blupi 2 (`sb2/blupi/en`) builds the same tree with
-  `_EGAMES=0`; its changes keep Eggbert 2's results identical (`scratch/sb2/samestatus.py`). Eggbert 2 is the
-  primary STRICT target: a change may cost a Blupi 2 STRICT function only if Eggbert 2 gains and that Blupi 2
-  function keeps a re-proven EQUIVALENT certificate (docs/SB2.md "Edition policy"); never the reverse. Never edit `src/` for SB2; SB2 source changes only
-  from SB2 binary evidence. Run `tools/crossmap.py --target sb2/eggbert/en --audit` before `--accept`.
+  `_EGAMES=0`. Never edit `src/` for SB2; SB2 source changes only from SB2 binary evidence. Run
+  `tools/crossmap.py --target sb2/eggbert/en --audit` before `--accept`.
+- Historical targets are matched independently (user policy, 2026-10-24). The matching reconstruction exists to
+  reproduce each original executable, not to compile every edition from one source: Speedy Blupi 1, Speedy
+  Eggbert 1, Speedy Blupi 2 and Speedy Eggbert 2 (and their language and demo builds) are optimized separately.
+  Share a matching source file only while the evidence shows the originals were the same; where editions need
+  different implementations, declarations, headers or translation-unit context, give them edition-specific
+  source rather than many conditional macros or compiler steering. No edition may be made to lose STRICT
+  coverage so another can gain; an EQUIVALENT fallback for one edition is a temporary research state.
+  Report progress per executable, never as a combined metric. Edition-specific source still needs historical
+  evidence: no dummy declarations, synthetic functions or meaningless changes that steer symbol numbering.
+  The SDL3 port (`port/`) keeps its own shared architecture and is not bound to the matching source layout.
 
 Hard rules:
 - `assets/` is immutable original material; `external/` holds read-only reference repos

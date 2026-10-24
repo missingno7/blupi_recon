@@ -98,6 +98,10 @@ identical function results (`scratch/w-b2lang/REPORT.md`).
 
 ### Edition policy (2026-10-23)
 
+[SUPERSEDED 2026-10-24] Replaced by the independent-target policy in AGENTS.md: each SB2 edition is matched on its own,
+with edition-specific source where the originals differ; no edition gives up STRICT coverage for another. The text
+below records the earlier rule and its applications.
+
 [EVIDENCE] Every structural fix so far that helped one SB2 edition hurt the other (pixmap.cpp's `CacheAll`
 order: Blupi 2 +512 STRICT bytes, Eggbert 2 −512; the decblupi predicates and GetBlupiInfo/MoveObjectSort
 need opposite contexts per edition): the 2001 and 2004 originals were compiled from different source
