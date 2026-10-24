@@ -96,6 +96,14 @@ from every SB1 image; neither SB2 executable imports any USER32 function SB1 lac
 SetCapture/ReleaseCapture), but each breaks the ICF survivors of another image; nothing attested supplies the last
 three USER32 references. 18 real links, every existing US/Eggbert payload unchanged.
 
+## `.data` virtual size of the SB1 secondaries (2026-10-24, `scratch/w-bss32/REPORT.md`)
+
+[EVIDENCE] The 32-byte `.data` virtual-size excess of every SB1 secondary relink (both Blupi languages, all six
+Eggbert 1 languages) is a sandbox artefact: the sandbox `sound.cpp` path makes the `__FILE__` literal longer, shifting
+initialized data by 16 bytes, which the CRT's `__bufin` 16-byte alignment rounds to 32. With the historical-path
+`sound.obj` all nine retail targets have the exact virtual size and BSS placement. No source or CRT change is needed;
+builds must use the historical build path (docs/BUILD_PATH.md).
+
 ## Open items and the next evidence for each
 
 | Open item | Next evidence that could decide it |
