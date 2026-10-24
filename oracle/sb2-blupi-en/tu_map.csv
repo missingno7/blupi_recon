@@ -367,7 +367,7 @@ rva,size,tu,confidence,best_source,status,evidence
 0x28030,207,network.cpp,anchored,sb1/blupi/us:network.cpp:?Receive@CNetwork@@QAEHPAXKPAK@Z,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20f10 (?Receive@CNetwork@@QAEHPAXKPAK@Z)
 0x28100,18,network.cpp,anchored,sb1/blupi/us:network.cpp:?Close@CNetwork@@QAEHXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x20fe0 (?Close@CNetwork@@QAEHXZ)
 0x28120,35,network.cpp,anchored,sb1/blupi/us:network.cpp:?FreeUnknownList@CNetwork@@QAEXXZ,strict,[EVIDENCE] exact match to sb1/blupi/us 0x21000 (?FreeUnknownList@CNetwork@@QAEXXZ)
-0x28150,4,,unplaced,,none,
+0x28150,4,network.cpp,anchored,sb2:network.cpp:?IsHost@CNetwork@@QAEHXZ,strict,"[EVIDENCE] Physical final network.cpp slot, between independently located FreeUnknownList and CPixmap constructor, in both SB2 editions. All ten original calls correspond to IsHost; identical CButton::GetHide has no compiled caller. scratch/w-sb2small/REPORT.md; SB1 Eggbert precedent a8eea8f."
 0x28160,139,,unplaced,,strict,
 0x28200,148,pixmap.cpp,anchored,sb1/blupi/us:pixmap.cpp:??1CPixmap@@QAE@XZ,strict,[EVIDENCE] sequence match to sb1/blupi/us 0x210d0 (??1CPixmap@@QAE@XZ)
 0x282a0,1272,pixmap.cpp,bracketed,sb1/blupi/us:pixmap.cpp,strict,[EVIDENCE] between pixmap.cpp anchors 0x281b0 and 0x28870

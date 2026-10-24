@@ -3053,6 +3053,12 @@
       "rva": "0x0002b370",
       "size": 48,
       "tu": "games/sb2/src/text.cpp"
+    },
+    {
+      "symbol": "?IsHost@CNetwork@@QAEHXZ",
+      "rva": "0x00028100",
+      "size": 16,
+      "tu": "games/sb2/src/network.cpp"
     }
   ],
   "symbol_mappings": [
@@ -3081,11 +3087,7 @@
   "promotion_exclusions": [
     {
       "symbol": "?GetHide@CButton@@QAEHXZ",
-      "reason": "[OPEN] 16-byte body identical to CNetwork::IsHost; one copy at 0x28100 (inside network.cpp's block; button.cpp has no slot for it). Which symbol the linker kept is not proven: cmpfunc folds whichever copy has compiled callers into the other, so the label depends on the TU set. Counted for neither until ownership is evidenced."
-    },
-    {
-      "symbol": "?IsHost@CNetwork@@QAEHXZ",
-      "reason": "[OPEN] see ?GetHide@CButton@@QAEHXZ: shared 16-byte body at 0x28100 with unproven owner (accepted as STRICT on 2026-10-22 before event.cpp's callers were compiled; withdrawn)."
+      "reason": "[EVIDENCE] Attribution boundary: identical 16-byte body is physically owned by CNetwork::IsHost at Eggbert RVA 0x28100 / Blupi RVA 0x28150, at the end of the network.cpp block. All ten original call sites call IsHost; GetHide has no compiled caller. Its byte hit is RELOC-UNVERIFIED, not a retained STRICT body or a code mismatch. scratch/w-sb2small/REPORT.md"
     },
     {
       "symbol": "?PlayDown@CEvent@@IAEHUtagPOINT@@H@Z",

@@ -43,7 +43,7 @@
   "crt_library_sha256": "3b5f43e920c37c8da086b0d3ef0396e6517d44fcdcb4e7d03a6058620bc13ee3",
   "inventory_sha256": {
     "functions.csv": "bc0fe28fb064732585acec74afec6cdb13a2e62013346f2eff2b5b60cb548df5",
-    "tu_map.csv": "547034ed5dde1d33cef336fa78b82ec47b231dd9f66b8173e6372cd9e3c2a7cd"
+    "tu_map.csv": "49766549c6e5288612b2e1502950dfd6994b59213f225f8b31deaf4a661947bd"
   },
   "crt_target_identity": {},
   "checks": {

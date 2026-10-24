@@ -214,8 +214,15 @@ Withdrawn earlier and re-accepted after later genuine context: `MouseMove` (twic
 `BltFast` returned in round 3 once inherited SB1 definitions that SB2 does not have (`CButton::Redraw`,
 `CButton::GetEnable`, the empty `CPixmap::Fill` stub; no callers, no SB2 body) were removed.
 
-Shared bodies with unproven owner (counted once): `CButton::GetHide`/`CNetwork::IsHost` (0x28100, not
-accepted under either name); `CPixmap::SetTrueColorBack`/`CSound::SetState` (0x28cf0) and
+[EVIDENCE] The shared 16-byte getter belongs to **CNetwork::IsHost**, STRICT at Eggbert RVA `0x28100`
+and Blupi RVA `0x28150`: both occupy the final network.cpp slot, and all ten original call sites call
+IsHost. It is now accepted on all four SB2 targets (+16 unique bytes each; Eggbert 136,432 -> 136,448,
+Blupi en/de/fr 121,360 -> 121,376). CButton::GetHide has no compiled caller; its identical byte hit
+is RELOC-UNVERIFIED, an attribution boundary rather than a body mismatch or a separate STRICT body.
+Only inventory ownership/acceptance changed; certificates were re-proved with only their inventory
+hash changing (`scratch/w-sb2small/REPORT.md`). The DX7 sound witness remains scratch-only.
+
+Other shared bodies with unproven owner (counted once): `CPixmap::SetTrueColorBack`/`CSound::SetState` (0x28cf0) and
 `CPixmap::SetTrueColorDecor`/`CSound::SetCDAudio` (0x28d00), mutually FOLDED (both have compiled
 callers; the bodies lie in pixmap.cpp's block); `CEvent::NetDraw`/`DrawMap`, `BuildUp`/`PlayDown`/
 `PlayMove`/`PlayUp` (as in SB1).
