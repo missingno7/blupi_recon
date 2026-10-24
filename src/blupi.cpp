@@ -179,6 +179,7 @@ BOOL ReadConfig(LPSTR lpCmdLine)
 		if (g_mouseType > 9) g_mouseType = 9;
 	}
 
+#if !_DEMO // June ReadConfig ends after MouseType; no benchmark/true-color keys.
 	pText = strstr(buffer, "Benchmark=");
 	if (pText != NULL)
 	{
@@ -195,6 +196,7 @@ BOOL ReadConfig(LPSTR lpCmdLine)
 		if (i == 8) g_bTrueColorBack = FALSE;
 		if (i == 16) g_bTrueColorBack = TRUE;
 	}
+#endif
 
 	return TRUE;
 }
@@ -405,7 +407,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message,
 				totalDim.y = 96;
 				iconDim.x = DIMLITTLEX;
 				iconDim.y = DIMLITTLEY;
+#if _DEMO // June image paths use the single image directory.
+				g_pPixmap->Cache(CHLITTLE, "image\\little.blp", totalDim, iconDim, TRUE);
+#else
 				g_pPixmap->Cache(CHLITTLE, "image08\\little.blp", totalDim, iconDim, TRUE);
+#endif
 				g_pPixmap->SetTransparent(CHLITTLE, RGB(0, 0, 255)); // bleu
 
 				g_pPixmap->SavePalette();
@@ -735,7 +741,11 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	totalDim.y = LYIMAGE;
 	iconDim.x = 0;
 	iconDim.y = 0;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(0, "image\\init.blp", totalDim, iconDim, TRUE)) return FALSE;
+#else
 	if (!g_pPixmap->Cache(0, "image08\\init.blp", totalDim, iconDim, TRUE)) return FALSE;
+#endif
 	OutputDebug("SavePalette\n");
 	g_pPixmap->SavePalette();
 	OutputDebug("InitSysPalette\n");
@@ -751,96 +761,152 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	totalDim.y = 0x500;
 	iconDim.x = 0x40;
 	iconDim.y = 0x40;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(1, "image\\object.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(1, "image08\\object.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache object.blp", TRUE);
 	g_pPixmap->SetTransparent(1, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(2, "image\\blupi000.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(2, "image08\\blupi000.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache blupi.blp", TRUE);
 	g_pPixmap->SetTransparent(2, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(11, "image\\blupi001.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(11, "image08\\blupi001.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache blupi001.blp", TRUE);
 	g_pPixmap->SetTransparent(11, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(12, "image\\blupi002.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(12, "image08\\blupi002.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache blupi002.blp", TRUE);
 	g_pPixmap->SetTransparent(12, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(13, "image\\blupi003.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(13, "image08\\blupi003.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache blupi003.blp", TRUE);
 	g_pPixmap->SetTransparent(13, RGB(0, 0, 255));
 	totalDim.x = 0x40;
 	totalDim.y = 0x40;
 	iconDim.x = 0x40;
 	iconDim.y = 0x40;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(14, "image\\temp.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(14, "image08\\temp.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache temp.blp", TRUE);
 	g_pPixmap->SetTransparent(14, RGB(0, 0, 255));
 	totalDim.x = 0xd0;
 	totalDim.y = 0xa0;
 	iconDim.x = 0xd0;
 	iconDim.y = 0xa0;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(8, "image\\map.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(8, "image08\\map.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache map.blp", TRUE);
 	g_pPixmap->SetTransparent(8, RGB(0, 0, 255));
 	totalDim.x = 0x3c0;
 	totalDim.y = 0x4b0;
 	iconDim.x = 0x3c;
 	iconDim.y = 0x3c;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(10, "image\\element.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(10, "image08\\element.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache element.blp", TRUE);
 	g_pPixmap->SetTransparent(10, RGB(0, 0, 255));
 	totalDim.x = 0x800;
 	totalDim.y = 0x280;
 	iconDim.x = 0x80;
 	iconDim.y = 0x80;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(9, "image\\explo.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(9, "image08\\explo.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache explo.blp", TRUE);
 	g_pPixmap->SetTransparent(9, RGB(0, 0, 255));
 	totalDim.x = LXIMAGE;
 	totalDim.y = LYIMAGE;
 	iconDim.x = 0;
 	iconDim.y = 0;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(3, "image\\decor000.blp", totalDim, iconDim, FALSE)) return FALSE;
+#else
 	if (!g_pPixmap->Cache(3, "image08\\decor000.blp", totalDim, iconDim, FALSE)) return FALSE;
+#endif
 	totalDim.x = 0xf0;
 	totalDim.y = 0x348;
 	iconDim.x = 0x28;
 	iconDim.y = 0x28;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(4, "image\\button00.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(4, "image08\\button00.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache button00.blp", TRUE);
 	g_pPixmap->SetTransparent(4, RGB(0, 0, 255));
 	totalDim.x = 0x7c;
 	totalDim.y = 0x58;
 	iconDim.x = 0x7c;
 	iconDim.y = 0x16;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(5, "image\\jauge.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(5, "image08\\jauge.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache jauge.blp", TRUE);
 	g_pPixmap->SetTransparent(5, RGB(0, 0, 255));
 	totalDim.x = 0x100;
 	totalDim.y = 0x180;
 	iconDim.x = 0x10;
 	iconDim.y = 0x10;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(6, "image\\text.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(6, "image08\\text.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache text.blp", TRUE);
 	g_pPixmap->SetTransparent(6, RGB(0, 0, 255));
 	totalDim.x = 0x100;
 	totalDim.y = 0x60;
 	iconDim.x = 0x10;
 	iconDim.y = 0x0c;
+#if _DEMO // June image paths use the single image directory.
+	if (!g_pPixmap->Cache(7, "image\\little.blp", totalDim, iconDim, FALSE))
+#else
 	if (!g_pPixmap->Cache(7, "image08\\little.blp", totalDim, iconDim, FALSE))
+#endif
 		return InitFail("Cache little.blp", TRUE);
 	g_pPixmap->SetTransparent(7, RGB(0, 0, 255));
 
@@ -862,7 +928,9 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	g_pEvent->Create(hInstance, g_hWnd, g_pPixmap, g_pDecor, g_pSound, g_pNetwork, g_pMovie);
 	g_pEvent->SetFullScreen(g_bFullScreen);
 	g_pEvent->SetMouseType(g_mouseType);
-#if _INTRO
+#if _DEMO // June DoInit enters the CD-test phase (0x610).
+	g_pEvent->ChangePhase(WM_PHASE_TESTCD);
+#elif _INTRO
 	g_pEvent->ChangePhase(WM_PHASE_INTRO1);
 #else
 	g_pEvent->ChangePhase(WM_PHASE_INIT);

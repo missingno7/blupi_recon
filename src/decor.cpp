@@ -286,7 +286,11 @@ void CDecor::GetMissionPath(char* str, int user, int mission, BOOL bUser)
 	else
 	{
 		sprintf(str, "data\\world%.3d.blp", mission);
+#if _DEMO // June GetMissionPath reads official worlds from the CD path.
+		AddCDPath(str);
+#else
 		AddUserPath(str);
+#endif
 	}
 }
 
@@ -310,13 +314,20 @@ BOOL CDecor::Write(int gamer, int mission, BOOL bUser)
 	memset(pBuffer, 0, sizeof(DescFile));
 
 	pBuffer->majRev = 1;
+#if _DEMO // June writes level revision 1.2 with its demo marker.
+	pBuffer->minRev = 2;
+	pBuffer->reserve1[0] = 1;
+#else
 	pBuffer->minRev = 3;
 	pBuffer->reserve1[0] = 0;
+#endif
 	pBuffer->posDecor = m_posDecor;
 	pBuffer->dimDecor = m_dimDecor;
 	pBuffer->music = m_music;
 	pBuffer->region = m_region;
+#if !_DEMO // June level files do not store the retail mission title.
 	strcpy(pBuffer->name, m_missionTitle);
+#endif
 
 	for (i = 0; i < MAXTEAM; i++)
 	{
@@ -371,14 +382,19 @@ BOOL CDecor::Read(int gamer, int mission, BOOL bUser)
 		
 	majRev = pBuffer->majRev;
 	minRev = pBuffer->minRev;
+#if _DEMO // June rejects non-demo official levels (mission numbers below 200).
+	if (mission < 200 && pBuffer->reserve1[0] == 0) goto error;
+#endif
 	m_posDecor = pBuffer->posDecor;
 	m_dimDecor = pBuffer->dimDecor;
 	m_music = pBuffer->music;
 	m_region = pBuffer->region;
+#if !_DEMO // June Read has no revision-1.3 mission-title arm.
 	if (majRev >= 1 && minRev >= 3)
 	{
 		strcpy(m_missionTitle, pBuffer->name);
 	}
+#endif
 
 	for (i = 0; i < MAXTEAM; i++)
 	{
@@ -448,7 +464,11 @@ BOOL CDecor::CurrentWrite(int gamer, int mission)
 	pBuffer->lg = sizeof(DescGameFile);
 	pBuffer->majRev = 1;
 	pBuffer->minRev = 2;
+#if _DEMO // June save-state marker at file offset 12 is one.
+	pBuffer->reseve1[0] = 1;
+#else
 	pBuffer->reseve1[0] = 0;
+#endif
 	memcpy(pBuffer->decor, m_decor, sizeof(pBuffer->decor));
 	memcpy(pBuffer->bigDecor, m_bigDecor, sizeof(pBuffer->bigDecor));
 	memcpy(pBuffer->moveObject, m_moveObject, sizeof(pBuffer->moveObject));

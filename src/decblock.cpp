@@ -841,7 +841,11 @@ BOOL CDecor::LoadImages()
 			}
 		}
 #endif
+#if _DEMO // June LoadImages uses image, before the retail color-depth split.
+		sprintf(filename, "image\\decor%.3d.blp", m_region);
+#else
 		sprintf(filename, "image08\\decor%.3d.blp", m_region);
+#endif
 		if (!m_pPixmap->Cache(3, filename, totalDim, iconDim, FALSE))
 		{
 			return FALSE;
@@ -1588,7 +1592,11 @@ void CDecor::DrawInfo()
 			DrawText(m_pPixmap, pos, text, FONTWHITE);
 		}
 
+#if _DEMO // June hides the treasure count only for official mission 1.
+		if (m_mission != 1 || m_bPrivate)
+#else
 		if ((m_mission != 1 && m_mission % 10 != 0) || m_bPrivate)
+#endif
 		{
 			sprintf(text, "%d/%d", m_nbTresor, m_totalTresor);
 			pos.x = 590;
@@ -1686,6 +1694,7 @@ POINT CDecor::DecorNextAction()
 			{
 				posDecor.x += 3 * table_decor_action[num + 2 + m_decorPhase * 2];
 				posDecor.y += 3 * table_decor_action[num + 2 + m_decorPhase * 2 + 1];
+#if !_DEMO // June DecorNextAction advances without retail edge clamping.
 				if (m_dimDecor.x == 0)
 				{
 					num2 = 0;
@@ -1718,6 +1727,7 @@ POINT CDecor::DecorNextAction()
 				{
 					posDecor.y = num2;
 				}
+#endif
 				m_decorPhase++;
 				break;
 			}

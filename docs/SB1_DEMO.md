@@ -90,3 +90,17 @@ resources are unresolved. The conditional key model is not an authenticated orig
 See [SB1_CLOSURE.md](SB1_CLOSURE.md) and `scratch/w-demo10/REPORT.md` for raw real-link numbers,
 failed gates, reproduction commands and the remaining boundaries. No matching acceptance status
 for any existing target changed.
+
+## Demo matching and demo-only code (2026-10-24, `scratch/w-demolive/REPORT.md`)
+
+[EVIDENCE] `_DEMO` arms for June differences read from the demo's bytes: the single `image\` folder (DoInit cache
+paths, LoadImages), the CD-test first phase in DoInit, ReadConfig ending after `MouseType` (no benchmark or
+true-colour keys), the treasure count hidden only for official mission 1, and DecorNextAction without the retail edge
+clamp. 18 more functions are STRICT: 76,976 -> 89,296 / 140,784 bytes. All nine retail reports and payloads are
+unchanged, certificates pass, the primary relink stays `557ca92e…`, and the port's SB1 golden tests pass.
+
+[EVIDENCE] Census: 410 game bodies and four DirectX thunks. The only two demo-only methods were already reconstructed
+and already emitted, REF-dead, in every retail build (they disappear from the retail maps). The demo has 128 imports,
+none absent from all retail editions (`GetCurrentDirectoryA`, from June ReadConfig, is imported by Eggbert 1).
+[NEGATIVE] So demo code supplies neither the retail dead population nor the six dead imports. Fourteen changed live
+June keys remain binary-derived.

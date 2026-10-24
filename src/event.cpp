@@ -2842,6 +2842,9 @@ void CEvent::TryInsert()
 {
 	if ( m_tryInsertCount == 0 )
 	{
+#if _DEMO // June TryInsert goes directly to the requested phase.
+		ChangePhase(m_tryPhase);
+#else
 		if (CheckWorld1())
 		{
 			ChangePhase(m_tryPhase);
@@ -2850,6 +2853,7 @@ void CEvent::TryInsert()
 		{
 			m_tryInsertCount = 40;
 		}
+#endif
 	}
 	else
 	{

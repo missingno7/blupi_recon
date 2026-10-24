@@ -149,10 +149,16 @@ void GetCurrentDir(char *pName, int lg)
 void AddCDPath(char *pFilename)
 {
 	char	temp[MAX_PATH];
+#if !_DEMO // June AddCDPath only prepends g_CDPath.
 	BOOL	bDaniel = FALSE;
+#endif
 
 	if ( g_CDPath[0] == 0 )  return;
 
+#if _DEMO // June 0x1f240: no retail parent-directory selection.
+	strcpy(temp, g_CDPath);
+	strcat(temp, pFilename);
+#else
 	if ( !bDaniel &&
 		 (strstr(pFilename, "data\\")    == pFilename ||
 		  strstr(pFilename, "image\\")   == pFilename ||
@@ -170,6 +176,7 @@ void AddCDPath(char *pFilename)
 		strcat(temp, pFilename);
 	}
 
+#endif
 	strcpy(pFilename, temp);
 }
 
@@ -186,7 +193,11 @@ void AddUserPath(char *pFilename)
 
 	if ( g_CDPath[0] != 0 )  return;
 
+#if _DEMO // June 0x1f2e0 retains the predecessor user-data directory.
+	strcpy(temp, "c:\\Planète Blupi\\");
+#else
 	strcpy(temp, "c:\\Speedy Blupi\\");
+#endif
 
 	att.nLength = sizeof(SECURITY_ATTRIBUTES);
 	att.lpSecurityDescriptor = NULL;
