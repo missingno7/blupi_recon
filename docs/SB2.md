@@ -749,6 +749,20 @@ window. ChangePhase: four candidates keep the zero/PLAY priorities (-65/-78); no
 boundary. Eggbert 2 (read-only): sb2-decomp's earlier BlitzActif/SoundEnviron declarations (+5 entities) are
 decompiler order, not independent evidence; nothing new for IsWorld, IsDeepWater, IsVentillo or the wind expression.
 
+### Round 20: `.data` literal boundary and virtual size (2026-10-24, `scratch/w-ablit`, `scratch/w-bss32`)
+
+[EVIDENCE] Virtual size: SB2's +32 holds no extra BSS object. Under the correct sound path both editions enter BSS 16
+bytes late because of earlier initialized-data drift (Eggbert 2's atlas/text bands start +8/+16, Blupi 2's 0/+8),
+which the CRT's `__bufin` 16-byte alignment rounds to 32. Deleting the 33 REF-dead definitions only appeared to fix it
+by removing `GetOffset`'s genuine 15-byte accent table (the original 1,808-byte text band is present byte for byte in
+both originals): rejected. [OPEN] The source of the remaining initialized drift.
+
+[EVIDENCE] `"ab"`: LINK pools identical literals at the earliest contribution, and a REF-dead function's literal can
+own the surviving copy, so an unused function in an object before decblock could explain the original placement.
+[OPEN] No source witness identifies such a function or its TU; the numeric band's original TU is itself unproven.
+Pixmap reorderings that moved literals each lost STRICT functions and were rejected. The hotspot table (above) was the
+one evidenced data error in this band.
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten
