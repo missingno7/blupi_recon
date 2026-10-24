@@ -461,7 +461,7 @@ void CPixmap::SetDebug(BOOL bDebug)
 // Retourne FALSE en cas d'erreur.
 //
 // Port: the screen is the port's 640x480 logical frame. Its format is the
-// original exclusive-mode format: 16 bpp when bTrueColor, else 8 bpp with
+// original exclusive-mode format: 16 bpp when bTrueColor or bTrueColorDecor, else 8 bpp with
 // palette (the original windowed mode used the desktop format instead).
 
 BOOL CPixmap::Create(HWND hwnd, POINT dim,
@@ -492,7 +492,7 @@ BOOL CPixmap::Create(HWND hwnd, POINT dim,
 	m_clipRect.right  = dim.x;
 	m_clipRect.bottom = dim.y;
 
-	depth = bTrueColor ? 16 : 8;
+	depth = bTrueColor || bTrueColorDecor ? 16 : 8;
 	m_lpDD         = new IDirectDraw;
 	m_lpDDSPrimary = new IDirectDrawSurface(blupi::render::kScreen, dim.x, dim.y, depth);
 	m_lpDDSBack    = new IDirectDrawSurface(blupi::render::kBackBuffer, dim.x, dim.y, depth);

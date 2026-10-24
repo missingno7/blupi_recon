@@ -292,6 +292,13 @@ foreach(game sb1 sb2_eggbert sb2_blupi)
                     -DBUILDROOT=${CMAKE_CURRENT_BINARY_DIR} -DDEPTH=${depth}
                     -P ${CMAKE_CURRENT_SOURCE_DIR}/oracle_display.cmake)
         endforeach()
+        if(NOT game STREQUAL "sb1")
+            add_test(NAME ${game}_mixed_depth
+                COMMAND ${CMAKE_COMMAND} -DEXE=$<TARGET_FILE:${oracle_exe}> -DDATA=${oracle_data}
+                    -DWORK=${CMAKE_CURRENT_BINARY_DIR}/mixed_depth_${game}
+                    -DBUILDROOT=${CMAKE_CURRENT_BINARY_DIR}
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/sb2_mixed_depth.cmake)
+        endif()
     endif()
 endforeach()
 
