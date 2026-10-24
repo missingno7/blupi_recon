@@ -109,3 +109,14 @@ reconstruction builds both, and what it means for the port. Static reads only (2
   `_EGAMES` as 0): it logs, waits for a click and shows the insert-CD screen. Only a damaged game
   folder reaches it.
 - The port's own release numbers (1.0.0, 1.1.0, ...) are unrelated to the game's 1.0 and 1.1.
+
+## Shared getter owner (2026-10-24)
+
+[EVIDENCE] In all six Speedy Eggbert 1 originals the 16-byte body at `0x20be0` (identical bytes to
+`CJauge::GetHide` and `CNetwork::GetNbSessions`) lies in CNetwork's source-order slot between `EnumSessions`
+(`0x20b30`) and `GetSessionName` (`0x20bf0`); jauge.cpp has no free slot between `SetType` and `SetHide`. The
+shared inventory (`oracle/sb1-eggbert-en/tu_map.csv`) now credits it to network.cpp: `GetNbSessions` STRICT,
+`GetHide` FOLDED into it, in all six targets (`targets.json` overrides). Every other function record, the
+primary report and the primary relink (`557ca92e…`) are unchanged; the 18 Eggbert 1 certificates were re-issued
+after their proofs re-passed and differ only in the pinned inventory hash (`scratch/w-egginv/REPORT.md`). This
+also removes the GetHide/GetNbSessions owner cycle the verifier showed with external network callbacks.

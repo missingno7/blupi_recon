@@ -244,6 +244,17 @@
         "?DoInit@@YAHPAXPADH@Z": {
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
+        },
+        "?GetHide@CJauge@@QAEHXZ": {
+          "status": "folded",
+          "into": {
+            "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+            "tu": "src/network.cpp",
+            "rva": "0x20be0"
+          }
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict"
         }
       },
       "equivalent_functions": [
@@ -512,6 +523,17 @@
         "?DoInit@@YAHPAXPADH@Z": {
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
+        },
+        "?GetHide@CJauge@@QAEHXZ": {
+          "status": "folded",
+          "into": {
+            "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+            "tu": "src/network.cpp",
+            "rva": "0x20be0"
+          }
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict"
         }
       },
       "equivalent_functions": [
@@ -780,6 +802,17 @@
         "?DoInit@@YAHPAXPADH@Z": {
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
+        },
+        "?GetHide@CJauge@@QAEHXZ": {
+          "status": "folded",
+          "into": {
+            "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+            "tu": "src/network.cpp",
+            "rva": "0x20be0"
+          }
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict"
         }
       },
       "equivalent_functions": [
@@ -1046,6 +1079,17 @@
         "?DoInit@@YAHPAXPADH@Z": {
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
+        },
+        "?GetHide@CJauge@@QAEHXZ": {
+          "status": "folded",
+          "into": {
+            "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+            "tu": "src/network.cpp",
+            "rva": "0x20be0"
+          }
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict"
         }
       },
       "equivalent_functions": [
@@ -1313,6 +1357,17 @@
         "?DoInit@@YAHPAXPADH@Z": {
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
+        },
+        "?GetHide@CJauge@@QAEHXZ": {
+          "status": "folded",
+          "into": {
+            "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+            "tu": "src/network.cpp",
+            "rva": "0x20be0"
+          }
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict"
         }
       },
       "equivalent_functions": [
@@ -1581,6 +1636,17 @@
         "?DoInit@@YAHPAXPADH@Z": {
           "exclude": true,
           "note": "its reference to WindowProc is verified only once WindowProc is STRICT"
+        },
+        "?GetHide@CJauge@@QAEHXZ": {
+          "status": "folded",
+          "into": {
+            "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+            "tu": "src/network.cpp",
+            "rva": "0x20be0"
+          }
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict"
         }
       },
       "equivalent_functions": [
