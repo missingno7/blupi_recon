@@ -54,6 +54,11 @@ TraceErrorDP is moved to the beginning of the TU, resolving the fifth warning.
 references, rather than simply by definition position. This is a measured
 exception to applying the definition-order assumption to every COFF section.
 Original callback linkage/packaging needs independent evidence before changing
+[EVIDENCE, 2026-10-24] Resolved mechanism (msvc5kb BLUPI-LAY-04, scratch/w-emitorder): C2 emits
+file-static functions only once a compiled reference needs them. Dropping `static` from the
+network.h prototypes and the definitions restores the original callback order in SB1 too, with
+identical payloads, but SB1's historical relink then keeps a different GetHide/GetNbSessions ICF
+survivor and loses functions at their original RVA (131 -> 48), so SB1 is unchanged. SB2 adopts it.
 the shared static declarations; no linkage or header change is proposed here.
 
 [EVIDENCE] Event's four remaining overlaps are NetDraw/DrawMap selecting the

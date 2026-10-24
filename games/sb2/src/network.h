@@ -69,10 +69,10 @@ public:
 	NetPlayer		m_players[MAXNETPLAYER];
 };
 
-static BOOL CALLBACK EnumProvidersCallback(LPGUID lpguidSP, LPSTR lpSTName,
+BOOL CALLBACK EnumProvidersCallback(LPGUID lpguidSP, LPSTR lpSTName,
 	DWORD dwMajorVersion, DWORD dwMinorVersion, NamedGUIDList* lpContext);
 
-static BOOL CALLBACK EnumSessionsCallback(LPDPSESSIONDESC2 lpThisSD,
+BOOL CALLBACK EnumSessionsCallback(LPDPSESSIONDESC2 lpThisSD,
 	LPDWORD lpdwTimeOut, DWORD dwFlags, NamedGUIDList* lpContext);
 
 void TraceErrorDP(HRESULT hErr);

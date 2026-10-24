@@ -1,8 +1,8 @@
 # Speedy Blupi 2 / Speedy Eggbert 2: matching
 
-Status (2026-10-23, blocker repair): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
+Status (2026-10-24): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
 target with its own oracle, source tree `games/sb2/src/` and manifest `games/sb2/recon.json`.
-Accepted: **447 STRICT + 12 FOLDED functions, 136,080 / 172,992 game `.text` bytes (78.7%)**, plus a separate EQUIVALENT tier of 6 functions (36,656 bytes, BlupiStep included; section 8 round 11-12): together 99.9% of game code is STRICT or certified EQUIVALENT. Speedy Blupi 2 en/de/fr: 11 EQUIVALENT functions (51,312 bytes, ChangePhase, BlupiStep and DrawButtons included), 99.98% together.
+Accepted: **448 STRICT + 12 FOLDED functions; strict plus folded-owner coverage 136,208 / 172,992 game `.text` bytes (78.7%)**, plus a separate EQUIVALENT tier of 5 functions (36,544 bytes, BlupiStep included; section 8 rounds 11-14): together 99.9% of game code is STRICT or certified EQUIVALENT. Speedy Blupi 2 en/de/fr: 121,616 bytes STRICT plus folded owners and 12 EQUIVALENT functions (51,424 bytes, ChangePhase, BlupiStep and DrawButtons included), 99.98% together.
 **Speedy Blupi 2** (`sb2/blupi/en`, `_EGAMES=0`) has **449 STRICT + 5 FOLDED accepted functions,
 121,712 / 173,072 bytes (70.3%)**. Its complete comparator report finds 454 STRICT + 6 FOLDED,
 121,728 bytes; the extra 16 unique bytes have an unproven shared owner. Both complete regression gates
@@ -609,6 +609,37 @@ payload, each relocation's site, symbol, type, addend and resolved original targ
 no longer the COFF placement of unrelated data in the object (which had made unrelated data fixes invalidate
 BlupiStep's certificate). All 39 SB2 certificates were re-issued; six negative controls (payload mutation,
 relocation retargeted, changed addend, ...) are rejected. SB1's checker and certificates are unchanged.
+
+### Round 14: multi-change context solvers, `.data` ledger, function emission order (2026-10-24)
+
+[NEGATIVE] `scratch/w-mc-egg/REPORT.md`: piecewise ID-shift solver for Eggbert 2's decblupi.cpp (fresh traces,
+exact key model, shifts -2000..+3000, any number of change points). The cheapest profile that satisfies every
+STRICT decision and fixes IsWorld, IsDeepWater and IsVentillo needs five compensating changes (+187 before
+IsWorld and -187 before ActiveSwitch, +43 before IsDeepWater, -108 before IsOutWater, -109 before SetMoveTraj;
+seven with BlupiStep's wind order). No authentic source explains it: attested `IsNormalJump` costs 288 bytes,
+the C# port's indexed trajectory clears 192, DX7 `dsound.h` 272. MoveObjectSort's late operand-order decision
+depends only on the header ID of `SortGetType`, so no body change of any size can fix it.
+
+[NEGATIVE] `scratch/w-mc-b2/REPORT.md`: per-TU uniform solutions exist for Blupi 2 (decblock -3, pixmap +9..+30,
+event +32, each periodic in 512/1024) but not for decblupi (four local changes) and not as one header shift.
+`DIRECTDRAW_VERSION=0x0300` with `D3D_OVERLOADS` makes six functions STRICT (+8,352 bytes, DrawButtons
+included) and costs MoveObjectSort 240 (re-provable EQUIVALENT); nothing in either executable attests those
+settings, so it is a hash fit, not a recovered configuration, and is not adopted.
+
+[EVIDENCE] `scratch/w-data6/REPORT.md`: every differing `.data` byte of both relinks is classified. All 168
+inventoried tables have the original's contents (no value or length errors); the differences are placement:
+numeric tables 14,697, atlas tables 10,245, event.cpp's table contribution 7,105, string literals 4,503,
+text.cpp 1,251, CRT 661 (Eggbert 2; Blupi 2 alike). [OPEN] The placement rule for these contributions.
+
+[EVIDENCE] `scratch/w-emitorder/REPORT.md`, msvc5kb `BLUPI-LAY-04`: VC5 C2 emits file-static and inline
+functions only after a compiled reference needs them, so a `static` callback follows its caller whatever its
+source position. All three originals place each DirectPlay callback before its caller, so their callbacks had
+external linkage. games/sb2/src/network.h and network.cpp now declare `EnumProvidersCallback` and
+`EnumSessionsCallback` without `static`: every function status of all four SB2 targets is unchanged
+(`samestatus.py`: 0 differing; certificates pass), and in Eggbert 2's relink both callbacks and their callers sit
+at their original RVAs (functions at original RVA 85 -> 87, same-offset `.text` +186 bytes). SB1 keeps its static
+callbacks: there the same change moves an ICF survivor (GetHide/GetNbSessions) and the whole image gets worse
+(docs/LAYOUT_ORDER.md).
 
 ### DirectX header environment (round 5)
 

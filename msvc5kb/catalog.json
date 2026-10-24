@@ -5028,6 +5028,33 @@
         "doc_ref": "docs/SB2.md"
       },
       "legacy_ids": []
+    },
+    {
+      "id": "BLUPI-LAY-04",
+      "section": "layout",
+      "tier": "PROVEN",
+      "scope": "general",
+      "applies": {
+        "opt": "any"
+      },
+      "title": "C2 emits file-static and inline functions only once a compiled reference needs them",
+      "symptoms": {},
+      "symptom": "A function's COMDAT section follows its first referencing function in the object although its definition (or prototype) precedes it; moving the definition does not change the order.",
+      "construct": "File-static (internal linkage, also inherited from a static header prototype) or inline definition whose address is taken or which is called by a later function, e.g. SB1/SB2 network.cpp's static CALLBACK EnumProvidersCallback/EnumSessionsCallback.",
+      "explanation": "SP3 C2 walks a definition-ordered pending list from its head (0x4537a2) and selects only symbols whose flag word (+0x6a) has 0x20 (needed out of line). Ordinary external definitions start with 0x20; file-static (0x08) and inline (0xc8) ones gain it only while a referencing function is compiled, then the scan restarts at the head, so they are emitted right after their first referencing function. C1XX's function streams are unchanged; RTM C2 orders the same way. Calling convention, casts, dllimport sinks, /Ob, /Od and prototype placement have no effect.",
+      "experiment": "Compile one-factor micro TUs and read the COFF section order; observe the pending-list selection with the c2dbg observer (scratch/w-emitorder micros.py, observe.py).",
+      "not_when": "Removing only the definition's static keeps the header prototype's internal linkage and changes nothing. Whole-image layout can still get worse through ICF survivor changes: on SB1 the extern callbacks restore network.cpp's original order but move the GetHide/GetNbSessions survivor (functions at original RVA 131 -> 48), so SB1 keeps static callbacks.",
+      "evidence": [
+        {
+          "ref": "blupi_recon:scratch/w-emitorder/REPORT.md; observer-results.json; micro-results.json; audit.json",
+          "tier": "PROVEN",
+          "counts": "50 micro variants on SP3 and RTM; SB1, Eggbert 2 and Blupi 2 network.obj order fixed with identical payloads and verifier reports; Eggbert 2 functions at original RVA 85 -> 87"
+        }
+      ],
+      "keywords": "static callback comdat section order emission deferred inline layout",
+      "blupi_status": "validated",
+      "doc_ref": "docs/SB2.md",
+      "legacy_ids": []
     }
   ]
 }
