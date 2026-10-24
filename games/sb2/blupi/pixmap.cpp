@@ -121,6 +121,51 @@ void CPixmap::ReleaseAll()
 }
 
 
+int CPixmap::Benchmark()
+{
+	struct _timeb tstruct;
+	int        i, j, t1, t2, time;
+	RECT    rect;
+	POINT    dest;
+
+	_ftime(&tstruct);
+	t1 = tstruct.millitm;
+
+	for (j = 0; j < 10; j++)
+	{
+		dest.x = 0;
+		dest.y = 0;
+		rect.left = 29;
+		rect.right = 29 + LXIMAGE;
+		rect.top = 29;
+		rect.bottom = 29 + LYIMAGE;
+		DrawPart(-1, CHDECOR, dest, rect, 1);
+
+		dest.x = 13;  // position quelconque non-multiple de 16
+		dest.y = 13;
+		for (i = 0; i < 120; i++)
+		{
+			QuickIcon(1, 1, dest);
+		}
+	}
+
+	_ftime(&tstruct);
+	t2 = tstruct.millitm;
+
+	if (t1 > t2)  t2 += 1000;
+	time = t2 - t1;
+
+	FILE* file = NULL;
+	char        string[100];
+	sprintf(string, "Benchmark = %d\r\n", time);
+	file = fopen("data\\bench.blp", "wb");
+	if (file == NULL)  return time;
+	fwrite(string, strlen(string), 1, file);
+	fclose(file);
+
+	return time;
+}
+
 void CPixmap::SetDebug(BOOL bDebug)
 {
 	m_bDebug = bDebug;
@@ -1569,50 +1614,7 @@ void CPixmap::MouseHotSpot()
 
 
 
-int CPixmap::Benchmark()
-{
-	struct _timeb tstruct;
-	int        i, j, t1, t2, time;
-	RECT    rect;
-	POINT    dest;
 
-	_ftime(&tstruct);
-	t1 = tstruct.millitm;
-
-	for (j = 0; j < 10; j++)
-	{
-		dest.x = 0;
-		dest.y = 0;
-		rect.left = 29;
-		rect.right = 29 + LXIMAGE;
-		rect.top = 29;
-		rect.bottom = 29 + LYIMAGE;
-		DrawPart(-1, CHDECOR, dest, rect, 1);
-
-		dest.x = 13;  // position quelconque non-multiple de 16
-		dest.y = 13;
-		for (i = 0; i < 120; i++)
-		{
-			QuickIcon(1, 1, dest);
-		}
-	}
-
-	_ftime(&tstruct);
-	t2 = tstruct.millitm;
-
-	if (t1 > t2)  t2 += 1000;
-	time = t2 - t1;
-
-	FILE* file = NULL;
-	char        string[100];
-	sprintf(string, "Benchmark = %d\r\n", time);
-	file = fopen("data\\bench.blp", "wb");
-	if (file == NULL)  return time;
-	fwrite(string, strlen(string), 1, file);
-	fclose(file);
-
-	return time;
-}
 
 
 

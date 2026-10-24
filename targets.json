@@ -2008,8 +2008,10 @@
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
         },
         "?MouseBackDraw@CPixmap@@QAEXXZ": {
-          "exclude": true,
-          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+          "status": "strict",
+          "rva": "0x29f30",
+          "size": 272,
+          "note": "[EVIDENCE] Benchmark restored before SetDebug in Blupi overlay; MouseBackDraw independently STRICT, all original strict peers retained. scratch/w-b2own/REPORT.md (2026-10-24)."
         },
         "?MoveObjectSort@CDecor@@QAEXXZ": {
           "withdrawn": null,
@@ -2172,8 +2174,10 @@
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
         },
         "?MouseBackDraw@CPixmap@@QAEXXZ": {
-          "exclude": true,
-          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+          "status": "strict",
+          "rva": "0x29f30",
+          "size": 272,
+          "note": "[EVIDENCE] Benchmark restored before SetDebug in Blupi overlay; MouseBackDraw independently STRICT, all original strict peers retained. scratch/w-b2own/REPORT.md (2026-10-24)."
         },
         "?MoveObjectSort@CDecor@@QAEXXZ": {
           "withdrawn": null,
@@ -2336,8 +2340,10 @@
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
         },
         "?MouseBackDraw@CPixmap@@QAEXXZ": {
-          "exclude": true,
-          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+          "status": "strict",
+          "rva": "0x29f30",
+          "size": 272,
+          "note": "[EVIDENCE] Benchmark restored before SetDebug in Blupi overlay; MouseBackDraw independently STRICT, all original strict peers retained. scratch/w-b2own/REPORT.md (2026-10-24)."
         },
         "?MoveObjectSort@CDecor@@QAEXXZ": {
           "withdrawn": null,

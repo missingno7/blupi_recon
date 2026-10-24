@@ -3241,29 +3241,6 @@
         "certificate": "evidence/equivalence/sb2-blupi-en/IsOutWater.json"
       },
       {
-        "name": "MouseBackDraw",
-        "symbol": "?MouseBackDraw@CPixmap@@QAEXXZ",
-        "rva": "0x29f30",
-        "size": 272,
-        "tu": "games/sb2/src/pixmap.cpp",
-        "returns_value": false,
-        "regions": [
-          [
-            "0x8b",
-            "0x91",
-            "0x8b",
-            "0x90"
-          ],
-          [
-            "0xc3",
-            "0xc9",
-            "0xc2",
-            "0xc7"
-          ]
-        ],
-        "certificate": "evidence/equivalence/sb2-blupi-en/MouseBackDraw.json"
-      },
-      {
         "name": "ChangePhase",
         "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
         "tu": "games/sb2/src/event.cpp",
@@ -3649,29 +3626,6 @@
         "certificate": "evidence/equivalence/sb2-blupi-de/IsOutWater.json"
       },
       {
-        "name": "MouseBackDraw",
-        "symbol": "?MouseBackDraw@CPixmap@@QAEXXZ",
-        "rva": "0x29f30",
-        "size": 272,
-        "tu": "games/sb2/src/pixmap.cpp",
-        "returns_value": false,
-        "regions": [
-          [
-            "0x8b",
-            "0x91",
-            "0x8b",
-            "0x90"
-          ],
-          [
-            "0xc3",
-            "0xc9",
-            "0xc2",
-            "0xc7"
-          ]
-        ],
-        "certificate": "evidence/equivalence/sb2-blupi-de/MouseBackDraw.json"
-      },
-      {
         "name": "ChangePhase",
         "symbol": "?ChangePhase@CEvent@@QAEHI@Z",
         "tu": "games/sb2/src/event.cpp",
@@ -4055,29 +4009,6 @@
           ]
         ],
         "certificate": "evidence/equivalence/sb2-blupi-fr/IsOutWater.json"
-      },
-      {
-        "name": "MouseBackDraw",
-        "symbol": "?MouseBackDraw@CPixmap@@QAEXXZ",
-        "rva": "0x29f30",
-        "size": 272,
-        "tu": "games/sb2/src/pixmap.cpp",
-        "returns_value": false,
-        "regions": [
-          [
-            "0x8b",
-            "0x91",
-            "0x8b",
-            "0x90"
-          ],
-          [
-            "0xc3",
-            "0xc9",
-            "0xc2",
-            "0xc7"
-          ]
-        ],
-        "certificate": "evidence/equivalence/sb2-blupi-fr/MouseBackDraw.json"
       },
       {
         "name": "ChangePhase",

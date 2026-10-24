@@ -714,6 +714,23 @@ project with a sound.cpp-specific DirectSound header; the import hints prove DX5
 line is not identified and a per-TU header environment needs evidence. After the IsHost attribution (round 16 notes),
 the only uncovered bytes are this function (208, Eggbert 2) and the four DirectX import thunks (32 per edition).
 
+### Round 18: per-edition matching (2026-10-24, `scratch/w-b2own`, `scratch/w-button`)
+
+[EVIDENCE] Speedy Blupi 2 `MouseBackDraw` is STRICT: Blupi 2's own pixmap.cpp defines `CPixmap::Benchmark` before
+`SetDebug`, where both originals emit it (definition order = emission order). Blupi 2: 452 STRICT + 5 FOLDED,
+122,240 B per language; EQUIVALENT 9 functions / 50,800 B. Eggbert 2 unchanged (its shared pixmap.cpp keeps the old
+order: restoring the full anchored order would cost QuickIcon). [NEGATIVE] SB1's binary-proven forms of GetBlupiInfo,
+DecorNextAction clamps, IsDeepWater, IsOutWater, DrawButtons' number position and ChangePhase's music/WriteInfo
+guards gain nothing on Blupi 2 (several are neutral, IsOutWater costs SetMoveTraj); declaration order is already
+identical to SB1 for 178 CDecor, 98 CEvent and 45 CPixmap declarations.
+
+[EVIDENCE] button.cpp conflict: each restored dead definition (`CButton::Redraw`, `GetEnable`) adds two front-end IDs;
+four extra IDs flip a bit-3 operand-order decision in `MouseMove`. Neither alone gives the original jauge ICF
+survivor. sb2-decomp's method order (MouseMove before MouseDown) keeps every STRICT payload with both methods and
+reaches 312 (Eggbert 2) / 337 (Blupi 2) functions at their original RVA, but the originals place MouseDown before
+MouseMove, so it contradicts the binary. [OPEN] The original needs about four fewer IDs before MouseMove alongside the
+dead methods; no attested source shows where.
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten

@@ -144,7 +144,7 @@ class TargetEquivalenceTests(unittest.TestCase):
             if name.startswith('sb1/'):
                 expected = 0 if target.primary or name == 'sb1/blupi/demo' else 3 if '/eggbert/' in name else 2
             else:
-                expected = 4 if name == 'sb2/eggbert/en' else 10
+                expected = 4 if name == 'sb2/eggbert/en' else 9
             self.assertEqual(len(entries), expected)
             self.assertTrue(all(target.slug in e['certificate'] for e in entries))
             # Translation never applies to the namespaced target records.
@@ -175,8 +175,8 @@ class TargetEquivalenceTests(unittest.TestCase):
                 self.assertEqual(target_coverage.main(), 0)
             lines.append(output.getvalue().splitlines())
         self.assertEqual(lines[0], lines[1][:-1])
-        self.assertIn('10 functions', lines[1][-1])
-        self.assertIn('51,072 bytes', lines[1][-1])
+        self.assertIn('9 functions', lines[1][-1])
+        self.assertIn('50,800 bytes', lines[1][-1])
 
     @staticmethod
     def function(payload):
