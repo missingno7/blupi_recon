@@ -34,7 +34,7 @@
   "payload_sha256": "3d1883c7c6fa4fc90b5132ed39a65437320a3a830d35eb5b2dff81464da04436",
   "oracle_sha256": "e2ae251daf61730243506fef1663dd49115f0e3cbabdbdb5af64022ded71479d",
   "oracle_function_sha256": "3dba43b4fb5861b0397a7eb998db17fd1f1ee1bd135cfdd16f3dfa503e3506e2",
-  "checker_sha256": "5cb7ab9a8749b1b68faaabfb9df71f6e85bacac30acf14abb9915ba77c8e225a",
+  "checker_sha256": "b9da23ac390f50484fdefa537b4492a06f6c35a1584f531b155924798f9c6f22",
   "comparator_sha256": "e5f128d8f4fed1aba7371f03397a154f76b3d2d72b8dee874b167bff83bf2323",
   "comparator_wrapper_sha256": "ae663881d257785e3f7f6729080c0982e5b25034cd870988bfa2330d3b5ef2dc",
   "capstone_version": "5.0.3",

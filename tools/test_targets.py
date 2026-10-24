@@ -141,9 +141,9 @@ class TargetEquivalenceTests(unittest.TestCase):
             target = targets.load(name)
             entries = equiv.declarations(target, target.manifest())
             if name.startswith('sb1/'):
-                expected = 0 if target.primary else 3 if '/eggbert/' in name else 2
+                expected = 0 if target.primary or name == 'sb1/blupi/demo' else 3 if '/eggbert/' in name else 2
             else:
-                expected = 5 if name == 'sb2/eggbert/en' else 12
+                expected = 4 if name == 'sb2/eggbert/en' else 13
             self.assertEqual(len(entries), expected)
             self.assertTrue(all(target.slug in e['certificate'] for e in entries))
             # Translation never applies to the namespaced target records.
@@ -174,8 +174,8 @@ class TargetEquivalenceTests(unittest.TestCase):
                 self.assertEqual(target_coverage.main(), 0)
             lines.append(output.getvalue().splitlines())
         self.assertEqual(lines[0], lines[1][:-1])
-        self.assertIn('12 functions', lines[1][-1])
-        self.assertIn('51,424 bytes', lines[1][-1])
+        self.assertIn('13 functions', lines[1][-1])
+        self.assertIn('51,664 bytes', lines[1][-1])
 
     @staticmethod
     def function(payload):
@@ -401,7 +401,7 @@ class SB1EquivalenceTests(unittest.TestCase):
             t = targets.load(name)
             entries = equiv.declarations(t,t.manifest())
             self.assertFalse(any(e['name']=='DoInit' for e in entries))
-            self.assertEqual(len(entries),0 if t.primary else 3 if '/eggbert/' in name else 2)
+            self.assertEqual(len(entries),0 if t.primary or name == 'sb1/blupi/demo' else 3 if '/eggbert/' in name else 2)
             for entry in entries:
                 self.assertEqual(entry['proof_method'],'sb1-local')
                 self.assertTrue(entry['certificate'].startswith('evidence/equivalence/'+t.slug+'/'))

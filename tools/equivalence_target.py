@@ -1270,8 +1270,8 @@ def bindings(target, manifest, comparison, evidence, pe, out, library):
 
 
 def pure_sort_callee(comparison, pe, symbol):
-    """The only call reordering lemma: SortGetType is a total pure integer map."""
-    require(symbol == '?SortGetType@@YAHH@Z', 'unknown purity theorem')
+    """One call-reordering lemma for free SortGetType and static CDecor::SortGetType."""
+    require(symbol in ('?SortGetType@@YAHH@Z', '?SortGetType@CDecor@@SAHH@Z'), 'unknown purity theorem')
     matches = [(u,r) for u in comparison for r in u['functions'] if r['name'] == symbol]
     require(len(matches) == 1, 'pure callee must have one emitted definition')
     unit, row = matches[0]

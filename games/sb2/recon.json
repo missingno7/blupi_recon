@@ -1398,9 +1398,15 @@
       "tu": "games/sb2/src/decmove.cpp"
     },
     {
-      "symbol": "?SortGetType@@YAHH@Z",
+      "symbol": "?SortGetType@CDecor@@SAHH@Z",
       "rva": "0x000198f0",
       "size": 48,
+      "tu": "games/sb2/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+      "rva": "0x00019920",
+      "size": 240,
       "tu": "games/sb2/src/decmove.cpp"
     },
     {
@@ -3494,6 +3500,24 @@
         "certificate": "evidence/equivalence/sb2-blupi-en/IsMoveTraj.json"
       },
       {
+        "name": "MoveObjectSort",
+        "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+        "rva": "0x19910",
+        "size": 240,
+        "tu": "games/sb2/src/decmove.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0x80",
+            "0xa0",
+            "0x80",
+            "0xa0"
+          ]
+        ],
+        "pure_callee": "?SortGetType@CDecor@@SAHH@Z",
+        "certificate": "evidence/equivalence/sb2-blupi-en/MoveObjectSort.json"
+      },
+      {
         "name": "BlupiStep",
         "symbol": "?BlupiStep@CDecor@@QAEXXZ",
         "tu": "games/sb2/src/decblupi.cpp",
@@ -3940,6 +3964,24 @@
           ]
         ],
         "certificate": "evidence/equivalence/sb2-blupi-de/IsMoveTraj.json"
+      },
+      {
+        "name": "MoveObjectSort",
+        "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+        "rva": "0x19910",
+        "size": 240,
+        "tu": "games/sb2/src/decmove.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0x80",
+            "0xa0",
+            "0x80",
+            "0xa0"
+          ]
+        ],
+        "pure_callee": "?SortGetType@CDecor@@SAHH@Z",
+        "certificate": "evidence/equivalence/sb2-blupi-de/MoveObjectSort.json"
       },
       {
         "name": "BlupiStep",
@@ -4390,6 +4432,24 @@
         "certificate": "evidence/equivalence/sb2-blupi-fr/IsMoveTraj.json"
       },
       {
+        "name": "MoveObjectSort",
+        "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
+        "rva": "0x19910",
+        "size": 240,
+        "tu": "games/sb2/src/decmove.cpp",
+        "returns_value": false,
+        "regions": [
+          [
+            "0x80",
+            "0xa0",
+            "0x80",
+            "0xa0"
+          ]
+        ],
+        "pure_callee": "?SortGetType@CDecor@@SAHH@Z",
+        "certificate": "evidence/equivalence/sb2-blupi-fr/MoveObjectSort.json"
+      },
+      {
         "name": "BlupiStep",
         "symbol": "?BlupiStep@CDecor@@QAEXXZ",
         "tu": "games/sb2/src/decblupi.cpp",
@@ -4507,24 +4567,6 @@
           ]
         ],
         "certificate": "evidence/equivalence/sb2-eggbert-en/IsVentillo.json"
-      },
-      {
-        "name": "MoveObjectSort",
-        "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
-        "rva": "0x19920",
-        "size": 240,
-        "tu": "games/sb2/src/decmove.cpp",
-        "returns_value": false,
-        "regions": [
-          [
-            "0x80",
-            "0xa0",
-            "0x80",
-            "0xa0"
-          ]
-        ],
-        "pure_callee": "?SortGetType@@YAHH@Z",
-        "certificate": "evidence/equivalence/sb2-eggbert-en/MoveObjectSort.json"
       },
       {
         "name": "BlupiStep",

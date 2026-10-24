@@ -1902,13 +1902,6 @@
           "size": 208,
           "tu": "games/sb2/src/sound.cpp",
           "note": "[EVIDENCE] STRICT with Blupi 2's historical sound path, including __FILE__ and line 63. Eggbert 2's different descriptor size and line remain open. docs/SB2.md, blocker repair."
-        },
-        {
-          "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
-          "rva": "0x19910",
-          "size": 240,
-          "tu": "games/sb2/src/decmove.cpp",
-          "note": "[EVIDENCE] STRICT in Blupi 2 with every relocation verified; Eggbert 2's operand-order residue remains open. docs/SB2.md, blocker repair."
         }
       ],
       "accepted_overrides": {
@@ -2018,6 +2011,14 @@
         "?MouseBackDraw@CPixmap@@QAEXXZ": {
           "exclude": true,
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?MoveObjectSort@CDecor@@QAEXXZ": {
+          "withdrawn": {
+            "reason": "Edition policy: the witness-supported static CDecor helper makes Eggbert 2 MoveObjectSort STRICT; Blupi 2 loses 240 STRICT bytes and is re-proven EQUIVALENT.",
+            "evidence": "evidence/equivalence/sb2-blupi-en/MoveObjectSort.json; docs/SB2.md round 16",
+            "date": "2026-10-24"
+          },
+          "note": "[EVIDENCE] Static CDecor::SortGetType preserves the 48-byte helper and fixes the primary late header-ID decision; this Blupi 2 body is certified EQUIVALENT. docs/SB2.md, round 16."
         }
       }
     },
@@ -2063,13 +2064,6 @@
           "size": 208,
           "tu": "games/sb2/src/sound.cpp",
           "note": "[EVIDENCE] STRICT with Blupi 2's historical sound path, including __FILE__ and line 63. Eggbert 2's different descriptor size and line remain open. docs/SB2.md, blocker repair."
-        },
-        {
-          "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
-          "rva": "0x19910",
-          "size": 240,
-          "tu": "games/sb2/src/decmove.cpp",
-          "note": "[EVIDENCE] STRICT in Blupi 2 with every relocation verified; Eggbert 2's operand-order residue remains open. docs/SB2.md, blocker repair."
         }
       ],
       "accepted_overrides": {
@@ -2179,6 +2173,14 @@
         "?MouseBackDraw@CPixmap@@QAEXXZ": {
           "exclude": true,
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?MoveObjectSort@CDecor@@QAEXXZ": {
+          "withdrawn": {
+            "reason": "Edition policy: the witness-supported static CDecor helper makes Eggbert 2 MoveObjectSort STRICT; Blupi 2 loses 240 STRICT bytes and is re-proven EQUIVALENT.",
+            "evidence": "evidence/equivalence/sb2-blupi-de/MoveObjectSort.json; docs/SB2.md round 16",
+            "date": "2026-10-24"
+          },
+          "note": "[EVIDENCE] Static CDecor::SortGetType preserves the 48-byte helper and fixes the primary late header-ID decision; this Blupi 2 body is certified EQUIVALENT. docs/SB2.md, round 16."
         }
       }
     },
@@ -2224,13 +2226,6 @@
           "size": 208,
           "tu": "games/sb2/src/sound.cpp",
           "note": "[EVIDENCE] STRICT with Blupi 2's historical sound path, including __FILE__ and line 63. Eggbert 2's different descriptor size and line remain open. docs/SB2.md, blocker repair."
-        },
-        {
-          "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
-          "rva": "0x19910",
-          "size": 240,
-          "tu": "games/sb2/src/decmove.cpp",
-          "note": "[EVIDENCE] STRICT in Blupi 2 with every relocation verified; Eggbert 2's operand-order residue remains open. docs/SB2.md, blocker repair."
         }
       ],
       "accepted_overrides": {
@@ -2340,6 +2335,14 @@
         "?MouseBackDraw@CPixmap@@QAEXXZ": {
           "exclude": true,
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
+        },
+        "?MoveObjectSort@CDecor@@QAEXXZ": {
+          "withdrawn": {
+            "reason": "Edition policy: the witness-supported static CDecor helper makes Eggbert 2 MoveObjectSort STRICT; Blupi 2 loses 240 STRICT bytes and is re-proven EQUIVALENT.",
+            "evidence": "evidence/equivalence/sb2-blupi-fr/MoveObjectSort.json; docs/SB2.md round 16",
+            "date": "2026-10-24"
+          },
+          "note": "[EVIDENCE] Static CDecor::SortGetType preserves the 48-byte helper and fixes the primary late header-ID decision; this Blupi 2 body is certified EQUIVALENT. docs/SB2.md, round 16."
         }
       }
     },

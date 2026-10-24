@@ -2319,7 +2319,7 @@ int CDecor::MoveObjectFree()
 	return -1;
 }
 
-int __cdecl SortGetType(int type)
+int CDecor::SortGetType(int type)
 {
 	if (type == TYPE_BOMBEDOWN || type == TYPE_BOMBEUP || type == TYPE_BOMBEFOLLOW1 || type == TYPE_BOMBEFOLLOW2)
 	{
@@ -2357,7 +2357,7 @@ void CDecor::MoveObjectSort()
 			flag = FALSE;
 			for (i = 0; i < num - 1; i++)
 			{
-				if (::SortGetType(m_moveObject[i].type) > ::SortGetType(m_moveObject[i + 1].type))
+				if (SortGetType(m_moveObject[i].type) > SortGetType(m_moveObject[i + 1].type))
 				{
 					MoveObjectCopy(&dst, &m_moveObject[i]);
 					MoveObjectCopy(&m_moveObject[i], &m_moveObject[i + 1]);

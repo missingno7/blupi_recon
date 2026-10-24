@@ -663,6 +663,20 @@ Tables.cs and sb2-decomp's dectables.cpp give the semantic ancestry, not the fil
 `CEvent::OutputNetDebug`; the later literal bands drift by 4-24 bytes from there. `.data` virtual size is 32 bytes
 over the original in both editions.
 
+### Round 16: SortGetType declaration identity (2026-10-24)
+
+[EVIDENCE] The sb2-decomp/C# member order and original helper ABI support static
+`CDecor::SortGetType` before `MoveObjectSort`. Its predicted ID 33269 has
+F(ID).bit7=1, fixing the late header-only decision: Eggbert gains 240 STRICT bytes
+(449 STRICT + 12 FOLDED, 136,432 bytes). Under the edition policy, Blupi en/de/fr
+lose that one STRICT body (447 + 5 FOLDED, 121,360 bytes each), independently
+re-proven EQUIVALENT; no other report changes beyond the helper rename. The shared
+checker accepts both manglings under the unchanged 48-byte instruction theorem.
+Official re-issuance changes only the checker hash in 22 SB1 and 40 SB2 existing
+certificates, plus three new Blupi proofs. All four SB2 and ten SB1 gates exit 0;
+reports are unchanged across the checker refresh (sandbox sound gate INCOMPLETE).
+Evidence: `scratch/w-sb2rev/REPORT.md`, `scratch/w-sb2rev/integration/checker-rollover/`.
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten
