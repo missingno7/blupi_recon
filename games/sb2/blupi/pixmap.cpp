@@ -1589,9 +1589,8 @@ void CPixmap::MouseHotSpot()
 {
 	int				rank;
 
-	static int table_mouse_hotspot[4*2] =
+	static int table_mouse_hotspot[3*2] =
 	{
-		25, 0,
 		30, 30,		// SPRITE_ARROW
 		20, 15,		// SPRITE_POINTER
 		30, 30,
@@ -1600,7 +1599,7 @@ void CPixmap::MouseHotSpot()
 	if ( m_mouseSprite >= SPRITE_ARROW &&
 		 m_mouseSprite <= SPRITE_WAIT  )
 	{
-		rank = m_mouseSprite;
+		rank = m_mouseSprite - SPRITE_ARROW;
 
 		m_mouseHotSpot.x = table_mouse_hotspot[rank*2+0];
 		m_mouseHotSpot.y = table_mouse_hotspot[rank*2+1];

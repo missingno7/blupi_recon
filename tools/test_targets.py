@@ -16,6 +16,104 @@ import targets
 import verify
 import equivalence_target as equiv
 import source_tree
+import cmpfunc
+
+
+class DataAddendTests(unittest.TestCase):
+    @staticmethod
+    def fixture(value=0, oracle_name=b'.data', truncated=False):
+        payload = bytes.fromhex('1e0000001e000000140000000f0000001e0000001e000000')
+        symbol = cmpfunc.Symbol(1, 'table', value, 1, 0, 3)
+        section = cmpfunc.Section(1, '.data', b'\xcc' * value + payload, 0,
+                                  value + len(payload), [], 0)
+        coff = SimpleNamespace(sections=[section], symbols=[symbol], sym_by_index={1: symbol})
+        raw = b'\xa5' * 16 + payload + b'\x5a' * 40
+        if truncated:
+            raw = raw[:32]
+        oracle = SimpleNamespace(Name=oracle_name, VirtualAddress=0x1000,
+                                 Misc_VirtualSize=len(raw), SizeOfRawData=len(raw))
+        pe = SimpleNamespace(sections=[oracle],
+                             OPTIONAL_HEADER=SimpleNamespace(ImageBase=0x400000, FileAlignment=16),
+                             get_data=lambda rva, size: raw[rva-0x1000:rva-0x1000+size])
+        return pe, coff, symbol, 0x401010
+
+    def test_outside_addends_validate_the_complete_base_payload(self):
+        for value in (0, 12):  # Negative offset can land inside a preceding COFF object.
+            for addend in (-8, -4, 28, 80):
+                with self.subTest(value=value, addend=addend):
+                    pe, coff, symbol, base = self.fixture(value)
+                    if value:
+                        coff.symbols.insert(0, cmpfunc.Symbol(2, 'preceding', 0, 1, 0, 3))
+                    status, _, detail = cmpfunc.verify_data_target(pe, coff, symbol, addend, base+addend)
+                    self.assertEqual(status, 'STRICT')
+                    self.assertEqual(detail['data_size'], 24)
+                    self.assertEqual(detail['symbol_base_va'], f'0x{base:08x}')
+                    self.assertEqual(detail['out_of_range_data_addend'], addend)
+
+    def test_full_payload_mutation_wrong_base_kind_and_bounds_fail(self):
+        for addend in (-8, 28):
+            pe, coff, symbol, base = self.fixture()
+            for index in (0, 23):
+                raw = bytearray(coff.sections[0].raw)
+                raw[index] ^= 1
+                coff.sections[0].raw = bytes(raw)
+                self.assertEqual(cmpfunc.verify_data_target(pe, coff, symbol, addend, base+addend)[0], 'MISMATCH')
+                raw[index] ^= 1
+                coff.sections[0].raw = bytes(raw)
+            self.assertEqual(cmpfunc.verify_data_target(pe, coff, symbol, addend, base+addend+4)[0], 'MISMATCH')
+            for kwargs in (dict(oracle_name=b'.rdata'), dict(truncated=True)):
+                pe, coff, symbol, base = self.fixture(**kwargs)
+                self.assertEqual(cmpfunc.verify_data_target(pe, coff, symbol, addend, base+addend)[0], 'MISMATCH')
+
+    def test_relocated_payload_is_not_raw_byte_proof(self):
+        pe, coff, symbol, base = self.fixture()
+        coff.sections[0].relocations.append(cmpfunc.Relocation(1, 0, 1, 6))
+        self.assertEqual(cmpfunc.verify_data_target(pe, coff, symbol, -8, base-8)[0], 'RELOC-UNVERIFIED')
+
+    def test_negative_addend_cannot_borrow_an_extent_from_preceding_data(self):
+        pe, coff, symbol, base = self.fixture()
+        preceding = replace(symbol, index=2, name='preceding')
+        symbol.value = len(coff.sections[0].raw)  # No payload at the symbol base.
+        coff.symbols.insert(0, preceding)
+        self.assertIsNone(cmpfunc.data_extent(coff, symbol, 0))
+        # These bytes equal the preceding object's tail, which is not this symbol.
+        self.assertIsNotNone(cmpfunc.data_extent(coff, symbol, -8))
+        self.assertEqual(cmpfunc.verify_data_target(pe, coff, symbol, -8, base+16)[0], 'RELOC-UNVERIFIED')
+
+    def test_string_symbol_uses_its_complete_base_payload_too(self):
+        pe, coff, symbol, base = self.fixture(oracle_name=b'.rdata')
+        coff.sections[0].name = '.rdata'
+        symbol.name = '??_C@_01@fixture'
+        for addend in (-4, 8):
+            status, _, detail = cmpfunc.verify_data_target(pe, coff, symbol, addend, base+addend)
+            self.assertEqual(status, 'STRICT')
+            self.assertEqual(detail['data_size'], 2)  # First NUL terminates the string.
+
+    def test_missing_conflicting_and_inconsistent_base_bindings_fail(self):
+        pe, coff, symbol, base = self.fixture()
+        function = cmpfunc.Function(cmpfunc.Symbol(3, 'caller', 0, 2, 0x20, 2),
+            cmpfunc.Section(2, '.text', (-8).to_bytes(4, 'little', signed=True), 0, 4, [], 0),
+            0, 4, [cmpfunc.Relocation(2, 0, 1, 6)])
+        path = Path('caller.obj')
+        key = cmpfunc.symbol_map_key(path, symbol)
+        for bindings, expected in (({}, 'RELOC-UNVERIFIED'), ({key: None}, 'MISMATCH'),
+                                   ({key: base+4}, 'RELOC-UNVERIFIED'), ({key: base}, 'STRICT')):
+            with self.subTest(bindings=bindings):
+                status, rows = cmpfunc.resolve_sites(function, 0, (base-8).to_bytes(4, 'little'),
+                    0x2000, 0x400000, pe, coff, path, {}, {}, {}, {}, {}, bindings, set())
+                self.assertEqual(status, expected)
+                self.assertEqual(rows[0]['verified'], expected == 'STRICT')
+
+    def test_existing_inside_and_one_past_reports_are_unchanged(self):
+        pe, coff, symbol, base = self.fixture()
+        status, _, detail = cmpfunc.verify_data_target(pe, coff, symbol, 4, base+4)
+        self.assertEqual(status, 'STRICT')
+        self.assertEqual(detail['data_size'], 20)
+        self.assertNotIn('symbol_base_va', detail)
+        status, _, detail = cmpfunc.verify_data_target(pe, coff, symbol, 24, base+24)
+        self.assertEqual(status, 'STRICT')
+        self.assertTrue(detail['one_past_data_object'])
+        self.assertNotIn('symbol_base_va', detail)
 
 
 class TargetAcceptanceTests(unittest.TestCase):
@@ -322,7 +420,7 @@ class SourceOverlayTests(unittest.TestCase):
             self.assertEqual(source_tree.resolve(blupi, 'games/sb2/src/decor.h'),
                              targets.ROOT / 'games/sb2/blupi/decor.h')
             # Every shared TU must see the overlaid header through quoted includes.
-            tree = source_tree.prepare(blupi, targets.ROOT / 'scratch/w-sb2split/tests')
+            tree = source_tree.prepare(blupi, targets.ROOT / 'scratch/test-targets')
             shared = source_tree.compile_source(blupi, tree, 'games/sb2/src/decnet.cpp')
             self.assertEqual(shared.parent, tree)
             self.assertEqual((shared.parent / 'decor.h').read_bytes(),

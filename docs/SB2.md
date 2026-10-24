@@ -843,6 +843,15 @@ Detailed assessment, fresh per-function comparisons, certificate diffs and all g
 `scratch/w-sb2split/REPORT.md`. Earlier rounds above are historical observations and may show
 superseded totals or policies.
 
+[EVIDENCE] The original mouse-hotspot table is six ints (`30,30,20,15,30,30`), indexed by
+`m_mouseSprite - SPRITE_ARROW`; both edition sources now omit the unused reconstructed `{25,0}`
+prefix. The comparator proves out-of-range initialized-data addends against the complete symbol-base
+payload. All fourteen baseline function reports are identical under old/new comparators; 55 certificates
+were officially re-proved with only their comparator hash changed. All four SB2 targets retain every
+function status, with MouseHotSpot STRICT and both negative addends verified. Blupi 2's relink places the
+hotspot/sound tables at their original `0x486eb8` / `0x487190`; Eggbert 2 retains eight bytes of upstream
+drift. This equivalent rewrite needs no SDL3 port action. Details: `scratch/w-hotspot/REPORT.md`.
+
 ## 12. Next targets (estimated bytes)
 
 1. **BlupiStep**: 35,452 original body bytes / 14 diagnostic regions on Blupi 2; 35,449 / 20 on

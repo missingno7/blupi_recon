@@ -615,6 +615,33 @@ def verify_data_target(pe: pefile.PE, coff: Coff, symbol: Symbol, addend: int,
                     return "MISMATCH", "one-past data object's initialized bytes differ", entry
                 return "STRICT", "relocation targets the end of a byte-verified initialized data object", entry
 
+    # An address expression may lie outside its symbol (e.g. table - 8 for
+    # indexed addressing). The operand still binds symbol + addend, not the
+    # neighbouring object's bytes. resolve_sites has already required a unique
+    # run-wide symbol binding; validate the complete payload at that base.
+    if symbol.storage in (2, 3) and 0 < symbol.section <= len(coff.sections):
+        base_extent = data_extent(coff, symbol, 0)
+        if (base_extent is not None and base_extent[0] == symbol.value
+                and (addend < 0 or addend > len(base_extent[1]))):
+            obj_section = coff.sections[symbol.section - 1]
+            if section_kind(obj_section.name) in ("data", "rdata"):
+                start, expected = base_extent
+                if any(r.offset < start + len(expected)
+                       and r.offset + relocation_size(r.typ) > start
+                       for r in obj_section.relocations):
+                    return "RELOC-UNVERIFIED", "out-of-range data object's payload contains relocations", {
+                        "target_va": f"0x{target_va:08x}"}
+                status, reason, entry = verify_data_target(pe, coff, symbol, 0, target_va - addend)
+                entry.update({"target_va": f"0x{target_va:08x}",
+                              "symbol_base_va": f"0x{target_va - addend:08x}",
+                              "out_of_range_data_addend": addend})
+                return status, "symbol-base payload: " + reason, entry
+
+    if (addend < 0 and 0 < symbol.section <= len(coff.sections)
+            and section_kind(coff.sections[symbol.section - 1].name) in ("data", "rdata")):
+        return "RELOC-UNVERIFIED", "initialized data extent is not identifiable", {
+            "target_va": f"0x{target_va:08x}"}
+
     extent = data_extent(coff, symbol, addend)
     entry: dict[str, Any] = {"target_va": f"0x{target_va:08x}"}
     if extent is None:
