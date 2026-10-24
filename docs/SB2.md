@@ -684,6 +684,31 @@ certificates, plus three new Blupi proofs. All four SB2 and ten SB1 gates exit 0
 reports are unchanged across the checker refresh (sandbox sound gate INCOMPLETE).
 Evidence: `scratch/w-sb2rev/REPORT.md`, `scratch/w-sb2rev/integration/checker-rollover/`.
 
+### Round 17: linker inputs, BlupiStep, CreateSoundBuffer (2026-10-24, `scratch/w-sb2link`, `w-sb2step`, `w-sb2small`)
+
+[EVIDENCE] Linker: the LINK model replays every current SB2 ICF input and fold (837 SP3 / 831 RTM entries, 17 / 16
+folds) and both import sorts. No SB1 function with a binary-proven body is missing from SB2's source: it already has
+33 REF-dead definitions; only `CButton::Redraw`, `CButton::GetEnable` and `CPixmap::Fill` (Planet Blupi, SB2 header
+declarations) are absent. Most of the placement gap is one ICF choice: the shared empty destructor survives in
+button.cpp instead of jauge.cpp (+16 bytes through about 290 functions); pixmap's CacheAll/Benchmark slot and event's
+BuildUp/Play* slot are source/emission order, which no dead population can fix. Fixed-order upper bound of the model:
+405/463 (Eggbert 2), 401/455 (Blupi 2). [NEGATIVE] Restoring Redraw + GetEnable reaches 313 / 338 functions at their
+original RVA (from 87 / 30) exactly as predicted, but changes `CButton::MouseMove` by seven bytes through its
+declaration context in every edition (MouseMove matched only after round 3 removed them). [OPEN] What else differed in
+the original button.cpp before MouseMove.
+
+[EVIDENCE] BlupiStep: the key-mask TEST orientation is fixed in C2's post-reader input (memory AND versus a named
+temporary under the door guard), before scheduling and allocation; a preregistered compiler-IR counterfactual changed
+exactly the predicted byte (`+0x5b69`). The constant-group regions' first cost difference is localized; reversing the
+first queue crossing is byte-inert. Three new natural source forms: no STRICT gain (pilot stopped).
+
+[EVIDENCE] CreateSoundBuffer (Eggbert 2): DX7 `dsound.h` for sound.cpp alone, with one meaningful line before it
+(`#define DIRECTSOUND_VERSION 0x0700`, or equally `#include <windows.h>`), reproduces the descriptor and line 64 with
+every other payload unchanged; only `__FILE__` (historical path) stays unverified in the sandbox. [HYPOTHESIS] A 2004
+project with a sound.cpp-specific DirectSound header; the import hints prove DX5 import libraries. Not integrated: the
+line is not identified and a per-TU header environment needs evidence. After the IsHost attribution (round 16 notes),
+the only uncovered bytes are this function (208, Eggbert 2) and the four DirectX import thunks (32 per edition).
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten
