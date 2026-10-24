@@ -2804,7 +2804,7 @@
     "difference_values_sha256": "65dc7af627655d29ea582c6f96c452f05fbef61bb943baaaab1deb2b46bfc6f3",
     "differing_bytes": 18906,
     "verified_relocations": 499,
-    "relocations_sha256": "c78b4f659a45b950bce2a81b9de0d978349867f25e9ed6dd743a27b845190bb8",
+    "relocations_sha256": "f633149a1ebadf1c97b9bf832258557c43026cc85a522a1162f9f09b912a2875",
     "previously_proved_equivalent_callee_entries": {
       "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z": {
         "rva": "0x14b00",
@@ -2825,11 +2825,6 @@
         "rva": "0x14890",
         "certificate": "evidence/equivalence/sb2-blupi-de/IsDoor.json",
         "payload_sha256": "95c45cc84500c9c48ea809e41fc024db17dba062fa77745bc6bdc632d36c3ce3"
-      },
-      "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
-        "rva": "0x14dd0",
-        "certificate": "evidence/equivalence/sb2-blupi-de/IsMoveTraj.json",
-        "payload_sha256": "d48af936a8d9da345fd1b742c6e3b936fbfb1c6db1523f496ca76e8f47e12bb6"
       }
     }
   }

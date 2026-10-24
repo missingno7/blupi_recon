@@ -76,13 +76,18 @@ def capture(name, unit):
     canonical, _, source = unit.partition('=')
     canonical = canonical.replace('\\', '/')
     source = (ROOT / (source or canonical)).resolve()
+    import source_tree
+    manifest = fnprobe.load_manifest()
+    if source == (ROOT / canonical).resolve():
+        source = source_tree.resolve(manifest, canonical)
     obj = fnprobe.compile_unit(canonical, source, cap, ['/B2' + str(stub)], tree=profiles.get().name)
     for f in (cap / 'il').iterdir():
         shutil.copyfile(f, cap / f.name)
     meta = dict(unit=canonical, source=str(source), source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                 object=str(obj), c2_sha256=verify_compiler(), diagnostic_only=True,
                 headers={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
-                         for p in source.parent.glob('*.h')})
+                         for root in source_tree.roots(manifest) for p in root.glob('*.h')},
+                source_overlays=manifest.get('source_overlays', []))
     write(cap / 'capture.json', meta)
     profiles.stamp(cap)
     print(cap, flush=True)

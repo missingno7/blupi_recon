@@ -6,3 +6,7 @@ tools/fixtures/*.patch -text -whitespace
 tools/equivalence.py -text
 tools/cmpfunc.py -text
 games/sb2/src/** -text
+games/sb2/blupi/** -text
+tools/cmpfunc_target.py -text
+oracle/functions.csv -text
+oracle/sb2-eggbert-en/functions.csv -text

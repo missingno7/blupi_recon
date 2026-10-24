@@ -96,10 +96,30 @@ def capture(name, unit):
     _keep(name)
 
 
+def source_context(src, work):
+    """Effective target headers for the direct diagnostic capture helpers."""
+    import source_tree
+    target = profiles.target()
+    if target is None:
+        return src, src.parent
+    manifest = target.manifest()
+    tree = source_tree.prepare(manifest, work)
+    for unit in manifest['translation_units']:
+        canonical = unit['source']
+        if src.resolve() in ((ROOT / canonical).resolve(), source_tree.resolve(manifest, canonical).resolve()):
+            src = source_tree.compile_source(manifest, tree, canonical)
+            break
+    return src, tree
+
+
 def capture_micro(name, src):
     _fresh_il()
+    includes = []
+    if profiles.target() is not None:
+        src, root = source_context(Path(src).resolve(), WORK / 'capture')
+        includes = ['--include', str(src.parent), '--include', str(root)]
     cmd = [PY, str(ROOT / "tools/msvc.py"), src, "--tree", profiles.get().name, "--out", str(WORK / f"{name}.obj"),
-           "--log-dir", str(WORK / "logs")]
+           "--log-dir", str(WORK / "logs")] + includes
     for f in ["/W3", "/GX", "/O2", "/ML", "/Gd", "/Gy", "/B2" + str(STUB)]:
         cmd += ["--flag", f]
     for d in profiles.target().defines if profiles.target() else []:

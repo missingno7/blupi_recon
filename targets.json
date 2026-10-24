@@ -1902,6 +1902,13 @@
           "size": 208,
           "tu": "games/sb2/src/sound.cpp",
           "note": "[EVIDENCE] STRICT with Blupi 2's historical sound path, including __FILE__ and line 63. Eggbert 2's different descriptor size and line remain open. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?SortGetType@@YAHH@Z",
+          "rva": "0x198e0",
+          "size": 48,
+          "tu": "games/sb2/src/decmove.cpp",
+          "note": "[EVIDENCE] Pre-9e41413 free helper; same 48-byte original body and call ABI. Independent edition split."
         }
       ],
       "accepted_overrides": {
@@ -1916,12 +1923,8 @@
           "note": "[EVIDENCE] STRICT at 0x14080 (272 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
         },
         "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
-          "withdrawn": {
-            "reason": "Policy transition: this candidate loses the 112-byte STRICT body and passes the target-local static EQUIVALENT proof.",
-            "evidence": "evidence/equivalence/sb2-blupi-en/IsMoveTraj.json; docs/SB2.md \"Edition policy\"",
-            "date": "2026-10-23"
-          },
-          "note": "[EVIDENCE] Edition policy: the Eggbert 2 primary form of IsMoveTraj (POINT cel) costs Blupi 2 this STRICT body; it is certified EQUIVALENT in the target tier."
+          "withdrawn": null,
+          "note": "[EVIDENCE] Independent edition overlay restores the pre-policy STRICT form; docs/SB2.md, edition split (2026-10-24)."
         },
         "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z": {
           "withdrawn": null,
@@ -2004,23 +2007,22 @@
           "exclude": true,
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
         },
-        "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z": {
-          "exclude": true,
-          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
-        },
         "?MouseBackDraw@CPixmap@@QAEXXZ": {
           "exclude": true,
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
         },
         "?MoveObjectSort@CDecor@@QAEXXZ": {
-          "withdrawn": {
-            "reason": "Edition policy: the witness-supported static CDecor helper makes Eggbert 2 MoveObjectSort STRICT; Blupi 2 loses 240 STRICT bytes and is re-proven EQUIVALENT.",
-            "evidence": "evidence/equivalence/sb2-blupi-en/MoveObjectSort.json; docs/SB2.md round 16",
-            "date": "2026-10-24"
-          },
-          "note": "[EVIDENCE] Static CDecor::SortGetType preserves the 48-byte helper and fixes the primary late header-ID decision; this Blupi 2 body is certified EQUIVALENT. docs/SB2.md, round 16."
+          "withdrawn": null,
+          "note": "[EVIDENCE] Independent edition overlay restores the pre-policy STRICT form; docs/SB2.md, edition split (2026-10-24)."
+        },
+        "?SortGetType@CDecor@@SAHH@Z": {
+          "exclude": true,
+          "note": "[EVIDENCE] Blupi overlay uses the pre-9e41413 free helper, accepted at the same original RVA."
         }
-      }
+      },
+      "source_overlays": [
+        "games/sb2/blupi"
+      ]
     },
     "sb2/blupi/de": {
       "exe": "assets/blupi2_variants/deutsch/Blupi.exe",
@@ -2064,6 +2066,13 @@
           "size": 208,
           "tu": "games/sb2/src/sound.cpp",
           "note": "[EVIDENCE] STRICT with Blupi 2's historical sound path, including __FILE__ and line 63. Eggbert 2's different descriptor size and line remain open. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?SortGetType@@YAHH@Z",
+          "rva": "0x198e0",
+          "size": 48,
+          "tu": "games/sb2/src/decmove.cpp",
+          "note": "[EVIDENCE] Pre-9e41413 free helper; same 48-byte original body and call ABI. Independent edition split."
         }
       ],
       "accepted_overrides": {
@@ -2078,12 +2087,8 @@
           "note": "[EVIDENCE] STRICT at 0x14080 (272 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
         },
         "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
-          "withdrawn": {
-            "reason": "Policy transition: this candidate loses the 112-byte STRICT body and passes the target-local static EQUIVALENT proof.",
-            "evidence": "evidence/equivalence/sb2-blupi-de/IsMoveTraj.json; docs/SB2.md \"Edition policy\"",
-            "date": "2026-10-23"
-          },
-          "note": "[EVIDENCE] Edition policy: the Eggbert 2 primary form of IsMoveTraj (POINT cel) costs Blupi 2 this STRICT body; it is certified EQUIVALENT in the target tier."
+          "withdrawn": null,
+          "note": "[EVIDENCE] Independent edition overlay restores the pre-policy STRICT form; docs/SB2.md, edition split (2026-10-24)."
         },
         "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z": {
           "withdrawn": null,
@@ -2166,23 +2171,22 @@
           "exclude": true,
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
         },
-        "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z": {
-          "exclude": true,
-          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
-        },
         "?MouseBackDraw@CPixmap@@QAEXXZ": {
           "exclude": true,
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
         },
         "?MoveObjectSort@CDecor@@QAEXXZ": {
-          "withdrawn": {
-            "reason": "Edition policy: the witness-supported static CDecor helper makes Eggbert 2 MoveObjectSort STRICT; Blupi 2 loses 240 STRICT bytes and is re-proven EQUIVALENT.",
-            "evidence": "evidence/equivalence/sb2-blupi-de/MoveObjectSort.json; docs/SB2.md round 16",
-            "date": "2026-10-24"
-          },
-          "note": "[EVIDENCE] Static CDecor::SortGetType preserves the 48-byte helper and fixes the primary late header-ID decision; this Blupi 2 body is certified EQUIVALENT. docs/SB2.md, round 16."
+          "withdrawn": null,
+          "note": "[EVIDENCE] Independent edition overlay restores the pre-policy STRICT form; docs/SB2.md, edition split (2026-10-24)."
+        },
+        "?SortGetType@CDecor@@SAHH@Z": {
+          "exclude": true,
+          "note": "[EVIDENCE] Blupi overlay uses the pre-9e41413 free helper, accepted at the same original RVA."
         }
-      }
+      },
+      "source_overlays": [
+        "games/sb2/blupi"
+      ]
     },
     "sb2/blupi/fr": {
       "exe": "assets/blupi2_variants/francais/Blupi.exe",
@@ -2226,6 +2230,13 @@
           "size": 208,
           "tu": "games/sb2/src/sound.cpp",
           "note": "[EVIDENCE] STRICT with Blupi 2's historical sound path, including __FILE__ and line 63. Eggbert 2's different descriptor size and line remain open. docs/SB2.md, blocker repair."
+        },
+        {
+          "symbol": "?SortGetType@@YAHH@Z",
+          "rva": "0x198e0",
+          "size": 48,
+          "tu": "games/sb2/src/decmove.cpp",
+          "note": "[EVIDENCE] Pre-9e41413 free helper; same 48-byte original body and call ABI. Independent edition split."
         }
       ],
       "accepted_overrides": {
@@ -2240,12 +2251,8 @@
           "note": "[EVIDENCE] STRICT at 0x14080 (272 bytes) in Blupi 2; the inherited withdrawal applies only to Eggbert 2. Fresh complete verifier and zero-conflict identity audit: docs/SB2.md, blocker repair."
         },
         "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z": {
-          "withdrawn": {
-            "reason": "Policy transition: this candidate loses the 112-byte STRICT body and passes the target-local static EQUIVALENT proof.",
-            "evidence": "evidence/equivalence/sb2-blupi-fr/IsMoveTraj.json; docs/SB2.md \"Edition policy\"",
-            "date": "2026-10-23"
-          },
-          "note": "[EVIDENCE] Edition policy: the Eggbert 2 primary form of IsMoveTraj (POINT cel) costs Blupi 2 this STRICT body; it is certified EQUIVALENT in the target tier."
+          "withdrawn": null,
+          "note": "[EVIDENCE] Independent edition overlay restores the pre-policy STRICT form; docs/SB2.md, edition split (2026-10-24)."
         },
         "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z": {
           "withdrawn": null,
@@ -2328,23 +2335,22 @@
           "exclude": true,
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
         },
-        "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z": {
-          "exclude": true,
-          "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
-        },
         "?MouseBackDraw@CPixmap@@QAEXXZ": {
           "exclude": true,
           "note": "[OPEN] VC5 RTM compiler-context residue on Speedy Blupi 2 (operand/register order; source shared with Eggbert 2, where it is STRICT); scratch/w-b2app or scratch/w-b2event REPORT.md"
         },
         "?MoveObjectSort@CDecor@@QAEXXZ": {
-          "withdrawn": {
-            "reason": "Edition policy: the witness-supported static CDecor helper makes Eggbert 2 MoveObjectSort STRICT; Blupi 2 loses 240 STRICT bytes and is re-proven EQUIVALENT.",
-            "evidence": "evidence/equivalence/sb2-blupi-fr/MoveObjectSort.json; docs/SB2.md round 16",
-            "date": "2026-10-24"
-          },
-          "note": "[EVIDENCE] Static CDecor::SortGetType preserves the 48-byte helper and fixes the primary late header-ID decision; this Blupi 2 body is certified EQUIVALENT. docs/SB2.md, round 16."
+          "withdrawn": null,
+          "note": "[EVIDENCE] Independent edition overlay restores the pre-policy STRICT form; docs/SB2.md, edition split (2026-10-24)."
+        },
+        "?SortGetType@CDecor@@SAHH@Z": {
+          "exclude": true,
+          "note": "[EVIDENCE] Blupi overlay uses the pre-9e41413 free helper, accepted at the same original RVA."
         }
-      }
+      },
+      "source_overlays": [
+        "games/sb2/blupi"
+      ]
     },
     "sb2/eggbert/en": {
       "exe": "assets/eggbert2/Eggbert2.exe",

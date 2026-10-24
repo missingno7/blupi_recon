@@ -3241,29 +3241,6 @@
         "certificate": "evidence/equivalence/sb2-blupi-en/IsOutWater.json"
       },
       {
-        "name": "BltFast",
-        "symbol": "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z",
-        "rva": "0x28e10",
-        "size": 240,
-        "tu": "games/sb2/src/pixmap.cpp",
-        "returns_value": true,
-        "regions": [
-          [
-            "0x33",
-            "0x3f",
-            "0x33",
-            "0x3f"
-          ],
-          [
-            "0x6b",
-            "0x73",
-            "0x6b",
-            "0x73"
-          ]
-        ],
-        "certificate": "evidence/equivalence/sb2-blupi-en/BltFast.json"
-      },
-      {
         "name": "MouseBackDraw",
         "symbol": "?MouseBackDraw@CPixmap@@QAEXXZ",
         "rva": "0x29f30",
@@ -3485,41 +3462,6 @@
         "certificate": "evidence/equivalence/sb2-blupi-en/changephase.json"
       },
       {
-        "name": "IsMoveTraj",
-        "symbol": "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
-        "tu": "games/sb2/src/decblupi.cpp",
-        "rva": "0x14dd0",
-        "size": 112,
-        "returns_value": true,
-        "regions": [
-          [
-            "0x3a",
-            "0x62",
-            "0x3a",
-            "0x64"
-          ]
-        ],
-        "certificate": "evidence/equivalence/sb2-blupi-en/IsMoveTraj.json"
-      },
-      {
-        "name": "MoveObjectSort",
-        "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
-        "rva": "0x19910",
-        "size": 240,
-        "tu": "games/sb2/src/decmove.cpp",
-        "returns_value": false,
-        "regions": [
-          [
-            "0x80",
-            "0xa0",
-            "0x80",
-            "0xa0"
-          ]
-        ],
-        "pure_callee": "?SortGetType@CDecor@@SAHH@Z",
-        "certificate": "evidence/equivalence/sb2-blupi-en/MoveObjectSort.json"
-      },
-      {
         "name": "BlupiStep",
         "symbol": "?BlupiStep@CDecor@@QAEXXZ",
         "tu": "games/sb2/src/decblupi.cpp",
@@ -3705,29 +3647,6 @@
           ]
         ],
         "certificate": "evidence/equivalence/sb2-blupi-de/IsOutWater.json"
-      },
-      {
-        "name": "BltFast",
-        "symbol": "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z",
-        "rva": "0x28e10",
-        "size": 240,
-        "tu": "games/sb2/src/pixmap.cpp",
-        "returns_value": true,
-        "regions": [
-          [
-            "0x33",
-            "0x3f",
-            "0x33",
-            "0x3f"
-          ],
-          [
-            "0x6b",
-            "0x73",
-            "0x6b",
-            "0x73"
-          ]
-        ],
-        "certificate": "evidence/equivalence/sb2-blupi-de/BltFast.json"
       },
       {
         "name": "MouseBackDraw",
@@ -3951,41 +3870,6 @@
         "certificate": "evidence/equivalence/sb2-blupi-de/changephase.json"
       },
       {
-        "name": "IsMoveTraj",
-        "symbol": "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
-        "tu": "games/sb2/src/decblupi.cpp",
-        "rva": "0x14dd0",
-        "size": 112,
-        "returns_value": true,
-        "regions": [
-          [
-            "0x3a",
-            "0x62",
-            "0x3a",
-            "0x64"
-          ]
-        ],
-        "certificate": "evidence/equivalence/sb2-blupi-de/IsMoveTraj.json"
-      },
-      {
-        "name": "MoveObjectSort",
-        "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
-        "rva": "0x19910",
-        "size": 240,
-        "tu": "games/sb2/src/decmove.cpp",
-        "returns_value": false,
-        "regions": [
-          [
-            "0x80",
-            "0xa0",
-            "0x80",
-            "0xa0"
-          ]
-        ],
-        "pure_callee": "?SortGetType@CDecor@@SAHH@Z",
-        "certificate": "evidence/equivalence/sb2-blupi-de/MoveObjectSort.json"
-      },
-      {
         "name": "BlupiStep",
         "symbol": "?BlupiStep@CDecor@@QAEXXZ",
         "tu": "games/sb2/src/decblupi.cpp",
@@ -4171,29 +4055,6 @@
           ]
         ],
         "certificate": "evidence/equivalence/sb2-blupi-fr/IsOutWater.json"
-      },
-      {
-        "name": "BltFast",
-        "symbol": "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z",
-        "rva": "0x28e10",
-        "size": 240,
-        "tu": "games/sb2/src/pixmap.cpp",
-        "returns_value": true,
-        "regions": [
-          [
-            "0x33",
-            "0x3f",
-            "0x33",
-            "0x3f"
-          ],
-          [
-            "0x6b",
-            "0x73",
-            "0x6b",
-            "0x73"
-          ]
-        ],
-        "certificate": "evidence/equivalence/sb2-blupi-fr/BltFast.json"
       },
       {
         "name": "MouseBackDraw",
@@ -4415,41 +4276,6 @@
           ]
         ],
         "certificate": "evidence/equivalence/sb2-blupi-fr/changephase.json"
-      },
-      {
-        "name": "IsMoveTraj",
-        "symbol": "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
-        "tu": "games/sb2/src/decblupi.cpp",
-        "rva": "0x14dd0",
-        "size": 112,
-        "returns_value": true,
-        "regions": [
-          [
-            "0x3a",
-            "0x62",
-            "0x3a",
-            "0x64"
-          ]
-        ],
-        "certificate": "evidence/equivalence/sb2-blupi-fr/IsMoveTraj.json"
-      },
-      {
-        "name": "MoveObjectSort",
-        "symbol": "?MoveObjectSort@CDecor@@QAEXXZ",
-        "rva": "0x19910",
-        "size": 240,
-        "tu": "games/sb2/src/decmove.cpp",
-        "returns_value": false,
-        "regions": [
-          [
-            "0x80",
-            "0xa0",
-            "0x80",
-            "0xa0"
-          ]
-        ],
-        "pure_callee": "?SortGetType@CDecor@@SAHH@Z",
-        "certificate": "evidence/equivalence/sb2-blupi-fr/MoveObjectSort.json"
       },
       {
         "name": "BlupiStep",

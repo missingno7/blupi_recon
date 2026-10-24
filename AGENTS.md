@@ -27,8 +27,11 @@ same `src/`:
 - `tools/cmpfunc.py` and `tools/equivalence.py` are pinned by the certificates: targets with their own
   inventory (`oracle/<target>/`, from `tools/derive_target.py`) go through `tools/cmpfunc_target.py`.
 - SB2 (`sb2/eggbert/en`) is a separate game: its own tree `games/sb2/src/`, manifest `games/sb2/recon.json`
-  and inventory `oracle/sb2-eggbert-en/` (docs/SB2.md). Speedy Blupi 2 (`sb2/blupi/en`) builds the same tree with
-  `_EGAMES=0`. Never edit `src/` for SB2; SB2 source changes only from SB2 binary evidence. Run
+  and inventory `oracle/sb2-eggbert-en/` (docs/SB2.md). Speedy Blupi 2 (`sb2/blupi/en|de|fr`) uses
+  `_EGAMES=0` and the whole-file `games/sb2/blupi/` overlay declared by `source_overlays` in targets.json.
+  Logical TU names stay in `games/sb2/src/`; tools/source_tree.py stages the effective tree so quoted
+  includes use edition headers in every TU. Add only files with evidenced edition requirements; the
+  port continues to compile `games/sb2/src/` unchanged. Never edit `src/` for SB2; SB2 source changes only from SB2 binary evidence. Run
   `tools/crossmap.py --target sb2/eggbert/en --audit` before `--accept`.
 - Historical targets are matched independently (user policy, 2026-10-24). The matching reconstruction exists to
   reproduce each original executable, not to compile every edition from one source: Speedy Blupi 1, Speedy

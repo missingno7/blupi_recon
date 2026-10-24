@@ -15,6 +15,7 @@ import target_coverage
 import targets
 import verify
 import equivalence_target as equiv
+import source_tree
 
 
 class TargetAcceptanceTests(unittest.TestCase):
@@ -143,7 +144,7 @@ class TargetEquivalenceTests(unittest.TestCase):
             if name.startswith('sb1/'):
                 expected = 0 if target.primary or name == 'sb1/blupi/demo' else 3 if '/eggbert/' in name else 2
             else:
-                expected = 4 if name == 'sb2/eggbert/en' else 13
+                expected = 4 if name == 'sb2/eggbert/en' else 10
             self.assertEqual(len(entries), expected)
             self.assertTrue(all(target.slug in e['certificate'] for e in entries))
             # Translation never applies to the namespaced target records.
@@ -174,8 +175,8 @@ class TargetEquivalenceTests(unittest.TestCase):
                 self.assertEqual(target_coverage.main(), 0)
             lines.append(output.getvalue().splitlines())
         self.assertEqual(lines[0], lines[1][:-1])
-        self.assertIn('13 functions', lines[1][-1])
-        self.assertIn('51,664 bytes', lines[1][-1])
+        self.assertIn('10 functions', lines[1][-1])
+        self.assertIn('51,072 bytes', lines[1][-1])
 
     @staticmethod
     def function(payload):
@@ -306,6 +307,41 @@ class TargetEquivalenceTests(unittest.TestCase):
     def test_unmodeled_control_transfer_is_rejected(self):
         with self.assertRaisesRegex(ValueError,'control transfers'):
             equiv.constant_states(equiv.decode(bytes.fromhex('e2fe c3')))
+
+
+class SourceOverlayTests(unittest.TestCase):
+    def test_overlay_is_target_local_and_keeps_logical_tus(self):
+        egg = targets.load('sb2/eggbert/en').manifest()
+        base = source_tree.base_root(egg)
+        self.assertEqual(source_tree.prepare(egg, targets.ROOT / 'scratch/w-sb2split/tests'), base)
+        for language in ('en', 'de', 'fr'):
+            blupi = targets.load('sb2/blupi/' + language).manifest()
+            self.assertEqual(blupi['translation_units'], targets.load('sb2/blupi/en').manifest()['translation_units'])
+            self.assertEqual([u['source'] for u in blupi['translation_units']],
+                             [u['source'] for u in egg['translation_units']])
+            self.assertEqual(source_tree.resolve(blupi, 'games/sb2/src/decor.h'),
+                             targets.ROOT / 'games/sb2/blupi/decor.h')
+            # Every shared TU must see the overlaid header through quoted includes.
+            tree = source_tree.prepare(blupi, targets.ROOT / 'scratch/w-sb2split/tests')
+            shared = source_tree.compile_source(blupi, tree, 'games/sb2/src/decnet.cpp')
+            self.assertEqual(shared.parent, tree)
+            self.assertEqual((shared.parent / 'decor.h').read_bytes(),
+                             (targets.ROOT / 'games/sb2/blupi/decor.h').read_bytes())
+            self.assertEqual(source_tree.compile_source(blupi, tree, 'games/sb2/src/decnet.cpp', shared), shared)
+
+    def test_restored_strict_functions_cannot_fall_back_to_equivalence(self):
+        for language in ('en', 'de', 'fr'):
+            target = targets.load('sb2/blupi/' + language)
+            manifest = target.manifest()
+            names = {e['name'] for e in equiv.declarations(target, manifest)}
+            for name in ('IsMoveTraj', 'MoveObjectSort', 'BltFast'):
+                self.assertNotIn(name, names)
+                entry = next(a for a in manifest['accepted_functions'] if a['symbol'].startswith('?' + name + '@'))
+                self.assertFalse(entry.get('withdrawn'))
+                row = dict(name=entry['symbol'], status='MISMATCH', code_size=entry['size'],
+                           matches=[dict(rva=hex(verify.parse_number(entry['rva'])))])
+                self.assertEqual(len(verify.accepted_regressions(
+                    dict(accepted_functions=[entry]), {entry['tu']: [row]})), 1)
 
 
 class SB1EquivalenceTests(unittest.TestCase):

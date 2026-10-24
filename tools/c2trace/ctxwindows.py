@@ -41,8 +41,10 @@ def main():
     src = Path(a.tu).resolve()
     name = 'ctxwin-' + src.stem
     c2trace._fresh_il()
+    src, include_root = c2trace.source_context(src, profile.work / 'predict')
     cmd = [sys.executable, str(ROOT / 'tools/msvc.py'), str(src), '--tree', profile.name, '--out', str(profile.work / 'predict' / (name + '.obj')),
            '--log-dir', str(profile.work / 'predict/logs'), '--include', str(src.parent),
+           '--include', str(include_root),
            '--include', str(Path('C:/tools') / a.sdk / 'INCLUDE')]
     for i in a.include:
         cmd += ['--include', str(Path(i).resolve())]

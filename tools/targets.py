@@ -39,6 +39,7 @@ class Target:
     address_map: dict[str, Any] | None = None
     toolchain_tree: str | None = None     # compiler release, if not the manifest's
     build_path: str | None = None         # the historical __FILE__ path of the TU that has one, if not the manifest's
+    source_overlays: list[str] = field(default_factory=list)  # whole-file edition revisions, last wins
 
     @property
     def primary(self) -> bool:
@@ -79,6 +80,8 @@ class Target:
     def manifest(self) -> dict[str, Any]:
         """The manifest with this target's defines, address map and overrides applied."""
         manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        if self.source_overlays:
+            manifest["source_overlays"] = list(manifest.get("source_overlays", [])) + self.source_overlays
         if self.primary:
             return manifest
         manifest = copy.deepcopy(manifest)
@@ -174,7 +177,8 @@ def load(name: str | None = None) -> Target:
                   accepted_overrides=dict(spec.get("accepted_overrides", {})),
                   accepted_functions=list(spec.get("accepted_functions", [])),
                   status=spec.get("status", "active"), oracle_dir=oracle_dir, address_map=address_map,
-                  toolchain_tree=spec.get("toolchain_tree"), build_path=spec.get("build_path"))
+                  toolchain_tree=spec.get("toolchain_tree"), build_path=spec.get("build_path"),
+                  source_overlays=list(spec.get("source_overlays", [])))
 
 
 def add_argument(parser: argparse.ArgumentParser) -> None:

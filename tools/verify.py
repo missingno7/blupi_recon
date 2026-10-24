@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import sys
+import source_tree
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
@@ -122,17 +123,18 @@ def compile_units(manifest: dict[str, Any], substitutions: dict[str, Path]) -> l
     obj_dir.mkdir(parents=True)
     results: list[tuple[str, Path]] = []
     jobs: list[tuple[str, Path, list[str]]] = []
+    tree = source_tree.prepare(manifest, BUILD)
     for index, unit in enumerate(manifest["translation_units"]):
         canonical = unit["source"]
-        source = substitutions.get(canonical, ROOT / canonical)
+        source = source_tree.compile_source(manifest, tree, canonical, substitutions.get(canonical))
         obj = obj_dir / f"{index:02d}_{Path(canonical).stem}.obj"
         command = [sys.executable, str(ROOT / "tools" / "msvc.py"), str(source),
                    "--tree", tool["tree"], "--out", str(obj), "--cwd", str(ROOT),
                    "--log-dir", str(BUILD / "logs")]
         if unit.get("build_path"):
             command.extend(["--build-path", unit["build_path"]])
-        includes = [source_root(manifest)] + [Path(p) for p in tool.get("include_dirs", [])]
-        if source.parent != source_root(manifest):
+        includes = [tree] + [Path(p) for p in tool.get("include_dirs", [])]
+        if source.parent != tree:
             includes.insert(0, source.parent)
         for include in includes:
             command.extend(["--include", str(include)])

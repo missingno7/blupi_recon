@@ -90,8 +90,9 @@ def main():
             sys.path.insert(0,str(ROOT/'tools/c2trace'))
             c2trace._fresh_il()
             src=Path(a.tu).resolve()
+            src,include_root=c2trace.source_context(src,profile.work/'predict')
             cmd=[sys.executable,str(ROOT/'tools/msvc.py'),str(src),'--tree',profile.name,'--out',str(profile.work/'predict'/('predict-'+name+'.obj')),
-                 '--log-dir',str(profile.work/'predict/logs'),'--include',str(src.parent),'--include',str(Path('C:/tools')/a.sdk/'INCLUDE')]
+                 '--log-dir',str(profile.work/'predict/logs'),'--include',str(src.parent),'--include',str(include_root),'--include',str(Path('C:/tools')/a.sdk/'INCLUDE')]
             for i in a.include:cmd+=['--include',i]
             for f in ['/W3','/GX','/O2','/ML','/Gd','/Gy','/B2'+str(c2trace.STUB)]+a.flag:cmd+=['--flag',f]
             for d in ((profiles.target().defines if profiles.target() else [])+a.define):cmd+=['--define',d]

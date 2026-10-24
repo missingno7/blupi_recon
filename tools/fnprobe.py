@@ -19,6 +19,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import source_tree
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -40,8 +41,10 @@ def compile_unit(canonical: str, source: Path, out_dir: Path, extra_flags: list[
                  tree: str | None = None) -> Path:
     manifest = load_manifest()
     tool = manifest["toolchain"]
-    source_root = ROOT / manifest.get("source_root", "src")
+    source_root = source_tree.prepare(manifest, out_dir)
     unit = next((u for u in manifest["translation_units"] if u["source"] == canonical), {"source": canonical})
+    if unit in manifest["translation_units"]:
+        source = source_tree.compile_source(manifest, source_root, canonical, source)
     obj = out_dir / (Path(canonical).stem + ".obj")
     command = [sys.executable, str(ROOT / "tools" / "msvc.py"), str(source), "--tree", tree or tool["tree"],
                "--out", str(obj), "--log-dir", str(out_dir / "logs"), "--cwd", str(ROOT)]

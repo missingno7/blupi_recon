@@ -2,11 +2,12 @@
 
 Status (2026-10-24): `sb2/eggbert/en` (`assets/eggbert2/Eggbert2.exe`) is an active matching
 target with its own oracle, source tree `games/sb2/src/` and manifest `games/sb2/recon.json`.
-Accepted: **448 STRICT + 12 FOLDED functions; strict plus folded-owner coverage 136,208 / 172,992 game `.text` bytes (78.7%)**, plus a separate EQUIVALENT tier of 5 functions (36,544 bytes, BlupiStep included; section 8 rounds 11-14): together 99.9% of game code is STRICT or certified EQUIVALENT. Speedy Blupi 2 en/de/fr: 121,616 bytes STRICT plus folded owners and 12 EQUIVALENT functions (51,424 bytes, ChangePhase, BlupiStep and DrawButtons included), 99.98% together.
-**Speedy Blupi 2** (`sb2/blupi/en`, `_EGAMES=0`) has **449 STRICT + 5 FOLDED accepted functions,
-121,712 / 173,072 bytes (70.3%)**. Its complete comparator report finds 454 STRICT + 6 FOLDED,
-121,728 bytes; the extra 16 unique bytes have an unproven shared owner. Both complete regression gates
-pass, including historical sound paths. SB1's fresh report is unchanged (127,456 bytes; certificates pass).
+Accepted **Eggbert 2 en: 450 STRICT + 12 FOLDED, 136,448 / 172,992 game `.text` bytes**, plus
+4 EQUIVALENT functions / 36,304 bytes. **Blupi 2 en: 451 STRICT + 5 FOLDED,
+121,968 / 173,072 bytes**, plus 10 EQUIVALENT / 51,072 bytes; **Blupi 2 de** and **fr** each have
+the same independently verified counts. Section 11 documents the minimal edition overlay and
+the three recovered Blupi STRICT functions. All fourteen matching target gates exit 0; the sandbox
+sound-path gate remains INCOMPLETE as expected. SB1 function reports are unchanged.
 
 ```powershell
 .\.pyenv\python.exe tools\verify.py --target sb2/eggbert/en             # clean build + strict report
@@ -742,15 +743,16 @@ include override (`scratch/sb2/sdkverify.py`, 26 runs in `scratch/w-sdkenv/suite
 
 ## 9. Tools and limitations
 
-- `verify.py`: `source_root`, own-manifest `--accept`, folded owners in the game's tree.
+- `verify.py`: `source_root`, whole-file `source_overlays`, own-manifest `--accept`, folded owners in the game's tree.
 - `crossmap.py --audit [--candidates] [--results PATH]`: callers of each symbol in SB1 must call the SB2
   address; calls of STRICT functions must land on the same-named SB1 function, a documented rename
   (`source_correspondence`) or a shared body the run locates under that name.
 - `target_coverage.py`: accepted unique bytes per group (`coverage_groups` in the effective target manifest).
 - `fnprobe.py --target`; `buildpath.py` folder mode with a sandbox fallback.
+- `relink.py` and `fnprobe.py` select the same effective edition tree as `verify.py`.
 - Limitations: STRICT placement by unique bytes cannot name a renamed/split body without a compiled
   caller (the audit catches it); fold ownership flips with the set of compiled callers (cmpfunc is
-  pinned); withdrawn entries stay forced at their RVA; `relink.py`/`residues.py`/permuter know only SB1.
+  pinned); withdrawn entries stay forced at their RVA; `residues.py`/permuter retain SB1-specific defaults.
 
 ## 10. SB1 protection
 
@@ -758,12 +760,53 @@ include override (`scratch/sb2/sdkverify.py`, 26 runs in `scratch/w-sdkenv/suite
 targets is byte-identical to the pre-SB2 baseline (equivalence certificates checked); the relinked
 SB1 image is `557ca92e…`; nothing under `src/`, `port/`, `assets/` or `external/` changed.
 
-## 11. Structure
+## 11. Independent edition source (2026-10-24)
 
-No change justified. SB2 lives beside `src/`; the tools take a manifest `source_root`. The engine TUs
-that are textually identical in both trees include headers that differ (`pixmap.h`, `sound.h`,
-`decor.h`, `event.h`), and those headers decide code generation through declaration context, so a
-shared engine source file would need per-game headers anyway. Revisit when SB2's headers are final.
+[EVIDENCE] Under the independent-target policy, Blupi 2 en/de/fr declare
+`source_overlays: ["games/sb2/blupi"]` in targets.json. Eggbert 2 keeps
+`games/sb2/src/`. An overlay contains whole files, with the last overlay taking precedence;
+logical TU names, oracle identities and certificate declarations stay unchanged. Only four
+files currently differ:
+
+| Blupi overlay | Difference and evidence |
+|---|---|
+| `decor.h`, `decmove.cpp` | Free `SortGetType` declared after the class, exactly the pre-`9e41413` form. Its original 48-byte body/call ABI is unchanged; `MoveObjectSort` regains 240 STRICT bytes. The static member remains Eggbert's STRICT form. Source membership is not uniquely recoverable from that ABI; the static-member witnesses are sb2-decomp and the C# port. |
+| `decblupi.cpp` | `IsMoveTraj` converts the used by-value `pos` directly, exactly the pre-`e1a2e09` form (`b2-continue`, `w-eggprimary` reports). It regains 112 STRICT bytes; Eggbert retains its used `POINT cel`. Both source spellings implement the binary-supported trajectory calculation. |
+| `pixmap.cpp` | Nested palette-capacity guards in `Create`, the `w-solve-pixmap/candidate.diff` form. `Create` itself is byte-identical; Blupi's `BltFast` gains 240 STRICT bytes with no losses. This natural spelling is a reconstruction hypothesis, not an authenticated historical source line. |
+
+[EVIDENCE] `tools/source_tree.py` copies the base and overlay files byte-for-byte to a fresh
+private build tree. This is necessary: VC5 resolves quoted includes beside the including file
+before searching `/I`, so an overlay include directory alone would leave shared TUs using the
+wrong `decor.h`. Targets without overlays keep their original paths. `verify.py`, `relink.py`,
+`fnprobe.py`, and c2trace capture helpers use this resolver. `crossmap.py` and
+`equivalence_target.py` consume logical TU identities and objects, rather than resolving source
+files; their checks need no change. SB1 and the SDL3 port retain their source trees.
+
+[EVIDENCE] Accepted coverage, counted independently by `target_coverage.py`:
+
+| Executable | Before STRICT / FOLDED / bytes | After STRICT / FOLDED / bytes | EQUIVALENT after |
+|---|---:|---:|---:|
+| Eggbert 2 en | 450 / 12 / 136,448 | 450 / 12 / 136,448 | 4 / 36,304 bytes |
+| Blupi 2 en | 448 / 5 / 121,376 | 451 / 5 / 121,968 | 10 / 51,072 bytes |
+| Blupi 2 de | 448 / 5 / 121,376 | 451 / 5 / 121,968 | 10 / 51,072 bytes |
+| Blupi 2 fr | 448 / 5 / 121,376 | 451 / 5 / 121,968 | 10 / 51,072 bytes |
+
+Bytes here include folded owners once. Blupi's three obsolete equivalence certificates per
+language are removed. Only its three BlupiStep certificates require official re-issuance,
+because `IsMoveTraj` is now a STRICT callee. The comparator and proof checker are unchanged.
+The sandbox historical sound-path gate remains INCOMPLETE; accepted coverage retains the
+existing 208-byte Blupi sound entry whose path-dependent relocation needs an outside-sandbox run.
+
+[NEGATIVE] Complete pixmap order restoration gains Blupi's BltFast/MouseBackDraw (512 bytes)
+but loses its QuickIcon (784 bytes); an edition split alone cannot accept that regression.
+The nested guard gives the smaller proven gain without that loss. IsWorld/IsDeepWater/IsVentillo
+withdrawals from replacing the inherited SB1 BlupiStep context cannot be restored by reinstating
+the wrong game's body. DrawButtons, GetBlupiInfo and MouseBackDraw still need genuine context.
+`DIRECTDRAW_VERSION=0x0300` plus `D3D_OVERLOADS` remains rejected evidence-free steering.
+
+Detailed assessment, fresh per-function comparisons, certificate diffs and all gate receipts:
+`scratch/w-sb2split/REPORT.md`. Earlier rounds above are historical observations and may show
+superseded totals or policies.
 
 ## 12. Next targets (estimated bytes)
 
@@ -775,7 +818,8 @@ shared engine source file would need per-game headers anyway. Revisit when SB2's
    context. Neither is strict, despite the original-style constructor loop now matching beside them.
 3. **Blupi 2's smaller residues**: GetBlupiInfo, IsBridge, IsDoor, IsTeleporte, IsOutWater, BltFast and
    MouseBackDraw; IsDeepWater remains withdrawn. Eggbert retains four withdrawals and
-   its MoveObjectSort residue. Existing negative probes constrain new source hypotheses.
+   its IsWorld/IsDeepWater/IsVentillo residues. MoveObjectSort and IsMoveTraj are now STRICT in both
+   editions through their own source forms. Existing negative probes constrain new source hypotheses.
 4. **Eggbert 2's sound environment**: DX5 plus DX7 dsound.h matches its data evidence, but needs genuine
    context for GetBlupiInfo/SetBalleTraj/IsBalleTraj and line 64. Blupi 2's sound helper is now accepted
    separately with its existing DX5 descriptor and line 63.

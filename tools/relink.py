@@ -328,6 +328,8 @@ def main(argv=None):
     units = manifest["translation_units"]
     obj_dir = args.objects_dir.resolve() if args.objects_dir else out / "objects"
     obj_dir.mkdir(parents=True, exist_ok=True)
+    import source_tree
+    effective_root = source_tree.prepare(manifest, out)
     objects = {}
     degraded = {}
     compile_commands = []
@@ -336,10 +338,10 @@ def main(argv=None):
         obj = obj_dir / f"{index:02d}_{Path(source).stem}.obj"
         objects[source] = obj
         if not args.link_only and not args.objects_dir:
-            command = [sys.executable, str(ROOT / "tools/msvc.py"), str(ROOT / source),
+            command = [sys.executable, str(ROOT / "tools/msvc.py"), str(source_tree.compile_source(manifest, effective_root, source)),
                        "--out", str(obj), "--tree", manifest["toolchain"]["tree"],
                        "--cwd", str(ROOT), "--log-dir", str(out / "logs")]
-            for include in [str(ROOT / manifest.get("source_root", "src"))] + manifest["toolchain"].get("include_dirs", []):
+            for include in [str(effective_root)] + manifest["toolchain"].get("include_dirs", []):
                 command += ["--include", include]
             for define in manifest["toolchain"].get("defines", []) + unit.get("defines", []):
                 command += ["--define", define]
@@ -455,7 +457,7 @@ def main(argv=None):
                "/fixed", "/incremental:no", *([] if args.default_libs else ["/nodefaultlib"]),
                *["/opt:" + s for s in args.opt.split(",")],
                f"/out:{image_path}", f"/map:{map_path}"]
-    source_root = ROOT / manifest.get("source_root", "src")
+    source_root = effective_root
     resource_candidates = [source_root / "res" / f"{target.slug}.rc"]
     if source_root != ROOT / "src":
         resource_candidates.insert(0, ROOT / "games/sb2/res" / f"{target.slug}.rc")
@@ -533,7 +535,8 @@ def main(argv=None):
                   command=command, expanded_command=[str(linker)] + arguments,
                   compile_commands=compile_commands, order=[u["source"] for u in ordered],
                   objects={k: dict(path=str(v), sha256=digest(v)) for k, v in objects.items()},
-                  canonical_sources={u["source"]: digest(ROOT / u["source"]) for u in units},
+                  canonical_sources={u["source"]: digest(source_tree.resolve(manifest, u["source"])) for u in units},
+                  source_overlays=manifest.get("source_overlays", []),
                   object_mode="reused; see object compile logs for candidate source provenance" if
                   args.objects_dir else "canonical", toolchain=manifest["toolchain"],
                   linker_sha256=digest(linker), libraries={str(p): digest(p) for p in libraries},
