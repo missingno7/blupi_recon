@@ -104,6 +104,21 @@ initialized data by 16 bytes, which the CRT's `__bufin` 16-byte alignment rounds
 `sound.obj` all nine retail targets have the exact virtual size and BSS placement. No source or CRT change is needed;
 builds must use the historical build path (docs/BUILD_PATH.md).
 
+## Translation-unit partition (2026-10-25, `scratch/w-tupart/REPORT.md`)
+
+[EVIDENCE] `.data` cannot fix the original object boundaries: PE data has no boundary marker and input alignments of 4
+or 8 bytes allow a zero gap inside or between objects. Four of our objects contribute no data at all (decblupi, decnet,
+decmove, jauge). Six whole-file concatenations are rejected in all three images (US, Eggbert 1, June demo) because they
+would place a later table before an earlier literal (blupi+button, ddutil+decblock, decor+event, network+dectables,
+pixmap+sound, sound+text), and event/jauge/menu must contain a split. Two 15-object groupings (A: decblock..decmove as
+one TU; B: decdesign..decor as one TU) reproduce the engine data bytes of all three images exactly as today's 19 do,
+and either gives Rich 270 with the six-dead-import witness.
+
+[NEGATIVE] A real compile of each grouping keeps most current STRICT functions but not all: A 130/133 (GetBlupiInfo,
+MockeryDetect, MoveObjectSort break), B 125/128 (IsVentillo, ModifDecor, MoveObjectSort break), identically in US and
+Eggbert 1. Sparse breakage neither confirms nor excludes merged originals. [OPEN] The original TU count, filenames and
+the four modules the import witness removes; an authenticated project/object list would decide it.
+
 ## Open items and the next evidence for each
 
 | Open item | Next evidence that could decide it |
