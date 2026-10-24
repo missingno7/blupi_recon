@@ -365,6 +365,12 @@ public:
 	void	MoveObjectPlouf(POINT pos);
 	void	MoveObjectTiplouf(POINT pos);
 	void	MoveObjectBlup(POINT pos);
+	void	FlushBalleTraj();
+	void	SetBalleTraj(POINT pos);
+	BOOL	IsBalleTraj(POINT pos);
+	void	FlushMoveTraj();
+	void	SetMoveTraj(POINT pos);
+	BOOL	IsMoveTraj(POINT pos);
 	int		SearchDistRight(POINT pos, POINT dir, int type);
 	void	StartSploutchGlu(POINT pos);
 	BOOL	ObjectStart(POINT pos, int type, int speed);
@@ -388,6 +394,7 @@ public:
 	BOOL	MockeryDetect(POINT pos);
 	BOOL	BlupiElectro(POINT pos);
 	int		MoveObjectDetect(POINT pos, BOOL *pbNear);
+	int		MoveAscenseurDetect(POINT pos, int height);
 	int		MoveChargeDetect(POINT pos);
 	int		MovePersoDetect(POINT pos);
 	int		MoveBalleDetect(POINT pos);
@@ -576,7 +583,12 @@ protected:
 	// release and eGames builds, and SB2 has the same 100,044-byte block after this array
 	// (docs/LAYOUT_DEBT.md, follow-up 3). No build accesses it. One array represents the size only,
 	// not the original member list.
-	BYTE		m_unknownTail[100044];
+	// [HYPOTHESIS, scratch only] SB2-derived trajectory storage; no SB1 access proves these names/offsets.
+	int         m_blupiTimeNoAsc;
+	BYTE        m_balleTraj[MAXCELX * MAXCELY / 8 + 1];
+	BYTE        m_moveTraj[MAXCELX * MAXCELY / 8 + 1];
+	// [EVIDENCE] The complete tail remains the independently proven 100,044 bytes.
+	BYTE        m_unknownTail[100044 - sizeof(int) - 2 * (MAXCELX * MAXCELY / 8 + 1)];
 };
 
 POINT GetCel(int x, int y);

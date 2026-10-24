@@ -1,0 +1,76 @@
+{
+  "cells_completed": 429,
+  "cells_total": 429,
+  "tested": 340626,
+  "seconds": 6.489581108093262,
+  "solutions": [
+    {
+      "cell": {
+        "rank": -1,
+        "representative": [
+          1,
+          0
+        ],
+        "lower_inclusive": [
+          1,
+          0
+        ],
+        "upper_exclusive": [
+          6,
+          1
+        ]
+      },
+      "strict_positions": [],
+      "band_positions": [
+        [
+          322,
+          380
+        ]
+      ]
+    },
+    {
+      "cell": {
+        "rank": 2,
+        "representative": [
+          7,
+          0
+        ],
+        "exact": [
+          7,
+          0
+        ]
+      },
+      "strict_positions": [],
+      "band_positions": [
+        [
+          322,
+          380
+        ]
+      ]
+    },
+    {
+      "cell": {
+        "rank": 3,
+        "representative": [
+          7,
+          1
+        ],
+        "lower_exclusive": [
+          7,
+          0
+        ],
+        "upper_exclusive": [
+          16,
+          0
+        ]
+      },
+      "strict_positions": [],
+      "band_positions": [
+        [
+          322,
+          380
+        ]
+      ]
+    }
+  ]
+}

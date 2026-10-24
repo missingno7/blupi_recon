@@ -1,0 +1,2134 @@
+[
+  {
+    "label": "pb-fifo",
+    "source": "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree\\fifo.cpp",
+    "object": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\pb-fifo.obj",
+    "command": [
+      "D:\\Prog\\blupi_recon\\.pyenv\\python.exe",
+      "tools/msvc.py",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree\\fifo.cpp",
+      "--tree",
+      "sp3",
+      "--out",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\pb-fifo.obj",
+      "--log-dir",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\logs",
+      "--include",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree",
+      "--include",
+      "C:\\tools\\dx5sdk\\INCLUDE",
+      "--define",
+      "WIN32",
+      "--define",
+      "NDEBUG",
+      "--define",
+      "_WINDOWS",
+      "--define",
+      "nullptr=0",
+      "--flag",
+      "/W3",
+      "--flag",
+      "/GX",
+      "--flag",
+      "/O2",
+      "--flag",
+      "/ML",
+      "--flag",
+      "/Gd",
+      "--flag",
+      "/Gy"
+    ],
+    "exit": 0,
+    "seconds": 0.22559475898742676,
+    "comdats": [
+      {
+        "name": "??0CPileTriee@@QAE@J@Z",
+        "section": 2,
+        "size": 48,
+        "relocs": 1,
+        "key": [
+          48,
+          1
+        ]
+      },
+      {
+        "name": "??1CPileTriee@@QAE@XZ",
+        "section": 4,
+        "size": 16,
+        "relocs": 1,
+        "key": [
+          16,
+          1
+        ]
+      },
+      {
+        "name": "?get@CPileTriee@@QAEJXZ",
+        "section": 6,
+        "size": 48,
+        "relocs": 0,
+        "key": [
+          48,
+          0
+        ]
+      },
+      {
+        "name": "?put@CPileTriee@@QAEXJJ@Z",
+        "section": 8,
+        "size": 112,
+        "relocs": 0,
+        "key": [
+          112,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "label": "pb-arrange",
+    "source": "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree\\arrange.cpp",
+    "object": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\pb-arrange.obj",
+    "command": [
+      "D:\\Prog\\blupi_recon\\.pyenv\\python.exe",
+      "tools/msvc.py",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree\\arrange.cpp",
+      "--tree",
+      "sp3",
+      "--out",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\pb-arrange.obj",
+      "--log-dir",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\logs",
+      "--include",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree",
+      "--include",
+      "C:\\tools\\dx5sdk\\INCLUDE",
+      "--define",
+      "WIN32",
+      "--define",
+      "NDEBUG",
+      "--define",
+      "_WINDOWS",
+      "--define",
+      "nullptr=0",
+      "--flag",
+      "/W3",
+      "--flag",
+      "/GX",
+      "--flag",
+      "/O2",
+      "--flag",
+      "/ML",
+      "--flag",
+      "/Gd",
+      "--flag",
+      "/Gy"
+    ],
+    "exit": 0,
+    "seconds": 0.27700161933898926,
+    "comdats": [
+      {
+        "name": "?GetSeeBits@CDecor@@IAEHUtagPOINT@@PADH@Z",
+        "section": 3,
+        "size": 384,
+        "relocs": 12,
+        "key": [
+          384,
+          12
+        ]
+      },
+      {
+        "name": "?CopyBits@@YAXPAD0@Z",
+        "section": 5,
+        "size": 32,
+        "relocs": 0,
+        "key": [
+          32,
+          0
+        ]
+      },
+      {
+        "name": "?ChangeBits@@YAHPAD0@Z",
+        "section": 7,
+        "size": 48,
+        "relocs": 0,
+        "key": [
+          48,
+          0
+        ]
+      },
+      {
+        "name": "?GetSeeIcon@CDecor@@IAEHPADH@Z",
+        "section": 9,
+        "size": 256,
+        "relocs": 6,
+        "key": [
+          256,
+          6
+        ]
+      },
+      {
+        "name": "?ArrangeFloor@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 11,
+        "size": 1616,
+        "relocs": 38,
+        "key": [
+          1616,
+          38
+        ]
+      },
+      {
+        "name": "?ArrangeMur@CDecor@@QAEXUtagPOINT@@AAHH@Z",
+        "section": 13,
+        "size": 464,
+        "relocs": 10,
+        "key": [
+          464,
+          10
+        ]
+      },
+      {
+        "name": "?ArrangeBuild@CDecor@@QAEXUtagPOINT@@AAH1@Z",
+        "section": 15,
+        "size": 544,
+        "relocs": 11,
+        "key": [
+          544,
+          11
+        ]
+      },
+      {
+        "name": "?ArrangeObject@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 17,
+        "size": 960,
+        "relocs": 13,
+        "key": [
+          960,
+          13
+        ]
+      },
+      {
+        "name": "?ArrangeFillTestFloor@CDecor@@QAEHUtagPOINT@@0@Z",
+        "section": 19,
+        "size": 320,
+        "relocs": 2,
+        "key": [
+          320,
+          2
+        ]
+      },
+      {
+        "name": "?ArrangeFillTest@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 21,
+        "size": 272,
+        "relocs": 4,
+        "key": [
+          272,
+          4
+        ]
+      },
+      {
+        "name": "?ArrangeFillPut@CDecor@@QAEXUtagPOINT@@HH@Z",
+        "section": 23,
+        "size": 160,
+        "relocs": 7,
+        "key": [
+          160,
+          7
+        ]
+      },
+      {
+        "name": "?ArrangeFillSearch@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 25,
+        "size": 352,
+        "relocs": 10,
+        "key": [
+          352,
+          10
+        ]
+      },
+      {
+        "name": "?ArrangeFill@CDecor@@QAEXUtagPOINT@@HHH@Z",
+        "section": 27,
+        "size": 272,
+        "relocs": 6,
+        "key": [
+          272,
+          6
+        ]
+      },
+      {
+        "name": "?ArrangeBlupi@CDecor@@QAEXXZ",
+        "section": 29,
+        "size": 64,
+        "relocs": 1,
+        "key": [
+          64,
+          1
+        ]
+      }
+    ]
+  },
+  {
+    "label": "pb-obstacle",
+    "source": "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree\\obstacle.cpp",
+    "object": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\pb-obstacle.obj",
+    "command": [
+      "D:\\Prog\\blupi_recon\\.pyenv\\python.exe",
+      "tools/msvc.py",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree\\obstacle.cpp",
+      "--tree",
+      "sp3",
+      "--out",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\pb-obstacle.obj",
+      "--log-dir",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\logs",
+      "--include",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree",
+      "--include",
+      "C:\\tools\\dx5sdk\\INCLUDE",
+      "--define",
+      "WIN32",
+      "--define",
+      "NDEBUG",
+      "--define",
+      "_WINDOWS",
+      "--define",
+      "nullptr=0",
+      "--flag",
+      "/W3",
+      "--flag",
+      "/GX",
+      "--flag",
+      "/O2",
+      "--flag",
+      "/ML",
+      "--flag",
+      "/Gd",
+      "--flag",
+      "/Gy"
+    ],
+    "exit": 0,
+    "seconds": 0.2782747745513916,
+    "comdats": [
+      {
+        "name": "?SearchFloor@CDecor@@QAEXHHUtagPOINT@@PAH@Z",
+        "section": 3,
+        "size": 224,
+        "relocs": 2,
+        "key": [
+          224,
+          2
+        ]
+      },
+      {
+        "name": "?SearchObject@CDecor@@QAEXHHUtagPOINT@@PAH@Z",
+        "section": 5,
+        "size": 160,
+        "relocs": 1,
+        "key": [
+          160,
+          1
+        ]
+      },
+      {
+        "name": "?AjustFloor@CDecor@@QAEXHHUtagPOINT@@PAH@Z",
+        "section": 7,
+        "size": 144,
+        "relocs": 0,
+        "key": [
+          144,
+          0
+        ]
+      },
+      {
+        "name": "?AjustObject@CDecor@@QAEXHHUtagPOINT@@PAH@Z",
+        "section": 9,
+        "size": 864,
+        "relocs": 3,
+        "key": [
+          864,
+          3
+        ]
+      },
+      {
+        "name": "?Copy33To99@@YAXPAH0HH@Z",
+        "section": 11,
+        "size": 80,
+        "relocs": 0,
+        "key": [
+          80,
+          0
+        ]
+      },
+      {
+        "name": "?IsFreeDirect@CDecor@@QAEHUtagPOINT@@HH@Z",
+        "section": 13,
+        "size": 864,
+        "relocs": 14,
+        "key": [
+          864,
+          14
+        ]
+      },
+      {
+        "name": "?IsFreeCelObstacle@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 15,
+        "size": 176,
+        "relocs": 3,
+        "key": [
+          176,
+          3
+        ]
+      },
+      {
+        "name": "?IsFreeCelFloor@CDecor@@QAEHUtagPOINT@@H@Z",
+        "section": 17,
+        "size": 160,
+        "relocs": 3,
+        "key": [
+          160,
+          3
+        ]
+      },
+      {
+        "name": "?IsFreeCelGo@CDecor@@QAEHUtagPOINT@@H@Z",
+        "section": 19,
+        "size": 432,
+        "relocs": 5,
+        "key": [
+          432,
+          5
+        ]
+      },
+      {
+        "name": "?IsFreeCelHili@CDecor@@QAEHUtagPOINT@@H@Z",
+        "section": 21,
+        "size": 304,
+        "relocs": 5,
+        "key": [
+          304,
+          5
+        ]
+      },
+      {
+        "name": "?IsFreeCel@CDecor@@QAEHUtagPOINT@@H@Z",
+        "section": 23,
+        "size": 320,
+        "relocs": 6,
+        "key": [
+          320,
+          6
+        ]
+      },
+      {
+        "name": "?IsFreeCelDepose@CDecor@@QAEHUtagPOINT@@H@Z",
+        "section": 25,
+        "size": 112,
+        "relocs": 1,
+        "key": [
+          112,
+          1
+        ]
+      },
+      {
+        "name": "?IsFreeCelEmbarque@CDecor@@QAEHUtagPOINT@@HAAHAAU2@@Z",
+        "section": 27,
+        "size": 704,
+        "relocs": 17,
+        "key": [
+          704,
+          17
+        ]
+      },
+      {
+        "name": "?IsFreeCelDebarque@CDecor@@QAEHUtagPOINT@@HAAHAAU2@@Z",
+        "section": 29,
+        "size": 816,
+        "relocs": 21,
+        "key": [
+          816,
+          21
+        ]
+      },
+      {
+        "name": "?IsFreeJump@CDecor@@QAEHUtagPOINT@@HHAAH@Z",
+        "section": 31,
+        "size": 512,
+        "relocs": 8,
+        "key": [
+          512,
+          8
+        ]
+      },
+      {
+        "name": "?IsFreeGlisse@CDecor@@QAEHUtagPOINT@@HHAAH@Z",
+        "section": 33,
+        "size": 160,
+        "relocs": 3,
+        "key": [
+          160,
+          3
+        ]
+      },
+      {
+        "name": "?DirectSearch@CDecor@@QAEHUtagPOINT@@0@Z",
+        "section": 35,
+        "size": 208,
+        "relocs": 0,
+        "key": [
+          208,
+          0
+        ]
+      },
+      {
+        "name": "?FlushUsed@CDecor@@QAEXH@Z",
+        "section": 37,
+        "size": 48,
+        "relocs": 0,
+        "key": [
+          48,
+          0
+        ]
+      },
+      {
+        "name": "?AddUsedPos@CDecor@@QAEXHUtagPOINT@@@Z",
+        "section": 39,
+        "size": 304,
+        "relocs": 0,
+        "key": [
+          304,
+          0
+        ]
+      },
+      {
+        "name": "?IsUsedPos@CDecor@@QAEHHUtagPOINT@@@Z",
+        "section": 41,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?SearchBestBase@CDecor@@QAEHHAAHAAUtagPOINT@@0@Z",
+        "section": 43,
+        "size": 848,
+        "relocs": 12,
+        "key": [
+          848,
+          12
+        ]
+      },
+      {
+        "name": "?SearchBestPass@CDecor@@QAEHHAAH@Z",
+        "section": 45,
+        "size": 800,
+        "relocs": 8,
+        "key": [
+          800,
+          8
+        ]
+      },
+      {
+        "name": "?IsWorkableObject@CDecor@@QAEHUtagPOINT@@H@Z",
+        "section": 47,
+        "size": 352,
+        "relocs": 17,
+        "key": [
+          352,
+          17
+        ]
+      },
+      {
+        "name": "?SearchOtherObject@CDecor@@QAEHHUtagPOINT@@HHHHHHHAAU2@AAH@Z",
+        "section": 49,
+        "size": 928,
+        "relocs": 3,
+        "key": [
+          928,
+          3
+        ]
+      },
+      {
+        "name": "?SearchOtherDrapeau@CDecor@@QAEHHUtagPOINT@@HAAU2@AAH@Z",
+        "section": 51,
+        "size": 432,
+        "relocs": 4,
+        "key": [
+          432,
+          4
+        ]
+      },
+      {
+        "name": "?SearchOtherBateau@CDecor@@QAEHHUtagPOINT@@HAAU2@AAH@Z",
+        "section": 53,
+        "size": 384,
+        "relocs": 2,
+        "key": [
+          384,
+          2
+        ]
+      },
+      {
+        "name": "?IsSpiderObject@CDecor@@QAEHH@Z",
+        "section": 55,
+        "size": 32,
+        "relocs": 0,
+        "key": [
+          32,
+          0
+        ]
+      },
+      {
+        "name": "?SearchSpiderObject@CDecor@@QAEHHUtagPOINT@@HAAU2@AAH@Z",
+        "section": 57,
+        "size": 400,
+        "relocs": 2,
+        "key": [
+          400,
+          2
+        ]
+      },
+      {
+        "name": "?IsTracksObject@CDecor@@QAEHH@Z",
+        "section": 59,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?SearchTracksObject@CDecor@@QAEHHUtagPOINT@@HAAU2@AAH@Z",
+        "section": 61,
+        "size": 576,
+        "relocs": 1,
+        "key": [
+          576,
+          1
+        ]
+      },
+      {
+        "name": "?IsRobotObject@CDecor@@QAEHH@Z",
+        "section": 63,
+        "size": 48,
+        "relocs": 0,
+        "key": [
+          48,
+          0
+        ]
+      },
+      {
+        "name": "?SearchRobotObject@CDecor@@QAEHHUtagPOINT@@HAAU2@AAH2@Z",
+        "section": 65,
+        "size": 2160,
+        "relocs": 9,
+        "key": [
+          2160,
+          9
+        ]
+      },
+      {
+        "name": "?IsUsineBuild@CDecor@@QAEHHUtagPOINT@@@Z",
+        "section": 67,
+        "size": 192,
+        "relocs": 5,
+        "key": [
+          192,
+          5
+        ]
+      },
+      {
+        "name": "?IsUsineFree@CDecor@@QAEHHUtagPOINT@@@Z",
+        "section": 69,
+        "size": 432,
+        "relocs": 21,
+        "key": [
+          432,
+          21
+        ]
+      },
+      {
+        "name": "?IsBombeObject@CDecor@@QAEHH@Z",
+        "section": 71,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      },
+      {
+        "name": "?SearchBombeObject@CDecor@@QAEHHUtagPOINT@@HAAU2@AAH@Z",
+        "section": 73,
+        "size": 400,
+        "relocs": 2,
+        "key": [
+          400,
+          2
+        ]
+      },
+      {
+        "name": "?SearchElectroObject@CDecor@@QAEHHUtagPOINT@@HAAU2@AAH@Z",
+        "section": 75,
+        "size": 736,
+        "relocs": 5,
+        "key": [
+          736,
+          5
+        ]
+      },
+      {
+        "name": "?IsFireCel@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 77,
+        "size": 192,
+        "relocs": 2,
+        "key": [
+          192,
+          2
+        ]
+      },
+      {
+        "name": "?IsVirusCel@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 79,
+        "size": 112,
+        "relocs": 0,
+        "key": [
+          112,
+          0
+        ]
+      },
+      {
+        "name": "?IsBuildPont@CDecor@@QAEHAAUtagPOINT@@AAH@Z",
+        "section": 81,
+        "size": 896,
+        "relocs": 10,
+        "key": [
+          896,
+          10
+        ]
+      },
+      {
+        "name": "?IsBuildBateau@CDecor@@QAEHUtagPOINT@@AAH@Z",
+        "section": 83,
+        "size": 528,
+        "relocs": 16,
+        "key": [
+          528,
+          16
+        ]
+      },
+      {
+        "name": "?InitDrapeau@CDecor@@QAEXXZ",
+        "section": 85,
+        "size": 32,
+        "relocs": 0,
+        "key": [
+          32,
+          0
+        ]
+      },
+      {
+        "name": "?AddDrapeau@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 87,
+        "size": 80,
+        "relocs": 1,
+        "key": [
+          80,
+          1
+        ]
+      },
+      {
+        "name": "?SubDrapeau@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 89,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      },
+      {
+        "name": "?TestDrapeau@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 91,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "label": "pb-action",
+    "source": "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree\\action.cpp",
+    "object": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\pb-action.obj",
+    "command": [
+      "D:\\Prog\\blupi_recon\\.pyenv\\python.exe",
+      "tools/msvc.py",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree\\action.cpp",
+      "--tree",
+      "sp3",
+      "--out",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\pb-action.obj",
+      "--log-dir",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\logs",
+      "--include",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\pb-tree",
+      "--include",
+      "C:\\tools\\dx5sdk\\INCLUDE",
+      "--define",
+      "WIN32",
+      "--define",
+      "NDEBUG",
+      "--define",
+      "_WINDOWS",
+      "--define",
+      "nullptr=0",
+      "--flag",
+      "/W3",
+      "--flag",
+      "/GX",
+      "--flag",
+      "/O2",
+      "--flag",
+      "/ML",
+      "--flag",
+      "/Gd",
+      "--flag",
+      "/Gy"
+    ],
+    "exit": 0,
+    "seconds": 0.22446441650390625,
+    "comdats": [
+      {
+        "name": "?Action@@YAHFFAAF000AAUtagPOINT@@00@Z",
+        "section": 3,
+        "size": 464,
+        "relocs": 2,
+        "key": [
+          464,
+          2
+        ]
+      },
+      {
+        "name": "?Rotate@@YAHAAFF@Z",
+        "section": 5,
+        "size": 352,
+        "relocs": 2,
+        "key": [
+          352,
+          2
+        ]
+      },
+      {
+        "name": "?GetIconDirect@@YAHF@Z",
+        "section": 7,
+        "size": 192,
+        "relocs": 2,
+        "key": [
+          192,
+          2
+        ]
+      },
+      {
+        "name": "?GetAmplitude@@YAHF@Z",
+        "section": 9,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "label": "sb2-wave",
+    "source": "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\wave\\wave.cpp",
+    "object": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\sb2-wave.obj",
+    "command": [
+      "D:\\Prog\\blupi_recon\\.pyenv\\python.exe",
+      "tools/msvc.py",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\wave\\wave.cpp",
+      "--tree",
+      "sp3",
+      "--out",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\sb2-wave.obj",
+      "--log-dir",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\logs",
+      "--include",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\wave",
+      "--include",
+      "C:\\tools\\dx5sdk\\INCLUDE",
+      "--define",
+      "WIN32",
+      "--define",
+      "NDEBUG",
+      "--define",
+      "_WINDOWS",
+      "--define",
+      "nullptr=0",
+      "--flag",
+      "/W3",
+      "--flag",
+      "/GX",
+      "--flag",
+      "/O2",
+      "--flag",
+      "/ML",
+      "--flag",
+      "/Gd",
+      "--flag",
+      "/Gy"
+    ],
+    "exit": 0,
+    "seconds": 0.2191784381866455,
+    "comdats": [
+      {
+        "name": "?WAVE_LoadResource@@YAPAXHPAXPAUtagWAVEFILE@@@Z",
+        "section": 2,
+        "size": 160,
+        "relocs": 8,
+        "key": [
+          160,
+          8
+        ]
+      },
+      {
+        "name": "?wave_ParseWaveMemory@@YAHPAXPAPAUtWAVEFORMATEX@@PAPAEPAK@Z",
+        "section": 5,
+        "size": 240,
+        "relocs": 0,
+        "key": [
+          240,
+          0
+        ]
+      },
+      {
+        "name": "?LoadWave@@YAXPAXHPAUIDirectSound@@AAPAUIDirectSoundBuffer@@@Z",
+        "section": 7,
+        "size": 336,
+        "relocs": 8,
+        "key": [
+          336,
+          8
+        ]
+      }
+    ]
+  },
+  {
+    "label": "history-decmove-60",
+    "source": "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\history-60c7fab-parent\\decmove.cpp",
+    "object": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\history-decmove-60.obj",
+    "command": [
+      "D:\\Prog\\blupi_recon\\.pyenv\\python.exe",
+      "tools/msvc.py",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\history-60c7fab-parent\\decmove.cpp",
+      "--tree",
+      "sp3",
+      "--out",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\history-decmove-60.obj",
+      "--log-dir",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\logs",
+      "--include",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\history-60c7fab-parent",
+      "--include",
+      "C:\\tools\\dx5sdk\\INCLUDE",
+      "--define",
+      "WIN32",
+      "--define",
+      "NDEBUG",
+      "--define",
+      "_WINDOWS",
+      "--define",
+      "nullptr=0",
+      "--flag",
+      "/W3",
+      "--flag",
+      "/GX",
+      "--flag",
+      "/O2",
+      "--flag",
+      "/ML",
+      "--flag",
+      "/Gd",
+      "--flag",
+      "/Gy"
+    ],
+    "exit": 0,
+    "seconds": 0.2980234622955322,
+    "comdats": [
+      {
+        "name": "?NetDataFlush@CDecor@@QAEXXZ",
+        "section": 2,
+        "size": 96,
+        "relocs": 1,
+        "key": [
+          96,
+          1
+        ]
+      },
+      {
+        "name": "?NetSendBarePacket@CDecor@@QAEXEH@Z",
+        "section": 4,
+        "size": 48,
+        "relocs": 1,
+        "key": [
+          48,
+          1
+        ]
+      },
+      {
+        "name": "?TreatNetData@CDecor@@QAEXXZ",
+        "section": 6,
+        "size": 1552,
+        "relocs": 21,
+        "key": [
+          1552,
+          21
+        ]
+      },
+      {
+        "name": "?DoNetSmooth@CDecor@@QAEXH@Z",
+        "section": 8,
+        "size": 192,
+        "relocs": 1,
+        "key": [
+          192,
+          1
+        ]
+      },
+      {
+        "name": "?NetAdjustToLift@CDecor@@QAEXXZ",
+        "section": 10,
+        "size": 80,
+        "relocs": 0,
+        "key": [
+          80,
+          0
+        ]
+      },
+      {
+        "name": "?NetAscenseurSynchro@CDecor@@QAEXHF@Z",
+        "section": 12,
+        "size": 272,
+        "relocs": 0,
+        "key": [
+          272,
+          0
+        ]
+      },
+      {
+        "name": "?NetPlayerCollide@CDecor@@QAEXUtagPOINT@@PAH@Z",
+        "section": 14,
+        "size": 224,
+        "relocs": 1,
+        "key": [
+          224,
+          1
+        ]
+      },
+      {
+        "name": "?NetMessageIndexFlush@CDecor@@QAEXXZ",
+        "section": 16,
+        "size": 32,
+        "relocs": 0,
+        "key": [
+          32,
+          0
+        ]
+      },
+      {
+        "name": "?NetMessagePush@CDecor@@QAEHPAUNetMessage@@@Z",
+        "section": 18,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?NetMessagePop@CDecor@@QAEHPAUNetMessage@@@Z",
+        "section": 20,
+        "size": 112,
+        "relocs": 0,
+        "key": [
+          112,
+          0
+        ]
+      },
+      {
+        "name": "?NotifFlush@CDecor@@QAEXXZ",
+        "section": 22,
+        "size": 32,
+        "relocs": 0,
+        "key": [
+          32,
+          0
+        ]
+      },
+      {
+        "name": "?NotifPop@CDecor@@QAEXXZ",
+        "section": 24,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?NotifPush@CDecor@@QAEXPAD@Z",
+        "section": 26,
+        "size": 144,
+        "relocs": 2,
+        "key": [
+          144,
+          2
+        ]
+      },
+      {
+        "name": "?NotifStep@CDecor@@QAEXXZ",
+        "section": 28,
+        "size": 32,
+        "relocs": 1,
+        "key": [
+          32,
+          1
+        ]
+      },
+      {
+        "name": "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "section": 30,
+        "size": 32,
+        "relocs": 0,
+        "key": [
+          32,
+          0
+        ]
+      },
+      {
+        "name": "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 32,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 34,
+        "size": 160,
+        "relocs": 0,
+        "key": [
+          160,
+          0
+        ]
+      },
+      {
+        "name": "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "section": 36,
+        "size": 32,
+        "relocs": 0,
+        "key": [
+          32,
+          0
+        ]
+      },
+      {
+        "name": "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 38,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 40,
+        "size": 160,
+        "relocs": 0,
+        "key": [
+          160,
+          0
+        ]
+      },
+      {
+        "name": "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 42,
+        "size": 192,
+        "relocs": 12,
+        "key": [
+          192,
+          12
+        ]
+      },
+      {
+        "name": "?ObjectStart@CDecor@@QAEHUtagPOINT@@HH@Z",
+        "section": 44,
+        "size": 32,
+        "relocs": 1,
+        "key": [
+          32,
+          1
+        ]
+      },
+      {
+        "name": "?MoveObjectStep@CDecor@@QAEXXZ",
+        "section": 46,
+        "size": 592,
+        "relocs": 18,
+        "key": [
+          592,
+          18
+        ]
+      },
+      {
+        "name": "?MoveObjectStepLine@CDecor@@QAEXH@Z",
+        "section": 48,
+        "size": 960,
+        "relocs": 5,
+        "key": [
+          960,
+          5
+        ]
+      },
+      {
+        "name": "?MoveObjectStepIcon@CDecor@@QAEXH@Z",
+        "section": 50,
+        "size": 4176,
+        "relocs": 62,
+        "key": [
+          4176,
+          62
+        ]
+      },
+      {
+        "name": "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "section": 52,
+        "size": 864,
+        "relocs": 9,
+        "key": [
+          864,
+          9
+        ]
+      },
+      {
+        "name": "?AscenseurDetect@CDecor@@QAEHUtagRECT@@UtagPOINT@@1@Z",
+        "section": 54,
+        "size": 336,
+        "relocs": 2,
+        "key": [
+          336,
+          2
+        ]
+      },
+      {
+        "name": "?AscenseurVertigo@CDecor@@QAEXHPAH0@Z",
+        "section": 56,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?AscenseurShift@CDecor@@QAEHH@Z",
+        "section": 58,
+        "size": 48,
+        "relocs": 0,
+        "key": [
+          48,
+          0
+        ]
+      },
+      {
+        "name": "?AscenseurSynchro@CDecor@@QAEXH@Z",
+        "section": 60,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      },
+      {
+        "name": "?UpdateCaisse@CDecor@@QAEXXZ",
+        "section": 62,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      },
+      {
+        "name": "?TestPushCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+        "section": 64,
+        "size": 224,
+        "relocs": 2,
+        "key": [
+          224,
+          2
+        ]
+      },
+      {
+        "name": "?TestPushOneCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+        "section": 66,
+        "size": 240,
+        "relocs": 3,
+        "key": [
+          240,
+          3
+        ]
+      },
+      {
+        "name": "?SearchLinkCaisse@CDecor@@QAEXHH@Z",
+        "section": 68,
+        "size": 464,
+        "relocs": 3,
+        "key": [
+          464,
+          3
+        ]
+      },
+      {
+        "name": "?AddLinkCaisse@CDecor@@QAEHH@Z",
+        "section": 70,
+        "size": 80,
+        "relocs": 0,
+        "key": [
+          80,
+          0
+        ]
+      },
+      {
+        "name": "?CaisseInFront@CDecor@@QAEHXZ",
+        "section": 72,
+        "size": 128,
+        "relocs": 0,
+        "key": [
+          128,
+          0
+        ]
+      },
+      {
+        "name": "?CaisseGetMove@CDecor@@QAEHH@Z",
+        "section": 74,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?MockeryDetect@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 76,
+        "size": 544,
+        "relocs": 1,
+        "key": [
+          544,
+          1
+        ]
+      },
+      {
+        "name": "?BlupiElectro@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 78,
+        "size": 160,
+        "relocs": 1,
+        "key": [
+          160,
+          1
+        ]
+      },
+      {
+        "name": "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 80,
+        "size": 208,
+        "relocs": 3,
+        "key": [
+          208,
+          3
+        ]
+      },
+      {
+        "name": "?MoveObjectDetect@CDecor@@QAEHUtagPOINT@@PAH@Z",
+        "section": 82,
+        "size": 544,
+        "relocs": 1,
+        "key": [
+          544,
+          1
+        ]
+      },
+      {
+        "name": "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "section": 84,
+        "size": 224,
+        "relocs": 1,
+        "key": [
+          224,
+          1
+        ]
+      },
+      {
+        "name": "?MoveChargeDetect@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 86,
+        "size": 160,
+        "relocs": 1,
+        "key": [
+          160,
+          1
+        ]
+      },
+      {
+        "name": "?MovePersoDetect@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 88,
+        "size": 192,
+        "relocs": 1,
+        "key": [
+          192,
+          1
+        ]
+      },
+      {
+        "name": "?MoveBalleDetect@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 90,
+        "size": 208,
+        "relocs": 1,
+        "key": [
+          208,
+          1
+        ]
+      },
+      {
+        "name": "?MoveObjectDelete@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 92,
+        "size": 128,
+        "relocs": 0,
+        "key": [
+          128,
+          0
+        ]
+      },
+      {
+        "name": "?MoveObjectFree@CDecor@@QAEHXZ",
+        "section": 94,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      },
+      {
+        "name": "?SortGetType@@YAHH@Z",
+        "section": 96,
+        "size": 48,
+        "relocs": 0,
+        "key": [
+          48,
+          0
+        ]
+      },
+      {
+        "name": "?MoveObjectSort@CDecor@@QAEXXZ",
+        "section": 98,
+        "size": 240,
+        "relocs": 2,
+        "key": [
+          240,
+          2
+        ]
+      },
+      {
+        "name": "?MoveObjectPriority@CDecor@@QAEXH@Z",
+        "section": 100,
+        "size": 160,
+        "relocs": 1,
+        "key": [
+          160,
+          1
+        ]
+      },
+      {
+        "name": "?MoveObjectSearch@CDecor@@QAEHUtagPOINT@@H@Z",
+        "section": 102,
+        "size": 160,
+        "relocs": 0,
+        "key": [
+          160,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "label": "history-decmove-f47",
+    "source": "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\history-f47a4e6-parent\\decmove.cpp",
+    "object": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\history-decmove-f47.obj",
+    "command": [
+      "D:\\Prog\\blupi_recon\\.pyenv\\python.exe",
+      "tools/msvc.py",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\history-f47a4e6-parent\\decmove.cpp",
+      "--tree",
+      "sp3",
+      "--out",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\history-decmove-f47.obj",
+      "--log-dir",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\logs",
+      "--include",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\history-f47a4e6-parent",
+      "--include",
+      "C:\\tools\\dx5sdk\\INCLUDE",
+      "--define",
+      "WIN32",
+      "--define",
+      "NDEBUG",
+      "--define",
+      "_WINDOWS",
+      "--define",
+      "nullptr=0",
+      "--flag",
+      "/W3",
+      "--flag",
+      "/GX",
+      "--flag",
+      "/O2",
+      "--flag",
+      "/ML",
+      "--flag",
+      "/Gd",
+      "--flag",
+      "/Gy"
+    ],
+    "exit": 0,
+    "seconds": 0.2837371826171875,
+    "comdats": [
+      {
+        "name": "?NetDataFlush@CDecor@@QAEXXZ",
+        "section": 2,
+        "size": 96,
+        "relocs": 1,
+        "key": [
+          96,
+          1
+        ]
+      },
+      {
+        "name": "?NetSendBarePacket@CDecor@@QAEXEH@Z",
+        "section": 4,
+        "size": 48,
+        "relocs": 1,
+        "key": [
+          48,
+          1
+        ]
+      },
+      {
+        "name": "?TreatNetData@CDecor@@QAEXXZ",
+        "section": 6,
+        "size": 1552,
+        "relocs": 21,
+        "key": [
+          1552,
+          21
+        ]
+      },
+      {
+        "name": "?DoNetSmooth@CDecor@@QAEXH@Z",
+        "section": 8,
+        "size": 192,
+        "relocs": 1,
+        "key": [
+          192,
+          1
+        ]
+      },
+      {
+        "name": "?NetAdjustToLift@CDecor@@QAEXXZ",
+        "section": 10,
+        "size": 80,
+        "relocs": 0,
+        "key": [
+          80,
+          0
+        ]
+      },
+      {
+        "name": "?NetAscenseurSynchro@CDecor@@QAEXHF@Z",
+        "section": 12,
+        "size": 272,
+        "relocs": 0,
+        "key": [
+          272,
+          0
+        ]
+      },
+      {
+        "name": "?NetPlayerCollide@CDecor@@QAEXUtagPOINT@@PAH@Z",
+        "section": 14,
+        "size": 224,
+        "relocs": 1,
+        "key": [
+          224,
+          1
+        ]
+      },
+      {
+        "name": "?NetMessageIndexFlush@CDecor@@QAEXXZ",
+        "section": 16,
+        "size": 32,
+        "relocs": 0,
+        "key": [
+          32,
+          0
+        ]
+      },
+      {
+        "name": "?NetMessagePush@CDecor@@QAEHPAUNetMessage@@@Z",
+        "section": 18,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?NetMessagePop@CDecor@@QAEHPAUNetMessage@@@Z",
+        "section": 20,
+        "size": 112,
+        "relocs": 0,
+        "key": [
+          112,
+          0
+        ]
+      },
+      {
+        "name": "?NotifFlush@CDecor@@QAEXXZ",
+        "section": 22,
+        "size": 32,
+        "relocs": 0,
+        "key": [
+          32,
+          0
+        ]
+      },
+      {
+        "name": "?NotifPop@CDecor@@QAEXXZ",
+        "section": 24,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?NotifPush@CDecor@@QAEXPAD@Z",
+        "section": 26,
+        "size": 144,
+        "relocs": 2,
+        "key": [
+          144,
+          2
+        ]
+      },
+      {
+        "name": "?NotifStep@CDecor@@QAEXXZ",
+        "section": 28,
+        "size": 32,
+        "relocs": 1,
+        "key": [
+          32,
+          1
+        ]
+      },
+      {
+        "name": "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 30,
+        "size": 192,
+        "relocs": 12,
+        "key": [
+          192,
+          12
+        ]
+      },
+      {
+        "name": "?ObjectStart@CDecor@@QAEHUtagPOINT@@HH@Z",
+        "section": 32,
+        "size": 32,
+        "relocs": 1,
+        "key": [
+          32,
+          1
+        ]
+      },
+      {
+        "name": "?MoveObjectStep@CDecor@@QAEXXZ",
+        "section": 34,
+        "size": 592,
+        "relocs": 18,
+        "key": [
+          592,
+          18
+        ]
+      },
+      {
+        "name": "?MoveObjectStepLine@CDecor@@QAEXH@Z",
+        "section": 36,
+        "size": 960,
+        "relocs": 5,
+        "key": [
+          960,
+          5
+        ]
+      },
+      {
+        "name": "?MoveObjectStepIcon@CDecor@@QAEXH@Z",
+        "section": 38,
+        "size": 4176,
+        "relocs": 62,
+        "key": [
+          4176,
+          62
+        ]
+      },
+      {
+        "name": "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "section": 40,
+        "size": 864,
+        "relocs": 9,
+        "key": [
+          864,
+          9
+        ]
+      },
+      {
+        "name": "?AscenseurDetect@CDecor@@QAEHUtagRECT@@UtagPOINT@@1@Z",
+        "section": 42,
+        "size": 336,
+        "relocs": 2,
+        "key": [
+          336,
+          2
+        ]
+      },
+      {
+        "name": "?AscenseurVertigo@CDecor@@QAEXHPAH0@Z",
+        "section": 44,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?AscenseurShift@CDecor@@QAEHH@Z",
+        "section": 46,
+        "size": 48,
+        "relocs": 0,
+        "key": [
+          48,
+          0
+        ]
+      },
+      {
+        "name": "?AscenseurSynchro@CDecor@@QAEXH@Z",
+        "section": 48,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      },
+      {
+        "name": "?UpdateCaisse@CDecor@@QAEXXZ",
+        "section": 50,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      },
+      {
+        "name": "?TestPushCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+        "section": 52,
+        "size": 224,
+        "relocs": 2,
+        "key": [
+          224,
+          2
+        ]
+      },
+      {
+        "name": "?TestPushOneCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+        "section": 54,
+        "size": 240,
+        "relocs": 3,
+        "key": [
+          240,
+          3
+        ]
+      },
+      {
+        "name": "?SearchLinkCaisse@CDecor@@QAEXHH@Z",
+        "section": 56,
+        "size": 464,
+        "relocs": 3,
+        "key": [
+          464,
+          3
+        ]
+      },
+      {
+        "name": "?AddLinkCaisse@CDecor@@QAEHH@Z",
+        "section": 58,
+        "size": 80,
+        "relocs": 0,
+        "key": [
+          80,
+          0
+        ]
+      },
+      {
+        "name": "?CaisseInFront@CDecor@@QAEHXZ",
+        "section": 60,
+        "size": 128,
+        "relocs": 0,
+        "key": [
+          128,
+          0
+        ]
+      },
+      {
+        "name": "?CaisseGetMove@CDecor@@QAEHH@Z",
+        "section": 62,
+        "size": 96,
+        "relocs": 0,
+        "key": [
+          96,
+          0
+        ]
+      },
+      {
+        "name": "?MockeryDetect@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 64,
+        "size": 544,
+        "relocs": 1,
+        "key": [
+          544,
+          1
+        ]
+      },
+      {
+        "name": "?BlupiElectro@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 66,
+        "size": 160,
+        "relocs": 1,
+        "key": [
+          160,
+          1
+        ]
+      },
+      {
+        "name": "?MoveObjectDetect@CDecor@@QAEHUtagPOINT@@PAH@Z",
+        "section": 68,
+        "size": 544,
+        "relocs": 1,
+        "key": [
+          544,
+          1
+        ]
+      },
+      {
+        "name": "?MoveChargeDetect@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 70,
+        "size": 160,
+        "relocs": 1,
+        "key": [
+          160,
+          1
+        ]
+      },
+      {
+        "name": "?MovePersoDetect@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 72,
+        "size": 192,
+        "relocs": 1,
+        "key": [
+          192,
+          1
+        ]
+      },
+      {
+        "name": "?MoveBalleDetect@CDecor@@QAEHUtagPOINT@@@Z",
+        "section": 74,
+        "size": 208,
+        "relocs": 1,
+        "key": [
+          208,
+          1
+        ]
+      },
+      {
+        "name": "?MoveObjectDelete@CDecor@@QAEXUtagPOINT@@@Z",
+        "section": 76,
+        "size": 128,
+        "relocs": 0,
+        "key": [
+          128,
+          0
+        ]
+      },
+      {
+        "name": "?MoveObjectFree@CDecor@@QAEHXZ",
+        "section": 78,
+        "size": 64,
+        "relocs": 0,
+        "key": [
+          64,
+          0
+        ]
+      },
+      {
+        "name": "?SortGetType@@YAHH@Z",
+        "section": 80,
+        "size": 48,
+        "relocs": 0,
+        "key": [
+          48,
+          0
+        ]
+      },
+      {
+        "name": "?MoveObjectSort@CDecor@@QAEXXZ",
+        "section": 82,
+        "size": 240,
+        "relocs": 2,
+        "key": [
+          240,
+          2
+        ]
+      },
+      {
+        "name": "?MoveObjectPriority@CDecor@@QAEXH@Z",
+        "section": 84,
+        "size": 160,
+        "relocs": 1,
+        "key": [
+          160,
+          1
+        ]
+      },
+      {
+        "name": "?MoveObjectSearch@CDecor@@QAEHUtagPOINT@@H@Z",
+        "section": 86,
+        "size": 160,
+        "relocs": 0,
+        "key": [
+          160,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "label": "history-text",
+    "source": "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\history-699e45d-parent\\text.cpp",
+    "object": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\history-text.obj",
+    "command": [
+      "D:\\Prog\\blupi_recon\\.pyenv\\python.exe",
+      "tools/msvc.py",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\history-699e45d-parent\\text.cpp",
+      "--tree",
+      "sp3",
+      "--out",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\history-text.obj",
+      "--log-dir",
+      "D:\\Prog\\blupi_recon\\build\\w-sb1icf-source-keys\\logs",
+      "--include",
+      "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-sources\\history-699e45d-parent",
+      "--include",
+      "C:\\tools\\dx5sdk\\INCLUDE",
+      "--define",
+      "WIN32",
+      "--define",
+      "NDEBUG",
+      "--define",
+      "_WINDOWS",
+      "--define",
+      "nullptr=0",
+      "--flag",
+      "/W3",
+      "--flag",
+      "/GX",
+      "--flag",
+      "/O2",
+      "--flag",
+      "/ML",
+      "--flag",
+      "/Gd",
+      "--flag",
+      "/Gy"
+    ],
+    "exit": 0,
+    "seconds": 0.2415618896484375,
+    "comdats": [
+      {
+        "name": "?GetOffset@@YAHD@Z",
+        "section": 3,
+        "size": 48,
+        "relocs": 1,
+        "key": [
+          48,
+          1
+        ]
+      },
+      {
+        "name": "?GetCharWidthA@@YAHDH@Z",
+        "section": 5,
+        "size": 80,
+        "relocs": 4,
+        "key": [
+          80,
+          4
+        ]
+      },
+      {
+        "name": "?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z",
+        "section": 7,
+        "size": 80,
+        "relocs": 2,
+        "key": [
+          80,
+          2
+        ]
+      },
+      {
+        "name": "?DrawChar@@YAXPAVCPixmap@@PAUtagPOINT@@EH@Z",
+        "section": 9,
+        "size": 144,
+        "relocs": 9,
+        "key": [
+          144,
+          9
+        ]
+      },
+      {
+        "name": "?DrawTextLeft@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+        "section": 11,
+        "size": 48,
+        "relocs": 1,
+        "key": [
+          48,
+          1
+        ]
+      },
+      {
+        "name": "?DrawTextA@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+        "section": 13,
+        "size": 48,
+        "relocs": 1,
+        "key": [
+          48,
+          1
+        ]
+      },
+      {
+        "name": "?DrawTextPente@@YAXPAVCPixmap@@UtagPOINT@@PADHH@Z",
+        "section": 15,
+        "size": 128,
+        "relocs": 3,
+        "key": [
+          128,
+          3
+        ]
+      },
+      {
+        "name": "?DrawTextRect@@YAXPAVCPixmap@@UtagPOINT@@PADHHH@Z",
+        "section": 17,
+        "size": 256,
+        "relocs": 2,
+        "key": [
+          256,
+          2
+        ]
+      },
+      {
+        "name": "?DrawTextCenter@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+        "section": 19,
+        "size": 192,
+        "relocs": 2,
+        "key": [
+          192,
+          2
+        ]
+      },
+      {
+        "name": "?GetTextHeight@@YAHPADHH@Z",
+        "section": 21,
+        "size": 176,
+        "relocs": 0,
+        "key": [
+          176,
+          0
+        ]
+      },
+      {
+        "name": "?GetTextWidth@@YAHPADH@Z",
+        "section": 23,
+        "size": 48,
+        "relocs": 1,
+        "key": [
+          48,
+          1
+        ]
+      },
+      {
+        "name": "?GetBignumInfo@@YAXHAAH0@Z",
+        "section": 25,
+        "size": 48,
+        "relocs": 3,
+        "key": [
+          48,
+          3
+        ]
+      },
+      {
+        "name": "?DrawBignum@@YAXPAVCPixmap@@UtagPOINT@@H@Z",
+        "section": 27,
+        "size": 160,
+        "relocs": 4,
+        "key": [
+          160,
+          4
+        ]
+      },
+      {
+        "name": "?GetBignumWidth@@YAHH@Z",
+        "section": 30,
+        "size": 96,
+        "relocs": 3,
+        "key": [
+          96,
+          3
+        ]
+      }
+    ]
+  }
+]

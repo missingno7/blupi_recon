@@ -1,0 +1,118 @@
+{
+  "trnsctrl.obj": [
+    {
+      "name": "?_CallMemberFunction0@@YGXPAX0@Z",
+      "section": 2,
+      "value": 0,
+      "symbol_index": 7,
+      "raw_size": 7,
+      "characteristics": "0x60501020",
+      "relocs": 0,
+      "full_section_unmasked_oracle_hits": [
+        "0x23e20"
+      ]
+    },
+    {
+      "name": "?_CallMemberFunction1@@YGXPAX00@Z",
+      "section": 3,
+      "value": 0,
+      "symbol_index": 10,
+      "raw_size": 7,
+      "characteristics": "0x60501020",
+      "relocs": 0,
+      "full_section_unmasked_oracle_hits": [
+        "0x23e20"
+      ]
+    },
+    {
+      "name": "?_CallMemberFunction2@@YGXPAX00H@Z",
+      "section": 4,
+      "value": 0,
+      "symbol_index": 13,
+      "raw_size": 7,
+      "characteristics": "0x60501020",
+      "relocs": 0,
+      "full_section_unmasked_oracle_hits": [
+        "0x23e20"
+      ]
+    }
+  ],
+  "frame.obj": [
+    {
+      "name": "?FrameUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+      "section": 11,
+      "value": 0,
+      "symbol_index": 45,
+      "raw_size": 32,
+      "characteristics": "0x60501020",
+      "relocs": 1,
+      "full_section_unmasked_oracle_hits": []
+    }
+  ],
+  "ehvecdtr.obj": [
+    {
+      "name": "?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+      "section": 5,
+      "value": 0,
+      "symbol_index": 25,
+      "raw_size": 32,
+      "characteristics": "0x60501020",
+      "relocs": 1,
+      "full_section_unmasked_oracle_hits": []
+    }
+  ],
+  "aw_cmp.obj": [
+    {
+      "name": "_strncnt",
+      "section": 10,
+      "value": 0,
+      "symbol_index": 37,
+      "raw_size": 48,
+      "characteristics": "0x60501020",
+      "relocs": 0,
+      "full_section_unmasked_oracle_hits": [
+        "0x285c0"
+      ]
+    }
+  ],
+  "aw_map.obj": [
+    {
+      "name": "_strncnt",
+      "section": 10,
+      "value": 0,
+      "symbol_index": 37,
+      "raw_size": 48,
+      "characteristics": "0x60501020",
+      "relocs": 0,
+      "full_section_unmasked_oracle_hits": [
+        "0x285c0"
+      ]
+    }
+  ],
+  "chkstk.obj": [
+    {
+      "name": "__alloca_probe",
+      "section": 1,
+      "value": 0,
+      "symbol_index": 6,
+      "raw_size": 47,
+      "characteristics": "0x60500020",
+      "relocs": 0,
+      "full_section_unmasked_oracle_hits": [
+        "0x2b630"
+      ]
+    },
+    {
+      "name": "__chkstk",
+      "section": 1,
+      "value": 0,
+      "symbol_index": 7,
+      "raw_size": 47,
+      "characteristics": "0x60500020",
+      "relocs": 0,
+      "full_section_unmasked_oracle_hits": [
+        "0x2b630"
+      ]
+    }
+  ]
+}

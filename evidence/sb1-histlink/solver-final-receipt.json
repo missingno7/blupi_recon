@@ -1,0 +1,168 @@
+{
+  "suites": {
+    "solver-suite.json": [
+      {
+        "target": "sb1/blupi/us",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 13,
+        "accepted_regressions": 0,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/blupi/de",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 13,
+        "accepted_regressions": 0,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/blupi/fr",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 13,
+        "accepted_regressions": 0,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/en",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/de",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/es",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/fr",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/it",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/pt",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      }
+    ],
+    "solver-suite-sb2forms.json": [
+      {
+        "target": "sb1/blupi/us",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 13,
+        "accepted_regressions": 0,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/blupi/de",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 13,
+        "accepted_regressions": 0,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/blupi/fr",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 13,
+        "accepted_regressions": 0,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/en",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/de",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/es",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/fr",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/it",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      },
+      {
+        "target": "sb1/eggbert/pt",
+        "unchanged_raw_payloads": 460,
+        "added_unlocated": 8,
+        "changed_existing_records": 12,
+        "accepted_regressions": 1,
+        "official_exit": 1
+      }
+    ]
+  },
+  "owner_proposal": {
+    "targets": 6,
+    "semantic_proofs_completed": true,
+    "changed_getter_records_per_target": 2,
+    "accepted_regressions": 0,
+    "acceptance": "FAIL_PIN_PROPOSAL_ONLY",
+    "canonical_base_inventory_edits_proposed": 1
+  },
+  "diff_checks": {
+    "solver-tail8.diff": "APPLIES_UNAPPLIED",
+    "solver-tail8-sb2forms.diff": "APPLIES_UNAPPLIED",
+    "solver-eggbert-inventory.diff": "APPLIES_UNAPPLIED"
+  },
+  "canonical_source_hashes_unchanged": 64,
+  "git_head": "aa3dfd685ac4374fb61a4f16ff72e87b7196a4a8",
+  "git_status": ""
+}

@@ -1,0 +1,392 @@
+{
+  "scope": "Eight current compiled keys plus four historical measured keys; not all twelve current forms",
+  "keys": [
+    [
+      32,
+      0
+    ],
+    [
+      80,
+      0
+    ],
+    [
+      112,
+      0
+    ],
+    [
+      32,
+      0
+    ],
+    [
+      80,
+      0
+    ],
+    [
+      112,
+      0
+    ],
+    [
+      192,
+      12
+    ],
+    [
+      32,
+      1
+    ],
+    [
+      864,
+      9
+    ],
+    [
+      48,
+      0
+    ],
+    [
+      208,
+      3
+    ],
+    [
+      192,
+      1
+    ]
+  ],
+  "tested": 4095,
+  "solutions": [
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?StartSploutchGlu@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    },
+    {
+      "names": [
+        "?AscenseurShift@CDecor@@QAEHH@Z",
+        "?DynamiteStart@CDecor@@QAEXHHH@Z",
+        "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "?MoveObjectFollow@CDecor@@QAEXUtagPOINT@@@Z",
+        "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z"
+      ],
+      "strict": true,
+      "closed": false
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "tested": 309291,
+  "seconds": 5.414130687713623,
+  "solutions": [
+    {
+      "entry": {
+        "slot": 191,
+        "name": "?Write@CDecor@@QAEHHHH@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\12_decor.obj",
+        "size": 528,
+        "relocs": 12,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          590,
+          590
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 192,
+        "name": "?Read@CDecor@@QAEHHHH@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\12_decor.obj",
+        "size": 624,
+        "relocs": 15,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          590,
+          590
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 194,
+        "name": "?CurrentWrite@CDecor@@QAEHHH@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\12_decor.obj",
+        "size": 1584,
+        "relocs": 14,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          590,
+          590
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 195,
+        "name": "?CurrentRead@CDecor@@QAEHHHPAH0@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\12_decor.obj",
+        "size": 1568,
+        "relocs": 14,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          590,
+          590
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 196,
+        "name": "?FileExist@CDecor@@QAEHHHPAD@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\12_decor.obj",
+        "size": 544,
+        "relocs": 18,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          590,
+          590
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 197,
+        "name": "?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\12_decor.obj",
+        "size": 464,
+        "relocs": 0,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          590,
+          590
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 199,
+        "name": "?AdaptDoors@CDecor@@QAEXHH@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\12_decor.obj",
+        "size": 848,
+        "relocs": 6,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          590,
+          590
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 397,
+        "name": "?Flush@CPixmap@@QAEXH@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\07_pixmap.obj",
+        "size": 48,
+        "relocs": 0,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          546,
+          547
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 400,
+        "name": "?SetClipping@CPixmap@@QAEXUtagRECT@@@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\07_pixmap.obj",
+        "size": 48,
+        "relocs": 0,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          576,
+          579
+        ],
+        [
+          581,
+          581
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 401,
+        "name": "?GetClipping@CPixmap@@QAE?AUtagRECT@@XZ",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\07_pixmap.obj",
+        "size": 48,
+        "relocs": 0,
+        "live": true
+      },
+      "strict_seconds": [],
+      "band_seconds": [
+        [
+          576,
+          579
+        ],
+        [
+          581,
+          581
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 418,
+        "name": "?MouseBackClear@CPixmap@@QAEXXZ",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\07_pixmap.obj",
+        "size": 32,
+        "relocs": 1,
+        "live": true
+      },
+      "strict_seconds": [
+        [
+          560,
+          560
+        ]
+      ],
+      "band_seconds": [
+        [
+          560,
+          560
+        ],
+        [
+          563,
+          563
+        ]
+      ]
+    }
+  ]
+}

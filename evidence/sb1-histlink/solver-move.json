@@ -1,0 +1,47 @@
+{
+  "entries_completed": 793,
+  "entries_total": 793,
+  "tested": 628056,
+  "seconds": 10.875609874725342,
+  "solutions": [
+    {
+      "entry": {
+        "slot": 15,
+        "name": "??1CButton@@QAE@XZ",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\00_button.obj",
+        "size": 16,
+        "relocs": 0,
+        "live": true
+      },
+      "strict_positions": [],
+      "band_positions": [
+        [
+          381,
+          381
+        ]
+      ]
+    },
+    {
+      "entry": {
+        "slot": 37,
+        "name": "_DDSetDebug",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-us-extern\\objects\\01_ddutil.obj",
+        "size": 16,
+        "relocs": 1,
+        "live": true
+      },
+      "strict_positions": [
+        [
+          281,
+          307
+        ]
+      ],
+      "band_positions": [
+        [
+          281,
+          307
+        ]
+      ]
+    }
+  ]
+}

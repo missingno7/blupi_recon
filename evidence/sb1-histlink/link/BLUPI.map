@@ -1,0 +1,1396 @@
+ BLUPI
+
+ Timestamp is 36245013 (Wed Oct 14 07:17:39 1998)
+
+ Preferred load address is 00400000
+
+ Start         Length     Name                   Class
+ 0001:00000000 0002aed6H .text                   CODE
+ 0001:0002aee0 000000b3H .text$x                 CODE
+ 0002:00000000 0000021cH .idata$5                DATA
+ 0002:00000220 00000557H .rdata                  DATA
+ 0002:00000778 000000a8H .xdata$x                DATA
+ 0002:00000820 0000008cH .idata$2                DATA
+ 0002:000008ac 00000014H .idata$3                DATA
+ 0002:000008c0 0000021cH .idata$4                DATA
+ 0002:00000adc 00000896H .idata$6                DATA
+ 0002:00001372 00000000H .edata                  DATA
+ 0003:00000000 00000004H .CRT$XCA                DATA
+ 0003:00000004 00000004H .CRT$XCZ                DATA
+ 0003:00000008 00000004H .CRT$XIA                DATA
+ 0003:0000000c 00000004H .CRT$XIC                DATA
+ 0003:00000010 00000004H .CRT$XIY                DATA
+ 0003:00000014 00000004H .CRT$XIZ                DATA
+ 0003:00000018 00000004H .CRT$XPA                DATA
+ 0003:0000001c 00000004H .CRT$XPX                DATA
+ 0003:00000020 00000004H .CRT$XPZ                DATA
+ 0003:00000024 00000004H .CRT$XTA                DATA
+ 0003:00000028 00000004H .CRT$XTB                DATA
+ 0003:0000002c 00000004H .CRT$XTZ                DATA
+ 0003:00000030 000505e0H .data                   DATA
+ 0003:00050610 0000180cH .bss                    DATA
+ 0004:00000000 00000dd0H .rsrc$01                DATA
+ 0004:00000dd0 00004db8H .rsrc$02                DATA
+
+  Address         Publics by Value              Rva+Base     Lib:Object
+
+ 0001:00000000       ?GetNum@@YAHPAD@Z          00401000 f   10_blupi.obj
+ 0001:00000030       ?ReadConfig@@YAHPAD@Z      00401030 f   10_blupi.obj
+ 0001:000002e0       ?UpdateFrame@@YAXXZ        004012e0 f   10_blupi.obj
+ 0001:000004f0       ?SetDecor@@YAXXZ           004014f0 f   10_blupi.obj
+ 0001:000005c0       ?RestoreGame@@YAHXZ        004015c0 f   10_blupi.obj
+ 0001:000005f0       ?FlushGame@@YAHXZ          004015f0 f   10_blupi.obj
+ 0001:00000610       ?WindowProc@@YGJPAXIIJ@Z   00401610 f   10_blupi.obj
+ 0001:00000c50       ?TimerStep@@YGXIIKKK@Z     00401c50 f   10_blupi.obj
+ 0001:00000c90       ?InitFail@@YAHPBDH@Z       00401c90 f   10_blupi.obj
+ 0001:00000d60       ?Benchmark@@YAHXZ          00401d60 f   10_blupi.obj
+ 0001:00000e30       _WinMain@16                00401e30 f   10_blupi.obj
+ 0001:000019f0       ??0CButton@@QAE@XZ         004029f0 f   00_button.obj
+ 0001:00001a30       ?Create@CButton@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HHI@Z 00402a30 f   00_button.obj
+ 0001:00001ae0       ?SetIconMenu@CButton@@QAEXPAHH@Z 00402ae0 f   00_button.obj
+ 0001:00001b10       ?SetToolTips@CButton@@QAEXPAHH@Z 00402b10 f   00_button.obj
+ 0001:00001b40       ?Draw@CButton@@QAEXXZ      00402b40 f   00_button.obj
+ 0001:00001c90       ?GetState@CButton@@QAEHXZ  00402c90 f   00_button.obj
+ 0001:00001ca0       ?SetState@CButton@@QAEXH@Z 00402ca0 f   00_button.obj
+ 0001:00001cd0       ?GetMenu@CButton@@QAEHXZ   00402cd0 f   00_button.obj
+ 0001:00001ce0       ?SetMenu@CButton@@QAEXH@Z  00402ce0 f   00_button.obj
+ 0001:00001d10       ?SetEnable@CButton@@QAEXH@Z 00402d10 f   00_button.obj
+ 0001:00001d40       ?SetHide@CButton@@QAEXH@Z  00402d40 f   00_button.obj
+ 0001:00001d60       ?TreatEvent@CButton@@QAEHIIJ@Z 00402d60 f   00_button.obj
+ 0001:00001df0       ?MouseOnButton@CButton@@QAEHUtagPOINT@@@Z 00402df0 f   00_button.obj
+ 0001:00001e10       ?GetToolTips@CButton@@QAEHUtagPOINT@@@Z 00402e10 f   00_button.obj
+ 0001:00001f00       ?Detect@CButton@@IAEHUtagPOINT@@@Z 00402f00 f   00_button.obj
+ 0001:00001f70       ?MouseDown@CButton@@IAEHUtagPOINT@@@Z 00402f70 f   00_button.obj
+ 0001:00001fd0       ?MouseMove@CButton@@IAEHUtagPOINT@@@Z 00402fd0 f   00_button.obj
+ 0001:000020a0       ?MouseUp@CButton@@IAEHUtagPOINT@@@Z 004030a0 f   00_button.obj
+ 0001:00002100       _DDSetDebug                00403100 f   01_ddutil.obj
+ 0001:00002110       _DDLoadBitmap              00403110 f   01_ddutil.obj
+ 0001:000022a0       _DDReLoadBitmap            004032a0 f   01_ddutil.obj
+ 0001:00002340       _DDCopyBitmap              00403340 f   01_ddutil.obj
+ 0001:00002540       _DDLoadPalette             00403540 f   01_ddutil.obj
+ 0001:000027a0       _DDColorMatch              004037a0 f   01_ddutil.obj
+ 0001:000028a0       _DDSetColorKey             004038a0 f   01_ddutil.obj
+ 0001:000028d0       _DDSetColorKey2            004038d0 f   01_ddutil.obj
+ 0001:00002910       ??0CDecor@@QAE@XZ          00403910 f   14_decblock.obj
+ 0001:000029b0       ??1CDecor@@QAE@XZ          004039b0 f   14_decblock.obj
+ 0001:000029d0       ?Create@CDecor@@QAEXPAXPAVCSound@@PAVCPixmap@@PAVCNetwork@@@Z 004039d0 f   14_decblock.obj
+ 0001:00002aa0       ?LoadImages@CDecor@@QAEHXZ 00403aa0 f   14_decblock.obj
+ 0001:00002b60       ?InitGamer@CDecor@@QAEXXZ  00403b60 f   14_decblock.obj
+ 0001:00002b80       ?InitDecor@CDecor@@QAEXXZ  00403b80 f   14_decblock.obj
+ 0001:00002e70       ?SetTime@CDecor@@QAEXH@Z   00403e70 f   14_decblock.obj
+ 0001:00002e80       ?GetTime@CDecor@@QAEHXZ    00403e80 f   14_decblock.obj
+ 0001:00002e90       ?PlayPrepare@CDecor@@QAEXH@Z 00403e90 f   14_decblock.obj
+ 0001:00003150       ?BuildPrepare@CDecor@@QAEXXZ 00404150 f   14_decblock.obj
+ 0001:000031c0       ?IsTerminated@CDecor@@QAEHXZ 004041c0 f   14_decblock.obj
+ 0001:000031d0       ?MoveStep@CDecor@@QAEXH@Z  004041d0 f   14_decblock.obj
+ 0001:000032e0       ?GetBlupiChannelActual@CDecor@@QAEHXZ 004042e0 f   14_decblock.obj
+ 0001:00003310       ?GetBlupiChannelStandard@CDecor@@QAEHXZ 00404310 f   14_decblock.obj
+ 0001:00003330       ?GetIconPerso@CDecor@@QAEHXZ 00404330 f   14_decblock.obj
+ 0001:00003350       ?Build@CDecor@@QAEXUtagRECT@@UtagPOINT@@@Z 00404350 f   14_decblock.obj
+ 0001:00004270       ?DrawInfo@CDecor@@QAEXXZ   00405270 f   14_decblock.obj
+ 0001:00004670       ?DecorNextAction@CDecor@@QAE?AUtagPOINT@@XZ 00405670 f   14_decblock.obj
+ 0001:00004780       ?KeyChange@CDecor@@QAEXH@Z 00405780 f   14_decblock.obj
+ 0001:00004790       ?SetJoystickEnable@CDecor@@QAEXH@Z 00405790 f   14_decblock.obj
+ 0001:000047a0       ?SetDemoPlay@CDecor@@QAEXH@Z 004057a0 f   14_decblock.obj
+ 0001:000047b0       ?GetBlupiInfo@CDecor@@QAEXPAH000@Z 004057b0 f   14_decblock.obj
+ 0001:00004800       ?PlaySoundA@CDecor@@QAEXHUtagPOINT@@H@Z 00405800 f   14_decblock.obj
+ 0001:00004880       ?StopSound@CDecor@@QAEXH@Z 00405880 f   14_decblock.obj
+ 0001:000048d0       ?AdaptMotorVehicleSound@CDecor@@QAEXUtagPOINT@@@Z 004058d0 f   14_decblock.obj
+ 0001:00004950       ?ChangePhase@CDecor@@QAEXH@Z 00405950 f   14_decblock.obj
+ 0001:00004a20       ?ScreenPosToCelPos@CDecor@@QAE?AUtagPOINT@@U2@@Z 00405a20 f   15_decdesign.obj
+ 0001:00004ab0       ?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z 00405ab0 f   15_decdesign.obj
+ 0001:00004ae0       ?SetIconLiftAndStuff@CDecor@@QAEXHH@Z 00405ae0 f   15_decdesign.obj
+ 0001:00004b40       ?DeleteCel@CDecor@@QAEXUtagPOINT@@@Z 00405b40 f   15_decdesign.obj
+ 0001:00004ba0       ?PlaceDecor@@YAXPAH00HHH@Z 00405ba0 f   15_decdesign.obj
+ 0001:00004c20       ?PlaceDecor1@CDecor@@QAEXUtagPOINT@@HHH@Z 00405c20 f   15_decdesign.obj
+ 0001:00004e80       ?PlaceDecor2@CDecor@@QAEXUtagPOINT@@HHH@Z 00405e80 f   15_decdesign.obj
+ 0001:000051f0       ?PlaceDecor3@CDecor@@QAEXUtagPOINT@@HHH@Z 004061f0 f   15_decdesign.obj
+ 0001:00005530       ?PlaceDecor4@CDecor@@QAEXUtagPOINT@@HHH@Z 00406530 f   15_decdesign.obj
+ 0001:00006360       ?PlaceDecor5@CDecor@@QAEXUtagPOINT@@HHH@Z 00407360 f   15_decdesign.obj
+ 0001:00006b20       ?PlaceDecor6@CDecor@@QAEXUtagPOINT@@HHH@Z 00407b20 f   15_decdesign.obj
+ 0001:00007340       ?PlaceDecor7@CDecor@@QAEXUtagPOINT@@HHH@Z 00408340 f   15_decdesign.obj
+ 0001:00007520       ?GetMissionTitle@CDecor@@QAEPADXZ 00408520 f   15_decdesign.obj
+ 0001:00007530       ?SetMissionTitle@CDecor@@QAEXPAD@Z 00408530 f   15_decdesign.obj
+ 0001:00007560       ?GetRegion@CDecor@@QAEHXZ  00408560 f   15_decdesign.obj
+ 0001:00007570       ?SetRegion@CDecor@@QAEXH@Z 00408570 f   15_decdesign.obj
+ 0001:00007580       ?GetMusic@CDecor@@QAEHXZ   00408580 f   15_decdesign.obj
+ 0001:00007590       ?SetMusic@CDecor@@QAEXH@Z  00408590 f   15_decdesign.obj
+ 0001:000075a0       ?GetDim@CDecor@@QAE?AUtagPOINT@@XZ 004085a0 f   15_decdesign.obj
+ 0001:000075c0       ?SetDim@CDecor@@QAEXUtagPOINT@@@Z 004085c0 f   15_decdesign.obj
+ 0001:000075e0       ?GetNbVies@CDecor@@QAEHXZ  004085e0 f   15_decdesign.obj
+ 0001:000075f0       ?SetNbVies@CDecor@@QAEXH@Z 004085f0 f   15_decdesign.obj
+ 0001:00007600       ?GetPause@CDecor@@QAEHXZ   00408600 f   15_decdesign.obj
+ 0001:00007610       ?ChangePause@CDecor@@QAEXH@Z 00408610 f   15_decdesign.obj
+ 0001:00007620       ?GetDoors@CDecor@@QAEXPAF@Z 00408620 f   15_decdesign.obj
+ 0001:00007650       ?SetDoors@CDecor@@QAEXPAF@Z 00408650 f   15_decdesign.obj
+ 0001:00007680       ?SetAllMissions@CDecor@@QAEXH@Z 00408680 f   15_decdesign.obj
+ 0001:000076a0       ?CheatAction@CDecor@@QAEXH@Z 004086a0 f   15_decdesign.obj
+ 0001:00007d40       ?GetSuperBlupi@CDecor@@QAEHXZ 00408d40 f   15_decdesign.obj
+ 0001:00007d50       ?SetSuperBlupi@CDecor@@QAEXH@Z 00408d50 f   15_decdesign.obj
+ 0001:00007d60       ?GetDrawSecret@CDecor@@QAEHXZ 00408d60 f   15_decdesign.obj
+ 0001:00007d70       ?SetDrawSecret@CDecor@@QAEXH@Z 00408d70 f   15_decdesign.obj
+ 0001:00007d80       ?GetNetPacked@CDecor@@QAEHXZ 00408d80 f   15_decdesign.obj
+ 0001:00007d90       ?SetNetPacked@CDecor@@QAEXH@Z 00408d90 f   15_decdesign.obj
+ 0001:00007da0       ?GetNetMovePredict@CDecor@@QAEHXZ 00408da0 f   15_decdesign.obj
+ 0001:00007db0       ?SetNetMovePredict@CDecor@@QAEXH@Z 00408db0 f   15_decdesign.obj
+ 0001:00007dc0       ?GetNetDebug@CDecor@@QAEHXZ 00408dc0 f   15_decdesign.obj
+ 0001:00007dd0       ?SetNetDebug@CDecor@@QAEXH@Z 00408dd0 f   15_decdesign.obj
+ 0001:00007df0       ?OutputNetDebug@CDecor@@QAEXPAD@Z 00408df0 f   15_decdesign.obj
+ 0001:00007e60       ?SetMulti@CDecor@@QAEXH@Z  00408e60 f   15_decdesign.obj
+ 0001:00007e70       ?SetTeam@CDecor@@QAEXH@Z   00408e70 f   15_decdesign.obj
+ 0001:00007e80       ?BlupiSearchIcon@CDecor@@QAEXXZ 00408e80 f   15_decdesign.obj
+ 0001:00008280       ?BlupiStep@CDecor@@QAEXXZ  00409280 f   17_decblupi.obj
+ 0001:0000e540       ?GetPosDecor@CDecor@@QAE?AUtagPOINT@@U2@@Z 0040f540 f   17_decblupi.obj
+ 0001:0000e5b0       ?BlupiAddFifo@CDecor@@QAEXUtagPOINT@@@Z 0040f5b0 f   17_decblupi.obj
+ 0001:0000e640       ?DecorDetect@CDecor@@QAEHUtagRECT@@H@Z 0040f640 f   17_decblupi.obj
+ 0001:0000e8c0       ?TestPath@CDecor@@QAEHUtagRECT@@UtagPOINT@@PAU3@@Z 0040f8c0 f   17_decblupi.obj
+ 0001:0000ec10       ?MoveObjectPollution@CDecor@@QAEXXZ 0040fc10 f   17_decblupi.obj
+ 0001:0000edd0       ?MoveObjectPlouf@CDecor@@QAEXUtagPOINT@@@Z 0040fdd0 f   17_decblupi.obj
+ 0001:0000ee20       ?MoveObjectTiplouf@CDecor@@QAEXUtagPOINT@@@Z 0040fe20 f   17_decblupi.obj
+ 0001:0000ee80       ?MoveObjectBlup@CDecor@@QAEXUtagPOINT@@@Z 0040fe80 f   17_decblupi.obj
+ 0001:0000ef90       ?IsWorld@CDecor@@QAEHUtagPOINT@@@Z 0040ff90 f   17_decblupi.obj
+ 0001:0000f050       ?GetTypeBarre@CDecor@@QAEHUtagPOINT@@@Z 00410050 f   17_decblupi.obj
+ 0001:0000f150       ?IsLave@CDecor@@QAEHUtagPOINT@@@Z 00410150 f   17_decblupi.obj
+ 0001:0000f1b0       ?IsRessort@CDecor@@QAEHUtagPOINT@@@Z 004101b0 f   17_decblupi.obj
+ 0001:0000f210       ?IsSurfWater@CDecor@@QAEHUtagPOINT@@@Z 00410210 f   17_decblupi.obj
+ 0001:0000f290       ?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z 00410290 f   17_decblupi.obj
+ 0001:0000f2e0       ?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z 004102e0 f   17_decblupi.obj
+ 0001:0000f330       ?IsPassIcon@CDecor@@QAEHH@Z 00410330 f   17_decblupi.obj
+ 0001:0000f370       ?IsBlocIcon@CDecor@@QAEHH@Z 00410370 f   17_decblupi.obj
+ 0001:0000f3b0       ?SearchDistRight@CDecor@@QAEHUtagPOINT@@0H@Z 004103b0 f   17_decblupi.obj
+ 0001:0000f480       ?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z 00410480 f   17_decblupi.obj
+ 0001:0000f670       ?NetStopCloud@CDecor@@QAEXH@Z 00410670 f   11_decnet.obj
+ 0001:0000f6b0       ?ObjectStart@CDecor@@QAEHUtagPOINT@@HHH@Z 004106b0 f   11_decnet.obj
+ 0001:0000f8a0       ?ObjectDelete@CDecor@@QAEHUtagPOINT@@HH@Z 004108a0 f   11_decnet.obj
+ 0001:0000f910       ?ModifDecor@CDecor@@QAEXUtagPOINT@@HH@Z 00410910 f   11_decnet.obj
+ 0001:0000f980       ?NetPlaySound@CDecor@@QAEXFUtagPOINT@@@Z 00410980 f   11_decnet.obj
+ 0001:0000f9c0       ?NetStopSound@CDecor@@QAEXF@Z 004109c0 f   11_decnet.obj
+ 0001:0000fa00       ?NetDataFlush@CDecor@@QAEXXZ 00410a00 f   16_decmove.obj
+ 0001:0000fa60       ?NetSendBarePacket@CDecor@@QAEXEH@Z 00410a60 f   16_decmove.obj
+ 0001:0000fa90       ?TreatNetData@CDecor@@QAEXXZ 00410a90 f   16_decmove.obj
+ 0001:000100a0       ?DoNetSmooth@CDecor@@QAEXH@Z 004110a0 f   16_decmove.obj
+ 0001:00010160       ?NetAdjustToLift@CDecor@@QAEXXZ 00411160 f   16_decmove.obj
+ 0001:000101b0       ?NetAscenseurSynchro@CDecor@@QAEXHF@Z 004111b0 f   16_decmove.obj
+ 0001:000102c0       ?NetPlayerCollide@CDecor@@QAEXUtagPOINT@@PAH@Z 004112c0 f   16_decmove.obj
+ 0001:000103a0       ?NetMessageIndexFlush@CDecor@@QAEXXZ 004113a0 f   16_decmove.obj
+ 0001:000103c0       ?NetMessagePush@CDecor@@QAEHPAUNetMessage@@@Z 004113c0 f   16_decmove.obj
+ 0001:00010420       ?NetMessagePop@CDecor@@QAEHPAUNetMessage@@@Z 00411420 f   16_decmove.obj
+ 0001:00010490       ?NotifFlush@CDecor@@QAEXXZ 00411490 f   16_decmove.obj
+ 0001:000104b0       ?NotifPop@CDecor@@QAEXXZ   004114b0 f   16_decmove.obj
+ 0001:00010510       ?NotifPush@CDecor@@QAEXPAD@Z 00411510 f   16_decmove.obj
+ 0001:000105a0       ?NotifStep@CDecor@@QAEXXZ  004115a0 f   16_decmove.obj
+ 0001:000105c0       ?MoveObjectStep@CDecor@@QAEXXZ 004115c0 f   16_decmove.obj
+ 0001:00010810       ?MoveObjectStepLine@CDecor@@QAEXH@Z 00411810 f   16_decmove.obj
+ 0001:00010bd0       ?MoveObjectStepIcon@CDecor@@QAEXH@Z 00411bd0 f   16_decmove.obj
+ 0001:00011c20       ?AscenseurDetect@CDecor@@QAEHUtagRECT@@UtagPOINT@@1@Z 00412c20 f   16_decmove.obj
+ 0001:00011d70       ?AscenseurVertigo@CDecor@@QAEXHPAH0@Z 00412d70 f   16_decmove.obj
+ 0001:00011dd0       ?AscenseurSynchro@CDecor@@QAEXH@Z 00412dd0 f   16_decmove.obj
+ 0001:00011e10       ?UpdateCaisse@CDecor@@QAEXXZ 00412e10 f   16_decmove.obj
+ 0001:00011e50       ?TestPushCaisse@CDecor@@QAEHHUtagPOINT@@H@Z 00412e50 f   16_decmove.obj
+ 0001:00011f30       ?TestPushOneCaisse@CDecor@@QAEHHUtagPOINT@@H@Z 00412f30 f   16_decmove.obj
+ 0001:00012020       ?SearchLinkCaisse@CDecor@@QAEXHH@Z 00413020 f   16_decmove.obj
+ 0001:000121f0       ?AddLinkCaisse@CDecor@@QAEHH@Z 004131f0 f   16_decmove.obj
+ 0001:00012240       ?CaisseInFront@CDecor@@QAEHXZ 00413240 f   16_decmove.obj
+ 0001:000122c0       ?CaisseGetMove@CDecor@@QAEHH@Z 004132c0 f   16_decmove.obj
+ 0001:00012320       ?MockeryDetect@CDecor@@QAEHUtagPOINT@@@Z 00413320 f   16_decmove.obj
+ 0001:00012540       ?BlupiElectro@CDecor@@QAEHUtagPOINT@@@Z 00413540 f   16_decmove.obj
+ 0001:000125e0       ?MoveObjectDetect@CDecor@@QAEHUtagPOINT@@PAH@Z 004135e0 f   16_decmove.obj
+ 0001:00012800       ?MoveChargeDetect@CDecor@@QAEHUtagPOINT@@@Z 00413800 f   16_decmove.obj
+ 0001:000128a0       ?MovePersoDetect@CDecor@@QAEHUtagPOINT@@@Z 004138a0 f   16_decmove.obj
+ 0001:00012960       ?MoveBalleDetect@CDecor@@QAEHUtagPOINT@@@Z 00413960 f   16_decmove.obj
+ 0001:00012a30       ?MoveObjectDelete@CDecor@@QAEXUtagPOINT@@@Z 00413a30 f   16_decmove.obj
+ 0001:00012ab0       ?MoveObjectFree@CDecor@@QAEHXZ 00413ab0 f   16_decmove.obj
+ 0001:00012af0       ?SortGetType@@YAHH@Z       00413af0 f   16_decmove.obj
+ 0001:00012b20       ?MoveObjectSort@CDecor@@QAEXXZ 00413b20 f   16_decmove.obj
+ 0001:00012c10       ?MoveObjectPriority@CDecor@@QAEXH@Z 00413c10 f   16_decmove.obj
+ 0001:00012cb0       ?MoveObjectSearch@CDecor@@QAEHUtagPOINT@@H@Z 00413cb0 f   16_decmove.obj
+ 0001:00012d50       ?VoyageGetPosVie@CDecor@@QAE?AUtagPOINT@@H@Z 00413d50 f   12_decor.obj
+ 0001:00012d70       ?VoyageInit@CDecor@@QAEXUtagPOINT@@0HH@Z 00413d70 f   12_decor.obj
+ 0001:00012ef0       ?VoyageStep@CDecor@@QAEXXZ 00413ef0 f   12_decor.obj
+ 0001:00013050       ?VoyageDraw@CDecor@@QAEXXZ 00414050 f   12_decor.obj
+ 0001:000130c0       ?IsRightBorder@CDecor@@QAEHHHHH@Z 004140c0 f   12_decor.obj
+ 0001:000133d0       ?AdaptMidBorder@CDecor@@QAEXHH@Z 004143d0 f   12_decor.obj
+ 0001:000134d0       ?AdaptBorder@CDecor@@QAEXUtagPOINT@@@Z 004144d0 f   12_decor.obj
+ 0001:00013550       ?DrawMap@CDecor@@QAEHHH@Z  00414550 f   12_decor.obj
+ 0001:00013880       ?GetMissionPath@CDecor@@QAEXPADHHH@Z 00414880 f   12_decor.obj
+ 0001:000138e0       ?Write@CDecor@@QAEHHHH@Z   004148e0 f   12_decor.obj
+ 0001:00013af0       ?Read@CDecor@@QAEHHHH@Z    00414af0 f   12_decor.obj
+ 0001:00013d60       ?DeleteMission@CDecor@@QAEHHHH@Z 00414d60 f   12_decor.obj
+ 0001:00013da0       ?CurrentWrite@CDecor@@QAEHHH@Z 00414da0 f   12_decor.obj
+ 0001:000143d0       ?CurrentRead@CDecor@@QAEHHHPAH0@Z 004153d0 f   12_decor.obj
+ 0001:000149f0       ?FileExist@CDecor@@QAEHHHPAD@Z 004159f0 f   12_decor.obj
+ 0001:00014c10       ?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z 00415c10 f   12_decor.obj
+ 0001:00014de0       ?SearchDoor@CDecor@@QAEHHPAUtagPOINT@@@Z 00415de0 f   12_decor.obj
+ 0001:00014e30       ?AdaptDoors@CDecor@@QAEXHH@Z 00415e30 f   12_decor.obj
+ 0001:00015180       ?OpenDoorsWin@CDecor@@QAEXXZ 00416180 f   12_decor.obj
+ 0001:000151a0       ?OpenGoldsWin@CDecor@@QAEXXZ 004161a0 f   12_decor.obj
+ 0001:000151d0       ?DoorsLost@CDecor@@QAEXXZ  004161d0 f   12_decor.obj
+ 0001:00015220       ??0CEvent@@QAE@XZ          00416220 f   13_event.obj
+ 0001:00015360       ??1CEvent@@QAE@XZ          00416360 f   13_event.obj
+ 0001:000153e0       ?OutputNetDebug@CEvent@@QAEXPBD@Z 004163e0 f   13_event.obj
+ 0001:00015440       ?GetMousePos@CEvent@@QAE?AUtagPOINT@@XZ 00416440 f   13_event.obj
+ 0001:00015480       ?SetFullScreen@CEvent@@QAEXH@Z 00416480 f   13_event.obj
+ 0001:00015490       ?SetMouseType@CEvent@@QAEXH@Z 00416490 f   13_event.obj
+ 0001:000154a0       ?Create@CEvent@@QAEXPAX0PAVCPixmap@@PAVCDecor@@PAVCSound@@PAVCNetwork@@PAVCMovie@@@Z 004164a0 f   13_event.obj
+ 0001:00015500       ?GetButtonIndex@CEvent@@QAEHH@Z 00416500 f   13_event.obj
+ 0001:00015550       ?GetState@CEvent@@QAEHH@Z  00416550 f   13_event.obj
+ 0001:00015580       ?SetState@CEvent@@QAEXHH@Z 00416580 f   13_event.obj
+ 0001:000155b0       ?SetEnable@CEvent@@QAEXHH@Z 004165b0 f   13_event.obj
+ 0001:000155e0       ?SetHide@CEvent@@QAEXHH@Z  004165e0 f   13_event.obj
+ 0001:00015610       ?GetMenu@CEvent@@QAEHH@Z   00416610 f   13_event.obj
+ 0001:00015640       ?SetMenu@CEvent@@QAEXHH@Z  00416640 f   13_event.obj
+ 0001:00015670       ?SetIconMenu@CEvent@@QAEXHPAHH@Z 00416670 f   13_event.obj
+ 0001:000156b0       ?RestoreGame@CEvent@@QAEXXZ 004166b0 f   13_event.obj
+ 0001:000156f0       ?FlushInput@CEvent@@QAEXXZ 004166f0 f   13_event.obj
+ 0001:00015710       ?ReadInput@CEvent@@QAEXXZ  00416710 f   13_event.obj
+ 0001:000158f0       ?NetCreate@CEvent@@IAEHH@Z 004168f0 f   13_event.obj
+ 0001:00015920       ?NetEnumSessions@CEvent@@IAEHXZ 00416920 f   13_event.obj
+ 0001:00015950       ?CreateButtons@CEvent@@IAEHXZ 00416950 f   13_event.obj
+ 0001:00015a70       ?NetAdjustLobbyButtons@CEvent@@IAEXXZ 00416a70 f   13_event.obj
+ 0001:00015c60       ?ChangePause@CEvent@@QAEXHH@Z 00416c60 f   13_event.obj
+ 0001:00015ce0       ?NetSendLobby@CEvent@@QAEXXZ 00416ce0 f   13_event.obj
+ 0001:00015d30       ?NetSearchPlayer@CEvent@@IAEHK@Z 00416d30 f   13_event.obj
+ 0001:00015d60       ?NetStartPlay@CEvent@@IAEXXZ 00416d60 f   13_event.obj
+ 0001:00015e50       ?NetSendBarePacket@CEvent@@IAEXHF@Z 00416e50 f   13_event.obj
+ 0001:00015e80       ?DrawMap@CEvent@@QAEXXZ    00416e80 f   13_event.obj
+ 0001:00015eb0       ?AddCheatCode@@YAXPAD0@Z   00416eb0 f   13_event.obj
+ 0001:00015f20       ?DrawTextCenter@CEvent@@IAEXHHHH@Z 00416f20 f   13_event.obj
+ 0001:00015f70       ?DrawButtons@CEvent@@QAEHXZ 00416f70 f   13_event.obj
+ 0001:00017c70       ?MousePosToSprite@CEvent@@QAEHUtagPOINT@@@Z 00418c70 f   13_event.obj
+ 0001:00017cf0       ?MouseSprite@CEvent@@QAEXUtagPOINT@@@Z 00418cf0 f   13_event.obj
+ 0001:00017d40       ?WaitMouse@CEvent@@QAEXH@Z 00418d40 f   13_event.obj
+ 0001:00017db0       ?HideMouse@CEvent@@QAEXH@Z 00418db0 f   13_event.obj
+ 0001:00017e30       ?DisableMouse@CEvent@@QAEXH@Z 00418e30 f   13_event.obj
+ 0001:00017ea0       ?EventButtons@CEvent@@IAEHIIJ@Z 00418ea0 f   13_event.obj
+ 0001:000180d0       ?MouseOnButton@CEvent@@IAEHUtagPOINT@@@Z 004190d0 f   13_event.obj
+ 0001:00018170       ?SearchPhase@CEvent@@IAEHI@Z 00419170 f   13_event.obj
+ 0001:000181b0       ?GetWorld@CEvent@@QAEHXZ   004191b0 f   13_event.obj
+ 0001:000181e0       ?IsPrivate@CEvent@@QAEHXZ  004191e0 f   13_event.obj
+ 0001:000181f0       ?IsMulti@CEvent@@QAEHXZ    004191f0 f   13_event.obj
+ 0001:00018200       ?GetWorldGroup@CEvent@@QAEXXZ 00419200 f   13_event.obj
+ 0001:00018250       ?SetMission@CEvent@@QAEXH@Z 00419250 f   13_event.obj
+ 0001:00018290       ?CheckWorld1@CEvent@@IAEHXZ 00419290 f   13_event.obj
+ 0001:00018310       ?ChangePhase@CEvent@@QAEHI@Z 00419310 f   13_event.obj
+ 0001:00019e20       ?GetPhase@CEvent@@QAEIXZ   0041ae20 f   13_event.obj
+ 0001:00019e30       ?TryInsert@CEvent@@QAEXXZ  0041ae30 f   13_event.obj
+ 0001:00019e70       ?MovieToStart@CEvent@@QAEXXZ 0041ae70 f   13_event.obj
+ 0001:00019ec0       ?ReadAll@CEvent@@QAEXXZ    0041aec0 f   13_event.obj
+ 0001:00019f60       ?CurrentRead@CEvent@@IAEHH@Z 0041af60 f   13_event.obj
+ 0001:00019fc0       ?CurrentWrite@CEvent@@IAEHH@Z 0041afc0 f   13_event.obj
+ 0001:0001a030       ?PlayDown@CEvent@@IAEHUtagPOINT@@H@Z 0041b030 f   13_event.obj
+ 0001:0001a030       ?PlayMove@CEvent@@IAEHUtagPOINT@@H@Z 0041b030 f   13_event.obj
+ 0001:0001a030       ?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z 0041b030 f   13_event.obj
+ 0001:0001a030       ?BuildUp@CEvent@@IAEHUtagPOINT@@H@Z 0041b030 f   13_event.obj
+ 0001:0001a040       ?MouseRelease@CEvent@@IAEXXZ 0041b040 f   13_event.obj
+ 0001:0001a060       ?MouseCapture@CEvent@@IAEXXZ 0041b060 f   13_event.obj
+ 0001:0001a080       ?IsMouseRelease@CEvent@@QAEHXZ 0041b080 f   13_event.obj
+ 0001:0001a090       ?AddUserExportPath@CEvent@@SAXPAD0@Z 0041b090 f   13_event.obj
+ 0001:0001a150       ?CopyMission@CEvent@@SAHPAD0@Z 0041b150 f   13_event.obj
+ 0001:0001a220       ?ChangeButtons@CEvent@@IAEXH@Z 0041b220 f   13_event.obj
+ 0001:0001ad50       ?BuildDown@CEvent@@IAEHUtagPOINT@@HH@Z 0041bd50 f   13_event.obj
+ 0001:0001b070       ?BuildMove@CEvent@@IAEHUtagPOINT@@H@Z 0041c070 f   13_event.obj
+ 0001:0001b0b0       ?StartMovie@CEvent@@QAEHPAD@Z 0041c0b0 f   13_event.obj
+ 0001:0001b210       ?StopMovie@CEvent@@QAEXXZ  0041c210 f   13_event.obj
+ 0001:0001b270       ?IsMovie@CEvent@@QAEHXZ    0041c270 f   13_event.obj
+ 0001:0001b280       ?WriteInfo@CEvent@@IAEHH@Z 0041c280 f   13_event.obj
+ 0001:0001b420       ?ReadInfo@CEvent@@IAEHH@Z  0041c420 f   13_event.obj
+ 0001:0001b600       ?ClearGamer@CEvent@@QAEHH@Z 0041c600 f   13_event.obj
+ 0001:0001b650       ?SetNbVies@CEvent@@QAEXH@Z 0041c650 f   13_event.obj
+ 0001:0001b660       ?GetSpeed@CEvent@@QAEHXZ   0041c660 f   13_event.obj
+ 0001:0001b670       ?SetSpeed@CEvent@@QAEXH@Z  0041c670 f   13_event.obj
+ 0001:0001b690       ?DemoRecStart@CEvent@@IAEXXZ 0041c690 f   13_event.obj
+ 0001:0001b6f0       ?DemoRecStop@CEvent@@IAEXXZ 0041c6f0 f   13_event.obj
+ 0001:0001b7e0       ?DemoPlayStart@CEvent@@IAEHXZ 0041c7e0 f   13_event.obj
+ 0001:0001b9a0       ?DemoPlayStop@CEvent@@IAEXXZ 0041c9a0 f   13_event.obj
+ 0001:0001ba00       ?DemoStep@CEvent@@QAEXXZ   0041ca00 f   13_event.obj
+ 0001:0001bac0       ?DemoRecEvent@CEvent@@IAEXXZ 0041cac0 f   13_event.obj
+ 0001:0001bb20       ?ChatFlush@CEvent@@IAEXXZ  0041cb20 f   13_event.obj
+ 0001:0001bb40       ?ChatPop@CEvent@@IAEXXZ    0041cb40 f   13_event.obj
+ 0001:0001bb90       ?ChatPush@CEvent@@IAEXPAD@Z 0041cb90 f   13_event.obj
+ 0001:0001bc10       ?ChatSend@CEvent@@IAEXXZ   0041cc10 f   13_event.obj
+ 0001:0001bd70       ?PutTextInputBox@CEvent@@IAEXUtagPOINT@@@Z 0041cd70 f   13_event.obj
+ 0001:0001bf00       ?TextInputDelete@CEvent@@IAEHXZ 0041cf00 f   13_event.obj
+ 0001:0001bf60       ?TreatTextInput@CEvent@@IAEHIIJ@Z 0041cf60 f   13_event.obj
+ 0001:0001c1b0       ?GetLastMousePos@CEvent@@QAE?AUtagPOINT@@XZ 0041d1b0 f   13_event.obj
+ 0001:0001c1d0       ?TreatEvent@CEvent@@QAEHIIJ@Z 0041d1d0 f   13_event.obj
+ 0001:0001c230       ?TreatEventBase@CEvent@@QAEHIIJ@Z 0041d230 f   13_event.obj
+ 0001:0001ddd0       ??0CJauge@@QAE@XZ          0041edd0 f   02_jauge.obj
+ 0001:0001ddf0       ?Create@CJauge@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HH@Z 0041edf0 f   02_jauge.obj
+ 0001:0001de50       ?Draw@CJauge@@QAEXXZ       0041ee50 f   02_jauge.obj
+ 0001:0001df50       ?GetLevel@CJauge@@QAEHXZ   0041ef50 f   02_jauge.obj
+ 0001:0001df60       ?SetLevel@CJauge@@QAEXH@Z  0041ef60 f   02_jauge.obj
+ 0001:0001df90       ?GetType@CJauge@@QAEHXZ    0041ef90 f   02_jauge.obj
+ 0001:0001dfa0       ?SetType@CJauge@@QAEXH@Z   0041efa0 f   02_jauge.obj
+ 0001:0001dfc0       ?GetNbSessions@CNetwork@@QAEHXZ 0041efc0 f   02_jauge.obj
+ 0001:0001dfc0       ?GetHide@CJauge@@QAEHXZ    0041efc0 f   02_jauge.obj
+ 0001:0001dfd0       ?SetHide@CJauge@@QAEXH@Z   0041efd0 f   02_jauge.obj
+ 0001:0001dff0       ??0CMenu@@QAE@XZ           0041eff0 f   03_menu.obj
+ 0001:0001e010       ??1CJauge@@QAE@XZ          0041f010 f   03_menu.obj
+ 0001:0001e010       ?OutputDebug@@YAXPAD@Z     0041f010 f   03_menu.obj
+ 0001:0001e010       ??1CButton@@QAE@XZ         0041f010 f   03_menu.obj
+ 0001:0001e010       ??1CMenu@@QAE@XZ           0041f010 f   03_menu.obj
+ 0001:0001e020       ?Delete@CMenu@@QAEXXZ      0041f020 f   03_menu.obj
+ 0001:0001e040       ?TreatEvent@CMenu@@QAEHIIJ@Z 0041f040 f   03_menu.obj
+ 0001:0001e0d0       ?Detect@CMenu@@IAEHUtagPOINT@@@Z 0041f0d0 f   03_menu.obj
+ 0001:0001e140       ?MouseDown@CMenu@@IAEHUtagPOINT@@@Z 0041f140 f   03_menu.obj
+ 0001:0001e150       ?MouseMove@CMenu@@IAEHUtagPOINT@@@Z 0041f150 f   03_menu.obj
+ 0001:0001e1b0       ?MouseUp@CMenu@@IAEHUtagPOINT@@@Z 0041f1b0 f   03_menu.obj
+ 0001:0001e1e0       ?InitHInstance@@YAXPAX@Z   0041f1e0 f   04_misc.obj
+ 0001:0001e1f0       ?LoadStringA@@YAXIPADH@Z   0041f1f0 f   04_misc.obj
+ 0001:0001e210       ?ChangeSprite@@YAXH@Z      0041f210 f   04_misc.obj
+ 0001:0001e330       ?ConvLongToPos@@YA?AUtagPOINT@@J@Z 0041f330 f   04_misc.obj
+ 0001:0001e350       ?InitRandom@@YAXXZ         0041f350 f   04_misc.obj
+ 0001:0001e360       ?GetCurrentDir@@YAXPADH@Z  0041f360 f   04_misc.obj
+ 0001:0001e410       ?AddCDPath@@YAXPAD@Z       0041f410 f   04_misc.obj
+ 0001:0001e560       ?AddUserPath@@YAXPAD@Z     0041f560 f   04_misc.obj
+ 0001:0001e690       ?TraceErrorDD@@YAXJPADH@Z  0041f690 f   04_misc.obj
+ 0001:0001efa0       ?TraceErrorDS@@YAXJPADH@Z  0041ffa0 f   04_misc.obj
+ 0001:0001f150       ?initAVI@CMovie@@IAEHXZ    00420150 f   05_movie.obj
+ 0001:0001f1a0       ?termAVI@CMovie@@IAEXXZ    004201a0 f   05_movie.obj
+ 0001:0001f1d0       ?positionMovie@CMovie@@IAEXPAXUtagRECT@@@Z 004201d0 f   05_movie.obj
+ 0001:0001f200       ?fileCloseMovie@CMovie@@IAEXPAX@Z 00420200 f   05_movie.obj
+ 0001:0001f250       ?fileOpenMovie@CMovie@@IAEHPAXUtagRECT@@PAD@Z 00420250 f   05_movie.obj
+ 0001:0001f3c0       ?playMovie@CMovie@@IAEXPAXH@Z 004203c0 f   05_movie.obj
+ 0001:0001f440       ??0CMovie@@QAE@XZ          00420440 f   05_movie.obj
+ 0001:0001f450       ??1CMovie@@QAE@XZ          00420450 f   05_movie.obj
+ 0001:0001f460       ?Create@CMovie@@QAEHXZ     00420460 f   05_movie.obj
+ 0001:0001f490       ?GetEnable@CMovie@@QAEHXZ  00420490 f   05_movie.obj
+ 0001:0001f4a0       ?IsExist@CMovie@@QAEHPAD@Z 004204a0 f   05_movie.obj
+ 0001:0001f550       ?Play@CMovie@@QAEHPAXUtagRECT@@PAD@Z 00420550 f   05_movie.obj
+ 0001:0001f5b0       ?Stop@CMovie@@QAEXPAX@Z    004205b0 f   05_movie.obj
+ 0001:0001f5d0       ?TraceErrorDP@@YAXJ@Z      004205d0 f   06_network.obj
+ 0001:0001f970       ??0CNetwork@@QAE@XZ        00420970 f   06_network.obj
+ 0001:0001f990       ??1CNetwork@@QAE@XZ        00420990 f   06_network.obj
+ 0001:0001f9c0       ?EnumProvidersCallback@@YGHPAU_GUID@@PADKKPAUNamedGUIDList@@@Z 004209c0 f   06_network.obj
+ 0001:0001fa30       ?EnumProviders@CNetwork@@QAEHXZ 00420a30 f   06_network.obj
+ 0001:0001fa80       ?GetProviderName@CNetwork@@QAEPADH@Z 00420a80 f   06_network.obj
+ 0001:0001fab0       ?CreateProvider@CNetwork@@QAEHH@Z 00420ab0 f   06_network.obj
+ 0001:0001fb20       ?FreeProviderList@CNetwork@@QAEXXZ 00420b20 f   06_network.obj
+ 0001:0001fb50       ?EnumSessionsCallback@@YGHPAUDPSESSIONDESC2@@PAKKPAUNamedGUIDList@@@Z 00420b50 f   06_network.obj
+ 0001:0001fbd0       ?EnumSessions@CNetwork@@QAEHXZ 00420bd0 f   06_network.obj
+ 0001:0001fc80       ?GetSessionName@CNetwork@@QAEPADH@Z 00420c80 f   06_network.obj
+ 0001:0001fcb0       ?JoinSession@CNetwork@@QAEHHPAD@Z 00420cb0 f   06_network.obj
+ 0001:0001fda0       ?FreeSessionList@CNetwork@@QAEXXZ 00420da0 f   06_network.obj
+ 0001:0001fdd0       ?CreateSession@CNetwork@@QAEHPAD0@Z 00420dd0 f   06_network.obj
+ 0001:0001fec0       ?Send@CNetwork@@QAEHPAXKK@Z 00420ec0 f   06_network.obj
+ 0001:0001ff10       ?Receive@CNetwork@@QAEHPAXKPAK@Z 00420f10 f   06_network.obj
+ 0001:0001ffe0       ?Close@CNetwork@@QAEHXZ    00420fe0 f   06_network.obj
+ 0001:00020000       ?FreeUnknownList@CNetwork@@QAEXXZ 00421000 f   06_network.obj
+ 0001:00020030       ?IsHost@CNetwork@@QAEHXZ   00421030 f   06_network.obj
+ 0001:00020040       ??0CPixmap@@QAE@XZ         00421040 f   07_pixmap.obj
+ 0001:000200d0       ??1CPixmap@@QAE@XZ         004210d0 f   07_pixmap.obj
+ 0001:00020170       ?SetDebug@CPixmap@@QAEXH@Z 00421170 f   07_pixmap.obj
+ 0001:00020190       ?Create@CPixmap@@QAEHPAXUtagPOINT@@HHH@Z 00421190 f   07_pixmap.obj
+ 0001:00020520       ?Flush@CPixmap@@QAEHXZ     00421520 f   07_pixmap.obj
+ 0001:00020530       ?Restore@CPixmap@@QAEHXZ   00421530 f   07_pixmap.obj
+ 0001:00020540       ?InitSysPalette@CPixmap@@QAEHXZ 00421540 f   07_pixmap.obj
+ 0001:000205a0       ?RestoreAll@CPixmap@@IAEJXZ 004215a0 f   07_pixmap.obj
+ 0001:00020650       ?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z 00421650 f   07_pixmap.obj
+ 0001:00020740       ?BltFast@CPixmap@@IAEJPAUIDirectDrawSurface@@HUtagPOINT@@UtagRECT@@H@Z 00421740 f   07_pixmap.obj
+ 0001:000207a0       ?DrawMap@CPixmap@@QAEHHUtagRECT@@0@Z 004217a0 f   07_pixmap.obj
+ 0001:00020810       ?SavePalette@CPixmap@@QAEHXZ 00421810 f   07_pixmap.obj
+ 0001:00020840       ?RestorePalette@CPixmap@@QAEHXZ 00421840 f   07_pixmap.obj
+ 0001:00020870       ?Cache@CPixmap@@QAEHHPADUtagPOINT@@1H@Z 00421870 f   07_pixmap.obj
+ 0001:00020a00       ?Flush@CPixmap@@QAEXH@Z    00421a00 f   07_pixmap.obj
+ 0001:00020a30       ?SetTransparent@CPixmap@@QAEXHK@Z 00421a30 f   07_pixmap.obj
+ 0001:00020a70       ?SetTransparent2@CPixmap@@QAEXHKK@Z 00421a70 f   07_pixmap.obj
+ 0001:00020ac0       ?SetClipping@CPixmap@@QAEXUtagRECT@@@Z 00421ac0 f   07_pixmap.obj
+ 0001:00020af0       ?GetClipping@CPixmap@@QAE?AUtagRECT@@XZ 00421af0 f   07_pixmap.obj
+ 0001:00020b20       ?QuickIcon@CPixmap@@QAEXHHUtagPOINT@@@Z 00421b20 f   07_pixmap.obj
+ 0001:00020e30       ?DrawIcon@CPixmap@@QAEHHHHUtagPOINT@@HH@Z 00421e30 f   07_pixmap.obj
+ 0001:00021100       ?DrawPart@CPixmap@@QAEHHHUtagPOINT@@UtagRECT@@HH@Z 00422100 f   07_pixmap.obj
+ 0001:000211c0       ?DrawImage@CPixmap@@QAEHHHUtagRECT@@H@Z 004221c0 f   07_pixmap.obj
+ 0001:00021240       ?Display@CPixmap@@QAEHXZ   00422240 f   07_pixmap.obj
+ 0001:000212e0       ?SetMousePosSprite@CPixmap@@QAEXUtagPOINT@@HH@Z 004222e0 f   07_pixmap.obj
+ 0001:00021330       ?SetMouseSprite@CPixmap@@QAEXHH@Z 00422330 f   07_pixmap.obj
+ 0001:00021360       ?MouseShow@CPixmap@@QAEXH@Z 00422360 f   07_pixmap.obj
+ 0001:00021370       ?MouseUpdate@CPixmap@@IAEXXZ 00422370 f   07_pixmap.obj
+ 0001:000214c0       ?MouseQuickDraw@CPixmap@@IAEHUtagRECT@@@Z 004224c0 f   07_pixmap.obj
+ 0001:00021580       ?MouseInvalidate@CPixmap@@QAEXXZ 00422580 f   07_pixmap.obj
+ 0001:00021590       ?MouseBackClear@CPixmap@@QAEXXZ 00422590 f   07_pixmap.obj
+ 0001:000215b0       ?MouseBackDraw@CPixmap@@QAEXXZ 004225b0 f   07_pixmap.obj
+ 0001:000216c0       ?MouseBackSave@CPixmap@@IAEXXZ 004226c0 f   07_pixmap.obj
+ 0001:000217c0       ?MouseBackRestore@CPixmap@@IAEXXZ 004227c0 f   07_pixmap.obj
+ 0001:00021890       ?MouseRectSprite@CPixmap@@IAEXPAUtagRECT@@PAUtagPOINT@@@Z 00422890 f   07_pixmap.obj
+ 0001:00021910       ?MouseHotSpot@CPixmap@@IAEXXZ 00422910 f   07_pixmap.obj
+ 0001:00021940       ?CreateSoundBuffer@CSound@@QAEHHKKKKH@Z 00422940 f   08_sound.obj
+ 0001:00021a10       ?ReadData@CSound@@QAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z 00422a10 f   08_sound.obj
+ 0001:00021b40       ?CreateBufferFromWaveFile@CSound@@QAEHHPAD@Z 00422b40 f   08_sound.obj
+ 0001:00021c30       ?InitMidiVolume@@YAXH@Z    00422c30 f   08_sound.obj
+ 0001:00021cb0       ??0CSound@@QAE@XZ          00422cb0 f   08_sound.obj
+ 0001:00021d10       ??1CSound@@QAE@XZ          00422d10 f   08_sound.obj
+ 0001:00021d60       ?Create@CSound@@QAEHPAX@Z  00422d60 f   08_sound.obj
+ 0001:00021dc0       ?GetNbProviders@CNetwork@@QAEHXZ 00422dc0 f   08_sound.obj
+ 0001:00021dc0       ?GetEnable@CSound@@QAEHXZ  00422dc0 f   08_sound.obj
+ 0001:00021dc0       ?GetTrueColorDecor@CPixmap@@QAEHXZ 00422dc0 f   08_sound.obj
+ 0001:00021dc0       ?GetTrueColorBack@CPixmap@@QAEHXZ 00422dc0 f   08_sound.obj
+ 0001:00021dd0       ?SetState@CSound@@QAEXH@Z  00422dd0 f   08_sound.obj
+ 0001:00021de0       ?SetAudioVolume@CSound@@QAEXH@Z 00422de0 f   08_sound.obj
+ 0001:00021df0       ?GetAudioVolume@CSound@@QAEHXZ 00422df0 f   08_sound.obj
+ 0001:00021e10       ?SetMidiVolume@CSound@@QAEXH@Z 00422e10 f   08_sound.obj
+ 0001:00021e20       ?GetMidiVolume@CSound@@QAEHXZ 00422e20 f   08_sound.obj
+ 0001:00021e40       ?CacheAll@CSound@@QAEXXZ   00422e40 f   08_sound.obj
+ 0001:00021e80       ?Cache@CSound@@QAEHHPAD@Z  00422e80 f   08_sound.obj
+ 0001:00021ec0       ?Flush@CSound@@QAEXH@Z     00422ec0 f   08_sound.obj
+ 0001:00021f00       ?PlaySoundDS@CSound@@QAEHHHHH@Z 00422f00 f   08_sound.obj
+ 0001:00021fc0       ?PlaySoundDS@CSound@@QAEHHHH@Z 00422fc0 f   08_sound.obj
+ 0001:00022050       ?StopSound@CSound@@QAEHH@Z 00423050 f   08_sound.obj
+ 0001:000220c0       ?PlayImage@CSound@@QAEHHUtagPOINT@@HH@Z 004230c0 f   08_sound.obj
+ 0001:00022220       ?Play@CSound@@QAEHHHH@Z    00423220 f   08_sound.obj
+ 0001:00022340       ?PlayMusic@CSound@@QAEHPAXPAD@Z 00423340 f   08_sound.obj
+ 0001:000224f0       ?RestartMusic@CSound@@QAEHXZ 004234f0 f   08_sound.obj
+ 0001:00022540       ?SuspendMusic@CSound@@QAEXXZ 00423540 f   08_sound.obj
+ 0001:00022590       ?StopMusic@CSound@@QAEXXZ  00423590 f   08_sound.obj
+ 0001:000225b0       ?IsPlayingMusic@CSound@@QAEHXZ 004235b0 f   08_sound.obj
+ 0001:000225c0       ?AdaptVolumeMusic@CSound@@QAEXXZ 004235c0 f   08_sound.obj
+ 0001:00022600       ?SetSuspendSkip@CSound@@QAEXH@Z 00423600 f   08_sound.obj
+ 0001:00022610       ?GetCharWidthA@@YAHDH@Z    00423610 f   09_text.obj
+ 0001:00022660       ?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z 00423660 f   09_text.obj
+ 0001:000226b0       ?DrawChar@@YAXPAVCPixmap@@PAUtagPOINT@@EH@Z 004236b0 f   09_text.obj
+ 0001:00022740       ?DrawTextLeft@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z 00423740 f   09_text.obj
+ 0001:00022770       ?DrawTextA@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z 00423770 f   09_text.obj
+ 0001:000227a0       ?DrawTextCenter@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z 004237a0 f   09_text.obj
+ 0001:00022860       ?GetTextWidth@@YAHPADH@Z   00423860 f   09_text.obj
+ 0001:00022890       _DirectSoundCreate@12      00423890 f   dsound:DSOUND.dll
+ 0001:00022896       _DirectDrawCreate@12       00423896 f   ddraw:DDRAW.dll
+ 0001:0002289c       _DirectPlayEnumerateA@8    0042389c f   dplayx:DPLAYX.dll
+ 0001:000228a2       _DirectPlayCreate@12       004238a2 f   dplayx:DPLAYX.dll
+ 0001:000228b0       _strstr                    004238b0 f   LIBC:strstr.obj
+ 0001:00022930       _fclose                    00423930 f   LIBC:fclose.obj
+ 0001:000229b0       _fread                     004239b0 f   LIBC:fread.obj
+ 0001:00022af0       __fsopen                   00423af0 f   LIBC:fopen.obj
+ 0001:00022b20       _fopen                     00423b20 f   LIBC:fopen.obj
+ 0001:00022b40       _sprintf                   00423b40 f   LIBC:sprintf.obj
+ 0001:00022bb0       ??3@YAXPAX@Z               00423bb0 f   LIBC:delete.obj
+ 0001:00022bc0       _fwrite                    00423bc0 f   LIBC:fwrite.obj
+ 0001:00022d10       __ftime                    00423d10 f   LIBC:ftime.obj
+ 0001:00022dd0       ??2@YAPAXI@Z               00423dd0 f   LIBC:new.obj
+ 0001:00022de0       ?_JumpToContinuation@@YGXPAXPAUEHRegistrationNode@@@Z 00423de0 f   LIBC:trnsctrl.obj
+ 0001:00022e20       ?_CallMemberFunction2@@YGXPAX00H@Z 00423e20 f   LIBC:trnsctrl.obj
+ 0001:00022e20       ?_CallMemberFunction0@@YGXPAX0@Z 00423e20 f   LIBC:trnsctrl.obj
+ 0001:00022e20       ?_CallMemberFunction1@@YGXPAX00@Z 00423e20 f   LIBC:trnsctrl.obj
+ 0001:00022e30       ?_UnwindNestedFrames@@YGXPAUEHRegistrationNode@@PAUEHExceptionRecord@@@Z 00423e30 f   LIBC:trnsctrl.obj
+ 0001:00022e90       ___CxxFrameHandler         00423e90 f   LIBC:trnsctrl.obj
+ 0001:00022ed0       ?_CallCatchBlock2@@YAPAXPAUEHRegistrationNode@@PBU_s_FuncInfo@@PAXHK@Z 00423ed0 f   LIBC:trnsctrl.obj
+ 0001:00022f60       ?_CallSETranslator@@YAHPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAX2PBU_s_FuncInfo@@H1@Z 00423f60 f   LIBC:trnsctrl.obj
+ 0001:000230c0       ?_GetRangeOfTrysToCheck@@YAPBU_s_TryBlockMapEntry@@PBU_s_FuncInfo@@HHPAI1@Z 004240c0 f   LIBC:trnsctrl.obj
+ 0001:00023140       __global_unwind2           00424140 f   LIBC:exsup.obj
+ 0001:00023182       __local_unwind2            00424182 f   LIBC:exsup.obj
+ 0001:000231da       __NLG_Return2              004241da     LIBC:exsup.obj
+ 0001:000231ea       __abnormal_termination     004241ea f   LIBC:exsup.obj
+ 0001:0002320d       __NLG_Notify1              0042420d f   LIBC:exsup.obj
+ 0001:00023216       __NLG_Notify               00424216 f   LIBC:exsup.obj
+ 0001:00023229       __NLG_Dispatch             00424229     LIBC:exsup.obj
+ 0001:00023230       ??_L@YGXPAXIHP6EX0@Z1@Z    00424230 f   LIBC:ehvecctr.obj
+ 0001:000232d0       ??_M@YGXPAXIHP6EX0@Z@Z     004242d0 f   LIBC:ehvecdtr.obj
+ 0001:00023380       ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z 00424380 f   LIBC:ehvecdtr.obj
+ 0001:00023410       _srand                     00424410 f   LIBC:rand.obj
+ 0001:00023420       _rand                      00424420 f   LIBC:rand.obj
+ 0001:00023450       _remove                    00424450 f   LIBC:unlink.obj
+ 0001:00023480       _free                      00424480 f   LIBC:free.obj
+ 0001:000234d0       _malloc                    004244d0 f   LIBC:malloc.obj
+ 0001:000234f0       __nh_malloc                004244f0 f   LIBC:malloc.obj
+ 0001:00023540       __heap_alloc               00424540 f   LIBC:malloc.obj
+ 0001:00023580       _tolower                   00424580 f   LIBC:tolower.obj
+ 0001:00023690       _strchr                    00424690 f   LIBC:strchr.obj
+ 0001:00023696       ___from_strstr_to_strchr   00424696     LIBC:strchr.obj
+ 0001:00023750       _strncpy                   00424750 f   LIBC:strncpy.obj
+ 0001:00023850       __findfirst                00424850 f   LIBC:findfile.obj
+ 0001:00023980       __findnext                 00424980 f   LIBC:findfile.obj
+ 0001:00023aa0       ___timet_from_ft           00424aa0 f   LIBC:findfile.obj
+ 0001:00023b30       __mkdir                    00424b30 f   LIBC:mkdir.obj
+ 0001:00023b60       __cinit                    00424b60 f   LIBC:crt0dat.obj
+ 0001:00023b90       _exit                      00424b90 f   LIBC:crt0dat.obj
+ 0001:00023bb0       __exit                     00424bb0 f   LIBC:crt0dat.obj
+ 0001:00023ca0       _fseek                     00424ca0 f   LIBC:fseek.obj
+ 0001:00023d40       _WinMainCRTStartup         00424d40 f   LIBC:wincrt0.obj
+ 0001:00023ee0       __amsg_exit                00424ee0 f   LIBC:wincrt0.obj
+ 0001:00023f40       __close                    00424f40 f   LIBC:close.obj
+ 0001:00024020       __freebuf                  00425020 f   LIBC:_freebuf.obj
+ 0001:00024060       _fflush                    00425060 f   LIBC:fflush.obj
+ 0001:000240b0       __flush                    004250b0 f   LIBC:fflush.obj
+ 0001:00024120       __flushall                 00425120 f   LIBC:fflush.obj
+ 0001:000241b0       __filbuf                   004251b0 f   LIBC:_filbuf.obj
+ 0001:000242a0       __read                     004252a0 f   LIBC:read.obj
+ 0001:00024500       __openfile                 00425500 f   LIBC:_open.obj
+ 0001:000246d0       __getstream                004256d0 f   LIBC:stream.obj
+ 0001:00024760       __flsbuf                   00425760 f   LIBC:_flsbuf.obj
+ 0001:00024890       __output                   00425890 f   LIBC:output.obj
+ 0001:00025350       __write                    00426350 f   LIBC:write.obj
+ 0001:00025570       _mktime                    00426570 f   LIBC:mktime.obj
+ 0001:000257c0       ___tzset                   004267c0 f   LIBC:tzset.obj
+ 0001:000257e0       __tzset                    004267e0 f   LIBC:tzset.obj
+ 0001:00025a90       __isindst                  00426a90 f   LIBC:tzset.obj
+ 0001:00025ea0       ___InternalCxxFrameHandler 00426ea0 f   LIBC:frame.obj
+ 0001:000262f0       ___FrameUnwindToState      004272f0 f   LIBC:frame.obj
+ 0001:000267d0       ?_DestructExceptionObject@@YAXPAUEHExceptionRecord@@E@Z 004277d0 f   LIBC:frame.obj
+ 0001:00026880       __CallSettingFrame@12      00427880 f   LIBC:lowhelpr.obj
+ 0001:000268a7       __NLG_Return               004278a7     LIBC:lowhelpr.obj
+ 0001:000268d0       ?terminate@@YAXXZ          004278d0 f   LIBC:hooks.obj
+ 0001:00026960       ?_inconsistency@@YAXXZ     00427960 f   LIBC:hooks.obj
+ 0001:000269f8       __except_handler3          004279f8 f   LIBC:exsup3.obj
+ 0001:00026ab5       __seh_longjmp_unwind@4     00427ab5 f   LIBC:exsup3.obj
+ 0001:00026ad0       __dosmaperr                00427ad0 f   LIBC:dosmap.obj
+ 0001:00026b40       __heap_init                00427b40 f   LIBC:heapinit.obj
+ 0001:00026b80       ___sbh_new_region          00427b80 f   LIBC:sbheap.obj
+ 0001:00026cf0       ___sbh_release_region      00427cf0 f   LIBC:sbheap.obj
+ 0001:00026d50       ___sbh_decommit_pages      00427d50 f   LIBC:sbheap.obj
+ 0001:00026e20       ___sbh_find_block          00427e20 f   LIBC:sbheap.obj
+ 0001:00026e80       ___sbh_free_block          00427e80 f   LIBC:sbheap.obj
+ 0001:00026ee0       ___sbh_alloc_block         00427ee0 f   LIBC:sbheap.obj
+ 0001:00027120       ___sbh_alloc_block_from_page 00428120 f   LIBC:sbheap.obj
+ 0001:000272a0       ___sbh_resize_block        004282a0 f   LIBC:sbheap.obj
+ 0001:00027370       __callnewh                 00428370 f   LIBC:handler.obj
+ 0001:00027390       ___crtLCMapStringA         00428390 f   LIBC:aw_map.obj
+ 0001:000275f0       __isctype                  004285f0 f   LIBC:isctype.obj
+ 0001:00027690       ___loctotime_t             00428690 f   LIBC:dtoxtime.obj
+ 0001:00027780       __lseek                    00428780 f   LIBC:lseek.obj
+ 0001:00027840       _ftell                     00428840 f   LIBC:ftell.obj
+ 0001:000279f0       __XcptFilter               004289f0 f   LIBC:winxfltr.obj
+ 0001:00027b80       __ismbblead                00428b80 f   LIBC:ismbbyte.obj
+ 0001:00027be0       __setenvp                  00428be0 f   LIBC:stdenvp.obj
+ 0001:00027cd0       __setargv                  00428cd0 f   LIBC:stdargv.obj
+ 0001:00027f80       ___crtGetEnvironmentStringsA 00428f80 f   LIBC:aw_env.obj
+ 0001:000280e0       __setmbcp                  004290e0 f   LIBC:mbctype.obj
+ 0001:000285c0       ___initmbctable            004295c0 f   LIBC:mbctype.obj
+ 0001:000285d0       __ioinit                   004295d0 f   LIBC:ioinit.obj
+ 0001:000287d0       __FF_MSGBANNER             004297d0 f   LIBC:crt0msg.obj
+ 0001:00028810       __NMSG_WRITE               00429810 f   LIBC:crt0msg.obj
+ 0001:000289f0       __alloc_osfhnd             004299f0 f   LIBC:osfinfo.obj
+ 0001:00028ab0       __set_osfhnd               00429ab0 f   LIBC:osfinfo.obj
+ 0001:00028b60       __free_osfhnd              00429b60 f   LIBC:osfinfo.obj
+ 0001:00028c00       __get_osfhandle            00429c00 f   LIBC:osfinfo.obj
+ 0001:00028c50       __commit                   00429c50 f   LIBC:commit.obj
+ 0001:00028cb0       ___initstdio               00429cb0 f   LIBC:_file.obj
+ 0001:00028d70       ___endstdio                00429d70 f   LIBC:_file.obj
+ 0001:00028d90       __getbuf                   00429d90 f   LIBC:_getbuf.obj
+ 0001:00028df0       __sopen                    00429df0 f   LIBC:open.obj
+ 0001:000291b0       __isatty                   0042a1b0 f   LIBC:isatty.obj
+ 0001:000291e0       _wctomb                    0042a1e0 f   LIBC:wctomb.obj
+ 0001:00029260       __aulldiv                  0042a260 f   LIBC:ulldiv.obj
+ 0001:000292d0       __aullrem                  0042a2d0 f   LIBC:ullrem.obj
+ 0001:00029350       _gmtime                    0042a350 f   LIBC:gmtime.obj
+ 0001:000294b0       _localtime                 0042a4b0 f   LIBC:localtim.obj
+ 0001:000296a0       _atol                      0042a6a0 f   LIBC:atox.obj
+ 0001:00029740       _wcstombs                  0042a740 f   LIBC:wcstombs.obj
+ 0001:00029970       _getenv                    0042a970 f   LIBC:getenv.obj
+ 0001:00029a00       ?__CxxUnhandledExceptionFilter@@YGJPAU_EXCEPTION_POINTERS@@@Z 0042aa00 f   LIBC:unhandld.obj
+ 0001:00029a60       ?__CxxSetUnhandledExceptionFilter@@YAXXZ 0042aa60 f   LIBC:unhandld.obj
+ 0001:00029a80       ?__CxxRestoreUnhandledExceptionFilter@@YAXXZ 0042aa80 f   LIBC:unhandld.obj
+ 0001:00029a90       ?_ValidateRead@@YAHPBXI@Z  0042aa90 f   LIBC:validate.obj
+ 0001:00029ab0       ?_ValidateWrite@@YAHPAXI@Z 0042aab0 f   LIBC:validate.obj
+ 0001:00029ad0       ?_ValidateExecute@@YAHP6GHXZ@Z 0042aad0 f   LIBC:validate.obj
+ 0001:00029af0       _memmove                   0042aaf0 f   LIBC:memmove.obj
+ 0001:00029e30       _abort                     0042ae30 f   LIBC:abort.obj
+ 0001:00029e50       ___crtGetStringTypeA       0042ae50 f   LIBC:aw_str.obj
+ 0001:00029f90       _wcslen                    0042af90 f   LIBC:wcslen.obj
+ 0001:00029fb0       ___crtMessageBoxA          0042afb0 f   LIBC:crtmbox.obj
+ 0001:0002a040       _calloc                    0042b040 f   LIBC:calloc.obj
+ 0001:0002a0e0       __fcloseall                0042b0e0 f   LIBC:closeall.obj
+ 0001:0002a150       __chsize                   0042b150 f   LIBC:chsize.obj
+ 0001:0002a2d0       __fptrap                   0042b2d0 f   LIBC:crt0fp.obj
+ 0001:0002a2e0       __allmul                   0042b2e0 f   LIBC:llmul.obj
+ 0001:0002a320       __mbsnbicoll               0042b320 f   LIBC:mbsnbico.obj
+ 0001:0002a360       ___wtomb_environ           0042b360 f   LIBC:wtombenv.obj
+ 0001:0002a3e0       _raise                     0042b3e0 f   LIBC:winsig.obj
+ 0001:0002a5b0       __setmode                  0042b5b0 f   LIBC:setmode.obj
+ 0001:0002a630       __chkstk                   0042b630     LIBC:chkstk.obj
+ 0001:0002a630       __alloca_probe             0042b630     LIBC:chkstk.obj
+ 0001:0002a660       ___crtCompareStringA       0042b660 f   LIBC:aw_cmp.obj
+ 0001:0002a930       ___crtsetenv               0042b930 f   LIBC:setenv.obj
+ 0001:0002ac30       _realloc                   0042bc30 f   LIBC:realloc.obj
+ 0001:0002add0       __mbschr                   0042bdd0 f   LIBC:mbschr.obj
+ 0001:0002ae80       __strdup                   0042be80 f   LIBC:strdup.obj
+ 0001:0002aed0       _RtlUnwind@16              0042bed0 f   kernel32:KERNEL32.dll
+ 0002:00000000       __imp__DirectDrawCreate@12 0042c000     ddraw:DDRAW.dll
+ 0002:00000004       \177DDRAW_NULL_THUNK_DATA  0042c004     ddraw:DDRAW.dll
+ 0002:00000008       __imp__DirectPlayCreate@12 0042c008     dplayx:DPLAYX.dll
+ 0002:0000000c       __imp__DirectPlayEnumerateA@8 0042c00c     dplayx:DPLAYX.dll
+ 0002:00000010       \177DPLAYX_NULL_THUNK_DATA 0042c010     dplayx:DPLAYX.dll
+ 0002:00000014       __imp__DirectSoundCreate@12 0042c014     dsound:DSOUND.dll
+ 0002:00000018       \177DSOUND_NULL_THUNK_DATA 0042c018     dsound:DSOUND.dll
+ 0002:0000001c       __imp__GetStockObject@4    0042c01c     gdi32:GDI32.dll
+ 0002:00000020       __imp__StretchBlt@44       0042c020     gdi32:GDI32.dll
+ 0002:00000024       __imp__SelectObject@8      0042c024     gdi32:GDI32.dll
+ 0002:00000028       __imp__DeleteDC@4          0042c028     gdi32:GDI32.dll
+ 0002:0000002c       __imp__SetPixel@16         0042c02c     gdi32:GDI32.dll
+ 0002:00000030       __imp__GetPixel@12         0042c030     gdi32:GDI32.dll
+ 0002:00000034       __imp__DeleteObject@4      0042c034     gdi32:GDI32.dll
+ 0002:00000038       __imp__GetObjectA@12       0042c038     gdi32:GDI32.dll
+ 0002:0000003c       __imp__GetSystemPaletteEntries@16 0042c03c     gdi32:GDI32.dll
+ 0002:00000040       __imp__CreateCompatibleDC@4 0042c040     gdi32:GDI32.dll
+ 0002:00000044       __imp__GetDeviceCaps@8     0042c044     gdi32:GDI32.dll
+ 0002:00000048       \177GDI32_NULL_THUNK_DATA  0042c048     gdi32:GDI32.dll
+ 0002:0000004c       __imp__LoadResource@8      0042c04c     kernel32:KERNEL32.dll
+ 0002:00000050       __imp__LockResource@4      0042c050     kernel32:KERNEL32.dll
+ 0002:00000054       __imp__CreateDirectoryA@8  0042c054     kernel32:KERNEL32.dll
+ 0002:00000058       __imp__FindResourceA@12    0042c058     kernel32:KERNEL32.dll
+ 0002:0000005c       __imp___lopen@8            0042c05c     kernel32:KERNEL32.dll
+ 0002:00000060       __imp__DeleteFileA@4       0042c060     kernel32:KERNEL32.dll
+ 0002:00000064       __imp___lread@12           0042c064     kernel32:KERNEL32.dll
+ 0002:00000068       __imp___lclose@4           0042c068     kernel32:KERNEL32.dll
+ 0002:0000006c       __imp__GetModuleHandleA@4  0042c06c     kernel32:KERNEL32.dll
+ 0002:00000070       __imp__GetDriveTypeA@4     0042c070     kernel32:KERNEL32.dll
+ 0002:00000074       __imp__HeapAlloc@12        0042c074     kernel32:KERNEL32.dll
+ 0002:00000078       __imp__CreateFileA@28      0042c078     kernel32:KERNEL32.dll
+ 0002:0000007c       __imp__FlushFileBuffers@4  0042c07c     kernel32:KERNEL32.dll
+ 0002:00000080       __imp__SetUnhandledExceptionFilter@4 0042c080     kernel32:KERNEL32.dll
+ 0002:00000084       __imp__GetFileType@4       0042c084     kernel32:KERNEL32.dll
+ 0002:00000088       __imp__GetStdHandle@4      0042c088     kernel32:KERNEL32.dll
+ 0002:0000008c       __imp__SetStdHandle@8      0042c08c     kernel32:KERNEL32.dll
+ 0002:00000090       __imp__GetOEMCP@0          0042c090     kernel32:KERNEL32.dll
+ 0002:00000094       __imp__GetACP@0            0042c094     kernel32:KERNEL32.dll
+ 0002:00000098       __imp__SetHandleCount@4    0042c098     kernel32:KERNEL32.dll
+ 0002:0000009c       __imp__GetEnvironmentStringsW@0 0042c09c     kernel32:KERNEL32.dll
+ 0002:000000a0       __imp__GetEnvironmentStrings@0 0042c0a0     kernel32:KERNEL32.dll
+ 0002:000000a4       __imp__GetCPInfo@8         0042c0a4     kernel32:KERNEL32.dll
+ 0002:000000a8       __imp__FreeEnvironmentStringsA@4 0042c0a8     kernel32:KERNEL32.dll
+ 0002:000000ac       __imp__GetModuleFileNameA@12 0042c0ac     kernel32:KERNEL32.dll
+ 0002:000000b0       __imp__FreeEnvironmentStringsW@4 0042c0b0     kernel32:KERNEL32.dll
+ 0002:000000b4       __imp__SetFilePointer@16   0042c0b4     kernel32:KERNEL32.dll
+ 0002:000000b8       __imp__LCMapStringW@24     0042c0b8     kernel32:KERNEL32.dll
+ 0002:000000bc       __imp__UnhandledExceptionFilter@4 0042c0bc     kernel32:KERNEL32.dll
+ 0002:000000c0       __imp__WideCharToMultiByte@32 0042c0c0     kernel32:KERNEL32.dll
+ 0002:000000c4       __imp__MultiByteToWideChar@24 0042c0c4     kernel32:KERNEL32.dll
+ 0002:000000c8       __imp__LCMapStringA@24     0042c0c8     kernel32:KERNEL32.dll
+ 0002:000000cc       __imp__VirtualFree@12      0042c0cc     kernel32:KERNEL32.dll
+ 0002:000000d0       __imp__HeapCreate@12       0042c0d0     kernel32:KERNEL32.dll
+ 0002:000000d4       __imp__VirtualAlloc@16     0042c0d4     kernel32:KERNEL32.dll
+ 0002:000000d8       __imp__GetTimeZoneInformation@4 0042c0d8     kernel32:KERNEL32.dll
+ 0002:000000dc       __imp__WriteFile@20        0042c0dc     kernel32:KERNEL32.dll
+ 0002:000000e0       __imp__HeapDestroy@4       0042c0e0     kernel32:KERNEL32.dll
+ 0002:000000e4       __imp__CloseHandle@4       0042c0e4     kernel32:KERNEL32.dll
+ 0002:000000e8       __imp__SetEnvironmentVariableA@8 0042c0e8     kernel32:KERNEL32.dll
+ 0002:000000ec       __imp__CompareStringW@24   0042c0ec     kernel32:KERNEL32.dll
+ 0002:000000f0       __imp__CompareStringA@24   0042c0f0     kernel32:KERNEL32.dll
+ 0002:000000f4       __imp__SetEndOfFile@4      0042c0f4     kernel32:KERNEL32.dll
+ 0002:000000f8       __imp__LoadLibraryA@4      0042c0f8     kernel32:KERNEL32.dll
+ 0002:000000fc       __imp__GetProcAddress@8    0042c0fc     kernel32:KERNEL32.dll
+ 0002:00000100       __imp__GetStringTypeW@16   0042c100     kernel32:KERNEL32.dll
+ 0002:00000104       __imp__GetStringTypeA@20   0042c104     kernel32:KERNEL32.dll
+ 0002:00000108       __imp__HeapReAlloc@16      0042c108     kernel32:KERNEL32.dll
+ 0002:0000010c       __imp__IsBadCodePtr@4      0042c10c     kernel32:KERNEL32.dll
+ 0002:00000110       __imp__IsBadWritePtr@8     0042c110     kernel32:KERNEL32.dll
+ 0002:00000114       __imp__IsBadReadPtr@8      0042c114     kernel32:KERNEL32.dll
+ 0002:00000118       __imp__HeapFree@12         0042c118     kernel32:KERNEL32.dll
+ 0002:0000011c       __imp__GetCommandLineA@0   0042c11c     kernel32:KERNEL32.dll
+ 0002:00000120       __imp__GetStartupInfoA@4   0042c120     kernel32:KERNEL32.dll
+ 0002:00000124       __imp__GetCurrentProcess@0 0042c124     kernel32:KERNEL32.dll
+ 0002:00000128       __imp__GetVersion@0        0042c128     kernel32:KERNEL32.dll
+ 0002:0000012c       __imp__ReadFile@20         0042c12c     kernel32:KERNEL32.dll
+ 0002:00000130       __imp__FindFirstFileA@8    0042c130     kernel32:KERNEL32.dll
+ 0002:00000134       __imp__GetLocalTime@4      0042c134     kernel32:KERNEL32.dll
+ 0002:00000138       __imp__RtlUnwind@16        0042c138     kernel32:KERNEL32.dll
+ 0002:0000013c       __imp__GetLastError@0      0042c13c     kernel32:KERNEL32.dll
+ 0002:00000140       __imp__TerminateProcess@8  0042c140     kernel32:KERNEL32.dll
+ 0002:00000144       __imp__FileTimeToLocalFileTime@8 0042c144     kernel32:KERNEL32.dll
+ 0002:00000148       __imp__FindNextFileA@8     0042c148     kernel32:KERNEL32.dll
+ 0002:0000014c       __imp__FileTimeToSystemTime@8 0042c14c     kernel32:KERNEL32.dll
+ 0002:00000150       __imp__ExitProcess@4       0042c150     kernel32:KERNEL32.dll
+ 0002:00000154       \177KERNEL32_NULL_THUNK_DATA 0042c154     kernel32:KERNEL32.dll
+ 0002:00000158       __imp__ScreenToClient@8    0042c158     user32:USER32.dll
+ 0002:0000015c       __imp__DefWindowProcA@16   0042c15c     user32:USER32.dll
+ 0002:00000160       __imp__PostQuitMessage@4   0042c160     user32:USER32.dll
+ 0002:00000164       __imp__PostMessageA@16     0042c164     user32:USER32.dll
+ 0002:00000168       __imp__DestroyWindow@4     0042c168     user32:USER32.dll
+ 0002:0000016c       __imp__RegisterClassA@4    0042c16c     user32:USER32.dll
+ 0002:00000170       __imp__DispatchMessageA@4  0042c170     user32:USER32.dll
+ 0002:00000174       __imp__MessageBoxA@16      0042c174     user32:USER32.dll
+ 0002:00000178       __imp__WaitMessage@0       0042c178     user32:USER32.dll
+ 0002:0000017c       __imp__PeekMessageA@20     0042c17c     user32:USER32.dll
+ 0002:00000180       __imp__TranslateMessage@4  0042c180     user32:USER32.dll
+ 0002:00000184       __imp__GetMessageA@16      0042c184     user32:USER32.dll
+ 0002:00000188       __imp__ShowWindow@8        0042c188     user32:USER32.dll
+ 0002:0000018c       __imp__SetFocus@4          0042c18c     user32:USER32.dll
+ 0002:00000190       __imp__UpdateWindow@4      0042c190     user32:USER32.dll
+ 0002:00000194       __imp__CreateWindowExA@48  0042c194     user32:USER32.dll
+ 0002:00000198       __imp__AdjustWindowRect@12 0042c198     user32:USER32.dll
+ 0002:0000019c       __imp__SetRect@20          0042c19c     user32:USER32.dll
+ 0002:000001a0       __imp__UnionRect@12        0042c1a0     user32:USER32.dll
+ 0002:000001a4       __imp__wsprintfA           0042c1a4     user32:USER32.dll
+ 0002:000001a8       __imp__MoveWindow@24       0042c1a8     user32:USER32.dll
+ 0002:000001ac       __imp__GetClientRect@8     0042c1ac     user32:USER32.dll
+ 0002:000001b0       __imp__InvalidateRect@12   0042c1b0     user32:USER32.dll
+ 0002:000001b4       __imp__ClientToScreen@8    0042c1b4     user32:USER32.dll
+ 0002:000001b8       __imp__SetCursor@4         0042c1b8     user32:USER32.dll
+ 0002:000001bc       __imp__LoadStringA@16      0042c1bc     user32:USER32.dll
+ 0002:000001c0       __imp__IntersectRect@12    0042c1c0     user32:USER32.dll
+ 0002:000001c4       __imp__SetCursorPos@8      0042c1c4     user32:USER32.dll
+ 0002:000001c8       __imp__ShowCursor@4        0042c1c8     user32:USER32.dll
+ 0002:000001cc       __imp__LoadCursorA@8       0042c1cc     user32:USER32.dll
+ 0002:000001d0       __imp__LoadImageA@24       0042c1d0     user32:USER32.dll
+ 0002:000001d4       __imp__LoadIconA@8         0042c1d4     user32:USER32.dll
+ 0002:000001d8       __imp__SetWindowTextA@8    0042c1d8     user32:USER32.dll
+ 0002:000001dc       __imp__GetCursorPos@4      0042c1dc     user32:USER32.dll
+ 0002:000001e0       __imp__GetSystemMetrics@4  0042c1e0     user32:USER32.dll
+ 0002:000001e4       \177USER32_NULL_THUNK_DATA 0042c1e4     user32:USER32.dll
+ 0002:000001e8       __imp__mciSendCommandA@16  0042c1e8     winmm:WINMM.dll
+ 0002:000001ec       __imp__mciGetErrorStringA@12 0042c1ec     winmm:WINMM.dll
+ 0002:000001f0       __imp__midiOutGetNumDevs@0 0042c1f0     winmm:WINMM.dll
+ 0002:000001f4       __imp__midiOutSetVolume@8  0042c1f4     winmm:WINMM.dll
+ 0002:000001f8       __imp__midiOutClose@4      0042c1f8     winmm:WINMM.dll
+ 0002:000001fc       __imp__mciGetDeviceIDA@4   0042c1fc     winmm:WINMM.dll
+ 0002:00000200       __imp__joyGetNumDevs@0     0042c200     winmm:WINMM.dll
+ 0002:00000204       __imp__joyGetDevCapsA@12   0042c204     winmm:WINMM.dll
+ 0002:00000208       __imp__joyGetPosEx@8       0042c208     winmm:WINMM.dll
+ 0002:0000020c       __imp__timeSetEvent@20     0042c20c     winmm:WINMM.dll
+ 0002:00000210       __imp__timeKillEvent@4     0042c210     winmm:WINMM.dll
+ 0002:00000214       __imp__midiOutOpen@20      0042c214     winmm:WINMM.dll
+ 0002:00000218       \177WINMM_NULL_THUNK_DATA  0042c218     winmm:WINMM.dll
+ 0002:00000220       _IID_IDirectPlay2          0042c220     06_network.obj
+ 0002:00000230       _IID_IDirectPlay2A         0042c230     06_network.obj
+ 0002:00000240       _IID_IDirectPlay3          0042c240     06_network.obj
+ 0002:00000250       _IID_IDirectPlay3A         0042c250     06_network.obj
+ 0002:00000260       _CLSID_DirectPlay          0042c260     06_network.obj
+ 0002:00000270       _DPSPGUID_IPX              0042c270     06_network.obj
+ 0002:00000280       _DPSPGUID_TCPIP            0042c280     06_network.obj
+ 0002:00000290       _DPSPGUID_SERIAL           0042c290     06_network.obj
+ 0002:000002a0       _DPSPGUID_MODEM            0042c2a0     06_network.obj
+ 0002:000002b0       _IID_IDirectPlay           0042c2b0     06_network.obj
+ 0002:00000310       ___lookuptable             0042c310     LIBC:output.obj
+ 0002:0000036c       ??_C@_1O@POHA@?$AA?$CI?$AAn?$AAu?$AAl?$AAl?$AA?$CJ?$AA?$AA@ 0042c36c     LIBC:output.obj
+ 0002:0000037c       ??_C@_06ONKE@?$CInull?$CJ?$AA@ 0042c37c     LIBC:output.obj
+ 0002:00000388       ___dnames                  0042c388     LIBC:timeset.obj
+ 0002:000003a0       ___mnames                  0042c3a0     LIBC:timeset.obj
+ 0002:000003c8       ??_C@_02JHIA@TZ?$AA@       0042c3c8     LIBC:tzset.obj
+ 0002:00000448       ??_C@_01A@?$AA?$AA@        0042c448     LIBC:aw_map.obj
+ 0002:0000044c       ??_C@_13A@?$AA?$AA?$AA?$AA@ 0042c44c     LIBC:aw_map.obj
+ 0002:00000450       ??_C@_0P@GGKG@runtime?5error?5?$AA@ 0042c450     LIBC:crt0msg.obj
+ 0002:00000460       ??_C@_02PIMC@?$AN?6?$AA@   0042c460     LIBC:crt0msg.obj
+ 0002:00000464       ??_C@_0O@DELO@TLOSS?5error?$AN?6?$AA@ 0042c464     LIBC:crt0msg.obj
+ 0002:00000474       ??_C@_0N@OMLL@SING?5error?$AN?6?$AA@ 0042c474     LIBC:crt0msg.obj
+ 0002:00000484       ??_C@_0P@OJAK@DOMAIN?5error?$AN?6?$AA@ 0042c484     LIBC:crt0msg.obj
+ 0002:00000494       ??_C@_0CF@EANP@R6028?$AN?6?9?5unable?5to?5initialize?5he@ 0042c494     LIBC:crt0msg.obj
+ 0002:000004bc       ??_C@_0DF@ECGN@R6027?$AN?6?9?5not?5enough?5space?5for?5lo@ 0042c4bc     LIBC:crt0msg.obj
+ 0002:000004f4       ??_C@_0DF@FKAC@R6026?$AN?6?9?5not?5enough?5space?5for?5st@ 0042c4f4     LIBC:crt0msg.obj
+ 0002:0000052c       ??_C@_0CG@DPMN@R6025?$AN?6?9?5pure?5virtual?5function?5c@ 0042c52c     LIBC:crt0msg.obj
+ 0002:00000554       ??_C@_0DF@CKIP@R6024?$AN?6?9?5not?5enough?5space?5for?5_o@ 0042c554     LIBC:crt0msg.obj
+ 0002:0000058c       ??_C@_0CJ@GGOE@R6019?$AN?6?9?5unable?5to?5open?5console?5@ 0042c58c     LIBC:crt0msg.obj
+ 0002:000005b8       ??_C@_0CB@LBOB@R6018?$AN?6?9?5unexpected?5heap?5error?$AN?6@ 0042c5b8     LIBC:crt0msg.obj
+ 0002:000005dc       ??_C@_0CN@FPEG@R6017?$AN?6?9?5unexpected?5multithread?5@ 0042c5dc     LIBC:crt0msg.obj
+ 0002:0000060c       ??_C@_0CM@OBIC@R6016?$AN?6?9?5not?5enough?5space?5for?5th@ 0042c60c     LIBC:crt0msg.obj
+ 0002:00000638       ??_C@_0CB@HPAL@?$AN?6abnormal?5program?5termination?$AN?6@ 0042c638     LIBC:crt0msg.obj
+ 0002:0000065c       ??_C@_0CM@JOOB@R6009?$AN?6?9?5not?5enough?5space?5for?5en@ 0042c65c     LIBC:crt0msg.obj
+ 0002:00000688       ??_C@_0CK@OIBL@R6008?$AN?6?9?5not?5enough?5space?5for?5ar@ 0042c688     LIBC:crt0msg.obj
+ 0002:000006b4       ??_C@_0CF@LKPB@R6002?$AN?6?9?5floating?5point?5not?5load@ 0042c6b4     LIBC:crt0msg.obj
+ 0002:000006dc       ??_C@_0CF@JPDF@Microsoft?5Visual?5C?$CL?$CL?5Runtime?5Lib@ 0042c6dc     LIBC:crt0msg.obj
+ 0002:00000704       ??_C@_02JJJH@?6?6?$AA@     0042c704     LIBC:crt0msg.obj
+ 0002:00000708       ??_C@_0BK@DEOK@Runtime?5Error?$CB?6?6Program?3?5?$AA@ 0042c708     LIBC:crt0msg.obj
+ 0002:00000724       ??_C@_0BH@NNCD@?$DMprogram?5name?5unknown?$DO?$AA@ 0042c724     LIBC:crt0msg.obj
+ 0002:0000073c       ??_C@_0BD@NJFP@GetLastActivePopup?$AA@ 0042c73c     LIBC:crtmbox.obj
+ 0002:00000750       ??_C@_0BA@GILI@GetActiveWindow?$AA@ 0042c750     LIBC:crtmbox.obj
+ 0002:00000760       ??_C@_0M@PKCK@MessageBoxA?$AA@ 0042c760     LIBC:crtmbox.obj
+ 0002:0000076c       ??_C@_0L@HKL@user32?4dll?$AA@ 0042c76c     LIBC:crtmbox.obj
+ 0002:00000820       __IMPORT_DESCRIPTOR_KERNEL32 0042c820     kernel32:KERNEL32.dll
+ 0002:00000834       __IMPORT_DESCRIPTOR_USER32 0042c834     user32:USER32.dll
+ 0002:00000848       __IMPORT_DESCRIPTOR_GDI32  0042c848     gdi32:GDI32.dll
+ 0002:0000085c       __IMPORT_DESCRIPTOR_WINMM  0042c85c     winmm:WINMM.dll
+ 0002:00000870       __IMPORT_DESCRIPTOR_DSOUND 0042c870     dsound:DSOUND.dll
+ 0002:00000884       __IMPORT_DESCRIPTOR_DDRAW  0042c884     ddraw:DDRAW.dll
+ 0002:00000898       __IMPORT_DESCRIPTOR_DPLAYX 0042c898     dplayx:DPLAYX.dll
+ 0002:000008ac       __NULL_IMPORT_DESCRIPTOR   0042c8ac     kernel32:KERNEL32.dll
+ 0003:00000000       ___xc_a                    0042e000     LIBC:crt0init.obj
+ 0003:00000004       ___xc_z                    0042e004     LIBC:crt0init.obj
+ 0003:00000008       ___xi_a                    0042e008     LIBC:crt0init.obj
+ 0003:00000014       ___xi_z                    0042e014     LIBC:crt0init.obj
+ 0003:00000018       ___xp_a                    0042e018     LIBC:crt0init.obj
+ 0003:00000020       ___xp_z                    0042e020     LIBC:crt0init.obj
+ 0003:00000024       ___xt_a                    0042e024     LIBC:crt0init.obj
+ 0003:0000002c       ___xt_z                    0042e02c     LIBC:crt0init.obj
+ 0003:00000030       ?g_speedRate@@3HA          0042e030     10_blupi.obj
+ 0003:00000034       ?g_timerInterval@@3HA      0042e034     10_blupi.obj
+ 0003:00000038       ?g_mouseType@@3HA          0042e038     10_blupi.obj
+ 0003:0000003c       ?g_lastPhase@@3IA          0042e03c     10_blupi.obj
+ 0003:00000040       ??_C@_0L@MKCN@TrueColor?$DN?$AA@ 0042e040     10_blupi.obj
+ 0003:0000004c       ??_C@_0L@JOIM@Benchmark?$DN?$AA@ 0042e04c     10_blupi.obj
+ 0003:00000058       ??_C@_0L@PLFC@MouseType?$DN?$AA@ 0042e058     10_blupi.obj
+ 0003:00000064       ??_C@_0M@KEOD@FullScreen?$DN?$AA@ 0042e064     10_blupi.obj
+ 0003:00000070       ??_C@_06OGOM@Timer?$DN?$AA@ 0042e070     10_blupi.obj
+ 0003:00000078       ??_C@_0L@MOII@SpeedRate?$DN?$AA@ 0042e078     10_blupi.obj
+ 0003:00000084       ??_C@_05NOFE@?9nocd?$AA@   0042e084     10_blupi.obj
+ 0003:0000008c       ??_C@_07EGIE@CD?9Rom?$DN?$AA@ 0042e08c     10_blupi.obj
+ 0003:00000094       ??_C@_0BA@CBDK@data?2config?4def?$AA@ 0042e094     10_blupi.obj
+ 0003:000000a4       ??_C@_02JKAF@rb?$AA@       0042e0a4     10_blupi.obj
+ 0003:000000a8       ??_C@_0L@BELP@wParam?$DN?$CFd?6?$AA@ 0042e0a8     10_blupi.obj
+ 0003:000000b4       ??_C@_0BN@CBDC@Event?5MCI_NOTIFY_SUCCESSFUL?6?$AA@ 0042e0b4     10_blupi.obj
+ 0003:000000d4       ??_C@_0BE@HGIO@Event?5MM_MCINOTIFY?6?$AA@ 0042e0d4     10_blupi.obj
+ 0003:000000e8       ??_C@_0BJ@CIEK@Event?5WM_PALETTECHANGED?6?$AA@ 0042e0e8     10_blupi.obj
+ 0003:00000104       ??_C@_0BK@FOPM@Event?5WM_QUERYNEWPALETTE?6?$AA@ 0042e104     10_blupi.obj
+ 0003:00000120       ??_C@_0BI@LPL@Event?5WM_DISPLAYCHANGE?6?$AA@ 0042e120     10_blupi.obj
+ 0003:00000138       ??_C@_0O@HFGP@Blupi?5?9?9?5stop?$AA@ 0042e138     10_blupi.obj
+ 0003:00000148       ??_C@_05OIAJ@Blupi?$AA@    0042e148     10_blupi.obj
+ 0003:00000150       ??_C@_0BD@GHFN@image08?2little?4blp?$AA@ 0042e150     10_blupi.obj
+ 0003:00000164       ??_C@_0BJ@NBON@Event?5WM_SYSCOLORCHANGE?6?$AA@ 0042e164     10_blupi.obj
+ 0003:00000180       ??_C@_01KMMP@?$CJ?$AA@     0042e180     10_blupi.obj
+ 0003:00000184       ??_C@_07GMNO@Error?5?$CI?$AA@ 0042e184     10_blupi.obj
+ 0003:0000018c       ??_C@_0BM@BKLG@DirectX?5Init?5FAILED?6?$CIwhile?5?$AA@ 0042e18c     10_blupi.obj
+ 0003:000001a8       ??_C@_0O@KPMF@data?2time?4blp?$AA@ 0042e1a8     10_blupi.obj
+ 0003:000001b8       ??_C@_02NGAF@wb?$AA@       0042e1b8     10_blupi.obj
+ 0003:000001bc       ??_C@_0BB@FIAD@CheckTime?5?$DN?5?$CFd?$AN?6?$AA@ 0042e1bc     10_blupi.obj
+ 0003:000001d0       ??_C@_09EFFE@New?5event?$AA@ 0042e1d0     10_blupi.obj
+ 0003:000001dc       ??_C@_09NKAJ@New?5decor?$AA@ 0042e1dc     10_blupi.obj
+ 0003:000001e8       ??_C@_09KLHO@New?5movie?$AA@ 0042e1e8     10_blupi.obj
+ 0003:000001f4       ??_C@_0M@CNNO@New?5network?$AA@ 0042e1f4     10_blupi.obj
+ 0003:00000200       ??_C@_09FFCH@New?5sound?$AA@ 0042e200     10_blupi.obj
+ 0003:0000020c       ??_C@_0BB@FBPC@Cache?5little?4blp?$AA@ 0042e20c     10_blupi.obj
+ 0003:00000220       ??_C@_0P@OMJC@Cache?5text?4blp?$AA@ 0042e220     10_blupi.obj
+ 0003:00000230       ??_C@_0BB@BCOI@image08?2text?4blp?$AA@ 0042e230     10_blupi.obj
+ 0003:00000244       ??_C@_0BA@NMCA@Cache?5jauge?4blp?$AA@ 0042e244     10_blupi.obj
+ 0003:00000254       ??_C@_0BC@HDNO@image08?2jauge?4blp?$AA@ 0042e254     10_blupi.obj
+ 0003:00000268       ??_C@_0BD@JIDG@Cache?5button00?4blp?$AA@ 0042e268     10_blupi.obj
+ 0003:0000027c       ??_C@_0BF@JHHG@image08?2button00?4blp?$AA@ 0042e27c     10_blupi.obj
+ 0003:00000294       ??_C@_0BF@EGO@image08?2decor000?4blp?$AA@ 0042e294     10_blupi.obj
+ 0003:000002ac       ??_C@_0BA@MMGI@Cache?5explo?4blp?$AA@ 0042e2ac     10_blupi.obj
+ 0003:000002bc       ??_C@_0BC@GDJG@image08?2explo?4blp?$AA@ 0042e2bc     10_blupi.obj
+ 0003:000002d0       ??_C@_0BC@FLDC@Cache?5element?4blp?$AA@ 0042e2d0     10_blupi.obj
+ 0003:000002e4       ??_C@_0BE@BLAE@image08?2element?4blp?$AA@ 0042e2e4     10_blupi.obj
+ 0003:000002f8       ??_C@_0O@IPLA@Cache?5map?4blp?$AA@ 0042e2f8     10_blupi.obj
+ 0003:00000308       ??_C@_0BA@PFII@image08?2map?4blp?$AA@ 0042e308     10_blupi.obj
+ 0003:00000318       ??_C@_0P@PFCF@Cache?5temp?4blp?$AA@ 0042e318     10_blupi.obj
+ 0003:00000328       ??_C@_0BB@LFP@image08?2temp?4blp?$AA@ 0042e328     10_blupi.obj
+ 0003:0000033c       ??_C@_0BD@IHLD@Cache?5blupi003?4blp?$AA@ 0042e33c     10_blupi.obj
+ 0003:00000350       ??_C@_0BF@IIPD@image08?2blupi003?4blp?$AA@ 0042e350     10_blupi.obj
+ 0003:00000368       ??_C@_0BD@CHJG@Cache?5blupi002?4blp?$AA@ 0042e368     10_blupi.obj
+ 0003:0000037c       ??_C@_0BF@CING@image08?2blupi002?4blp?$AA@ 0042e37c     10_blupi.obj
+ 0003:00000394       ??_C@_0BD@MHPJ@Cache?5blupi001?4blp?$AA@ 0042e394     10_blupi.obj
+ 0003:000003a8       ??_C@_0BF@MILJ@image08?2blupi001?4blp?$AA@ 0042e3a8     10_blupi.obj
+ 0003:000003c0       ??_C@_0BA@NEFM@Cache?5blupi?4blp?$AA@ 0042e3c0     10_blupi.obj
+ 0003:000003d0       ??_C@_0BF@GIJM@image08?2blupi000?4blp?$AA@ 0042e3d0     10_blupi.obj
+ 0003:000003e8       ??_C@_0BB@MGIJ@Cache?5object?4blp?$AA@ 0042e3e8     10_blupi.obj
+ 0003:000003fc       ??_C@_0BD@PACG@image08?2object?4blp?$AA@ 0042e3fc     10_blupi.obj
+ 0003:00000410       ??_C@_0BA@FADJ@InitSysPalette?6?$AA@ 0042e410     10_blupi.obj
+ 0003:00000420       ??_C@_0N@LGOA@SavePalette?6?$AA@ 0042e420     10_blupi.obj
+ 0003:00000430       ??_C@_0BB@HBFA@image08?2init?4blp?$AA@ 0042e430     10_blupi.obj
+ 0003:00000444       ??_C@_0N@KBEP@Image?3?5init?6?$AA@ 0042e444     10_blupi.obj
+ 0003:00000454       ??_C@_0O@MMBK@Create?5pixmap?$AA@ 0042e454     10_blupi.obj
+ 0003:00000464       ??_C@_0L@MJIL@New?5pixmap?$AA@ 0042e464     10_blupi.obj
+ 0003:00000470       ??_C@_0BN@HBGA@Game?5not?5correctly?5installed?$AA@ 0042e470     10_blupi.obj
+ 0003:00000490       ??_C@_0M@NOB@IDC_POINTER?$AA@ 0042e490     10_blupi.obj
+ 0003:0000049c       ??_C@_0O@KDHF@IDR_MAINFRAME?$AA@ 0042e49c     10_blupi.obj
+ 0003:000004b8       ?g_bDebug@@3HA             0042e4b8     01_ddutil.obj
+ 0003:000004bc       ??_C@_0BG@PMIK@DDLoadBitmap?3?5return?6?$AA@ 0042e4bc     01_ddutil.obj
+ 0003:000004d4       ??_C@_0BM@LBBF@DDLoadBitmap?3?5DeleteObject?6?$AA@ 0042e4d4     01_ddutil.obj
+ 0003:000004f0       ??_C@_0BN@GGGP@DDLoadBitmap?3?5CreateSurface?6?$AA@ 0042e4f0     01_ddutil.obj
+ 0003:00000510       ??_C@_0BJ@NDFP@DDLoadBitmap?3?5GetObject?6?$AA@ 0042e510     01_ddutil.obj
+ 0003:0000052c       ??_C@_0O@BGEF@DDLoadBitmap?6?$AA@ 0042e52c     01_ddutil.obj
+ 0003:0000053c       ??_C@_0BF@HDAN@ddcopybitmap?5failed?6?$AA@ 0042e53c     01_ddutil.obj
+ 0003:00000554       ??_C@_0BA@MHBC@handle?5is?5null?6?$AA@ 0042e554     01_ddutil.obj
+ 0003:00000564       ??_C@_0BI@NMEE@DDCopyBitmap?3?5DeleteDC?6?$AA@ 0042e564     01_ddutil.obj
+ 0003:0000057c       ??_C@_0BJ@CCGB@DDCopyBitmap?3?5ReleaseDC?6?$AA@ 0042e57c     01_ddutil.obj
+ 0003:00000598       ??_C@_0BN@EIDJ@DDCopyBitmap?3?5StretchBlt?9go?6?$AA@ 0042e598     01_ddutil.obj
+ 0003:000005b8       ??_C@_0BK@LELH@DDCopyBitmap?3?5StretchBlt?6?$AA@ 0042e5b8     01_ddutil.obj
+ 0003:000005d4       ??_C@_0BO@HOPA@DDCopyBitmap?3?5GetSurfaceDesc?6?$AA@ 0042e5d4     01_ddutil.obj
+ 0003:000005f4       ??_C@_0BJ@GJIB@DDCopyBitmap?3?5GetObject?6?$AA@ 0042e5f4     01_ddutil.obj
+ 0003:00000610       ??_C@_0BM@MODI@DDCopyBitmap?3?5SelectObject?6?$AA@ 0042e610     01_ddutil.obj
+ 0003:0000062c       ??_C@_0BM@GIBL@createcompatible?5dc?5failed?6?$AA@ 0042e62c     01_ddutil.obj
+ 0003:00000648       ??_C@_0CC@PGMF@DDCopyBitmap?3?5CreateCompatibleDC@ 0042e648     01_ddutil.obj
+ 0003:0000066c       ??_C@_0BH@EKCN@DDCopyBitmap?3?5Restore?6?$AA@ 0042e66c     01_ddutil.obj
+ 0003:00000684       ??_C@_0O@JKFH@DDCopyBitmap?6?$AA@ 0042e684     01_ddutil.obj
+ 0003:00000694       ??_C@_0BE@KHOE@DDLoadPalette?5n?$DN?$CFd?6?$AA@ 0042e694     01_ddutil.obj
+ 0003:000006a8       ??_C@_0BC@HAKJ@DDLoadPalette?5?9b?6?$AA@ 0042e6a8     01_ddutil.obj
+ 0003:000006bc       ??_C@_0BG@IDLN@lock?5resource?5failed?6?$AA@ 0042e6bc     01_ddutil.obj
+ 0003:000006d4       ??_C@_0BC@ELFG@DDLoadPalette?5?9a?6?$AA@ 0042e6d4     01_ddutil.obj
+ 0003:000006e8       ?table_shield@@3PAHA       0042e6e8     14_decblock.obj
+ 0003:00000720       ?table_shield_blupi@@3PAHA 0042e720     14_decblock.obj
+ 0003:00000730       ?table_power@@3PAHA        0042e730     14_decblock.obj
+ 0003:00000750       ?table_charge@@3PAHA       0042e750     14_decblock.obj
+ 0003:00000768       ?table_magicloop@@3PAHA    0042e768     14_decblock.obj
+ 0003:00000780       ?table_magictrack@@3PAHA   0042e780     14_decblock.obj
+ 0003:000007e0       ?table_decor_lave@@3PAHA   0042e7e0     14_decblock.obj
+ 0003:000007f8       ?table_decor_eau1@@3PAHA   0042e7f8     14_decblock.obj
+ 0003:00000808       ?table_decor_eau2@@3PAHA   0042e808     14_decblock.obj
+ 0003:00000818       ?table_decor_ventillog@@3PAHA 0042e818     14_decblock.obj
+ 0003:00000828       ?table_decor_ventillod@@3PAHA 0042e828     14_decblock.obj
+ 0003:00000838       ?table_decor_ventilloh@@3PAHA 0042e838     14_decblock.obj
+ 0003:00000848       ?table_decor_ventillob@@3PAHA 0042e848     14_decblock.obj
+ 0003:00000858       ?table_decor_ventg@@3PAHA  0042e858     14_decblock.obj
+ 0003:00000868       ?table_decor_ventd@@3PAHA  0042e868     14_decblock.obj
+ 0003:00000878       ?table_decor_venth@@3PAHA  0042e878     14_decblock.obj
+ 0003:00000888       ?table_decor_ventb@@3PAHA  0042e888     14_decblock.obj
+ 0003:00000898       ?table_marine@@3PAHA       0042e898     14_decblock.obj
+ 0003:000008c8       ?table_ressort@@3PAHA      0042e8c8     14_decblock.obj
+ 0003:000008e8       ?table_tutorial@@3PAHA     0042e8e8     14_decblock.obj
+ 0003:00000a28       ?table_decor_action@@3PAHA 0042ea28     14_decblock.obj
+ 0003:00000c40       ?table_364a0@@3PAHA        0042ec40     14_decblock.obj
+ 0003:00000c80       ?table_364b0@@3PAHA        0042ec80     14_decblock.obj
+ 0003:00000cb0       ?table_364d0@@3PAHA        0042ecb0     14_decblock.obj
+ 0003:00000cc8       ?table_364e8@@3PAHA        0042ecc8     14_decblock.obj
+ 0003:00000cd8       ?table_364f8@@3PAHA        0042ecd8     14_decblock.obj
+ 0003:00000cf8       ?table_36510@@3PAHA        0042ecf8     14_decblock.obj
+ 0003:00000d10       ?table_36520@@3PAHA        0042ed10     14_decblock.obj
+ 0003:00000d20       ?table_36418@@3PAHA        0042ed20     14_decblock.obj
+ 0003:00000d28       ?table_36458@@3PAHA        0042ed28     14_decblock.obj
+ 0003:00000d38       ?table_36488@@3PAHA        0042ed38     14_decblock.obj
+ 0003:00000d40       ?table_36538@@3PAHA        0042ed40     14_decblock.obj
+ 0003:00000d60       ?table_36548@@3PAHA        0042ed60     14_decblock.obj
+ 0003:00000db8       ?table_36550@@3PAHA        0042edb8     14_decblock.obj
+ 0003:00000df0       ?table_36570@@3PAHA        0042edf0     14_decblock.obj
+ 0003:00000e18       ?table_365d8@@3PAHA        0042ee18     14_decblock.obj
+ 0003:00000e20       ?table_36530@@3PAHA        0042ee20     14_decblock.obj
+ 0003:00000e38       ?table_365a8@@3PAHA        0042ee38     14_decblock.obj
+ 0003:00000e58       ?table_365d0@@3PAHA        0042ee58     14_decblock.obj
+ 0003:00000e70       ?table_design_lava@@3PAHA  0042ee70     14_decblock.obj
+ 0003:00000e78       ?table_design_marine@@3PAHA 0042ee78     14_decblock.obj
+ 0003:00000e88       ?table_design_fan@@3PAHA   0042ee88     14_decblock.obj
+ 0003:00000ea0       ?table_design_wind@@3PAHA  0042eea0     14_decblock.obj
+ 0003:00000eb8       ?table_365f0@@3PAHA        0042eeb8     14_decblock.obj
+ 0003:00000ee0       ?table_366b0@@3PAHA        0042eee0     14_decblock.obj
+ 0003:00000ef0       ?table_366c0@@3PAHA        0042eef0     14_decblock.obj
+ 0003:00000f08       ?table_366d8@@3PAHA        0042ef08     14_decblock.obj
+ 0003:00000f18       ?table_366e8@@3PAHA        0042ef18     14_decblock.obj
+ 0003:00000f28       ?table_366f8@@3PAHA        0042ef28     14_decblock.obj
+ 0003:00000f40       ?table_36710@@3PAHA        0042ef40     14_decblock.obj
+ 0003:00000f78       ?table_design_door@@3PAHA  0042ef78     14_decblock.obj
+ 0003:00000fc0       ?table_design_key@@3PAHA   0042efc0     14_decblock.obj
+ 0003:00000fd0       ?table_36848@@3PAHA        0042efd0     14_decblock.obj
+ 0003:00001010       ?table_36888@@3PAHA        0042f010     14_decblock.obj
+ 0003:00001030       ?table_368a8@@3PAHA        0042f030     14_decblock.obj
+ 0003:00001048       ?table_368c0@@3PAHA        0042f048     14_decblock.obj
+ 0003:00001068       ?table_368e0@@3PAHA        0042f068     14_decblock.obj
+ 0003:00001080       ?table_368f8@@3PAHA        0042f080     14_decblock.obj
+ 0003:00001090       ?table_36908@@3PAHA        0042f090     14_decblock.obj
+ 0003:000010b0       ?table_36980@@3PAHA        0042f0b0     14_decblock.obj
+ 0003:00001108       ?table_36928@@3PAHA        0042f108     14_decblock.obj
+ 0003:00001130       ?table_36950@@3PAHA        0042f130     14_decblock.obj
+ 0003:00001148       ?table_36968@@3PAHA        0042f148     14_decblock.obj
+ 0003:00001160       ?table_369c0@@3PAHA        0042f160     14_decblock.obj
+ 0003:00001170       ?table_369c8@@3PAHA        0042f170     14_decblock.obj
+ 0003:00001198       ?table_blupi@@3PAHA        0042f198     14_decblock.obj
+ 0003:000035d8       ?table_mirror@@3PAHA       004315d8     14_decblock.obj
+ 0003:00003a58       ?table_vitesse_march@@3PAHA 00431a58     14_decblock.obj
+ 0003:00003a68       ?table_vitesse_nage@@3PAHA 00431a68     14_decblock.obj
+ 0003:00003a88       ?table_vitesse_surf@@3PAHA 00431a88     14_decblock.obj
+ 0003:00003aa0       ?table_decor_quart@@3PAFA  00431aa0     14_decblock.obj
+ 0003:00005840       ?table_bulldozer_left@@3PAHA 00433840     14_decblock.obj
+ 0003:00005860       ?table_bulldozer_right@@3PAHA 00433860     14_decblock.obj
+ 0003:00005880       ?table_bulldozer_turn2l@@3PAHA 00433880     14_decblock.obj
+ 0003:000058d8       ?table_bulldozer_turn2r@@3PAHA 004338d8     14_decblock.obj
+ 0003:00005930       ?table_poisson_left@@3PAHA 00433930     14_decblock.obj
+ 0003:00005950       ?table_poisson_right@@3PAHA 00433950     14_decblock.obj
+ 0003:00005970       ?table_poisson_turn2l@@3PAHA 00433970     14_decblock.obj
+ 0003:00005a30       ?table_poisson_turn2r@@3PAHA 00433a30     14_decblock.obj
+ 0003:00005af0       ?table_oiseau_left@@3PAHA  00433af0     14_decblock.obj
+ 0003:00005b10       ?table_oiseau_right@@3PAHA 00433b10     14_decblock.obj
+ 0003:00005b30       ?table_oiseau_turn2l@@3PAHA 00433b30     14_decblock.obj
+ 0003:00005b58       ?table_oiseau_turn2r@@3PAHA 00433b58     14_decblock.obj
+ 0003:00005b80       ?table_blupih_left@@3PAHA  00433b80     14_decblock.obj
+ 0003:00005ba0       ?table_blupih_right@@3PAHA 00433ba0     14_decblock.obj
+ 0003:00005bc0       ?table_blupih_turn2l@@3PAHA 00433bc0     14_decblock.obj
+ 0003:00005c28       ?table_blupih_turn2r@@3PAHA 00433c28     14_decblock.obj
+ 0003:00005c90       ?table_blupit_left@@3PAHA  00433c90     14_decblock.obj
+ 0003:00005cb0       ?table_blupit_right@@3PAHA 00433cb0     14_decblock.obj
+ 0003:00005cd0       ?table_blupit_turn2l@@3PAHA 00433cd0     14_decblock.obj
+ 0003:00005d30       ?table_blupit_turn2r@@3PAHA 00433d30     14_decblock.obj
+ 0003:00005d90       ?table_explo2@@3PAHA       00433d90     14_decblock.obj
+ 0003:00005de0       ?table_explo3@@3PAHA       00433de0     14_decblock.obj
+ 0003:00005e30       ?table_explo4@@3PAHA       00433e30     14_decblock.obj
+ 0003:00005e58       ?table_pollution@@3PAHA    00433e58     14_decblock.obj
+ 0003:00005e78       ?table_plouf@@3PAHA        00433e78     14_decblock.obj
+ 0003:00005e98       ?table_tiplouf@@3PAHA      00433e98     14_decblock.obj
+ 0003:00005ea8       ?table_blup@@3PAHA         00433ea8     14_decblock.obj
+ 0003:00005ef8       ?table_cle@@3PAHA          00433ef8     14_decblock.obj
+ 0003:00005f28       ?table_skate@@3PAHA        00433f28     14_decblock.obj
+ 0003:00005fb0       ?table_glu@@3PAHA          00433fb0     14_decblock.obj
+ 0003:00006018       ?table_clear@@3PAHA        00434018     14_decblock.obj
+ 0003:00006130       ?table_electro@@3PAHA      00434130     14_decblock.obj
+ 0003:00006298       ?table_adapt_decor@@3PAHA  00434298     14_decblock.obj
+ 0003:000063d8       ??_C@_0BG@PNLP@image08?2decor?$CF?43d?4blp?$AA@ 004343d8     14_decblock.obj
+ 0003:000063f0       ??_C@_0BG@EGLO@image16?2decor?$CF?43d?4blp?$AA@ 004343f0     14_decblock.obj
+ 0003:00006408       ??_C@_05OHLK@?$CFd?1?$CFd?$AA@ 00434408     14_decblock.obj
+ 0003:00006410       ??_C@_04ODBC@?$DN?5?$CFd?$AA@ 00434410     14_decblock.obj
+ 0003:00006418       ??_C@_09BDGG@debug?4txt?$AA@ 00434418     15_decdesign.obj
+ 0003:00006424       ??_C@_0BJ@CKBD@?5?1?5snd?$DN?$CFd?$CI?$CFd?$CJ?5rcv?$DN?$CFd?$CI?$CFd?$CJ?$AA@ 00434424     15_decdesign.obj
+ 0003:00006440       ??_C@_0BD@PLGA@data?2world?$CF?43d?4blp?$AA@ 00434440     12_decor.obj
+ 0003:00006454       ??_C@_0BE@FMAK@data?2u?$CF?43d?9?$CF?43d?4blp?$AA@ 00434454     12_decor.obj
+ 0003:00006468       ??_C@_0BE@JNON@data?2s?$CF?43d?9?$CF?43d?4blp?$AA@ 00434468     12_decor.obj
+ 0003:00049d04       ??_C@_02MLFD@ab?$AA@       00477d04     13_event.obj
+ 0003:00049d08       ??_C@_0L@FMJP@color?$DN?$CFd?$AN?6?$AA@ 00477d08     13_event.obj
+ 0003:00049d14       ??_C@_0BF@IHDP@Sending?5MESS_START?$AN?6?$AA@ 00477d14     13_event.obj
+ 0003:00049d2c       ??_C@_0BH@IJBL@CEvent?3?3NetStartPlay?$AN?6?$AA@ 00477d2c     13_event.obj
+ 0003:00049d44       ??_C@_03BBGG@?5?1?5?$AA@   00477d44     13_event.obj
+ 0003:00049d48       ??_C@_03NAME@?4?4?4?$AA@   00477d48     13_event.obj
+ 0003:00049d4c       ??_C@_02MECO@?$CFd?$AA@    00477d4c     13_event.obj
+ 0003:00049d50       ??_C@_03LCIO@x?$CFd?$AA@   00477d50     13_event.obj
+ 0003:00049d54       ??_C@_02CPJP@?5?$DP?$AA@   00477d54     13_event.obj
+ 0003:00049d58       ??_C@_0M@OMMM@Version?51?40?$AA@ 00477d58     13_event.obj
+ 0003:00049d64       ??_C@_0BC@HLPI@data?2world001?4blp?$AA@ 00477d64     13_event.obj
+ 0003:00049d78       ??_C@_0CD@BPCE@CEvent?3?3ChangePhase?5?$FLRead?5error?$FN@ 00477d78     13_event.obj
+ 0003:00049d9c       ??_C@_0BM@MIIB@CEvent?3?3ChangePhase?5?$FLEnd?$FN?$AN?6?$AA@ 00477d9c     13_event.obj
+ 0003:00049db8       ??_C@_0BC@HDCD@movie?2win?$CF?43d?4avi?$AA@ 00477db8     13_event.obj
+ 0003:00049dcc       ??_C@_0BD@CFII@movie?2play?$CF?43d?4avi?$AA@ 00477dcc     13_event.obj
+ 0003:00049de0       ??_C@_0BE@IFIA@sound?2music?$CF?43d?4blp?$AA@ 00477de0     13_event.obj
+ 0003:00049df4       ??_C@_04MOAO@?4xch?$AA@    00477df4     13_event.obj
+ 0003:00049dfc       ??_C@_0M@BHGE@?2User?2?$CK?4xch?$AA@ 00477dfc     13_event.obj
+ 0003:00049e08       ??_C@_0CD@PMPP@CEvent?3?3ChangePhase?5?$FLLoadImages?$FN@ 00477e08     13_event.obj
+ 0003:00049e2c       ??_C@_0CE@GCDD@CEvent?3?3ChangePhase?5?$FLRead?$FN?5?$CFd?0?5?$CF@ 00477e2c     13_event.obj
+ 0003:00049e50       ??_C@_0CE@IOC@CEvent?3?3ChangePhase?5?$FLCache?5error@ 00477e50     13_event.obj
+ 0003:00049e74       ??_C@_0CC@KKPL@CEvent?3?3ChangePhase?5?$FLWriteInfo?$FN?$AN@ 00477e74     13_event.obj
+ 0003:00049e98       ??_C@_0CF@HCPG@CEvent?3?3ChangePhase?5?$FLBegin?$FN?5?9?9?9?5@ 00477e98     13_event.obj
+ 0003:00049ec0       ??_C@_06DBEH@?2User?2?$AA@ 00477ec0     13_event.obj
+ 0003:00049ec8       ??_C@_05BDKH@?2User?$AA@   00477ec8     13_event.obj
+ 0003:00049ed0       ??_C@_04PCDF@?4blp?$AA@    00477ed0     13_event.obj
+ 0003:00049ed8       ??_C@_0BC@GFFB@data?2info?$CF?43d?4blp?$AA@ 00477ed8     13_event.obj
+ 0003:00049eec       ??_C@_0BC@FFPP@data?2demo?$CF?43d?4blp?$AA@ 00477eec     13_event.obj
+ 0003:00049f00       ??_C@_02CPLA@?$DO?5?$AA@   00477f00     13_event.obj
+ 0003:00049f04       ??_C@_01FHE@?$DM?$AA@      00477f04     13_event.obj
+ 0003:00049f08       ??_C@_01KALE@?$HM?$AA@     00477f08     13_event.obj
+ 0003:00049f0c       ??_C@_0BA@MEM@movie?2essai?4avi?$AA@ 00477f0c     13_event.obj
+ 0003:00049f1c       ??_C@_0BG@COFF@Received?5MESS_START?$AN?6?$AA@ 00477f1c     13_event.obj
+ 0003:00049f80       ??_C@_09ODLD@IDC_EMPTY?$AA@ 00477f80     04_misc.obj
+ 0003:00049f8c       ??_C@_08CCOI@IDC_WAIT?$AA@ 00477f8c     04_misc.obj
+ 0003:00049f98       ??_C@_0M@NINO@IDC_ARROWDR?$AA@ 00477f98     04_misc.obj
+ 0003:00049fa4       ??_C@_0M@NKGE@IDC_ARROWDL?$AA@ 00477fa4     04_misc.obj
+ 0003:00049fb0       ??_C@_0M@KENN@IDC_ARROWUR?$AA@ 00477fb0     04_misc.obj
+ 0003:00049fbc       ??_C@_0M@KGGH@IDC_ARROWUL?$AA@ 00477fbc     04_misc.obj
+ 0003:00049fc8       ??_C@_0L@BGJD@IDC_ARROWR?$AA@ 00477fc8     04_misc.obj
+ 0003:00049fd4       ??_C@_0L@BECJ@IDC_ARROWL?$AA@ 00477fd4     04_misc.obj
+ 0003:00049fe0       ??_C@_0L@EAJB@IDC_ARROWD?$AA@ 00477fe0     04_misc.obj
+ 0003:00049fec       ??_C@_0L@EDHG@IDC_ARROWU?$AA@ 00477fec     04_misc.obj
+ 0003:00049ff8       ??_C@_09NMM@IDC_ARROW?$AA@ 00477ff8     04_misc.obj
+ 0003:0004a004       ??_C@_07IBMG@?2debug?2?$AA@ 00478004     04_misc.obj
+ 0003:0004a00c       ??_C@_03NLLK@?4?4?2?$AA@   0047800c     04_misc.obj
+ 0003:0004a010       ??_C@_06GOHH@movie?2?$AA@  00478010     04_misc.obj
+ 0003:0004a018       ??_C@_08PBBC@image16?2?$AA@ 00478018     04_misc.obj
+ 0003:0004a024       ??_C@_08GBKP@image08?2?$AA@ 00478024     04_misc.obj
+ 0003:0004a030       ??_C@_06KLOA@image?2?$AA@  00478030     04_misc.obj
+ 0003:0004a038       ??_C@_05GDLI@data?2?$AA@   00478038     04_misc.obj
+ 0003:0004a040       ??_C@_01PCFE@?2?$AA@       00478040     04_misc.obj
+ 0003:0004a044       ??_C@_0BB@GCHH@c?3?2Speedy?5Blupi?2?$AA@ 00478044     04_misc.obj
+ 0003:0004a058       ??_C@_0CL@PGMM@DirectDraw?5Error?5?$CFs?5in?5file?5?$CFs?5a@ 00478058     04_misc.obj
+ 0003:0004a084       ??_C@_0BF@LLCF@DDERR_CANTPAGEUNLOCK?$AA@ 00478084     04_misc.obj
+ 0003:0004a09c       ??_C@_0BE@PHHK@DDERR_NOTPAGELOCKED?$AA@ 0047809c     04_misc.obj
+ 0003:0004a0b0       ??_C@_05LCHN@DD_OK?$AA@    004780b0     04_misc.obj
+ 0003:0004a0b8       ??_C@_0O@NKPL@Unknown?5Error?$AA@ 004780b8     04_misc.obj
+ 0003:0004a0c8       ??_C@_0BD@OCPI@DDERR_CANTPAGELOCK?$AA@ 004780c8     04_misc.obj
+ 0003:0004a0dc       ??_C@_0BH@MJAO@DDERR_DCALREADYCREATED?$AA@ 004780dc     04_misc.obj
+ 0003:0004a0f4       ??_C@_0BJ@CODF@DDERR_INVALIDSURFACETYPE?$AA@ 004780f4     04_misc.obj
+ 0003:0004a110       ??_C@_0BB@PNI@DDERR_NOMIPMAPHW?$AA@ 00478110     04_misc.obj
+ 0003:0004a124       ??_C@_0BG@GGFL@DDERR_UNSUPPORTEDMODE?$AA@ 00478124     04_misc.obj
+ 0003:0004a13c       ??_C@_0BE@GJCG@DDERR_NOTPALETTIZED?$AA@ 0047813c     04_misc.obj
+ 0003:0004a150       ??_C@_0BI@CFBP@DDERR_IMPLICITLYCREATED?$AA@ 00478150     04_misc.obj
+ 0003:0004a168       ??_C@_0BA@BNFD@DDERR_WRONGMODE?$AA@ 00478168     04_misc.obj
+ 0003:0004a178       ??_C@_0L@PFPD@DDERR_NODC?$AA@ 00478178     04_misc.obj
+ 0003:0004a184       ??_C@_0BD@PHJH@DDERR_CANTCREATEDC?$AA@ 00478184     04_misc.obj
+ 0003:0004a198       ??_C@_0BA@IHOJ@DDERR_NOTLOCKED?$AA@ 00478198     04_misc.obj
+ 0003:0004a1a8       ??_C@_0BE@PLOG@DDERR_CANTDUPLICATE?$AA@ 004781a8     04_misc.obj
+ 0003:0004a1bc       ??_C@_0BD@CJKH@DDERR_NOTFLIPPABLE?$AA@ 004781bc     04_misc.obj
+ 0003:0004a1d0       ??_C@_0BO@IOJH@DDERR_EXCLUSIVEMODEALREADYSET?$AA@ 004781d0     04_misc.obj
+ 0003:0004a1f0       ??_C@_0BJ@OGJB@DDERR_NOTAOVERLAYSURFACE?$AA@ 004781f0     04_misc.obj
+ 0003:0004a20c       ??_C@_0BG@MKKH@DDERR_INVALIDPOSITION?$AA@ 0047820c     04_misc.obj
+ 0003:0004a224       ??_C@_0BE@DDHB@DDERR_NOOVERLAYDEST?$AA@ 00478224     04_misc.obj
+ 0003:0004a238       ??_C@_0BI@MEJA@DDERR_OVERLAYNOTVISIBLE?$AA@ 00478238     04_misc.obj
+ 0003:0004a250       ??_C@_0BB@LKO@DDERR_NODDROPSHW?$AA@ 00478250     04_misc.obj
+ 0003:0004a264       ??_C@_0O@DCPD@DDERR_NOBLTHW?$AA@ 00478264     04_misc.obj
+ 0003:0004a274       ??_C@_0BG@MIGH@DDERR_BLTFASTCANTCLIP?$AA@ 00478274     04_misc.obj
+ 0003:0004a28c       ??_C@_0BC@GBNJ@DDERR_NOPALETTEHW?$AA@ 0047828c     04_misc.obj
+ 0003:0004a2a0       ??_C@_0BI@DACF@DDERR_NOPALETTEATTACHED?$AA@ 004782a0     04_misc.obj
+ 0003:0004a2b8       ??_C@_0BF@MOCP@DDERR_HWNDALREADYSET?$AA@ 004782b8     04_misc.obj
+ 0003:0004a2d0       ??_C@_0BF@DLEF@DDERR_HWNDSUBCLASSED?$AA@ 004782d0     04_misc.obj
+ 0003:0004a2e8       ??_C@_0N@INIK@DDERR_NOHWND?$AA@ 004782e8     04_misc.obj
+ 0003:0004a2f8       ??_C@_0BI@NMMO@DDERR_NOCLIPPERATTACHED?$AA@ 004782f8     04_misc.obj
+ 0003:0004a310       ??_C@_0BJ@MFMC@DDERR_CLIPPERISUSINGHWND?$AA@ 00478310     04_misc.obj
+ 0003:0004a32c       ??_C@_0BF@MBHN@DDERR_REGIONTOOSMALL?$AA@ 0047832c     04_misc.obj
+ 0003:0004a344       ??_C@_0BC@KIDO@DDERR_NOEMULATION?$AA@ 00478344     04_misc.obj
+ 0003:0004a358       ??_C@_0CC@GOKD@DDERR_PRIMARYSURFACEALREADYEXIST@ 00478358     04_misc.obj
+ 0003:0004a37c       ??_C@_0BF@LDPJ@DDERR_NODIRECTDRAWHW?$AA@ 0047837c     04_misc.obj
+ 0003:0004a394       ??_C@_0BP@HCLN@DDERR_DIRECTDRAWALREADYCREATED?$AA@ 00478394     04_misc.obj
+ 0003:0004a3b4       ??_C@_0BM@OPAM@DDERR_INVALIDDIRECTDRAWGUID?$AA@ 004783b4     04_misc.obj
+ 0003:0004a3d0       ??_C@_0N@BDF@DDERR_XALIGN?$AA@ 004783d0     04_misc.obj
+ 0003:0004a3e0       ??_C@_0BG@BBPF@DDERR_WASSTILLDRAWING?$AA@ 004783e0     04_misc.obj
+ 0003:0004a3f8       ??_C@_0BO@MNN@DDERR_VERTICALBLANKINPROGRESS?$AA@ 004783f8     04_misc.obj
+ 0003:0004a418       ??_C@_0BG@LKKP@DDERR_UNSUPPORTEDMASK?$AA@ 00478418     04_misc.obj
+ 0003:0004a430       ??_C@_0BI@BECN@DDERR_UNSUPPORTEDFORMAT?$AA@ 00478430     04_misc.obj
+ 0003:0004a448       ??_C@_0BC@GCH@DDERR_TOOBIGWIDTH?$AA@ 00478448     04_misc.obj
+ 0003:0004a45c       ??_C@_0BB@GBAJ@DDERR_TOOBIGSIZE?$AA@ 0047845c     04_misc.obj
+ 0003:0004a470       ??_C@_0BD@BPON@DDERR_TOOBIGHEIGHT?$AA@ 00478470     04_misc.obj
+ 0003:0004a484       ??_C@_0BJ@OMKO@DDERR_SURFACENOTATTACHED?$AA@ 00478484     04_misc.obj
+ 0003:0004a4a0       ??_C@_0BC@FDEM@DDERR_SURFACELOST?$AA@ 004784a0     04_misc.obj
+ 0003:0004a4b4       ??_C@_0BI@KAAK@DDERR_SURFACEISOBSCURED?$AA@ 004784b4     04_misc.obj
+ 0003:0004a4cc       ??_C@_0BG@KGKE@DDERR_CANTLOCKSURFACE?$AA@ 004784cc     04_misc.obj
+ 0003:0004a4e4       ??_C@_0BC@OHLB@DDERR_SURFACEBUSY?$AA@ 004784e4     04_misc.obj
+ 0003:0004a4f8       ??_C@_0BO@PJKH@DDERR_SURFACEALREADYDEPENDENT?$AA@ 004784f8     04_misc.obj
+ 0003:0004a518       ??_C@_0BN@HBEC@DDERR_SURFACEALREADYATTACHED?$AA@ 00478518     04_misc.obj
+ 0003:0004a538       ??_C@_0BF@EBGI@DDERR_COLORKEYNOTSET?$AA@ 00478538     04_misc.obj
+ 0003:0004a550       ??_C@_0BC@LHPH@DDERR_PALETTEBUSY?$AA@ 00478550     04_misc.obj
+ 0003:0004a564       ??_C@_0CD@IKFB@DDERR_OVERLAYCOLORKEYONLYONEACTI@ 00478564     04_misc.obj
+ 0003:0004a588       ??_C@_0BG@FCIN@DDERR_OVERLAYCANTCLIP?$AA@ 00478588     04_misc.obj
+ 0003:0004a5a0       ??_C@_0BH@GLCM@DDERR_OUTOFVIDEOMEMORY?$AA@ 004785a0     04_misc.obj
+ 0003:0004a5b8       ??_C@_0BA@OHCK@DDERR_OUTOFCAPS?$AA@ 004785b8     04_misc.obj
+ 0003:0004a5c8       ??_C@_0BD@HDLA@DDERR_NOZOVERLAYHW?$AA@ 004785c8     04_misc.obj
+ 0003:0004a5dc       ??_C@_0BC@IPJO@DDERR_NOZBUFFERHW?$AA@ 004785dc     04_misc.obj
+ 0003:0004a5f0       ??_C@_0BA@KCIJ@DDERR_NOVSYNCHW?$AA@ 004785f0     04_misc.obj
+ 0003:0004a600       ??_C@_0BC@KLCE@DDERR_NOTEXTUREHW?$AA@ 00478600     04_misc.obj
+ 0003:0004a614       ??_C@_0BD@FJEG@DDERR_NOT4BITCOLOR?$AA@ 00478614     04_misc.obj
+ 0003:0004a628       ??_C@_0BI@NPCF@DDERR_NOT4BITCOLORINDEX?$AA@ 00478628     04_misc.obj
+ 0003:0004a640       ??_C@_0BD@ECCH@DDERR_NOT8BITCOLOR?$AA@ 00478640     04_misc.obj
+ 0003:0004a654       ??_C@_0BC@JCJA@DDERR_NOSTRETCHHW?$AA@ 00478654     04_misc.obj
+ 0003:0004a668       ??_C@_0BD@BAKO@DDERR_NOROTATIONHW?$AA@ 00478668     04_misc.obj
+ 0003:0004a67c       ??_C@_0BD@HLBF@DDERR_NORASTEROPHW?$AA@ 0047867c     04_misc.obj
+ 0003:0004a690       ??_C@_0BC@JFFJ@DDERR_NOOVERLAYHW?$AA@ 00478690     04_misc.obj
+ 0003:0004a6a4       ??_C@_0P@BPIP@DDERR_NOTFOUND?$AA@ 004786a4     04_misc.obj
+ 0003:0004a6b4       ??_C@_0BB@BGEM@DDERR_NOMIRRORHW?$AA@ 004786b4     04_misc.obj
+ 0003:0004a6c8       ??_C@_0M@DMHE@DDERR_NOGDI?$AA@ 004786c8     04_misc.obj
+ 0003:0004a6d4       ??_C@_0P@MLDL@DDERR_NOFLIPHW?$AA@ 004786d4     04_misc.obj
+ 0003:0004a6e4       ??_C@_0BG@GHJG@DDERR_NOEXCLUSIVEMODE?$AA@ 004786e4     04_misc.obj
+ 0003:0004a6fc       ??_C@_0BK@PEEB@DDERR_NODIRECTDRAWSUPPORT?$AA@ 004786fc     04_misc.obj
+ 0003:0004a718       ??_C@_0BD@PBLA@DDERR_NOCOLORKEYHW?$AA@ 00478718     04_misc.obj
+ 0003:0004a72c       ??_C@_0BE@IEFK@DDERR_NOCOLORCONVHW?$AA@ 0047872c     04_misc.obj
+ 0003:0004a740       ??_C@_0BM@INCD@DDERR_NOCOOPERATIVELEVELSET?$AA@ 00478740     04_misc.obj
+ 0003:0004a75c       ??_C@_0BB@NHFC@DDERR_NOCOLORKEY?$AA@ 0047875c     04_misc.obj
+ 0003:0004a770       ??_C@_0BB@EJBM@DDERR_NOCLIPLIST?$AA@ 00478770     04_misc.obj
+ 0003:0004a784       ??_C@_0BA@EHJG@DDERR_NOALPHAHW?$AA@ 00478784     04_misc.obj
+ 0003:0004a794       ??_C@_0L@NEBN@DDERR_NO3D?$AA@ 00478794     04_misc.obj
+ 0003:0004a7a0       ??_C@_0BF@IFLE@DDERR_LOCKEDSURFACES?$AA@ 004787a0     04_misc.obj
+ 0003:0004a7b8       ??_C@_0BC@KBCO@DDERR_INVALIDRECT?$AA@ 004787b8     04_misc.obj
+ 0003:0004a7cc       ??_C@_0BJ@EJCO@DDERR_INVALIDPIXELFORMAT?$AA@ 004787cc     04_misc.obj
+ 0003:0004a7e8       ??_C@_0BE@LOLC@DDERR_INVALIDOBJECT?$AA@ 004787e8     04_misc.obj
+ 0003:0004a7fc       ??_C@_0BC@HCAL@DDERR_INVALIDMODE?$AA@ 004787fc     04_misc.obj
+ 0003:0004a810       ??_C@_0BG@MOJK@DDERR_INVALIDCLIPLIST?$AA@ 00478810     04_misc.obj
+ 0003:0004a828       ??_C@_0BC@JNLE@DDERR_INVALIDCAPS?$AA@ 00478828     04_misc.obj
+ 0003:0004a83c       ??_C@_0BK@BLOA@DDERR_INCOMPATIBLEPRIMARY?$AA@ 0047883c     04_misc.obj
+ 0003:0004a858       ??_C@_0BC@EIBC@DDERR_HEIGHTALIGN?$AA@ 00478858     04_misc.obj
+ 0003:0004a86c       ??_C@_0BA@EAOD@DDERR_EXCEPTION?$AA@ 0047886c     04_misc.obj
+ 0003:0004a87c       ??_C@_0BI@PBAE@DDERR_CURRENTLYNOTAVAIL?$AA@ 0047887c     04_misc.obj
+ 0003:0004a894       ??_C@_0BK@JIOM@DDERR_CANNOTDETACHSURFACE?$AA@ 00478894     04_misc.obj
+ 0003:0004a8b0       ??_C@_0BK@DPHE@DDERR_CANNOTATTACHSURFACE?$AA@ 004788b0     04_misc.obj
+ 0003:0004a8cc       ??_C@_0BJ@CBME@DDERR_ALREADYINITIALIZED?$AA@ 004788cc     04_misc.obj
+ 0003:0004a8e8       ??_C@_0BE@OBBL@DDERR_INVALIDPARAMS?$AA@ 004788e8     04_misc.obj
+ 0003:0004a8fc       ??_C@_0BC@PPLJ@DDERR_OUTOFMEMORY?$AA@ 004788fc     04_misc.obj
+ 0003:0004a910       ??_C@_0BF@LHGP@DDERR_NOTINITIALIZED?$AA@ 00478910     04_misc.obj
+ 0003:0004a928       ??_C@_0O@JJAG@DDERR_GENERIC?$AA@ 00478928     04_misc.obj
+ 0003:0004a938       ??_C@_0BC@JHBM@DDERR_UNSUPPORTED?$AA@ 00478938     04_misc.obj
+ 0003:0004a94c       ??_C@_0CM@COND@DirectSound?5Error?5?$CFs?5in?5file?5?$CFs?5@ 0047894c     04_misc.obj
+ 0003:0004a978       ??_C@_0BE@MHLG@DSERR_UNINITIALIZED?$AA@ 00478978     04_misc.obj
+ 0003:0004a98c       ??_C@_0BG@BPHM@DSERR_OTHERAPPHASPRIO?$AA@ 0047898c     04_misc.obj
+ 0003:0004a9a4       ??_C@_0BB@MLJO@DSERR_BUFFERLOST?$AA@ 004789a4     04_misc.obj
+ 0003:0004a9b8       ??_C@_0BJ@LHGI@DSERR_ALREADYINITIALIZED?$AA@ 004789b8     04_misc.obj
+ 0003:0004a9d4       ??_C@_0P@JGOM@DSERR_NODRIVER?$AA@ 004789d4     04_misc.obj
+ 0003:0004a9e4       ??_C@_0BA@JHO@DSERR_BADFORMAT?$AA@ 004789e4     04_misc.obj
+ 0003:0004a9f4       ??_C@_0BG@MDBD@DSERR_PRIOLEVELNEEDED?$AA@ 004789f4     04_misc.obj
+ 0003:0004aa0c       ??_C@_0BC@EJKJ@DSERR_INVALIDCALL?$AA@ 00478a0c     04_misc.obj
+ 0003:0004aa20       ??_C@_0BF@JADI@DSERR_CONTROLUNAVAIL?$AA@ 00478a20     04_misc.obj
+ 0003:0004aa38       ??_C@_0BA@IBDB@DSERR_ALLOCATED?$AA@ 00478a38     04_misc.obj
+ 0003:0004aa48       ??_C@_0BD@JMDM@DSERR_INVALIDPARAM?$AA@ 00478a48     04_misc.obj
+ 0003:0004aa5c       ??_C@_0BC@GNO@DSERR_OUTOFMEMORY?$AA@ 00478a5c     04_misc.obj
+ 0003:0004aa70       ??_C@_0BE@FNCP@DSERR_NOAGGREGATION?$AA@ 00478a70     04_misc.obj
+ 0003:0004aa84       ??_C@_0O@EGDL@DSERR_GENERIC?$AA@ 00478a84     04_misc.obj
+ 0003:0004aa94       ??_C@_0BC@GOHL@DSERR_UNSUPPORTED?$AA@ 00478a94     04_misc.obj
+ 0003:0004aaa8       ??_C@_08KPNA@avivideo?$AA@ 00478aa8     05_movie.obj
+ 0003:0004aab4       ??_C@_0BF@MCIH@DirectPlay?5Error?5?$CFs?6?$AA@ 00478ab4     06_network.obj
+ 0003:0004aacc       ??_C@_0BB@GNDN@DPERR_NOTLOBBIED?$AA@ 00478acc     06_network.obj
+ 0003:0004aae0       ??_C@_05HCBE@DP_OK?$AA@    00478ae0     06_network.obj
+ 0003:0004aae8       ??_C@_0BJ@KBJE@DPERR_UNKNOWNAPPLICATION?$AA@ 00478ae8     06_network.obj
+ 0003:0004ab04       ??_C@_0BH@NOFK@DPERR_INVALIDINTERFACE?$AA@ 00478b04     06_network.obj
+ 0003:0004ab1c       ??_C@_0BE@PIBM@DPERR_APPNOTSTARTED?$AA@ 00478b1c     06_network.obj
+ 0003:0004ab30       ??_C@_0BI@GPHA@DPERR_CANTCREATEPROCESS?$AA@ 00478b30     06_network.obj
+ 0003:0004ab48       ??_C@_0BF@ECHL@DPERR_BUFFERTOOLARGE?$AA@ 00478b48     06_network.obj
+ 0003:0004ab60       ??_C@_0BC@HCBE@DPERR_SESSIONLOST?$AA@ 00478b60     06_network.obj
+ 0003:0004ab74       ??_C@_0BB@DHID@DPERR_PLAYERLOST?$AA@ 00478b74     06_network.obj
+ 0003:0004ab88       ??_C@_0BB@DEPF@DPERR_USERCANCEL?$AA@ 00478b88     06_network.obj
+ 0003:0004ab9c       ??_C@_0L@NBGB@DPERR_BUSY?$AA@ 00478b9c     06_network.obj
+ 0003:0004aba8       ??_C@_0BC@MPPN@DPERR_UNAVAILABLE?$AA@ 00478ba8     06_network.obj
+ 0003:0004abbc       ??_C@_0O@KDFP@DPERR_TIMEOUT?$AA@ 00478bbc     06_network.obj
+ 0003:0004abcc       ??_C@_0BB@GKEG@DPERR_SENDTOOBIG?$AA@ 00478bcc     06_network.obj
+ 0003:0004abe0       ??_C@_0BB@BHBA@DPERR_NOSESSIONS?$AA@ 00478be0     06_network.obj
+ 0003:0004abf4       ??_C@_0BA@MGKH@DPERR_NOPLAYERS?$AA@ 00478bf4     06_network.obj
+ 0003:0004ac04       ??_C@_0BI@KFMN@DPERR_NONAMESERVERFOUND?$AA@ 00478c04     06_network.obj
+ 0003:0004ac1c       ??_C@_0BB@FAOE@DPERR_NOMESSAGES?$AA@ 00478c1c     06_network.obj
+ 0003:0004ac30       ??_C@_0BD@JLI@DPERR_NOCONNECTION?$AA@ 00478c30     06_network.obj
+ 0003:0004ac44       ??_C@_0N@FDKF@DPERR_NOCAPS?$AA@ 00478c44     06_network.obj
+ 0003:0004ac54       ??_C@_0BE@FMNI@DPERR_INVALIDPLAYER?$AA@ 00478c54     06_network.obj
+ 0003:0004ac68       ??_C@_0BE@LGCA@DPERR_INVALIDOBJECT?$AA@ 00478c68     06_network.obj
+ 0003:0004ac7c       ??_C@_0BD@HKEK@DPERR_INVALIDFLAGS?$AA@ 00478c7c     06_network.obj
+ 0003:0004ac90       ??_C@_0BA@MELA@DPERR_EXCEPTION?$AA@ 00478c90     06_network.obj
+ 0003:0004aca0       ??_C@_0BK@BKDD@DPERR_CAPSNOTAVAILABLEYET?$AA@ 00478ca0     06_network.obj
+ 0003:0004acbc       ??_C@_0BI@NINM@DPERR_CANTCREATESESSION?$AA@ 00478cbc     06_network.obj
+ 0003:0004acd4       ??_C@_0BH@PAOG@DPERR_CANTCREATEPLAYER?$AA@ 00478cd4     06_network.obj
+ 0003:0004acec       ??_C@_0BG@IAEB@DPERR_CANTCREATEGROUP?$AA@ 00478cec     06_network.obj
+ 0003:0004ad04       ??_C@_0BE@FLAJ@DPERR_CANTADDPLAYER?$AA@ 00478d04     06_network.obj
+ 0003:0004ad18       ??_C@_0BF@DJPD@DPERR_BUFFERTOOSMALL?$AA@ 00478d18     06_network.obj
+ 0003:0004ad30       ??_C@_0BE@OOHJ@DPERR_ACTIVEPLAYERS?$AA@ 00478d30     06_network.obj
+ 0003:0004ad44       ??_C@_0BD@FECJ@DPERR_ACCESSDENIED?$AA@ 00478d44     06_network.obj
+ 0003:0004ad58       ??_C@_0BJ@JDAH@DPERR_ALREADYINITIALIZED?$AA@ 00478d58     06_network.obj
+ 0003:0004ad74       ??_C@_0BE@OJIJ@DPERR_INVALIDPARAMS?$AA@ 00478d74     06_network.obj
+ 0003:0004ad88       ??_C@_0BC@GEJJ@DPERR_OUTOFMEMORY?$AA@ 00478d88     06_network.obj
+ 0003:0004ad9c       ??_C@_0BC@MDM@DPERR_UNSUPPORTED?$AA@ 00478d9c     06_network.obj
+ 0003:0004adb0       ??_C@_0BC@MPMN@DPERR_NOINTERFACE?$AA@ 00478db0     06_network.obj
+ 0003:0004adc4       ??_C@_0O@PAAE@DPERR_GENERIC?$AA@ 00478dc4     06_network.obj
+ 0003:0004add8       ?table_icon_blupi@@3PAFA   00478dd8     18_dectables.obj
+ 0003:0004bb80       ?table_icon_object@@3PAFA  00479b80     18_dectables.obj
+ 0003:0004c710       ?table_icon_element@@3PAFA 0047a710     18_dectables.obj
+ 0003:0004cfd8       ?table_icon_explo@@3PAFA   0047afd8     18_dectables.obj
+ 0003:0004d280       ??_C@_0CJ@IBG@Can?8t?5attach?5clipper?5to?5primary?5@ 0047b280     07_pixmap.obj
+ 0003:0004d2ac       ??_C@_0CB@HDAF@Can?8t?5set?5clipper?5window?5handle?6@ 0047b2ac     07_pixmap.obj
+ 0003:0004d2d0       ??_C@_0BG@MDNG@Can?8t?5create?5clipper?6?$AA@ 0047b2d0     07_pixmap.obj
+ 0003:0004d2e8       ??_C@_0CB@NFAB@Fatal?5error?3?5CreateMouseSurface?6@ 0047b2e8     07_pixmap.obj
+ 0003:0004d30c       ??_C@_0CA@IPAA@Fatal?5error?3?5CreateBackSurface?6?$AA@ 0047b30c     07_pixmap.obj
+ 0003:0004d32c       ??_C@_0BM@ICAH@Fatal?5error?3?5CreateSurface?6?$AA@ 0047b32c     07_pixmap.obj
+ 0003:0004d348       ??_C@_06NBAD@pixmap?$AA@   0047b348     07_pixmap.obj
+ 0003:0004d350       ??_C@_0BN@IMEM@Fatal?5error?3?5SetDisplayMode?6?$AA@ 0047b350     07_pixmap.obj
+ 0003:0004d370       ??_C@_0CC@DAJH@Fatal?5error?3?5SetCooperativeLevel@ 0047b370     07_pixmap.obj
+ 0003:0004d394       ??_C@_0BP@IIPA@Fatal?5error?3?5DirectDrawCreate?6?$AA@ 0047b394     07_pixmap.obj
+ 0003:0004d3b4       ??_C@_0BF@IPEF@CPixmap?3?3RestoreAll?6?$AA@ 0047b3b4     07_pixmap.obj
+ 0003:0004d3cc       ??_C@_0P@JHPM@DDSetColorKey?6?$AA@ 0047b3cc     07_pixmap.obj
+ 0003:0004d3dc       ??_C@_0BL@HKKH@Fatal?5error?3?5DDLoadBitmap?6?$AA@ 0047b3dc     07_pixmap.obj
+ 0003:0004d3f8       ??_C@_0N@FPOK@Set?5palette?6?$AA@ 0047b3f8     07_pixmap.obj
+ 0003:0004d408       ??_C@_0BB@KHGB@Release?5palette?6?$AA@ 0047b408     07_pixmap.obj
+ 0003:0004d41c       ??_C@_0N@JHKP@Use?5palette?6?$AA@ 0047b41c     07_pixmap.obj
+ 0003:0004d484       ??_C@_0BE@CIPC@F?3?2Profil?2sound?4cpp?$AA@ 0047b484     08_sound.obj
+ 0003:0004d498       ??_C@_0CC@IMA@Data1?5?3?5?$CFd?0?5dwdata?3?5?$CFd?0?5pFile?3?5?$CF@ 0047b498     08_sound.obj
+ 0003:0004d4bc       ??_C@_0CA@JKJB@Fatal?5error?3?5DirectSoundCreate?6?$AA@ 0047b4bc     08_sound.obj
+ 0003:0004d4dc       ??_C@_0BE@KOD@sound?2sound?$CF?43d?4blp?$AA@ 0047b4dc     08_sound.obj
+ 0003:0004d4f0       ??_C@_0N@HGOF@PlayMusic?92?6?$AA@ 0047b4f0     08_sound.obj
+ 0003:0004d500       ??_C@_0N@ENBK@PlayMusic?91?6?$AA@ 0047b500     08_sound.obj
+ 0003:0004d510       ??_C@_09FLD@sequencer?$AA@ 0047b510     08_sound.obj
+ 0003:0004d51c       ??_C@_0O@NAGL@RestartMusic?6?$AA@ 0047b51c     08_sound.obj
+ 0003:0004d530       ?table_char@@3PADA         0047b530     09_text.obj
+ 0003:0004dc40       __NLG_Destination          0047bc40     LIBC:exsup.obj
+ 0003:0004dc60       __aexit_rtn                0047bc60     LIBC:wincrt0.obj
+ 0003:0004dc64       ___app_type                0047bc64     LIBC:wincrt0.obj
+ 0003:0004dc68       ___nullstring              0047bc68     LIBC:output.obj
+ 0003:0004dc6c       ___wnullstring             0047bc6c     LIBC:output.obj
+ 0003:0004dc70       __timezone                 0047bc70     LIBC:timeset.obj
+ 0003:0004dc74       __daylight                 0047bc74     LIBC:timeset.obj
+ 0003:0004dc78       __dstbias                  0047bc78     LIBC:timeset.obj
+ 0003:0004dd00       __tzname                   0047bd00     LIBC:timeset.obj
+ 0003:0004dd30       ?__pUnexpected@@3P6AXXZA   0047bd30     LIBC:hooks.obj
+ 0003:0004dd34       ?__pInconsistency@@3P6AXXZA 0047bd34     LIBC:hooks.obj
+ 0003:0004dea0       __amblksiz                 0047bea0     LIBC:heapinit.obj
+ 0003:0004dea8       ___small_block_heap        0047bea8     LIBC:sbheap.obj
+ 0003:0004fecc       ___sbh_threshold           0047decc     LIBC:sbheap.obj
+ 0003:0004fed0       __pctype                   0047ded0     LIBC:ctype.obj
+ 0003:0004fed4       __pwctype                  0047ded4     LIBC:ctype.obj
+ 0003:0004fed8       __ctype                    0047ded8     LIBC:ctype.obj
+ 0003:000500dc       ___mb_cur_max              0047e0dc     LIBC:nlsdata1.obj
+ 0003:000500e0       ___decimal_point           0047e0e0     LIBC:nlsdata1.obj
+ 0003:000500e4       ___decimal_point_length    0047e0e4     LIBC:nlsdata1.obj
+ 0003:000500e8       __XcptActTab               0047e0e8     LIBC:winxfltr.obj
+ 0003:00050160       __First_FPE_Indx           0047e160     LIBC:winxfltr.obj
+ 0003:00050164       __Num_FPE                  0047e164     LIBC:winxfltr.obj
+ 0003:00050168       __XcptActTabCount          0047e168     LIBC:winxfltr.obj
+ 0003:0005016c       __fpecode                  0047e16c     LIBC:winxfltr.obj
+ 0003:00050268       ___badioinfo               0047e268     LIBC:ioinit.obj
+ 0003:00050300       __iob                      0047e300     LIBC:_file.obj
+ 0003:00050580       __cfltcvt_tab              0047e580     LIBC:cmiscdat.obj
+ 0003:000505a0       __lpdays                   0047e5a0     LIBC:days.obj
+ 0003:000505d8       __days                     0047e5d8     LIBC:days.obj
+ 0003:00050610       ?blupi_unknown_47e610@@3PAEA 0047e610     10_blupi.obj
+ 0003:00050618       ?g_hWnd@@3PAXA             0047e618     10_blupi.obj
+ 0003:00050620       ?bss47e620Unknown@@3PAEA   0047e620     10_blupi.obj
+ 0003:00050628       ?g_CDPath@@3PADA           0047e628     10_blupi.obj
+ 0003:0005072c       ?g_updateTimer@@3IA        0047e72c     10_blupi.obj
+ 0003:00050730       ?unknownBss47e730@@3IA     0047e730     10_blupi.obj
+ 0003:00050738       ?g_pEvent@@3PAVCEvent@@A   0047e738     10_blupi.obj
+ 0003:0005073c       ?g_pPixmap@@3PAVCPixmap@@A 0047e73c     10_blupi.obj
+ 0003:00050740       ?g_pSound@@3PAVCSound@@A   0047e740     10_blupi.obj
+ 0003:00050744       ?g_pNetwork@@3PAVCNetwork@@A 0047e744     10_blupi.obj
+ 0003:00050748       ?g_pMovie@@3PAVCMovie@@A   0047e748     10_blupi.obj
+ 0003:0005074c       ?g_pDecor@@3PAVCDecor@@A   0047e74c     10_blupi.obj
+ 0003:00050750       ?g_bFullScreen@@3HA        0047e750     10_blupi.obj
+ 0003:00050754       ?g_bTrueColorBack@@3HA     0047e754     10_blupi.obj
+ 0003:00050758       ?g_benchmark@@3HA          0047e758     10_blupi.obj
+ 0003:0005075c       ?g_timer@@3HA              0047e75c     10_blupi.obj
+ 0003:00050760       ?g_bActive@@3HA            0047e760     10_blupi.obj
+ 0003:00050764       ?g_bTermInit@@3HA          0047e764     10_blupi.obj
+ 0003:00050768       ??_C@_00A@?$AA@            0047e768     01_ddutil.obj
+ 0003:0005076c       ?g_hInstance@@3PAXA        0047e76c     04_misc.obj
+ 0003:00050770       ?g_lastSprite@@3HA         0047e770     04_misc.obj
+ 0003:00050778       ?unknownBss_47e778@@3PAEA  0047e778     18_dectables.obj
+ 0003:000507dc       _errno                     0047e7dc     LIBC:crt0dat.obj
+ 0003:000507e0       __doserrno                 0047e7e0     LIBC:crt0dat.obj
+ 0003:000507e4       __umaskval                 0047e7e4     LIBC:crt0dat.obj
+ 0003:000507e8       __osver                    0047e7e8     LIBC:crt0dat.obj
+ 0003:000507ec       __winver                   0047e7ec     LIBC:crt0dat.obj
+ 0003:000507f0       __winmajor                 0047e7f0     LIBC:crt0dat.obj
+ 0003:000507f4       __winminor                 0047e7f4     LIBC:crt0dat.obj
+ 0003:000507f8       ___argc                    0047e7f8     LIBC:crt0dat.obj
+ 0003:000507fc       ___argv                    0047e7fc     LIBC:crt0dat.obj
+ 0003:00050800       ___wargv                   0047e800     LIBC:crt0dat.obj
+ 0003:00050804       __environ                  0047e804     LIBC:crt0dat.obj
+ 0003:00050808       ___initenv                 0047e808     LIBC:crt0dat.obj
+ 0003:0005080c       __wenviron                 0047e80c     LIBC:crt0dat.obj
+ 0003:00050810       ___winitenv                0047e810     LIBC:crt0dat.obj
+ 0003:00050814       __pgmptr                   0047e814     LIBC:crt0dat.obj
+ 0003:00050818       __wpgmptr                  0047e818     LIBC:crt0dat.obj
+ 0003:0005081c       __exitflag                 0047e81c     LIBC:crt0dat.obj
+ 0003:00050820       __C_Termination_Done       0047e820     LIBC:crt0dat.obj
+ 0003:00050824       __C_Exit_Done              0047e824     LIBC:crt0dat.obj
+ 0003:00050828       __aenvptr                  0047e828     LIBC:wincrt0.obj
+ 0003:0005082c       __wenvptr                  0047e82c     LIBC:wincrt0.obj
+ 0003:00050830       ___error_mode              0047e830     LIBC:wincrt0.obj
+ 0003:000508f4       ?_pCurrentException@@3PAUEHExceptionRecord@@A 0047e8f4     LIBC:frame.obj
+ 0003:000508f8       ?_pCurrentExContext@@3PAU_CONTEXT@@A 0047e8f8     LIBC:frame.obj
+ 0003:000508fc       ?__pSETranslator@@3P6AXIPAU_EXCEPTION_POINTERS@@@ZA 0047e8fc     LIBC:hooks.obj
+ 0003:00050900       ?__pTerminate@@3P6AXXZA    0047e900     LIBC:hooks.obj
+ 0003:00050908       __newmode                  0047e908     LIBC:_newmode.obj
+ 0003:0005090c       ?_pnhHeap@@3P6AHI@ZA       0047e90c     LIBC:handler.obj
+ 0003:00050918       ___lc_handle               0047e918     LIBC:nlsdata2.obj
+ 0003:00050930       ___lc_codepage             0047e930     LIBC:nlsdata2.obj
+ 0003:00050934       __pxcptinfoptrs            0047e934     LIBC:winxfltr.obj
+ 0003:00050a48       __mbctype                  0047ea48     LIBC:mbctype.obj
+ 0003:00050b50       __mbcasemap                0047eb50     LIBC:mbctype.obj
+ 0003:00050c50       ___mbcodepage              0047ec50     LIBC:mbctype.obj
+ 0003:00050c54       ___mblcid                  0047ec54     LIBC:mbctype.obj
+ 0003:00050c58       ___mbulinfo                0047ec58     LIBC:mbctype.obj
+ 0003:00050c68       __adbgmsg                  0047ec68     LIBC:crt0msg.obj
+ 0003:00050c6c       __cflush                   0047ec6c     LIBC:_file.obj
+ 0003:00050c70       __commode                  0047ec70     LIBC:ncommode.obj
+ 0003:00050cb4       __fmode                    0047ecb4     LIBC:txtmode.obj
+ 0003:00050cd4       ___piob                    0047ecd4     <common>
+ 0003:00050ce0       __bufin                    0047ece0     <common>
+ 0003:00051ce0       __nstream                  0047fce0     <common>
+ 0003:00051d00       ___pioinfo                 0047fd00     <common>
+ 0003:00051e00       __nhandle                  0047fe00     <common>
+ 0003:00051e04       ___ismbcodepage            0047fe04     <common>
+ 0003:00051e08       __crtheap                  0047fe08     <common>
+ 0003:00051e0c       __acmdln                   0047fe0c     <common>
+ 0003:00051e10       ___onexitend               0047fe10     <common>
+ 0003:00051e14       ___onexitbegin             0047fe14     <common>
+ 0003:00051e18       __FPinit                   0047fe18     <common>
+
+ entry point at        0001:00023d40
+
+ Static symbols
+
+ 0001:00000b60       ?FinishObjects@@YAXXZ      00401b60 f   10_blupi.obj
+ 0001:00000ef0       ?DoInit@@YAHPAXPADH@Z      00401ef0 f   10_blupi.obj
+ 0001:0002ab40       _findenv                   0042bb40 f   LIBC:setenv.obj
+ 0001:0002abc0       _copy_environ              0042bbc0 f   LIBC:setenv.obj
+ 0001:000275c0       _strncnt                   004285c0 f   LIBC:aw_map.obj
+ 0001:0002a560       _siglookup                 0042b560 f   LIBC:winsig.obj
+ 0001:00029930       _wcsncnt                   0042a930 f   LIBC:wcstombs.obj
+ 0001:000282f0       _getSystemCP               004292f0 f   LIBC:mbctype.obj
+ 0001:00028340       _CPtoLCID                  00429340 f   LIBC:mbctype.obj
+ 0001:000283a0       _setSBCS                   004293a0 f   LIBC:mbctype.obj
+ 0001:000283e0       _setSBUpLow                004293e0 f   LIBC:mbctype.obj
+ 0001:00027d70       _parse_cmdline             00428d70 f   LIBC:stdargv.obj
+ 0001:00027ba0       _x_ismbbtype               00428ba0 f   LIBC:ismbbyte.obj
+ 0001:00027b30       _xcptlookup                00428b30 f   LIBC:winxfltr.obj
+ 0001:000275c0       _strncnt                   004285c0 f   LIBC:aw_map.obj
+ 0001:00025f70       ?FindHandler@@YAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAU_CONTEXT@@PAXPBU_s_FuncInfo@@EH1@Z 00426f70 f   LIBC:frame.obj
+ 0001:00026220       ?FindHandlerForForeignException@@YAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAU_CONTEXT@@PAXPBU_s_FuncInfo@@HH1@Z 00427220 f   LIBC:frame.obj
+ 0001:000233f0       ?FrameUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z 004243f0 f   LIBC:ehvecdtr.obj
+ 0001:000263b0       ?CatchIt@@YAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAU_CONTEXT@@PAXPBU_s_FuncInfo@@PBU_s_HandlerType@@PBU_s_CatchableType@@PBU_s_TryBlockMapEntry@@H1@Z 004273b0 f   LIBC:frame.obj
+ 0001:00026440       ?CallCatchBlock@@YAPAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAU_CONTEXT@@PBU_s_FuncInfo@@PAXHK@Z 00427440 f   LIBC:frame.obj
+ 0001:00026590       ?ExFilterRethrow@@YAHPAU_EXCEPTION_POINTERS@@@Z 00427590 f   LIBC:frame.obj
+ 0001:000265c0       ?BuildCatchObject@@YAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PBU_s_HandlerType@@PBU_s_CatchableType@@@Z 004275c0 f   LIBC:frame.obj
+ 0001:00026850       ?AdjustPointer@@YAPAXPAXABUPMD@@@Z 00427850 f   LIBC:frame.obj
+ 0001:00025d00       _cvtdate                   00426d00 f   LIBC:tzset.obj
+ 0001:00025580       __make_time_t              00426580 f   LIBC:mktime.obj
+ 0001:00025220       _write_char                00426220 f   LIBC:output.obj
+ 0001:00025270       _write_multi_char          00426270 f   LIBC:output.obj
+ 0001:000252b0       _write_string              004262b0 f   LIBC:output.obj
+ 0001:000252f0       _get_int_arg               004262f0 f   LIBC:output.obj
+ 0001:00025310       _get_int64_arg             00426310 f   LIBC:output.obj
+ 0001:00025330       _get_short_arg             00426330 f   LIBC:output.obj
+ 0001:00024130       _flsall                    00425130 f   LIBC:fflush.obj
+ 0001:00023f10       _fast_error_exit           00424f10 f   LIBC:wincrt0.obj
+ 0001:00023bd0       _doexit                    00424bd0 f   LIBC:crt0dat.obj
+ 0001:00023c80       __initterm                 00424c80 f   LIBC:crt0dat.obj
+ 0001:000233f0       ?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z 004243f0 f   LIBC:ehvecdtr.obj
+ 0001:00023160       __unwind_handler           00424160 f   LIBC:exsup.obj
+ 0001:00022f30       ?CatchGuardHandler@@YA?AW4_EXCEPTION_DISPOSITION@@PAUEHExceptionRecord@@PAUCatchGuardRN@@PAX2@Z 00423f30 f   LIBC:trnsctrl.obj
+ 0001:00023030       ?TranslatorGuardHandler@@YA?AW4_EXCEPTION_DISPOSITION@@PAUEHExceptionRecord@@PAUTranslatorGuardRN@@PAX2@Z 00424030 f   LIBC:trnsctrl.obj
+
+ 174 bytes saved through ICF
+

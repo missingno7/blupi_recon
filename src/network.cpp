@@ -85,7 +85,7 @@ CNetwork::~CNetwork()
 	if (m_pDP) m_pDP->Release();
 }
 
-static BOOL CALLBACK EnumProvidersCallback(LPGUID lpguidSP, LPSTR lpSPName,
+BOOL CALLBACK EnumProvidersCallback(LPGUID lpguidSP, LPSTR lpSPName,
 	DWORD dwMajorVersion, DWORD dwMinorVersion, NamedGUIDList* lpContext)
 {
 	NamedGUID* lpGuid;
@@ -157,7 +157,7 @@ void CNetwork::FreeProviderList()
 }
 
 
-static BOOL CALLBACK EnumSessionsCallback(LPDPSESSIONDESC2 lpThisSD,
+BOOL CALLBACK EnumSessionsCallback(LPDPSESSIONDESC2 lpThisSD,
 	LPDWORD lpdwTimeOut, DWORD dwFlags, NamedGUIDList* lpContext)
 {
 	NamedGUID* lpGuid;

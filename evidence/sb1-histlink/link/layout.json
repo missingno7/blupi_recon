@@ -1,0 +1,4309 @@
+{
+  "oracle": {
+    "file_timestamp": 908349459,
+    "image_base": 4194304,
+    "entry_rva": 150848,
+    "section_alignment": 4096,
+    "file_alignment": 512,
+    "linker_version": [
+      5,
+      10
+    ],
+    "sections": [
+      {
+        "name": ".text",
+        "rva": 4096,
+        "virtual_size": 176019,
+        "raw_size": 176128,
+        "raw_offset": 1024,
+        "characteristics": 1610612768
+      },
+      {
+        "name": ".rdata",
+        "rva": 180224,
+        "virtual_size": 4978,
+        "raw_size": 5120,
+        "raw_offset": 177152,
+        "characteristics": 1073741888
+      },
+      {
+        "name": ".data",
+        "rva": 188416,
+        "virtual_size": 335388,
+        "raw_size": 329728,
+        "raw_offset": 182272,
+        "characteristics": 3221225536
+      },
+      {
+        "name": ".rsrc",
+        "rva": 524288,
+        "virtual_size": 23432,
+        "raw_size": 23552,
+        "raw_offset": 512000,
+        "characteristics": 1073741888
+      }
+    ],
+    "imports": [
+      {
+        "dll": "KERNEL32.dll",
+        "descriptor_rva": 182304,
+        "int_rva": 182540,
+        "iat_rva": 180300,
+        "names": [
+          "GetModuleHandleA",
+          "LoadResource",
+          "_lread",
+          "_lopen",
+          "LockResource",
+          "FindResourceA",
+          "_lclose",
+          "CreateDirectoryA",
+          "DeleteFileA",
+          "GetDriveTypeA",
+          "RtlUnwind",
+          "GetLastError",
+          "CreateFileA",
+          "FlushFileBuffers",
+          "SetUnhandledExceptionFilter",
+          "GetFileType",
+          "GetStdHandle",
+          "SetStdHandle",
+          "GetOEMCP",
+          "GetACP",
+          "SetHandleCount",
+          "GetEnvironmentStringsW",
+          "GetEnvironmentStrings",
+          "GetCPInfo",
+          "FreeEnvironmentStringsA",
+          "GetModuleFileNameA",
+          "FreeEnvironmentStringsW",
+          "SetFilePointer",
+          "LCMapStringW",
+          "UnhandledExceptionFilter",
+          "WideCharToMultiByte",
+          "MultiByteToWideChar",
+          "LCMapStringA",
+          "VirtualFree",
+          "HeapCreate",
+          "VirtualAlloc",
+          "GetTimeZoneInformation",
+          "WriteFile",
+          "HeapDestroy",
+          "CloseHandle",
+          "GetVersion",
+          "ReadFile",
+          "GetStartupInfoA",
+          "GetCurrentProcess",
+          "SetEnvironmentVariableA",
+          "CompareStringW",
+          "CompareStringA",
+          "SetEndOfFile",
+          "LoadLibraryA",
+          "HeapReAlloc",
+          "GetProcAddress",
+          "GetStringTypeW",
+          "GetStringTypeA",
+          "IsBadCodePtr",
+          "IsBadWritePtr",
+          "IsBadReadPtr",
+          "ExitProcess",
+          "FileTimeToLocalFileTime",
+          "TerminateProcess",
+          "GetCommandLineA",
+          "HeapFree",
+          "FindFirstFileA",
+          "GetLocalTime",
+          "HeapAlloc",
+          "FileTimeToSystemTime",
+          "FindNextFileA"
+        ]
+      },
+      {
+        "dll": "USER32.dll",
+        "descriptor_rva": 182324,
+        "int_rva": 182808,
+        "iat_rva": 180568,
+        "names": [
+          "PostMessageA",
+          "ScreenToClient",
+          "MessageBoxA",
+          "GetCursorPos",
+          "SetWindowTextA",
+          "GetSystemMetrics",
+          "DestroyWindow",
+          "LoadCursorA",
+          "TranslateMessage",
+          "WaitMessage",
+          "DispatchMessageA",
+          "SetFocus",
+          "GetMessageA",
+          "PeekMessageA",
+          "AdjustWindowRect",
+          "UpdateWindow",
+          "ShowWindow",
+          "SetRect",
+          "CreateWindowExA",
+          "GetClientRect",
+          "wsprintfA",
+          "UnionRect",
+          "InvalidateRect",
+          "LoadStringA",
+          "MoveWindow",
+          "SetCursor",
+          "ShowCursor",
+          "ClientToScreen",
+          "SetCursorPos",
+          "LoadIconA",
+          "IntersectRect",
+          "LoadImageA",
+          "PostQuitMessage",
+          "DefWindowProcA",
+          "RegisterClassA"
+        ]
+      },
+      {
+        "dll": "GDI32.dll",
+        "descriptor_rva": 182344,
+        "int_rva": 182492,
+        "iat_rva": 180252,
+        "names": [
+          "GetStockObject",
+          "DeleteObject",
+          "DeleteDC",
+          "GetObjectA",
+          "SelectObject",
+          "CreateCompatibleDC",
+          "StretchBlt",
+          "GetPixel",
+          "GetDeviceCaps",
+          "GetSystemPaletteEntries",
+          "SetPixel"
+        ]
+      },
+      {
+        "dll": "WINMM.dll",
+        "descriptor_rva": 182364,
+        "int_rva": 182952,
+        "iat_rva": 180712,
+        "names": [
+          "mciSendCommandA",
+          "mciGetErrorStringA",
+          "midiOutGetNumDevs",
+          "midiOutOpen",
+          "midiOutSetVolume",
+          "midiOutClose",
+          "joyGetNumDevs",
+          "joyGetDevCapsA",
+          "joyGetPosEx",
+          "timeSetEvent",
+          "timeKillEvent",
+          "mciGetDeviceIDA"
+        ]
+      },
+      {
+        "dll": "DSOUND.dll",
+        "descriptor_rva": 182384,
+        "int_rva": 182484,
+        "iat_rva": 180244,
+        "names": [
+          "DirectSoundCreate"
+        ]
+      },
+      {
+        "dll": "DDRAW.dll",
+        "descriptor_rva": 182404,
+        "int_rva": 182464,
+        "iat_rva": 180224,
+        "names": [
+          "DirectDrawCreate"
+        ]
+      },
+      {
+        "dll": "DPLAYX.dll",
+        "descriptor_rva": 182424,
+        "int_rva": 182472,
+        "iat_rva": 180232,
+        "names": [
+          "#2",
+          "#1"
+        ]
+      }
+    ]
+  },
+  "candidate": {
+    "file_timestamp": 908349459,
+    "image_base": 4194304,
+    "entry_rva": 150848,
+    "section_alignment": 4096,
+    "file_alignment": 512,
+    "linker_version": [
+      5,
+      10
+    ],
+    "sections": [
+      {
+        "name": ".text",
+        "rva": 4096,
+        "virtual_size": 176019,
+        "raw_size": 176128,
+        "raw_offset": 1024,
+        "characteristics": 1610612768
+      },
+      {
+        "name": ".rdata",
+        "rva": 180224,
+        "virtual_size": 4978,
+        "raw_size": 5120,
+        "raw_offset": 177152,
+        "characteristics": 1073741888
+      },
+      {
+        "name": ".data",
+        "rva": 188416,
+        "virtual_size": 335388,
+        "raw_size": 329728,
+        "raw_offset": 182272,
+        "characteristics": 3221225536
+      },
+      {
+        "name": ".rsrc",
+        "rva": 524288,
+        "virtual_size": 23432,
+        "raw_size": 23552,
+        "raw_offset": 512000,
+        "characteristics": 1073741888
+      }
+    ],
+    "imports": [
+      {
+        "dll": "KERNEL32.dll",
+        "descriptor_rva": 182304,
+        "int_rva": 182540,
+        "iat_rva": 180300,
+        "names": [
+          "LoadResource",
+          "LockResource",
+          "CreateDirectoryA",
+          "FindResourceA",
+          "_lopen",
+          "DeleteFileA",
+          "_lread",
+          "_lclose",
+          "GetModuleHandleA",
+          "GetDriveTypeA",
+          "HeapAlloc",
+          "CreateFileA",
+          "FlushFileBuffers",
+          "SetUnhandledExceptionFilter",
+          "GetFileType",
+          "GetStdHandle",
+          "SetStdHandle",
+          "GetOEMCP",
+          "GetACP",
+          "SetHandleCount",
+          "GetEnvironmentStringsW",
+          "GetEnvironmentStrings",
+          "GetCPInfo",
+          "FreeEnvironmentStringsA",
+          "GetModuleFileNameA",
+          "FreeEnvironmentStringsW",
+          "SetFilePointer",
+          "LCMapStringW",
+          "UnhandledExceptionFilter",
+          "WideCharToMultiByte",
+          "MultiByteToWideChar",
+          "LCMapStringA",
+          "VirtualFree",
+          "HeapCreate",
+          "VirtualAlloc",
+          "GetTimeZoneInformation",
+          "WriteFile",
+          "HeapDestroy",
+          "CloseHandle",
+          "SetEnvironmentVariableA",
+          "CompareStringW",
+          "CompareStringA",
+          "SetEndOfFile",
+          "LoadLibraryA",
+          "GetProcAddress",
+          "GetStringTypeW",
+          "GetStringTypeA",
+          "HeapReAlloc",
+          "IsBadCodePtr",
+          "IsBadWritePtr",
+          "IsBadReadPtr",
+          "HeapFree",
+          "GetCommandLineA",
+          "GetStartupInfoA",
+          "GetCurrentProcess",
+          "GetVersion",
+          "ReadFile",
+          "FindFirstFileA",
+          "GetLocalTime",
+          "RtlUnwind",
+          "GetLastError",
+          "TerminateProcess",
+          "FileTimeToLocalFileTime",
+          "FindNextFileA",
+          "FileTimeToSystemTime",
+          "ExitProcess"
+        ]
+      },
+      {
+        "dll": "USER32.dll",
+        "descriptor_rva": 182324,
+        "int_rva": 182808,
+        "iat_rva": 180568,
+        "names": [
+          "ScreenToClient",
+          "DefWindowProcA",
+          "PostQuitMessage",
+          "PostMessageA",
+          "DestroyWindow",
+          "RegisterClassA",
+          "DispatchMessageA",
+          "MessageBoxA",
+          "WaitMessage",
+          "PeekMessageA",
+          "TranslateMessage",
+          "GetMessageA",
+          "ShowWindow",
+          "SetFocus",
+          "UpdateWindow",
+          "CreateWindowExA",
+          "AdjustWindowRect",
+          "SetRect",
+          "UnionRect",
+          "wsprintfA",
+          "MoveWindow",
+          "GetClientRect",
+          "InvalidateRect",
+          "ClientToScreen",
+          "SetCursor",
+          "LoadStringA",
+          "IntersectRect",
+          "SetCursorPos",
+          "ShowCursor",
+          "LoadCursorA",
+          "LoadImageA",
+          "LoadIconA",
+          "SetWindowTextA",
+          "GetCursorPos",
+          "GetSystemMetrics"
+        ]
+      },
+      {
+        "dll": "GDI32.dll",
+        "descriptor_rva": 182344,
+        "int_rva": 182492,
+        "iat_rva": 180252,
+        "names": [
+          "GetStockObject",
+          "StretchBlt",
+          "SelectObject",
+          "DeleteDC",
+          "SetPixel",
+          "GetPixel",
+          "DeleteObject",
+          "GetObjectA",
+          "GetSystemPaletteEntries",
+          "CreateCompatibleDC",
+          "GetDeviceCaps"
+        ]
+      },
+      {
+        "dll": "WINMM.dll",
+        "descriptor_rva": 182364,
+        "int_rva": 182952,
+        "iat_rva": 180712,
+        "names": [
+          "mciSendCommandA",
+          "mciGetErrorStringA",
+          "midiOutGetNumDevs",
+          "midiOutSetVolume",
+          "midiOutClose",
+          "mciGetDeviceIDA",
+          "joyGetNumDevs",
+          "joyGetDevCapsA",
+          "joyGetPosEx",
+          "timeSetEvent",
+          "timeKillEvent",
+          "midiOutOpen"
+        ]
+      },
+      {
+        "dll": "DSOUND.dll",
+        "descriptor_rva": 182384,
+        "int_rva": 182484,
+        "iat_rva": 180244,
+        "names": [
+          "DirectSoundCreate"
+        ]
+      },
+      {
+        "dll": "DDRAW.dll",
+        "descriptor_rva": 182404,
+        "int_rva": 182464,
+        "iat_rva": 180224,
+        "names": [
+          "DirectDrawCreate"
+        ]
+      },
+      {
+        "dll": "DPLAYX.dll",
+        "descriptor_rva": 182424,
+        "int_rva": 182472,
+        "iat_rva": 180232,
+        "names": [
+          "#1",
+          "#2"
+        ]
+      }
+    ]
+  },
+  "import_comparison": {
+    "oracle_dll_order": [
+      "KERNEL32.dll",
+      "USER32.dll",
+      "GDI32.dll",
+      "WINMM.dll",
+      "DSOUND.dll",
+      "DDRAW.dll",
+      "DPLAYX.dll"
+    ],
+    "candidate_dll_order": [
+      "KERNEL32.dll",
+      "USER32.dll",
+      "GDI32.dll",
+      "WINMM.dll",
+      "DSOUND.dll",
+      "DDRAW.dll",
+      "DPLAYX.dll"
+    ],
+    "dll_order_equal": true,
+    "oracle_import_count": 128,
+    "candidate_import_count": 128,
+    "symbol_sets_equal_by_dll": {
+      "ddraw.dll": true,
+      "dplayx.dll": true,
+      "dsound.dll": true,
+      "gdi32.dll": true,
+      "kernel32.dll": true,
+      "user32.dll": true,
+      "winmm.dll": true
+    },
+    "symbol_order_equal_by_dll": {
+      "ddraw.dll": true,
+      "dplayx.dll": false,
+      "dsound.dll": true,
+      "gdi32.dll": false,
+      "kernel32.dll": false,
+      "user32.dll": false,
+      "winmm.dll": false
+    }
+  },
+  "sections": [
+    {
+      "name": ".text",
+      "oracle_initialized_size": 176019,
+      "rva_delta": 0,
+      "virtual_size_delta": 0,
+      "same_section_offset_equal_bytes": 175718,
+      "byte_exact": false
+    },
+    {
+      "name": ".rdata",
+      "oracle_initialized_size": 4978,
+      "rva_delta": 0,
+      "virtual_size_delta": 0,
+      "same_section_offset_equal_bytes": 4684,
+      "byte_exact": false
+    },
+    {
+      "name": ".data",
+      "oracle_initialized_size": 329728,
+      "rva_delta": 0,
+      "virtual_size_delta": 0,
+      "same_section_offset_equal_bytes": 329728,
+      "byte_exact": true
+    },
+    {
+      "name": ".rsrc",
+      "oracle_initialized_size": 23432,
+      "rva_delta": 0,
+      "virtual_size_delta": 0,
+      "same_section_offset_equal_bytes": 23432,
+      "byte_exact": true
+    }
+  ],
+  "candidate_only_sections": [],
+  "accepted_function_layout": [
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?GetNum@@YAHPAD@Z",
+      "oracle_rva": 4096,
+      "linked_rva": 4096,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?ReadConfig@@YAHPAD@Z",
+      "oracle_rva": 4144,
+      "linked_rva": 4144,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?UpdateFrame@@YAXXZ",
+      "oracle_rva": 4832,
+      "linked_rva": 4832,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?SetDecor@@YAXXZ",
+      "oracle_rva": 5360,
+      "linked_rva": 5360,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?RestoreGame@@YAHXZ",
+      "oracle_rva": 5568,
+      "linked_rva": 5568,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?FlushGame@@YAHXZ",
+      "oracle_rva": 5616,
+      "linked_rva": 5616,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?WindowProc@@YGJPAXIIJ@Z",
+      "oracle_rva": 5648,
+      "linked_rva": 5648,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?FinishObjects@@YAXXZ",
+      "oracle_rva": 7008,
+      "linked_rva": 7008,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?TimerStep@@YGXIIKKK@Z",
+      "oracle_rva": 7248,
+      "linked_rva": 7248,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?InitFail@@YAHPBDH@Z",
+      "oracle_rva": 7312,
+      "linked_rva": 7312,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?Benchmark@@YAHXZ",
+      "oracle_rva": 7520,
+      "linked_rva": 7520,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "_WinMain@16",
+      "oracle_rva": 7728,
+      "linked_rva": 7728,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/blupi.cpp",
+      "name": "?DoInit@@YAHPAXPADH@Z",
+      "oracle_rva": 7920,
+      "linked_rva": 7920,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "??0CButton@@QAE@XZ",
+      "oracle_rva": 10736,
+      "linked_rva": 10736,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?Create@CButton@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HHI@Z",
+      "oracle_rva": 10800,
+      "linked_rva": 10800,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?SetIconMenu@CButton@@QAEXPAHH@Z",
+      "oracle_rva": 10976,
+      "linked_rva": 10976,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?SetToolTips@CButton@@QAEXPAHH@Z",
+      "oracle_rva": 11024,
+      "linked_rva": 11024,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?Draw@CButton@@QAEXXZ",
+      "oracle_rva": 11072,
+      "linked_rva": 11072,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?GetState@CButton@@QAEHXZ",
+      "oracle_rva": 11408,
+      "linked_rva": 11408,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?SetState@CButton@@QAEXH@Z",
+      "oracle_rva": 11424,
+      "linked_rva": 11424,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?GetMenu@CButton@@QAEHXZ",
+      "oracle_rva": 11472,
+      "linked_rva": 11472,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?SetMenu@CButton@@QAEXH@Z",
+      "oracle_rva": 11488,
+      "linked_rva": 11488,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?SetEnable@CButton@@QAEXH@Z",
+      "oracle_rva": 11536,
+      "linked_rva": 11536,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?SetHide@CButton@@QAEXH@Z",
+      "oracle_rva": 11584,
+      "linked_rva": 11584,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?TreatEvent@CButton@@QAEHIIJ@Z",
+      "oracle_rva": 11616,
+      "linked_rva": 11616,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?MouseOnButton@CButton@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 11760,
+      "linked_rva": 11760,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?GetToolTips@CButton@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 11792,
+      "linked_rva": 11792,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?Detect@CButton@@IAEHUtagPOINT@@@Z",
+      "oracle_rva": 12032,
+      "linked_rva": 12032,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?MouseDown@CButton@@IAEHUtagPOINT@@@Z",
+      "oracle_rva": 12144,
+      "linked_rva": 12144,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?MouseMove@CButton@@IAEHUtagPOINT@@@Z",
+      "oracle_rva": 12240,
+      "linked_rva": 12240,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "?MouseUp@CButton@@IAEHUtagPOINT@@@Z",
+      "oracle_rva": 12448,
+      "linked_rva": 12448,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/ddutil.cpp",
+      "name": "_DDSetDebug",
+      "oracle_rva": 12544,
+      "linked_rva": 12544,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/ddutil.cpp",
+      "name": "_DDLoadBitmap",
+      "oracle_rva": 12560,
+      "linked_rva": 12560,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/ddutil.cpp",
+      "name": "_DDReLoadBitmap",
+      "oracle_rva": 12960,
+      "linked_rva": 12960,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/ddutil.cpp",
+      "name": "_DDCopyBitmap",
+      "oracle_rva": 13120,
+      "linked_rva": 13120,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/ddutil.cpp",
+      "name": "_DDLoadPalette",
+      "oracle_rva": 13632,
+      "linked_rva": 13632,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/ddutil.cpp",
+      "name": "_DDColorMatch",
+      "oracle_rva": 14240,
+      "linked_rva": 14240,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/ddutil.cpp",
+      "name": "_DDSetColorKey",
+      "oracle_rva": 14496,
+      "linked_rva": 14496,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/ddutil.cpp",
+      "name": "_DDSetColorKey2",
+      "oracle_rva": 14544,
+      "linked_rva": 14544,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "??0CDecor@@QAE@XZ",
+      "oracle_rva": 14608,
+      "linked_rva": 14608,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "??1CDecor@@QAE@XZ",
+      "oracle_rva": 14768,
+      "linked_rva": 14768,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?Create@CDecor@@QAEXPAXPAVCSound@@PAVCPixmap@@PAVCNetwork@@@Z",
+      "oracle_rva": 14800,
+      "linked_rva": 14800,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?LoadImages@CDecor@@QAEHXZ",
+      "oracle_rva": 15008,
+      "linked_rva": 15008,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?InitGamer@CDecor@@QAEXXZ",
+      "oracle_rva": 15200,
+      "linked_rva": 15200,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?InitDecor@CDecor@@QAEXXZ",
+      "oracle_rva": 15232,
+      "linked_rva": 15232,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?SetTime@CDecor@@QAEXH@Z",
+      "oracle_rva": 15984,
+      "linked_rva": 15984,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?GetTime@CDecor@@QAEHXZ",
+      "oracle_rva": 16000,
+      "linked_rva": 16000,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?PlayPrepare@CDecor@@QAEXH@Z",
+      "oracle_rva": 16016,
+      "linked_rva": 16016,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?BuildPrepare@CDecor@@QAEXXZ",
+      "oracle_rva": 16720,
+      "linked_rva": 16720,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?IsTerminated@CDecor@@QAEHXZ",
+      "oracle_rva": 16832,
+      "linked_rva": 16832,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?MoveStep@CDecor@@QAEXH@Z",
+      "oracle_rva": 16848,
+      "linked_rva": 16848,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?GetBlupiChannelActual@CDecor@@QAEHXZ",
+      "oracle_rva": 17120,
+      "linked_rva": 17120,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?GetBlupiChannelStandard@CDecor@@QAEHXZ",
+      "oracle_rva": 17168,
+      "linked_rva": 17168,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?GetIconPerso@CDecor@@QAEHXZ",
+      "oracle_rva": 17200,
+      "linked_rva": 17200,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?Build@CDecor@@QAEXUtagRECT@@UtagPOINT@@@Z",
+      "oracle_rva": 17232,
+      "linked_rva": 17232,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?DrawInfo@CDecor@@QAEXXZ",
+      "oracle_rva": 21104,
+      "linked_rva": 21104,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?DecorNextAction@CDecor@@QAE?AUtagPOINT@@XZ",
+      "oracle_rva": 22128,
+      "linked_rva": 22128,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?KeyChange@CDecor@@QAEXH@Z",
+      "oracle_rva": 22400,
+      "linked_rva": 22400,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?SetJoystickEnable@CDecor@@QAEXH@Z",
+      "oracle_rva": 22416,
+      "linked_rva": 22416,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?SetDemoPlay@CDecor@@QAEXH@Z",
+      "oracle_rva": 22432,
+      "linked_rva": 22432,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?GetBlupiInfo@CDecor@@QAEXPAH000@Z",
+      "oracle_rva": 22448,
+      "linked_rva": 22448,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?PlaySoundA@CDecor@@QAEXHUtagPOINT@@H@Z",
+      "oracle_rva": 22528,
+      "linked_rva": 22528,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?StopSound@CDecor@@QAEXH@Z",
+      "oracle_rva": 22656,
+      "linked_rva": 22656,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?AdaptMotorVehicleSound@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 22736,
+      "linked_rva": 22736,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblock.cpp",
+      "name": "?ChangePhase@CDecor@@QAEXH@Z",
+      "oracle_rva": 22864,
+      "linked_rva": 22864,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?ScreenPosToCelPos@CDecor@@QAE?AUtagPOINT@@U2@@Z",
+      "oracle_rva": 23072,
+      "linked_rva": 23072,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetCelHiliFromScreenPos@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 23216,
+      "linked_rva": 23216,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetIconLiftAndStuff@CDecor@@QAEXHH@Z",
+      "oracle_rva": 23264,
+      "linked_rva": 23264,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?DeleteCel@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 23360,
+      "linked_rva": 23360,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?PlaceDecor@@YAXPAH00HHH@Z",
+      "oracle_rva": 23456,
+      "linked_rva": 23456,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?PlaceDecor1@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "oracle_rva": 23584,
+      "linked_rva": 23584,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?PlaceDecor2@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "oracle_rva": 24192,
+      "linked_rva": 24192,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?PlaceDecor3@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "oracle_rva": 25072,
+      "linked_rva": 25072,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?PlaceDecor4@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "oracle_rva": 25904,
+      "linked_rva": 25904,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?PlaceDecor5@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "oracle_rva": 29536,
+      "linked_rva": 29536,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?PlaceDecor6@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "oracle_rva": 31520,
+      "linked_rva": 31520,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?PlaceDecor7@CDecor@@QAEXUtagPOINT@@HHH@Z",
+      "oracle_rva": 33600,
+      "linked_rva": 33600,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetMissionTitle@CDecor@@QAEPADXZ",
+      "oracle_rva": 34080,
+      "linked_rva": 34080,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetMissionTitle@CDecor@@QAEXPAD@Z",
+      "oracle_rva": 34096,
+      "linked_rva": 34096,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetRegion@CDecor@@QAEHXZ",
+      "oracle_rva": 34144,
+      "linked_rva": 34144,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetRegion@CDecor@@QAEXH@Z",
+      "oracle_rva": 34160,
+      "linked_rva": 34160,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetMusic@CDecor@@QAEHXZ",
+      "oracle_rva": 34176,
+      "linked_rva": 34176,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetMusic@CDecor@@QAEXH@Z",
+      "oracle_rva": 34192,
+      "linked_rva": 34192,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetDim@CDecor@@QAE?AUtagPOINT@@XZ",
+      "oracle_rva": 34208,
+      "linked_rva": 34208,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetDim@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 34240,
+      "linked_rva": 34240,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetNbVies@CDecor@@QAEHXZ",
+      "oracle_rva": 34272,
+      "linked_rva": 34272,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetNbVies@CDecor@@QAEXH@Z",
+      "oracle_rva": 34288,
+      "linked_rva": 34288,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetPause@CDecor@@QAEHXZ",
+      "oracle_rva": 34304,
+      "linked_rva": 34304,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?ChangePause@CDecor@@QAEXH@Z",
+      "oracle_rva": 34320,
+      "linked_rva": 34320,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetDoors@CDecor@@QAEXPAF@Z",
+      "oracle_rva": 34336,
+      "linked_rva": 34336,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetDoors@CDecor@@QAEXPAF@Z",
+      "oracle_rva": 34384,
+      "linked_rva": 34384,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetAllMissions@CDecor@@QAEXH@Z",
+      "oracle_rva": 34432,
+      "linked_rva": 34432,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?CheatAction@CDecor@@QAEXH@Z",
+      "oracle_rva": 34464,
+      "linked_rva": 34464,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetSuperBlupi@CDecor@@QAEHXZ",
+      "oracle_rva": 36160,
+      "linked_rva": 36160,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetSuperBlupi@CDecor@@QAEXH@Z",
+      "oracle_rva": 36176,
+      "linked_rva": 36176,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetDrawSecret@CDecor@@QAEHXZ",
+      "oracle_rva": 36192,
+      "linked_rva": 36192,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetDrawSecret@CDecor@@QAEXH@Z",
+      "oracle_rva": 36208,
+      "linked_rva": 36208,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetNetPacked@CDecor@@QAEHXZ",
+      "oracle_rva": 36224,
+      "linked_rva": 36224,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetNetPacked@CDecor@@QAEXH@Z",
+      "oracle_rva": 36240,
+      "linked_rva": 36240,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetNetMovePredict@CDecor@@QAEHXZ",
+      "oracle_rva": 36256,
+      "linked_rva": 36256,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetNetMovePredict@CDecor@@QAEXH@Z",
+      "oracle_rva": 36272,
+      "linked_rva": 36272,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?GetNetDebug@CDecor@@QAEHXZ",
+      "oracle_rva": 36288,
+      "linked_rva": 36288,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetNetDebug@CDecor@@QAEXH@Z",
+      "oracle_rva": 36304,
+      "linked_rva": 36304,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?OutputNetDebug@CDecor@@QAEXPAD@Z",
+      "oracle_rva": 36336,
+      "linked_rva": 36336,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetMulti@CDecor@@QAEXH@Z",
+      "oracle_rva": 36448,
+      "linked_rva": 36448,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?SetTeam@CDecor@@QAEXH@Z",
+      "oracle_rva": 36464,
+      "linked_rva": 36464,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decdesign.cpp",
+      "name": "?BlupiSearchIcon@CDecor@@QAEXXZ",
+      "oracle_rva": 36480,
+      "linked_rva": 36480,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?BlupiStep@CDecor@@QAEXXZ",
+      "oracle_rva": 37504,
+      "linked_rva": 37504,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?GetPosDecor@CDecor@@QAE?AUtagPOINT@@U2@@Z",
+      "oracle_rva": 62784,
+      "linked_rva": 62784,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?BlupiAddFifo@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 62896,
+      "linked_rva": 62896,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?DecorDetect@CDecor@@QAEHUtagRECT@@H@Z",
+      "oracle_rva": 63040,
+      "linked_rva": 63040,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?TestPath@CDecor@@QAEHUtagRECT@@UtagPOINT@@PAU3@@Z",
+      "oracle_rva": 63680,
+      "linked_rva": 63680,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?MoveObjectPollution@CDecor@@QAEXXZ",
+      "oracle_rva": 64528,
+      "linked_rva": 64528,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?MoveObjectPlouf@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 64976,
+      "linked_rva": 64976,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?MoveObjectTiplouf@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 65056,
+      "linked_rva": 65056,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?MoveObjectBlup@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 65152,
+      "linked_rva": 65152,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?IsWorld@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 65424,
+      "linked_rva": 65424,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?GetTypeBarre@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 65616,
+      "linked_rva": 65616,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?IsLave@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 65872,
+      "linked_rva": 65872,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?IsRessort@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 65968,
+      "linked_rva": 65968,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?IsSurfWater@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 66064,
+      "linked_rva": 66064,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?IsDeepWater@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 66192,
+      "linked_rva": 66192,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?IsOutWater@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 66272,
+      "linked_rva": 66272,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?IsPassIcon@CDecor@@QAEHH@Z",
+      "oracle_rva": 66352,
+      "linked_rva": 66352,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?IsBlocIcon@CDecor@@QAEHH@Z",
+      "oracle_rva": 66416,
+      "linked_rva": 66416,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?SearchDistRight@CDecor@@QAEHUtagPOINT@@0H@Z",
+      "oracle_rva": 66480,
+      "linked_rva": 66480,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decblupi.cpp",
+      "name": "?IsVentillo@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 66688,
+      "linked_rva": 66688,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decnet.cpp",
+      "name": "?NetStopCloud@CDecor@@QAEXH@Z",
+      "oracle_rva": 67184,
+      "linked_rva": 67184,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decnet.cpp",
+      "name": "?ObjectStart@CDecor@@QAEHUtagPOINT@@HHH@Z",
+      "oracle_rva": 67248,
+      "linked_rva": 67248,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decnet.cpp",
+      "name": "?ObjectDelete@CDecor@@QAEHUtagPOINT@@HH@Z",
+      "oracle_rva": 67744,
+      "linked_rva": 67744,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decnet.cpp",
+      "name": "?ModifDecor@CDecor@@QAEXUtagPOINT@@HH@Z",
+      "oracle_rva": 67856,
+      "linked_rva": 67856,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decnet.cpp",
+      "name": "?NetPlaySound@CDecor@@QAEXFUtagPOINT@@@Z",
+      "oracle_rva": 67968,
+      "linked_rva": 67968,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decnet.cpp",
+      "name": "?NetStopSound@CDecor@@QAEXF@Z",
+      "oracle_rva": 68032,
+      "linked_rva": 68032,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NetDataFlush@CDecor@@QAEXXZ",
+      "oracle_rva": 68096,
+      "linked_rva": 68096,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NetSendBarePacket@CDecor@@QAEXEH@Z",
+      "oracle_rva": 68192,
+      "linked_rva": 68192,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?TreatNetData@CDecor@@QAEXXZ",
+      "oracle_rva": 68240,
+      "linked_rva": 68240,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?DoNetSmooth@CDecor@@QAEXH@Z",
+      "oracle_rva": 69792,
+      "linked_rva": 69792,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NetAdjustToLift@CDecor@@QAEXXZ",
+      "oracle_rva": 69984,
+      "linked_rva": 69984,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NetAscenseurSynchro@CDecor@@QAEXHF@Z",
+      "oracle_rva": 70064,
+      "linked_rva": 70064,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NetPlayerCollide@CDecor@@QAEXUtagPOINT@@PAH@Z",
+      "oracle_rva": 70336,
+      "linked_rva": 70336,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NetMessageIndexFlush@CDecor@@QAEXXZ",
+      "oracle_rva": 70560,
+      "linked_rva": 70560,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NetMessagePush@CDecor@@QAEHPAUNetMessage@@@Z",
+      "oracle_rva": 70592,
+      "linked_rva": 70592,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NetMessagePop@CDecor@@QAEHPAUNetMessage@@@Z",
+      "oracle_rva": 70688,
+      "linked_rva": 70688,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NotifFlush@CDecor@@QAEXXZ",
+      "oracle_rva": 70800,
+      "linked_rva": 70800,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NotifPop@CDecor@@QAEXXZ",
+      "oracle_rva": 70832,
+      "linked_rva": 70832,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NotifPush@CDecor@@QAEXPAD@Z",
+      "oracle_rva": 70928,
+      "linked_rva": 70928,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?NotifStep@CDecor@@QAEXXZ",
+      "oracle_rva": 71072,
+      "linked_rva": 71072,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveObjectStep@CDecor@@QAEXXZ",
+      "oracle_rva": 71104,
+      "linked_rva": 71104,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveObjectStepLine@CDecor@@QAEXH@Z",
+      "oracle_rva": 71696,
+      "linked_rva": 71696,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveObjectStepIcon@CDecor@@QAEXH@Z",
+      "oracle_rva": 72656,
+      "linked_rva": 72656,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?AscenseurDetect@CDecor@@QAEHUtagRECT@@UtagPOINT@@1@Z",
+      "oracle_rva": 76832,
+      "linked_rva": 76832,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?AscenseurVertigo@CDecor@@QAEXHPAH0@Z",
+      "oracle_rva": 77168,
+      "linked_rva": 77168,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?AscenseurSynchro@CDecor@@QAEXH@Z",
+      "oracle_rva": 77264,
+      "linked_rva": 77264,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?UpdateCaisse@CDecor@@QAEXXZ",
+      "oracle_rva": 77328,
+      "linked_rva": 77328,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?TestPushCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+      "oracle_rva": 77392,
+      "linked_rva": 77392,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?TestPushOneCaisse@CDecor@@QAEHHUtagPOINT@@H@Z",
+      "oracle_rva": 77616,
+      "linked_rva": 77616,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?SearchLinkCaisse@CDecor@@QAEXHH@Z",
+      "oracle_rva": 77856,
+      "linked_rva": 77856,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?AddLinkCaisse@CDecor@@QAEHH@Z",
+      "oracle_rva": 78320,
+      "linked_rva": 78320,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?CaisseInFront@CDecor@@QAEHXZ",
+      "oracle_rva": 78400,
+      "linked_rva": 78400,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?CaisseGetMove@CDecor@@QAEHH@Z",
+      "oracle_rva": 78528,
+      "linked_rva": 78528,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MockeryDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 78624,
+      "linked_rva": 78624,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?BlupiElectro@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 79168,
+      "linked_rva": 79168,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveObjectDetect@CDecor@@QAEHUtagPOINT@@PAH@Z",
+      "oracle_rva": 79328,
+      "linked_rva": 79328,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveChargeDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 79872,
+      "linked_rva": 79872,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MovePersoDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 80032,
+      "linked_rva": 80032,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveBalleDetect@CDecor@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 80224,
+      "linked_rva": 80224,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveObjectDelete@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 80432,
+      "linked_rva": 80432,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveObjectFree@CDecor@@QAEHXZ",
+      "oracle_rva": 80560,
+      "linked_rva": 80560,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?SortGetType@@YAHH@Z",
+      "oracle_rva": 80624,
+      "linked_rva": 80624,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveObjectSort@CDecor@@QAEXXZ",
+      "oracle_rva": 80672,
+      "linked_rva": 80672,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveObjectPriority@CDecor@@QAEXH@Z",
+      "oracle_rva": 80912,
+      "linked_rva": 80912,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decmove.cpp",
+      "name": "?MoveObjectSearch@CDecor@@QAEHUtagPOINT@@H@Z",
+      "oracle_rva": 81072,
+      "linked_rva": 81072,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?VoyageGetPosVie@CDecor@@QAE?AUtagPOINT@@H@Z",
+      "oracle_rva": 81232,
+      "linked_rva": 81232,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?VoyageInit@CDecor@@QAEXUtagPOINT@@0HH@Z",
+      "oracle_rva": 81264,
+      "linked_rva": 81264,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?VoyageStep@CDecor@@QAEXXZ",
+      "oracle_rva": 81648,
+      "linked_rva": 81648,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?VoyageDraw@CDecor@@QAEXXZ",
+      "oracle_rva": 82000,
+      "linked_rva": 82000,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?IsRightBorder@CDecor@@QAEHHHHH@Z",
+      "oracle_rva": 82112,
+      "linked_rva": 82112,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?AdaptMidBorder@CDecor@@QAEXHH@Z",
+      "oracle_rva": 82896,
+      "linked_rva": 82896,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?AdaptBorder@CDecor@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 83152,
+      "linked_rva": 83152,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?DrawMap@CDecor@@QAEHHH@Z",
+      "oracle_rva": 83280,
+      "linked_rva": 83280,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?GetMissionPath@CDecor@@QAEXPADHHH@Z",
+      "oracle_rva": 84096,
+      "linked_rva": 84096,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?Write@CDecor@@QAEHHHH@Z",
+      "oracle_rva": 84192,
+      "linked_rva": 84192,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?Read@CDecor@@QAEHHHH@Z",
+      "oracle_rva": 84720,
+      "linked_rva": 84720,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?DeleteMission@CDecor@@QAEHHHH@Z",
+      "oracle_rva": 85344,
+      "linked_rva": 85344,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?CurrentWrite@CDecor@@QAEHHH@Z",
+      "oracle_rva": 85408,
+      "linked_rva": 85408,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?CurrentRead@CDecor@@QAEHHHPAH0@Z",
+      "oracle_rva": 86992,
+      "linked_rva": 86992,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?FileExist@CDecor@@QAEHHHPAD@Z",
+      "oracle_rva": 88560,
+      "linked_rva": 88560,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?SearchWorld@CDecor@@QAEHHPAUtagPOINT@@0@Z",
+      "oracle_rva": 89104,
+      "linked_rva": 89104,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?SearchDoor@CDecor@@QAEHHPAUtagPOINT@@@Z",
+      "oracle_rva": 89568,
+      "linked_rva": 89568,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?AdaptDoors@CDecor@@QAEXHH@Z",
+      "oracle_rva": 89648,
+      "linked_rva": 89648,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?OpenDoorsWin@CDecor@@QAEXXZ",
+      "oracle_rva": 90496,
+      "linked_rva": 90496,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?OpenGoldsWin@CDecor@@QAEXXZ",
+      "oracle_rva": 90528,
+      "linked_rva": 90528,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/decor.cpp",
+      "name": "?DoorsLost@CDecor@@QAEXXZ",
+      "oracle_rva": 90576,
+      "linked_rva": 90576,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "??0CEvent@@QAE@XZ",
+      "oracle_rva": 90656,
+      "linked_rva": 90656,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "??1CEvent@@QAE@XZ",
+      "oracle_rva": 90976,
+      "linked_rva": 90976,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?OutputNetDebug@CEvent@@QAEXPBD@Z",
+      "oracle_rva": 91104,
+      "linked_rva": 91104,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?GetMousePos@CEvent@@QAE?AUtagPOINT@@XZ",
+      "oracle_rva": 91200,
+      "linked_rva": 91200,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetFullScreen@CEvent@@QAEXH@Z",
+      "oracle_rva": 91264,
+      "linked_rva": 91264,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetMouseType@CEvent@@QAEXH@Z",
+      "oracle_rva": 91280,
+      "linked_rva": 91280,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?Create@CEvent@@QAEXPAX0PAVCPixmap@@PAVCDecor@@PAVCSound@@PAVCNetwork@@PAVCMovie@@@Z",
+      "oracle_rva": 91296,
+      "linked_rva": 91296,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?GetButtonIndex@CEvent@@QAEHH@Z",
+      "oracle_rva": 91392,
+      "linked_rva": 91392,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?GetState@CEvent@@QAEHH@Z",
+      "oracle_rva": 91472,
+      "linked_rva": 91472,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetState@CEvent@@QAEXHH@Z",
+      "oracle_rva": 91520,
+      "linked_rva": 91520,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetEnable@CEvent@@QAEXHH@Z",
+      "oracle_rva": 91568,
+      "linked_rva": 91568,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetHide@CEvent@@QAEXHH@Z",
+      "oracle_rva": 91616,
+      "linked_rva": 91616,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?GetMenu@CEvent@@QAEHH@Z",
+      "oracle_rva": 91664,
+      "linked_rva": 91664,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetMenu@CEvent@@QAEXHH@Z",
+      "oracle_rva": 91712,
+      "linked_rva": 91712,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetIconMenu@CEvent@@QAEXHPAHH@Z",
+      "oracle_rva": 91760,
+      "linked_rva": 91760,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?RestoreGame@CEvent@@QAEXXZ",
+      "oracle_rva": 91824,
+      "linked_rva": 91824,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?FlushInput@CEvent@@QAEXXZ",
+      "oracle_rva": 91888,
+      "linked_rva": 91888,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ReadInput@CEvent@@QAEXXZ",
+      "oracle_rva": 91920,
+      "linked_rva": 91920,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?NetCreate@CEvent@@IAEHH@Z",
+      "oracle_rva": 92400,
+      "linked_rva": 92400,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?NetEnumSessions@CEvent@@IAEHXZ",
+      "oracle_rva": 92448,
+      "linked_rva": 92448,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?CreateButtons@CEvent@@IAEHXZ",
+      "oracle_rva": 92496,
+      "linked_rva": 92496,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?NetAdjustLobbyButtons@CEvent@@IAEXXZ",
+      "oracle_rva": 92784,
+      "linked_rva": 92784,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ChangePause@CEvent@@QAEXHH@Z",
+      "oracle_rva": 93280,
+      "linked_rva": 93280,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?NetSendLobby@CEvent@@QAEXXZ",
+      "oracle_rva": 93408,
+      "linked_rva": 93408,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?NetSearchPlayer@CEvent@@IAEHK@Z",
+      "oracle_rva": 93488,
+      "linked_rva": 93488,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?NetStartPlay@CEvent@@IAEXXZ",
+      "oracle_rva": 93536,
+      "linked_rva": 93536,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?NetSendBarePacket@CEvent@@IAEXHF@Z",
+      "oracle_rva": 93776,
+      "linked_rva": 93776,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?AddCheatCode@@YAXPAD0@Z",
+      "oracle_rva": 93872,
+      "linked_rva": 93872,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?DrawTextCenter@CEvent@@IAEXHHHH@Z",
+      "oracle_rva": 93984,
+      "linked_rva": 93984,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?DrawButtons@CEvent@@QAEHXZ",
+      "oracle_rva": 94064,
+      "linked_rva": 94064,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?MousePosToSprite@CEvent@@QAEHUtagPOINT@@@Z",
+      "oracle_rva": 101488,
+      "linked_rva": 101488,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?MouseSprite@CEvent@@QAEXUtagPOINT@@@Z",
+      "oracle_rva": 101616,
+      "linked_rva": 101616,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?WaitMouse@CEvent@@QAEXH@Z",
+      "oracle_rva": 101696,
+      "linked_rva": 101696,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?HideMouse@CEvent@@QAEXH@Z",
+      "oracle_rva": 101808,
+      "linked_rva": 101808,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?DisableMouse@CEvent@@QAEXH@Z",
+      "oracle_rva": 101936,
+      "linked_rva": 101936,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?EventButtons@CEvent@@IAEHIIJ@Z",
+      "oracle_rva": 102048,
+      "linked_rva": 102048,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?MouseOnButton@CEvent@@IAEHUtagPOINT@@@Z",
+      "oracle_rva": 102608,
+      "linked_rva": 102608,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SearchPhase@CEvent@@IAEHI@Z",
+      "oracle_rva": 102768,
+      "linked_rva": 102768,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?GetWorld@CEvent@@QAEHXZ",
+      "oracle_rva": 102832,
+      "linked_rva": 102832,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?IsPrivate@CEvent@@QAEHXZ",
+      "oracle_rva": 102880,
+      "linked_rva": 102880,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?IsMulti@CEvent@@QAEHXZ",
+      "oracle_rva": 102896,
+      "linked_rva": 102896,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?GetWorldGroup@CEvent@@QAEXXZ",
+      "oracle_rva": 102912,
+      "linked_rva": 102912,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetMission@CEvent@@QAEXH@Z",
+      "oracle_rva": 102992,
+      "linked_rva": 102992,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?CheckWorld1@CEvent@@IAEHXZ",
+      "oracle_rva": 103056,
+      "linked_rva": 103056,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?GetPhase@CEvent@@QAEIXZ",
+      "oracle_rva": 110112,
+      "linked_rva": 110112,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?TryInsert@CEvent@@QAEXXZ",
+      "oracle_rva": 110128,
+      "linked_rva": 110128,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?MovieToStart@CEvent@@QAEXXZ",
+      "oracle_rva": 110192,
+      "linked_rva": 110192,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ReadAll@CEvent@@QAEXXZ",
+      "oracle_rva": 110272,
+      "linked_rva": 110272,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?CurrentRead@CEvent@@IAEHH@Z",
+      "oracle_rva": 110432,
+      "linked_rva": 110432,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?CurrentWrite@CEvent@@IAEHH@Z",
+      "oracle_rva": 110528,
+      "linked_rva": 110528,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?BuildUp@CEvent@@IAEHUtagPOINT@@H@Z",
+      "oracle_rva": 110640,
+      "linked_rva": 110640,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?MouseRelease@CEvent@@IAEXXZ",
+      "oracle_rva": 110656,
+      "linked_rva": 110656,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?MouseCapture@CEvent@@IAEXXZ",
+      "oracle_rva": 110688,
+      "linked_rva": 110688,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?IsMouseRelease@CEvent@@QAEHXZ",
+      "oracle_rva": 110720,
+      "linked_rva": 110720,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?AddUserExportPath@CEvent@@SAXPAD0@Z",
+      "oracle_rva": 110736,
+      "linked_rva": 110736,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?CopyMission@CEvent@@SAHPAD0@Z",
+      "oracle_rva": 110928,
+      "linked_rva": 110928,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ChangeButtons@CEvent@@IAEXH@Z",
+      "oracle_rva": 111136,
+      "linked_rva": 111136,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?BuildDown@CEvent@@IAEHUtagPOINT@@HH@Z",
+      "oracle_rva": 114000,
+      "linked_rva": 114000,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?BuildMove@CEvent@@IAEHUtagPOINT@@H@Z",
+      "oracle_rva": 114800,
+      "linked_rva": 114800,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?StartMovie@CEvent@@QAEHPAD@Z",
+      "oracle_rva": 114864,
+      "linked_rva": 114864,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?StopMovie@CEvent@@QAEXXZ",
+      "oracle_rva": 115216,
+      "linked_rva": 115216,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?IsMovie@CEvent@@QAEHXZ",
+      "oracle_rva": 115312,
+      "linked_rva": 115312,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?WriteInfo@CEvent@@IAEHH@Z",
+      "oracle_rva": 115328,
+      "linked_rva": 115328,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ReadInfo@CEvent@@IAEHH@Z",
+      "oracle_rva": 115744,
+      "linked_rva": 115744,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ClearGamer@CEvent@@QAEHH@Z",
+      "oracle_rva": 116224,
+      "linked_rva": 116224,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetNbVies@CEvent@@QAEXH@Z",
+      "oracle_rva": 116304,
+      "linked_rva": 116304,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?GetSpeed@CEvent@@QAEHXZ",
+      "oracle_rva": 116320,
+      "linked_rva": 116320,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?SetSpeed@CEvent@@QAEXH@Z",
+      "oracle_rva": 116336,
+      "linked_rva": 116336,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?DemoRecStart@CEvent@@IAEXXZ",
+      "oracle_rva": 116368,
+      "linked_rva": 116368,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?DemoRecStop@CEvent@@IAEXXZ",
+      "oracle_rva": 116464,
+      "linked_rva": 116464,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?DemoPlayStart@CEvent@@IAEHXZ",
+      "oracle_rva": 116704,
+      "linked_rva": 116704,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?DemoPlayStop@CEvent@@IAEXXZ",
+      "oracle_rva": 117152,
+      "linked_rva": 117152,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?DemoStep@CEvent@@QAEXXZ",
+      "oracle_rva": 117248,
+      "linked_rva": 117248,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?DemoRecEvent@CEvent@@IAEXXZ",
+      "oracle_rva": 117440,
+      "linked_rva": 117440,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ChatFlush@CEvent@@IAEXXZ",
+      "oracle_rva": 117536,
+      "linked_rva": 117536,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ChatPop@CEvent@@IAEXXZ",
+      "oracle_rva": 117568,
+      "linked_rva": 117568,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ChatPush@CEvent@@IAEXPAD@Z",
+      "oracle_rva": 117648,
+      "linked_rva": 117648,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?ChatSend@CEvent@@IAEXXZ",
+      "oracle_rva": 117776,
+      "linked_rva": 117776,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?PutTextInputBox@CEvent@@IAEXUtagPOINT@@@Z",
+      "oracle_rva": 118128,
+      "linked_rva": 118128,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?TextInputDelete@CEvent@@IAEHXZ",
+      "oracle_rva": 118528,
+      "linked_rva": 118528,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?TreatTextInput@CEvent@@IAEHIIJ@Z",
+      "oracle_rva": 118624,
+      "linked_rva": 118624,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?GetLastMousePos@CEvent@@QAE?AUtagPOINT@@XZ",
+      "oracle_rva": 119216,
+      "linked_rva": 119216,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/event.cpp",
+      "name": "?TreatEvent@CEvent@@QAEHIIJ@Z",
+      "oracle_rva": 119248,
+      "linked_rva": 119248,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "??0CJauge@@QAE@XZ",
+      "oracle_rva": 126416,
+      "linked_rva": 126416,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "?Create@CJauge@@QAEHPAXPAVCPixmap@@PAVCSound@@UtagPOINT@@HH@Z",
+      "oracle_rva": 126448,
+      "linked_rva": 126448,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "?Draw@CJauge@@QAEXXZ",
+      "oracle_rva": 126544,
+      "linked_rva": 126544,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "?GetLevel@CJauge@@QAEHXZ",
+      "oracle_rva": 126800,
+      "linked_rva": 126800,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "?SetLevel@CJauge@@QAEXH@Z",
+      "oracle_rva": 126816,
+      "linked_rva": 126816,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "?GetType@CJauge@@QAEHXZ",
+      "oracle_rva": 126864,
+      "linked_rva": 126864,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "?SetType@CJauge@@QAEXH@Z",
+      "oracle_rva": 126880,
+      "linked_rva": 126880,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "?GetHide@CJauge@@QAEHXZ",
+      "oracle_rva": 126912,
+      "linked_rva": 126912,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?GetNbSessions@CNetwork@@QAEHXZ",
+      "oracle_rva": 126912,
+      "linked_rva": 126912,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "?SetHide@CJauge@@QAEXH@Z",
+      "oracle_rva": 126928,
+      "linked_rva": 126928,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/menu.cpp",
+      "name": "??0CMenu@@QAE@XZ",
+      "oracle_rva": 126960,
+      "linked_rva": 126960,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/button.cpp",
+      "name": "??1CButton@@QAE@XZ",
+      "oracle_rva": 126992,
+      "linked_rva": 126992,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/jauge.cpp",
+      "name": "??1CJauge@@QAE@XZ",
+      "oracle_rva": 126992,
+      "linked_rva": 126992,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/menu.cpp",
+      "name": "??1CMenu@@QAE@XZ",
+      "oracle_rva": 126992,
+      "linked_rva": 126992,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?OutputDebug@@YAXPAD@Z",
+      "oracle_rva": 126992,
+      "linked_rva": 126992,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/menu.cpp",
+      "name": "?Delete@CMenu@@QAEXXZ",
+      "oracle_rva": 127008,
+      "linked_rva": 127008,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/menu.cpp",
+      "name": "?TreatEvent@CMenu@@QAEHIIJ@Z",
+      "oracle_rva": 127040,
+      "linked_rva": 127040,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/menu.cpp",
+      "name": "?Detect@CMenu@@IAEHUtagPOINT@@@Z",
+      "oracle_rva": 127184,
+      "linked_rva": 127184,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/menu.cpp",
+      "name": "?MouseDown@CMenu@@IAEHUtagPOINT@@@Z",
+      "oracle_rva": 127296,
+      "linked_rva": 127296,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/menu.cpp",
+      "name": "?MouseMove@CMenu@@IAEHUtagPOINT@@@Z",
+      "oracle_rva": 127312,
+      "linked_rva": 127312,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/menu.cpp",
+      "name": "?MouseUp@CMenu@@IAEHUtagPOINT@@@Z",
+      "oracle_rva": 127408,
+      "linked_rva": 127408,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?InitHInstance@@YAXPAX@Z",
+      "oracle_rva": 127456,
+      "linked_rva": 127456,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?LoadStringA@@YAXIPADH@Z",
+      "oracle_rva": 127472,
+      "linked_rva": 127472,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?ChangeSprite@@YAXH@Z",
+      "oracle_rva": 127504,
+      "linked_rva": 127504,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?ConvLongToPos@@YA?AUtagPOINT@@J@Z",
+      "oracle_rva": 127792,
+      "linked_rva": 127792,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?InitRandom@@YAXXZ",
+      "oracle_rva": 127824,
+      "linked_rva": 127824,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?GetCurrentDir@@YAXPADH@Z",
+      "oracle_rva": 127840,
+      "linked_rva": 127840,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?AddCDPath@@YAXPAD@Z",
+      "oracle_rva": 128016,
+      "linked_rva": 128016,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?AddUserPath@@YAXPAD@Z",
+      "oracle_rva": 128352,
+      "linked_rva": 128352,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?TraceErrorDD@@YAXJPADH@Z",
+      "oracle_rva": 128656,
+      "linked_rva": 128656,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/misc.cpp",
+      "name": "?TraceErrorDS@@YAXJPADH@Z",
+      "oracle_rva": 130976,
+      "linked_rva": 130976,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?initAVI@CMovie@@IAEHXZ",
+      "oracle_rva": 131408,
+      "linked_rva": 131408,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?termAVI@CMovie@@IAEXXZ",
+      "oracle_rva": 131488,
+      "linked_rva": 131488,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?positionMovie@CMovie@@IAEXPAXUtagRECT@@@Z",
+      "oracle_rva": 131536,
+      "linked_rva": 131536,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?fileCloseMovie@CMovie@@IAEXPAX@Z",
+      "oracle_rva": 131584,
+      "linked_rva": 131584,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?fileOpenMovie@CMovie@@IAEHPAXUtagRECT@@PAD@Z",
+      "oracle_rva": 131664,
+      "linked_rva": 131664,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?playMovie@CMovie@@IAEXPAXH@Z",
+      "oracle_rva": 132032,
+      "linked_rva": 132032,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "??0CMovie@@QAE@XZ",
+      "oracle_rva": 132160,
+      "linked_rva": 132160,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "??1CMovie@@QAE@XZ",
+      "oracle_rva": 132176,
+      "linked_rva": 132176,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?Create@CMovie@@QAEHXZ",
+      "oracle_rva": 132192,
+      "linked_rva": 132192,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?GetEnable@CMovie@@QAEHXZ",
+      "oracle_rva": 132240,
+      "linked_rva": 132240,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?IsExist@CMovie@@QAEHPAD@Z",
+      "oracle_rva": 132256,
+      "linked_rva": 132256,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?Play@CMovie@@QAEHPAXUtagRECT@@PAD@Z",
+      "oracle_rva": 132432,
+      "linked_rva": 132432,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/movie.cpp",
+      "name": "?Stop@CMovie@@QAEXPAX@Z",
+      "oracle_rva": 132528,
+      "linked_rva": 132528,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?TraceErrorDP@@YAXJ@Z",
+      "oracle_rva": 132560,
+      "linked_rva": 132560,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "??0CNetwork@@QAE@XZ",
+      "oracle_rva": 133488,
+      "linked_rva": 133488,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "??1CNetwork@@QAE@XZ",
+      "oracle_rva": 133520,
+      "linked_rva": 133520,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?EnumProvidersCallback@@YGHPAU_GUID@@PADKKPAUNamedGUIDList@@@Z",
+      "oracle_rva": 133568,
+      "linked_rva": 133568,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?EnumProviders@CNetwork@@QAEHXZ",
+      "oracle_rva": 133680,
+      "linked_rva": 133680,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?GetProviderName@CNetwork@@QAEPADH@Z",
+      "oracle_rva": 133760,
+      "linked_rva": 133760,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?CreateProvider@CNetwork@@QAEHH@Z",
+      "oracle_rva": 133808,
+      "linked_rva": 133808,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?FreeProviderList@CNetwork@@QAEXXZ",
+      "oracle_rva": 133920,
+      "linked_rva": 133920,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?EnumSessionsCallback@@YGHPAUDPSESSIONDESC2@@PAKKPAUNamedGUIDList@@@Z",
+      "oracle_rva": 133968,
+      "linked_rva": 133968,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?EnumSessions@CNetwork@@QAEHXZ",
+      "oracle_rva": 134096,
+      "linked_rva": 134096,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?GetSessionName@CNetwork@@QAEPADH@Z",
+      "oracle_rva": 134272,
+      "linked_rva": 134272,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?JoinSession@CNetwork@@QAEHHPAD@Z",
+      "oracle_rva": 134320,
+      "linked_rva": 134320,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?FreeSessionList@CNetwork@@QAEXXZ",
+      "oracle_rva": 134560,
+      "linked_rva": 134560,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?CreateSession@CNetwork@@QAEHPAD0@Z",
+      "oracle_rva": 134608,
+      "linked_rva": 134608,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?Send@CNetwork@@QAEHPAXKK@Z",
+      "oracle_rva": 134848,
+      "linked_rva": 134848,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?Receive@CNetwork@@QAEHPAXKPAK@Z",
+      "oracle_rva": 134928,
+      "linked_rva": 134928,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?Close@CNetwork@@QAEHXZ",
+      "oracle_rva": 135136,
+      "linked_rva": 135136,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?FreeUnknownList@CNetwork@@QAEXXZ",
+      "oracle_rva": 135168,
+      "linked_rva": 135168,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?IsHost@CNetwork@@QAEHXZ",
+      "oracle_rva": 135216,
+      "linked_rva": 135216,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "??0CPixmap@@QAE@XZ",
+      "oracle_rva": 135232,
+      "linked_rva": 135232,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "??1CPixmap@@QAE@XZ",
+      "oracle_rva": 135376,
+      "linked_rva": 135376,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?SetDebug@CPixmap@@QAEXH@Z",
+      "oracle_rva": 135536,
+      "linked_rva": 135536,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?Create@CPixmap@@QAEHPAXUtagPOINT@@HHH@Z",
+      "oracle_rva": 135568,
+      "linked_rva": 135568,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?Flush@CPixmap@@QAEHXZ",
+      "oracle_rva": 136480,
+      "linked_rva": 136480,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?Restore@CPixmap@@QAEHXZ",
+      "oracle_rva": 136496,
+      "linked_rva": 136496,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?InitSysPalette@CPixmap@@QAEHXZ",
+      "oracle_rva": 136512,
+      "linked_rva": 136512,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?RestoreAll@CPixmap@@IAEJXZ",
+      "oracle_rva": 136608,
+      "linked_rva": 136608,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?BltFast@CPixmap@@IAEJHHUtagPOINT@@UtagRECT@@H@Z",
+      "oracle_rva": 136784,
+      "linked_rva": 136784,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?BltFast@CPixmap@@IAEJPAUIDirectDrawSurface@@HUtagPOINT@@UtagRECT@@H@Z",
+      "oracle_rva": 137024,
+      "linked_rva": 137024,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?DrawMap@CPixmap@@QAEHHUtagRECT@@0@Z",
+      "oracle_rva": 137120,
+      "linked_rva": 137120,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?SavePalette@CPixmap@@QAEHXZ",
+      "oracle_rva": 137232,
+      "linked_rva": 137232,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?RestorePalette@CPixmap@@QAEHXZ",
+      "oracle_rva": 137280,
+      "linked_rva": 137280,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?Cache@CPixmap@@QAEHHPADUtagPOINT@@1H@Z",
+      "oracle_rva": 137328,
+      "linked_rva": 137328,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?Flush@CPixmap@@QAEXH@Z",
+      "oracle_rva": 137728,
+      "linked_rva": 137728,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?SetTransparent@CPixmap@@QAEXHK@Z",
+      "oracle_rva": 137776,
+      "linked_rva": 137776,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?SetTransparent2@CPixmap@@QAEXHKK@Z",
+      "oracle_rva": 137840,
+      "linked_rva": 137840,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?SetClipping@CPixmap@@QAEXUtagRECT@@@Z",
+      "oracle_rva": 137920,
+      "linked_rva": 137920,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?GetClipping@CPixmap@@QAE?AUtagRECT@@XZ",
+      "oracle_rva": 137968,
+      "linked_rva": 137968,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?QuickIcon@CPixmap@@QAEXHHUtagPOINT@@@Z",
+      "oracle_rva": 138016,
+      "linked_rva": 138016,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?DrawIcon@CPixmap@@QAEHHHHUtagPOINT@@HH@Z",
+      "oracle_rva": 138800,
+      "linked_rva": 138800,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?DrawPart@CPixmap@@QAEHHHUtagPOINT@@UtagRECT@@HH@Z",
+      "oracle_rva": 139520,
+      "linked_rva": 139520,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?DrawImage@CPixmap@@QAEHHHUtagRECT@@H@Z",
+      "oracle_rva": 139712,
+      "linked_rva": 139712,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?Display@CPixmap@@QAEHXZ",
+      "oracle_rva": 139840,
+      "linked_rva": 139840,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?SetMousePosSprite@CPixmap@@QAEXUtagPOINT@@HH@Z",
+      "oracle_rva": 140000,
+      "linked_rva": 140000,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?SetMouseSprite@CPixmap@@QAEXHH@Z",
+      "oracle_rva": 140080,
+      "linked_rva": 140080,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseShow@CPixmap@@QAEXH@Z",
+      "oracle_rva": 140128,
+      "linked_rva": 140128,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseUpdate@CPixmap@@IAEXXZ",
+      "oracle_rva": 140144,
+      "linked_rva": 140144,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseQuickDraw@CPixmap@@IAEHUtagRECT@@@Z",
+      "oracle_rva": 140480,
+      "linked_rva": 140480,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseInvalidate@CPixmap@@QAEXXZ",
+      "oracle_rva": 140672,
+      "linked_rva": 140672,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseBackClear@CPixmap@@QAEXXZ",
+      "oracle_rva": 140688,
+      "linked_rva": 140688,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseBackDraw@CPixmap@@QAEXXZ",
+      "oracle_rva": 140720,
+      "linked_rva": 140720,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseBackSave@CPixmap@@IAEXXZ",
+      "oracle_rva": 140992,
+      "linked_rva": 140992,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseBackRestore@CPixmap@@IAEXXZ",
+      "oracle_rva": 141248,
+      "linked_rva": 141248,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseRectSprite@CPixmap@@IAEXPAUtagRECT@@PAUtagPOINT@@@Z",
+      "oracle_rva": 141456,
+      "linked_rva": 141456,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?MouseHotSpot@CPixmap@@IAEXXZ",
+      "oracle_rva": 141584,
+      "linked_rva": 141584,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?CreateSoundBuffer@CSound@@QAEHHKKKKH@Z",
+      "oracle_rva": 141632,
+      "linked_rva": 141632,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?ReadData@CSound@@QAEHPAUIDirectSoundBuffer@@PAU_iobuf@@KK@Z",
+      "oracle_rva": 141840,
+      "linked_rva": 141840,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?CreateBufferFromWaveFile@CSound@@QAEHHPAD@Z",
+      "oracle_rva": 142144,
+      "linked_rva": 142144,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?InitMidiVolume@@YAXH@Z",
+      "oracle_rva": 142384,
+      "linked_rva": 142384,
+      "delta": 0,
+      "byte_exact_at_linked_rva": false,
+      "byte_exact_at_original_rva": false
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "??0CSound@@QAE@XZ",
+      "oracle_rva": 142512,
+      "linked_rva": 142512,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "??1CSound@@QAE@XZ",
+      "oracle_rva": 142608,
+      "linked_rva": 142608,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?Create@CSound@@QAEHPAX@Z",
+      "oracle_rva": 142688,
+      "linked_rva": 142688,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/network.cpp",
+      "name": "?GetNbProviders@CNetwork@@QAEHXZ",
+      "oracle_rva": 142784,
+      "linked_rva": 142784,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/pixmap.cpp",
+      "name": "?GetTrueColorDecor@CPixmap@@QAEHXZ",
+      "oracle_rva": 142784,
+      "linked_rva": 142784,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?GetEnable@CSound@@QAEHXZ",
+      "oracle_rva": 142784,
+      "linked_rva": 142784,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?SetState@CSound@@QAEXH@Z",
+      "oracle_rva": 142800,
+      "linked_rva": 142800,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?SetAudioVolume@CSound@@QAEXH@Z",
+      "oracle_rva": 142816,
+      "linked_rva": 142816,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?GetAudioVolume@CSound@@QAEHXZ",
+      "oracle_rva": 142832,
+      "linked_rva": 142832,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?SetMidiVolume@CSound@@QAEXH@Z",
+      "oracle_rva": 142864,
+      "linked_rva": 142864,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?GetMidiVolume@CSound@@QAEHXZ",
+      "oracle_rva": 142880,
+      "linked_rva": 142880,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?CacheAll@CSound@@QAEXXZ",
+      "oracle_rva": 142912,
+      "linked_rva": 142912,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?Cache@CSound@@QAEHHPAD@Z",
+      "oracle_rva": 142976,
+      "linked_rva": 142976,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?Flush@CSound@@QAEXH@Z",
+      "oracle_rva": 143040,
+      "linked_rva": 143040,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?PlaySoundDS@CSound@@QAEHHHHH@Z",
+      "oracle_rva": 143104,
+      "linked_rva": 143104,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?PlaySoundDS@CSound@@QAEHHHH@Z",
+      "oracle_rva": 143296,
+      "linked_rva": 143296,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?StopSound@CSound@@QAEHH@Z",
+      "oracle_rva": 143440,
+      "linked_rva": 143440,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?PlayImage@CSound@@QAEHHUtagPOINT@@HH@Z",
+      "oracle_rva": 143552,
+      "linked_rva": 143552,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?Play@CSound@@QAEHHHH@Z",
+      "oracle_rva": 143904,
+      "linked_rva": 143904,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?PlayMusic@CSound@@QAEHPAXPAD@Z",
+      "oracle_rva": 144192,
+      "linked_rva": 144192,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?RestartMusic@CSound@@QAEHXZ",
+      "oracle_rva": 144624,
+      "linked_rva": 144624,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?SuspendMusic@CSound@@QAEXXZ",
+      "oracle_rva": 144704,
+      "linked_rva": 144704,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?StopMusic@CSound@@QAEXXZ",
+      "oracle_rva": 144784,
+      "linked_rva": 144784,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?IsPlayingMusic@CSound@@QAEHXZ",
+      "oracle_rva": 144816,
+      "linked_rva": 144816,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?AdaptVolumeMusic@CSound@@QAEXXZ",
+      "oracle_rva": 144832,
+      "linked_rva": 144832,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/sound.cpp",
+      "name": "?SetSuspendSkip@CSound@@QAEXH@Z",
+      "oracle_rva": 144896,
+      "linked_rva": 144896,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/text.cpp",
+      "name": "?GetCharWidthA@@YAHDH@Z",
+      "oracle_rva": 144912,
+      "linked_rva": 144912,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/text.cpp",
+      "name": "?DrawCharSingle@@YAXPAVCPixmap@@UtagPOINT@@HH@Z",
+      "oracle_rva": 144992,
+      "linked_rva": 144992,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/text.cpp",
+      "name": "?DrawChar@@YAXPAVCPixmap@@PAUtagPOINT@@EH@Z",
+      "oracle_rva": 145072,
+      "linked_rva": 145072,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/text.cpp",
+      "name": "?DrawTextLeft@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "oracle_rva": 145216,
+      "linked_rva": 145216,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/text.cpp",
+      "name": "?DrawTextA@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "oracle_rva": 145264,
+      "linked_rva": 145264,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/text.cpp",
+      "name": "?DrawTextCenter@@YAXPAVCPixmap@@UtagPOINT@@PADH@Z",
+      "oracle_rva": 145312,
+      "linked_rva": 145312,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    },
+    {
+      "tu": "src/text.cpp",
+      "name": "?GetTextWidth@@YAHPADH@Z",
+      "oracle_rva": 145504,
+      "linked_rva": 145504,
+      "delta": 0,
+      "byte_exact_at_linked_rva": true,
+      "byte_exact_at_original_rva": true
+    }
+  ],
+  "accepted_function_summary": {
+    "manifest_count": 413,
+    "uniquely_mapped": 412,
+    "at_original_rva": 412,
+    "byte_exact_at_linked_rva": 372,
+    "byte_exact_at_original_rva": 372,
+    "delta_histogram": {
+      "0": 412
+    }
+  },
+  "resource_section": {
+    "oracle": {
+      "rva": 524288,
+      "virtual_size": 23432,
+      "raw_size": 23552,
+      "sha256": "bc13a154b45ea8b2cf8d9e40c22467c54184e6c1eb053c3b5059c718b8579de3"
+    },
+    "candidate": {
+      "rva": 524288,
+      "virtual_size": 23432,
+      "raw_size": 23552,
+      "sha256": "bc13a154b45ea8b2cf8d9e40c22467c54184e6c1eb053c3b5059c718b8579de3"
+    },
+    "byte_equal": true,
+    "note": "comparison only; original .rsrc bytes are never used as linked input"
+  },
+  "candidate_sha256": "882bf00828a20e546619b1e7ed36a0d4c104c0bc3298e4b59cb9175fb09ebbec",
+  "rich_header": {
+    "oracle": {
+      "offset": 160,
+      "key": "0x000c0d88",
+      "dans_offset": 128,
+      "entries": [
+        {
+          "comp_id": "0x00000000",
+          "count": 270
+        },
+        {
+          "comp_id": "0x00060684",
+          "count": 1
+        }
+      ]
+    },
+    "candidate": {
+      "offset": 160,
+      "key": "0x000c0d88",
+      "dans_offset": 128,
+      "entries": [
+        {
+          "comp_id": "0x00000000",
+          "count": 268
+        },
+        {
+          "comp_id": "0x00060684",
+          "count": 1
+        }
+      ]
+    }
+  }
+}

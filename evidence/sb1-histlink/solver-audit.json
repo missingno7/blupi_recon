@@ -1,0 +1,2826 @@
+{
+  "trace_validation": {
+    "count": 801,
+    "full_replay_exact": true,
+    "predicted_input_exact": true,
+    "actual_folds": [
+      {
+        "keeper": [
+          "?_CallMemberFunction0@@YGXPAX0@Z",
+          "trnsctrl.obj",
+          7,
+          0
+        ],
+        "folded": [
+          "?_CallMemberFunction1@@YGXPAX00@Z",
+          "trnsctrl.obj",
+          7,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "?_CallMemberFunction0@@YGXPAX0@Z",
+          "trnsctrl.obj",
+          7,
+          0
+        ],
+        "folded": [
+          "?_CallMemberFunction2@@YGXPAX00H@Z",
+          "trnsctrl.obj",
+          7,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "?GetEnable@CSound@@QAEHXZ",
+          "08_sound.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "?GetTrueColorDecor@CPixmap@@QAEHXZ",
+          "07_pixmap.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "?GetEnable@CSound@@QAEHXZ",
+          "08_sound.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "?GetNbProviders@CNetwork@@QAEHXZ",
+          "06_network.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "?GetEnable@CSound@@QAEHXZ",
+          "08_sound.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "?GetTrueColorBack@CPixmap@@QAEHXZ",
+          "07_pixmap.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "?PlayMove@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "?PlayDown@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "?BuildUp@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "?GetHide@CJauge@@QAEHXZ",
+          "02_jauge.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "?GetNbSessions@CNetwork@@QAEHXZ",
+          "06_network.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "??1CMenu@@QAE@XZ",
+          "03_menu.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "?OutputDebug@@YAXPAD@Z",
+          "04_misc.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "??1CMenu@@QAE@XZ",
+          "03_menu.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "??1CJauge@@QAE@XZ",
+          "02_jauge.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "??1CMenu@@QAE@XZ",
+          "03_menu.obj",
+          16,
+          0
+        ],
+        "folded": [
+          "??1CButton@@QAE@XZ",
+          "00_button.obj",
+          16,
+          0
+        ]
+      },
+      {
+        "keeper": [
+          "?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+          "ehvecdtr.obj",
+          32,
+          1
+        ],
+        "folded": [
+          "?FrameUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+          "frame.obj",
+          32,
+          1
+        ]
+      },
+      {
+        "keeper": [
+          "_strncnt",
+          "aw_map.obj",
+          48,
+          0
+        ],
+        "folded": [
+          "_strncnt",
+          "aw_cmp.obj",
+          48,
+          0
+        ]
+      }
+    ],
+    "added_entries": [
+      {
+        "name": "?FlushBalleTraj@CDecor@@QAEXXZ",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-solver-us-tail8\\objects\\16_decmove.obj",
+        "module_index": 7,
+        "flags": "0x60501020",
+        "size": 32,
+        "relocs": 0
+      },
+      {
+        "name": "?SetBalleTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-solver-us-tail8\\objects\\16_decmove.obj",
+        "module_index": 7,
+        "flags": "0x60501020",
+        "size": 96,
+        "relocs": 0
+      },
+      {
+        "name": "?IsBalleTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-solver-us-tail8\\objects\\16_decmove.obj",
+        "module_index": 7,
+        "flags": "0x60501020",
+        "size": 160,
+        "relocs": 0
+      },
+      {
+        "name": "?FlushMoveTraj@CDecor@@QAEXXZ",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-solver-us-tail8\\objects\\16_decmove.obj",
+        "module_index": 7,
+        "flags": "0x60501020",
+        "size": 32,
+        "relocs": 0
+      },
+      {
+        "name": "?SetMoveTraj@CDecor@@QAEXUtagPOINT@@@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-solver-us-tail8\\objects\\16_decmove.obj",
+        "module_index": 7,
+        "flags": "0x60501020",
+        "size": 96,
+        "relocs": 0
+      },
+      {
+        "name": "?IsMoveTraj@CDecor@@QAEHUtagPOINT@@@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-solver-us-tail8\\objects\\16_decmove.obj",
+        "module_index": 7,
+        "flags": "0x60501020",
+        "size": 160,
+        "relocs": 0
+      },
+      {
+        "name": "?AscenseurShift@CDecor@@QAEHH@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-solver-us-tail8\\objects\\16_decmove.obj",
+        "module_index": 7,
+        "flags": "0x60501020",
+        "size": 48,
+        "relocs": 0
+      },
+      {
+        "name": "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+        "module": "D:\\Prog\\blupi_recon\\build\\w-sb1icf-solver-us-tail8\\objects\\16_decmove.obj",
+        "module_index": 7,
+        "flags": "0x60501020",
+        "size": 224,
+        "relocs": 1
+      }
+    ],
+    "loaded_member_sequence_identical": true,
+    "job_active_processes_at_exit": 0,
+    "tool_files_unchanged": true
+  },
+  "links": {
+    "solver-link-tail8": {
+      "summary": {
+        "manifest_count": 413,
+        "uniquely_mapped": 412,
+        "at_original_rva": 412,
+        "byte_exact_at_linked_rva": 356,
+        "byte_exact_at_original_rva": 356,
+        "delta_histogram": {
+          "0": 412
+        }
+      },
+      "sections": [
+        {
+          "name": ".text",
+          "oracle_initialized_size": 176019,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 174934,
+          "byte_exact": false
+        },
+        {
+          "name": ".rdata",
+          "oracle_initialized_size": 4978,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 4684,
+          "byte_exact": false
+        },
+        {
+          "name": ".data",
+          "oracle_initialized_size": 329728,
+          "rva_delta": 0,
+          "virtual_size_delta": 32,
+          "same_section_offset_equal_bytes": 327661,
+          "byte_exact": false
+        },
+        {
+          "name": ".rsrc",
+          "oracle_initialized_size": 23432,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 23432,
+          "byte_exact": true
+        }
+      ],
+      "hash": "625379c898c44aca6689da67e81f5aa49349c60358ba105ed1fe0e4d505cfaa0",
+      "rich": {
+        "oracle": {
+          "offset": 160,
+          "key": "0x000c0d88",
+          "dans_offset": 128,
+          "entries": [
+            {
+              "comp_id": "0x00000000",
+              "count": 270
+            },
+            {
+              "comp_id": "0x00060684",
+              "count": 1
+            }
+          ]
+        },
+        "candidate": {
+          "offset": 160,
+          "key": "0x000c0d88",
+          "dans_offset": 128,
+          "entries": [
+            {
+              "comp_id": "0x00000000",
+              "count": 268
+            },
+            {
+              "comp_id": "0x00060684",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "gate": "FAIL_CERTIFICATE",
+      "full_qsort_replay_exact": true
+    },
+    "solver-link-tail8-guard": {
+      "summary": {
+        "manifest_count": 413,
+        "uniquely_mapped": 412,
+        "at_original_rva": 412,
+        "byte_exact_at_linked_rva": 372,
+        "byte_exact_at_original_rva": 372,
+        "delta_histogram": {
+          "0": 412
+        }
+      },
+      "sections": [
+        {
+          "name": ".text",
+          "oracle_initialized_size": 176019,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 175718,
+          "byte_exact": false
+        },
+        {
+          "name": ".rdata",
+          "oracle_initialized_size": 4978,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 4684,
+          "byte_exact": false
+        },
+        {
+          "name": ".data",
+          "oracle_initialized_size": 329728,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 329728,
+          "byte_exact": true
+        },
+        {
+          "name": ".rsrc",
+          "oracle_initialized_size": 23432,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 23432,
+          "byte_exact": true
+        }
+      ],
+      "hash": "882bf00828a20e546619b1e7ed36a0d4c104c0bc3298e4b59cb9175fb09ebbec",
+      "rich": {
+        "oracle": {
+          "offset": 160,
+          "key": "0x000c0d88",
+          "dans_offset": 128,
+          "entries": [
+            {
+              "comp_id": "0x00000000",
+              "count": 270
+            },
+            {
+              "comp_id": "0x00060684",
+              "count": 1
+            }
+          ]
+        },
+        "candidate": {
+          "offset": 160,
+          "key": "0x000c0d88",
+          "dans_offset": 128,
+          "entries": [
+            {
+              "comp_id": "0x00000000",
+              "count": 268
+            },
+            {
+              "comp_id": "0x00060684",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "gate": "FAIL_CERTIFICATE",
+      "full_qsort_replay_exact": true
+    },
+    "solver-link-declarations-only": {
+      "summary": {
+        "manifest_count": 413,
+        "uniquely_mapped": 412,
+        "at_original_rva": 48,
+        "byte_exact_at_linked_rva": 275,
+        "byte_exact_at_original_rva": 27,
+        "delta_histogram": {
+          "-116192": 4,
+          "-9040": 3,
+          "-16": 34,
+          "0": 48,
+          "16": 321,
+          "7360": 2
+        }
+      },
+      "sections": [
+        {
+          "name": ".text",
+          "oracle_initialized_size": 176019,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 39604,
+          "byte_exact": false
+        },
+        {
+          "name": ".rdata",
+          "oracle_initialized_size": 4978,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 4684,
+          "byte_exact": false
+        },
+        {
+          "name": ".data",
+          "oracle_initialized_size": 329728,
+          "rva_delta": 0,
+          "virtual_size_delta": 32,
+          "same_section_offset_equal_bytes": 327656,
+          "byte_exact": false
+        },
+        {
+          "name": ".rsrc",
+          "oracle_initialized_size": 23432,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 23432,
+          "byte_exact": true
+        }
+      ],
+      "hash": "e8a601aaf3d60c5f7276d880be96df34d583459948f8e233738133628b281e2f",
+      "rich": {
+        "oracle": {
+          "offset": 160,
+          "key": "0x000c0d88",
+          "dans_offset": 128,
+          "entries": [
+            {
+              "comp_id": "0x00000000",
+              "count": 270
+            },
+            {
+              "comp_id": "0x00060684",
+              "count": 1
+            }
+          ]
+        },
+        "candidate": {
+          "offset": 160,
+          "key": "0x000c0d88",
+          "dans_offset": 128,
+          "entries": [
+            {
+              "comp_id": "0x00000000",
+              "count": 268
+            },
+            {
+              "comp_id": "0x00060684",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "gate": "FAIL_CERTIFICATE",
+      "full_qsort_replay_exact": true
+    },
+    "solver-link-sb2forms": {
+      "summary": {
+        "manifest_count": 413,
+        "uniquely_mapped": 412,
+        "at_original_rva": 412,
+        "byte_exact_at_linked_rva": 356,
+        "byte_exact_at_original_rva": 356,
+        "delta_histogram": {
+          "0": 412
+        }
+      },
+      "sections": [
+        {
+          "name": ".text",
+          "oracle_initialized_size": 176019,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 162537,
+          "byte_exact": false
+        },
+        {
+          "name": ".rdata",
+          "oracle_initialized_size": 4978,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 4684,
+          "byte_exact": false
+        },
+        {
+          "name": ".data",
+          "oracle_initialized_size": 329728,
+          "rva_delta": 0,
+          "virtual_size_delta": 32,
+          "same_section_offset_equal_bytes": 327656,
+          "byte_exact": false
+        },
+        {
+          "name": ".rsrc",
+          "oracle_initialized_size": 23432,
+          "rva_delta": 0,
+          "virtual_size_delta": 0,
+          "same_section_offset_equal_bytes": 23432,
+          "byte_exact": true
+        }
+      ],
+      "hash": "2af36e969390c864933e30800104683b34665aeac4d8fd635180f1945a700707",
+      "rich": {
+        "oracle": {
+          "offset": 160,
+          "key": "0x000c0d88",
+          "dans_offset": 128,
+          "entries": [
+            {
+              "comp_id": "0x00000000",
+              "count": 270
+            },
+            {
+              "comp_id": "0x00060684",
+              "count": 1
+            }
+          ]
+        },
+        "candidate": {
+          "offset": 160,
+          "key": "0x000c0d88",
+          "dans_offset": 128,
+          "entries": [
+            {
+              "comp_id": "0x00000000",
+              "count": 268
+            },
+            {
+              "comp_id": "0x00060684",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "gate": "FAIL_CERTIFICATE",
+      "full_qsort_replay_exact": true
+    }
+  },
+  "whole_file_comparison": {
+    "same_size": true,
+    "size": 535552,
+    "differing_bytes": 596,
+    "differing_bytes_by_raw_section": {
+      ".text": 301,
+      ".rdata": 294,
+      ".data": 0,
+      ".rsrc": 0
+    },
+    "outside_sections": [
+      {
+        "offset": "0x94",
+        "oracle": 134,
+        "candidate": 132
+      }
+    ]
+  },
+  "text_residual_diagnostic": {
+    "iat_identity_fields": [
+      {
+        "rva": "0x169e",
+        "symbol": [
+          "user32.dll",
+          "PostQuitMessage"
+        ],
+        "oracle": "0x42c1d8",
+        "candidate": "0x42c160"
+      },
+      {
+        "rva": "0x16a8",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x179a",
+        "symbol": [
+          "user32.dll",
+          "SetWindowTextA"
+        ],
+        "oracle": "0x42c168",
+        "candidate": "0x42c1d8"
+      },
+      {
+        "rva": "0x17ce",
+        "symbol": [
+          "user32.dll",
+          "SetWindowTextA"
+        ],
+        "oracle": "0x42c168",
+        "candidate": "0x42c1d8"
+      },
+      {
+        "rva": "0x183d",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x1858",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x1873",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x188e",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x18b4",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x18c9",
+        "symbol": [
+          "user32.dll",
+          "GetCursorPos"
+        ],
+        "oracle": "0x42c164",
+        "candidate": "0x42c1dc"
+      },
+      {
+        "rva": "0x18d5",
+        "symbol": [
+          "user32.dll",
+          "ScreenToClient"
+        ],
+        "oracle": "0x42c15c",
+        "candidate": "0x42c158"
+      },
+      {
+        "rva": "0x18df",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x196b",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x19bf",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x19fb",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x1a2f",
+        "symbol": [
+          "user32.dll",
+          "DefWindowProcA"
+        ],
+        "oracle": "0x42c1dc",
+        "candidate": "0x42c15c"
+      },
+      {
+        "rva": "0x1c7d",
+        "symbol": [
+          "user32.dll",
+          "PostMessageA"
+        ],
+        "oracle": "0x42c158",
+        "candidate": "0x42c164"
+      },
+      {
+        "rva": "0x1d36",
+        "symbol": [
+          "user32.dll",
+          "MessageBoxA"
+        ],
+        "oracle": "0x42c160",
+        "candidate": "0x42c174"
+      },
+      {
+        "rva": "0x1d48",
+        "symbol": [
+          "user32.dll",
+          "DestroyWindow"
+        ],
+        "oracle": "0x42c170",
+        "candidate": "0x42c168"
+      },
+      {
+        "rva": "0x1e81",
+        "symbol": [
+          "user32.dll",
+          "PeekMessageA"
+        ],
+        "oracle": "0x42c18c",
+        "candidate": "0x42c17c"
+      },
+      {
+        "rva": "0x1e87",
+        "symbol": [
+          "user32.dll",
+          "GetMessageA"
+        ],
+        "oracle": "0x42c188",
+        "candidate": "0x42c184"
+      },
+      {
+        "rva": "0x1e8d",
+        "symbol": [
+          "user32.dll",
+          "TranslateMessage"
+        ],
+        "oracle": "0x42c178",
+        "candidate": "0x42c180"
+      },
+      {
+        "rva": "0x1e93",
+        "symbol": [
+          "user32.dll",
+          "DispatchMessageA"
+        ],
+        "oracle": "0x42c180",
+        "candidate": "0x42c170"
+      },
+      {
+        "rva": "0x1edb",
+        "symbol": [
+          "user32.dll",
+          "WaitMessage"
+        ],
+        "oracle": "0x42c17c",
+        "candidate": "0x42c178"
+      },
+      {
+        "rva": "0x1f50",
+        "symbol": [
+          "user32.dll",
+          "LoadIconA"
+        ],
+        "oracle": "0x42c1cc",
+        "candidate": "0x42c1d4"
+      },
+      {
+        "rva": "0x1f60",
+        "symbol": [
+          "user32.dll",
+          "LoadCursorA"
+        ],
+        "oracle": "0x42c174",
+        "candidate": "0x42c1cc"
+      },
+      {
+        "rva": "0x1f88",
+        "symbol": [
+          "user32.dll",
+          "RegisterClassA"
+        ],
+        "oracle": "0x42c1e0",
+        "candidate": "0x42c16c"
+      },
+      {
+        "rva": "0x1f98",
+        "symbol": [
+          "user32.dll",
+          "GetSystemMetrics"
+        ],
+        "oracle": "0x42c16c",
+        "candidate": "0x42c1e0"
+      },
+      {
+        "rva": "0x1fb5",
+        "symbol": [
+          "user32.dll",
+          "CreateWindowExA"
+        ],
+        "oracle": "0x42c1a0",
+        "candidate": "0x42c194"
+      },
+      {
+        "rva": "0x1fc5",
+        "symbol": [
+          "user32.dll",
+          "GetSystemMetrics"
+        ],
+        "oracle": "0x42c16c",
+        "candidate": "0x42c1e0"
+      },
+      {
+        "rva": "0x2020",
+        "symbol": [
+          "user32.dll",
+          "AdjustWindowRect"
+        ],
+        "oracle": "0x42c190",
+        "candidate": "0x42c198"
+      },
+      {
+        "rva": "0x2064",
+        "symbol": [
+          "user32.dll",
+          "CreateWindowExA"
+        ],
+        "oracle": "0x42c1a0",
+        "candidate": "0x42c194"
+      },
+      {
+        "rva": "0x2094",
+        "symbol": [
+          "user32.dll",
+          "ShowWindow"
+        ],
+        "oracle": "0x42c198",
+        "candidate": "0x42c188"
+      },
+      {
+        "rva": "0x20a0",
+        "symbol": [
+          "user32.dll",
+          "UpdateWindow"
+        ],
+        "oracle": "0x42c194",
+        "candidate": "0x42c190"
+      },
+      {
+        "rva": "0x20ad",
+        "symbol": [
+          "user32.dll",
+          "SetFocus"
+        ],
+        "oracle": "0x42c184",
+        "candidate": "0x42c18c"
+      },
+      {
+        "rva": "0x30e8",
+        "symbol": [
+          "user32.dll",
+          "PostMessageA"
+        ],
+        "oracle": "0x42c158",
+        "candidate": "0x42c164"
+      },
+      {
+        "rva": "0x3153",
+        "symbol": [
+          "kernel32.dll",
+          "GetModuleHandleA"
+        ],
+        "oracle": "0x42c04c",
+        "candidate": "0x42c06c"
+      },
+      {
+        "rva": "0x315a",
+        "symbol": [
+          "user32.dll",
+          "LoadImageA"
+        ],
+        "oracle": "0x42c1d4",
+        "candidate": "0x42c1d0"
+      },
+      {
+        "rva": "0x3186",
+        "symbol": [
+          "user32.dll",
+          "LoadImageA"
+        ],
+        "oracle": "0x42c1d4",
+        "candidate": "0x42c1d0"
+      },
+      {
+        "rva": "0x31bb",
+        "symbol": [
+          "gdi32.dll",
+          "GetObjectA"
+        ],
+        "oracle": "0x42c028",
+        "candidate": "0x42c038"
+      },
+      {
+        "rva": "0x3274",
+        "symbol": [
+          "gdi32.dll",
+          "DeleteObject"
+        ],
+        "oracle": "0x42c020",
+        "candidate": "0x42c034"
+      },
+      {
+        "rva": "0x32b7",
+        "symbol": [
+          "kernel32.dll",
+          "GetModuleHandleA"
+        ],
+        "oracle": "0x42c04c",
+        "candidate": "0x42c06c"
+      },
+      {
+        "rva": "0x32bd",
+        "symbol": [
+          "user32.dll",
+          "LoadImageA"
+        ],
+        "oracle": "0x42c1d4",
+        "candidate": "0x42c1d0"
+      },
+      {
+        "rva": "0x3330",
+        "symbol": [
+          "gdi32.dll",
+          "DeleteObject"
+        ],
+        "oracle": "0x42c020",
+        "candidate": "0x42c034"
+      },
+      {
+        "rva": "0x33b4",
+        "symbol": [
+          "gdi32.dll",
+          "CreateCompatibleDC"
+        ],
+        "oracle": "0x42c030",
+        "candidate": "0x42c040"
+      },
+      {
+        "rva": "0x33e5",
+        "symbol": [
+          "gdi32.dll",
+          "SelectObject"
+        ],
+        "oracle": "0x42c02c",
+        "candidate": "0x42c024"
+      },
+      {
+        "rva": "0x3409",
+        "symbol": [
+          "gdi32.dll",
+          "GetObjectA"
+        ],
+        "oracle": "0x42c028",
+        "candidate": "0x42c038"
+      },
+      {
+        "rva": "0x34d4",
+        "symbol": [
+          "gdi32.dll",
+          "StretchBlt"
+        ],
+        "oracle": "0x42c034",
+        "candidate": "0x42c020"
+      },
+      {
+        "rva": "0x3512",
+        "symbol": [
+          "gdi32.dll",
+          "DeleteDC"
+        ],
+        "oracle": "0x42c024",
+        "candidate": "0x42c028"
+      },
+      {
+        "rva": "0x35e0",
+        "symbol": [
+          "kernel32.dll",
+          "FindResourceA"
+        ],
+        "oracle": "0x42c060",
+        "candidate": "0x42c058"
+      },
+      {
+        "rva": "0x3609",
+        "symbol": [
+          "kernel32.dll",
+          "LoadResource"
+        ],
+        "oracle": "0x42c050",
+        "candidate": "0x42c04c"
+      },
+      {
+        "rva": "0x3610",
+        "symbol": [
+          "kernel32.dll",
+          "LockResource"
+        ],
+        "oracle": "0x42c05c",
+        "candidate": "0x42c050"
+      },
+      {
+        "rva": "0x36b1",
+        "symbol": [
+          "kernel32.dll",
+          "_lopen"
+        ],
+        "oracle": "0x42c058",
+        "candidate": "0x42c05c"
+      },
+      {
+        "rva": "0x36d8",
+        "symbol": [
+          "kernel32.dll",
+          "_lread"
+        ],
+        "oracle": "0x42c054",
+        "candidate": "0x42c064"
+      },
+      {
+        "rva": "0x3703",
+        "symbol": [
+          "kernel32.dll",
+          "_lclose"
+        ],
+        "oracle": "0x42c064",
+        "candidate": "0x42c068"
+      },
+      {
+        "rva": "0x37d5",
+        "symbol": [
+          "gdi32.dll",
+          "GetPixel"
+        ],
+        "oracle": "0x42c038",
+        "candidate": "0x42c030"
+      },
+      {
+        "rva": "0x37ea",
+        "symbol": [
+          "gdi32.dll",
+          "SetPixel"
+        ],
+        "oracle": "0x42c044",
+        "candidate": "0x42c02c"
+      },
+      {
+        "rva": "0x3883",
+        "symbol": [
+          "gdi32.dll",
+          "SetPixel"
+        ],
+        "oracle": "0x42c044",
+        "candidate": "0x42c02c"
+      },
+      {
+        "rva": "0xf7e5",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0xf88d",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x11365",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x1189b",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x12c95",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x12cfc",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x13179",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x1342b",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x135c7",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x13771",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x1380a",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x138bd",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x1397d",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x1644d",
+        "symbol": [
+          "user32.dll",
+          "GetCursorPos"
+        ],
+        "oracle": "0x42c164",
+        "candidate": "0x42c1dc"
+      },
+      {
+        "rva": "0x1645f",
+        "symbol": [
+          "user32.dll",
+          "ScreenToClient"
+        ],
+        "oracle": "0x42c15c",
+        "candidate": "0x42c158"
+      },
+      {
+        "rva": "0x19365",
+        "symbol": [
+          "user32.dll",
+          "PostMessageA"
+        ],
+        "oracle": "0x42c158",
+        "candidate": "0x42c164"
+      },
+      {
+        "rva": "0x1b04e",
+        "symbol": [
+          "user32.dll",
+          "ShowCursor"
+        ],
+        "oracle": "0x42c1c0",
+        "candidate": "0x42c1c8"
+      },
+      {
+        "rva": "0x1b06e",
+        "symbol": [
+          "user32.dll",
+          "ShowCursor"
+        ],
+        "oracle": "0x42c1c0",
+        "candidate": "0x42c1c8"
+      },
+      {
+        "rva": "0x1c73a",
+        "symbol": [
+          "kernel32.dll",
+          "DeleteFileA"
+        ],
+        "oracle": "0x42c06c",
+        "candidate": "0x42c060"
+      },
+      {
+        "rva": "0x1d904",
+        "symbol": [
+          "user32.dll",
+          "PostMessageA"
+        ],
+        "oracle": "0x42c158",
+        "candidate": "0x42c164"
+      },
+      {
+        "rva": "0x1dfb8",
+        "symbol": [
+          "user32.dll",
+          "ClientToScreen"
+        ],
+        "oracle": "0x42c1c4",
+        "candidate": "0x42c1b4"
+      },
+      {
+        "rva": "0x1dfc8",
+        "symbol": [
+          "user32.dll",
+          "SetCursorPos"
+        ],
+        "oracle": "0x42c1c8",
+        "candidate": "0x42c1c4"
+      },
+      {
+        "rva": "0x1e21f",
+        "symbol": [
+          "user32.dll",
+          "PostMessageA"
+        ],
+        "oracle": "0x42c158",
+        "candidate": "0x42c164"
+      },
+      {
+        "rva": "0x1f207",
+        "symbol": [
+          "user32.dll",
+          "LoadStringA"
+        ],
+        "oracle": "0x42c1b4",
+        "candidate": "0x42c1bc"
+      },
+      {
+        "rva": "0x1f233",
+        "symbol": [
+          "user32.dll",
+          "LoadCursorA"
+        ],
+        "oracle": "0x42c174",
+        "candidate": "0x42c1cc"
+      },
+      {
+        "rva": "0x1f320",
+        "symbol": [
+          "user32.dll",
+          "SetCursor"
+        ],
+        "oracle": "0x42c1bc",
+        "candidate": "0x42c1b8"
+      },
+      {
+        "rva": "0x1f5bb",
+        "symbol": [
+          "kernel32.dll",
+          "CreateDirectoryA"
+        ],
+        "oracle": "0x42c068",
+        "candidate": "0x42c054"
+      },
+      {
+        "rva": "0x1f62d",
+        "symbol": [
+          "kernel32.dll",
+          "CreateDirectoryA"
+        ],
+        "oracle": "0x42c068",
+        "candidate": "0x42c054"
+      },
+      {
+        "rva": "0x201a8",
+        "symbol": [
+          "winmm.dll",
+          "mciGetDeviceIDA"
+        ],
+        "oracle": "0x42c214",
+        "candidate": "0x42c1fc"
+      },
+      {
+        "rva": "0x201ec",
+        "symbol": [
+          "user32.dll",
+          "MoveWindow"
+        ],
+        "oracle": "0x42c1b8",
+        "candidate": "0x42c1a8"
+      },
+      {
+        "rva": "0x2023a",
+        "symbol": [
+          "user32.dll",
+          "UpdateWindow"
+        ],
+        "oracle": "0x42c194",
+        "candidate": "0x42c190"
+      },
+      {
+        "rva": "0x2038d",
+        "symbol": [
+          "user32.dll",
+          "UpdateWindow"
+        ],
+        "oracle": "0x42c194",
+        "candidate": "0x42c190"
+      },
+      {
+        "rva": "0x2119d",
+        "symbol": [
+          "gdi32.dll",
+          "CreateCompatibleDC"
+        ],
+        "oracle": "0x42c030",
+        "candidate": "0x42c040"
+      },
+      {
+        "rva": "0x211b0",
+        "symbol": [
+          "gdi32.dll",
+          "GetDeviceCaps"
+        ],
+        "oracle": "0x42c03c",
+        "candidate": "0x42c044"
+      },
+      {
+        "rva": "0x211cd",
+        "symbol": [
+          "gdi32.dll",
+          "DeleteDC"
+        ],
+        "oracle": "0x42c024",
+        "candidate": "0x42c028"
+      },
+      {
+        "rva": "0x2120e",
+        "symbol": [
+          "user32.dll",
+          "ShowCursor"
+        ],
+        "oracle": "0x42c1c0",
+        "candidate": "0x42c1c8"
+      },
+      {
+        "rva": "0x2122b",
+        "symbol": [
+          "user32.dll",
+          "ClientToScreen"
+        ],
+        "oracle": "0x42c1c4",
+        "candidate": "0x42c1b4"
+      },
+      {
+        "rva": "0x2123b",
+        "symbol": [
+          "user32.dll",
+          "SetCursorPos"
+        ],
+        "oracle": "0x42c1c8",
+        "candidate": "0x42c1c4"
+      },
+      {
+        "rva": "0x21548",
+        "symbol": [
+          "gdi32.dll",
+          "CreateCompatibleDC"
+        ],
+        "oracle": "0x42c030",
+        "candidate": "0x42c040"
+      },
+      {
+        "rva": "0x2155f",
+        "symbol": [
+          "gdi32.dll",
+          "GetDeviceCaps"
+        ],
+        "oracle": "0x42c03c",
+        "candidate": "0x42c044"
+      },
+      {
+        "rva": "0x21584",
+        "symbol": [
+          "gdi32.dll",
+          "GetSystemPaletteEntries"
+        ],
+        "oracle": "0x42c040",
+        "candidate": "0x42c03c"
+      },
+      {
+        "rva": "0x2158b",
+        "symbol": [
+          "gdi32.dll",
+          "DeleteDC"
+        ],
+        "oracle": "0x42c024",
+        "candidate": "0x42c028"
+      },
+      {
+        "rva": "0x22259",
+        "symbol": [
+          "user32.dll",
+          "GetClientRect"
+        ],
+        "oracle": "0x42c1a4",
+        "candidate": "0x42c1ac"
+      },
+      {
+        "rva": "0x22262",
+        "symbol": [
+          "user32.dll",
+          "ClientToScreen"
+        ],
+        "oracle": "0x42c1c4",
+        "candidate": "0x42c1b4"
+      },
+      {
+        "rva": "0x2241a",
+        "symbol": [
+          "user32.dll",
+          "IntersectRect"
+        ],
+        "oracle": "0x42c1d0",
+        "candidate": "0x42c1c0"
+      },
+      {
+        "rva": "0x22433",
+        "symbol": [
+          "user32.dll",
+          "UnionRect"
+        ],
+        "oracle": "0x42c1ac",
+        "candidate": "0x42c1a0"
+      },
+      {
+        "rva": "0x22521",
+        "symbol": [
+          "user32.dll",
+          "ClientToScreen"
+        ],
+        "oracle": "0x42c1c4",
+        "candidate": "0x42c1b4"
+      },
+      {
+        "rva": "0x22ab8",
+        "symbol": [
+          "user32.dll",
+          "wsprintfA"
+        ],
+        "oracle": "0x42c1a8",
+        "candidate": "0x42c1a4"
+      },
+      {
+        "rva": "0x22c5f",
+        "symbol": [
+          "winmm.dll",
+          "midiOutOpen"
+        ],
+        "oracle": "0x42c1f4",
+        "candidate": "0x42c214"
+      },
+      {
+        "rva": "0x22c65",
+        "symbol": [
+          "winmm.dll",
+          "midiOutSetVolume"
+        ],
+        "oracle": "0x42c1f8",
+        "candidate": "0x42c1f4"
+      },
+      {
+        "rva": "0x22c91",
+        "symbol": [
+          "winmm.dll",
+          "midiOutClose"
+        ],
+        "oracle": "0x42c1fc",
+        "candidate": "0x42c1f8"
+      },
+      {
+        "rva": "0x2389e",
+        "symbol": [
+          "dplayx.dll",
+          "#2"
+        ],
+        "oracle": "0x42c008",
+        "candidate": "0x42c00c"
+      },
+      {
+        "rva": "0x238a4",
+        "symbol": [
+          "dplayx.dll",
+          "#1"
+        ],
+        "oracle": "0x42c00c",
+        "candidate": "0x42c008"
+      },
+      {
+        "rva": "0x23d41",
+        "symbol": [
+          "kernel32.dll",
+          "GetLocalTime"
+        ],
+        "oracle": "0x42c144",
+        "candidate": "0x42c134"
+      },
+      {
+        "rva": "0x24457",
+        "symbol": [
+          "kernel32.dll",
+          "DeleteFileA"
+        ],
+        "oracle": "0x42c06c",
+        "candidate": "0x42c060"
+      },
+      {
+        "rva": "0x24461",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x244c3",
+        "symbol": [
+          "kernel32.dll",
+          "HeapFree"
+        ],
+        "oracle": "0x42c13c",
+        "candidate": "0x42c118"
+      },
+      {
+        "rva": "0x24572",
+        "symbol": [
+          "kernel32.dll",
+          "HeapAlloc"
+        ],
+        "oracle": "0x42c148",
+        "candidate": "0x42c074"
+      },
+      {
+        "rva": "0x24863",
+        "symbol": [
+          "kernel32.dll",
+          "FindFirstFileA"
+        ],
+        "oracle": "0x42c140",
+        "candidate": "0x42c130"
+      },
+      {
+        "rva": "0x24870",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x24992",
+        "symbol": [
+          "kernel32.dll",
+          "FindNextFileA"
+        ],
+        "oracle": "0x42c150",
+        "candidate": "0x42c148"
+      },
+      {
+        "rva": "0x2499c",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x24abb",
+        "symbol": [
+          "kernel32.dll",
+          "FileTimeToLocalFileTime"
+        ],
+        "oracle": "0x42c130",
+        "candidate": "0x42c144"
+      },
+      {
+        "rva": "0x24b39",
+        "symbol": [
+          "kernel32.dll",
+          "CreateDirectoryA"
+        ],
+        "oracle": "0x42c068",
+        "candidate": "0x42c054"
+      },
+      {
+        "rva": "0x24b43",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x24be4",
+        "symbol": [
+          "kernel32.dll",
+          "GetCurrentProcess"
+        ],
+        "oracle": "0x42c0f8",
+        "candidate": "0x42c124"
+      },
+      {
+        "rva": "0x24beb",
+        "symbol": [
+          "kernel32.dll",
+          "TerminateProcess"
+        ],
+        "oracle": "0x42c134",
+        "candidate": "0x42c140"
+      },
+      {
+        "rva": "0x24c6c",
+        "symbol": [
+          "kernel32.dll",
+          "ExitProcess"
+        ],
+        "oracle": "0x42c12c",
+        "candidate": "0x42c150"
+      },
+      {
+        "rva": "0x24d68",
+        "symbol": [
+          "kernel32.dll",
+          "GetVersion"
+        ],
+        "oracle": "0x42c0ec",
+        "candidate": "0x42c128"
+      },
+      {
+        "rva": "0x24dbd",
+        "symbol": [
+          "kernel32.dll",
+          "GetCommandLineA"
+        ],
+        "oracle": "0x42c138",
+        "candidate": "0x42c11c"
+      },
+      {
+        "rva": "0x24e54",
+        "symbol": [
+          "kernel32.dll",
+          "GetStartupInfoA"
+        ],
+        "oracle": "0x42c0f4",
+        "candidate": "0x42c120"
+      },
+      {
+        "rva": "0x24e75",
+        "symbol": [
+          "kernel32.dll",
+          "GetModuleHandleA"
+        ],
+        "oracle": "0x42c04c",
+        "candidate": "0x42c06c"
+      },
+      {
+        "rva": "0x24f32",
+        "symbol": [
+          "kernel32.dll",
+          "ExitProcess"
+        ],
+        "oracle": "0x42c12c",
+        "candidate": "0x42c150"
+      },
+      {
+        "rva": "0x24fb5",
+        "symbol": [
+          "kernel32.dll",
+          "CloseHandle"
+        ],
+        "oracle": "0x42c0e8",
+        "candidate": "0x42c0e4"
+      },
+      {
+        "rva": "0x24fbf",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x25339",
+        "symbol": [
+          "kernel32.dll",
+          "ReadFile"
+        ],
+        "oracle": "0x42c0f0",
+        "candidate": "0x42c12c"
+      },
+      {
+        "rva": "0x25343",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x25419",
+        "symbol": [
+          "kernel32.dll",
+          "ReadFile"
+        ],
+        "oracle": "0x42c0f0",
+        "candidate": "0x42c12c"
+      },
+      {
+        "rva": "0x25423",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x2644f",
+        "symbol": [
+          "kernel32.dll",
+          "WriteFile"
+        ],
+        "oracle": "0x42c0e0",
+        "candidate": "0x42c0dc"
+      },
+      {
+        "rva": "0x26521",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x26542",
+        "symbol": [
+          "kernel32.dll",
+          "WriteFile"
+        ],
+        "oracle": "0x42c0e0",
+        "candidate": "0x42c0dc"
+      },
+      {
+        "rva": "0x26561",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x26822",
+        "symbol": [
+          "kernel32.dll",
+          "GetTimeZoneInformation"
+        ],
+        "oracle": "0x42c0dc",
+        "candidate": "0x42c0d8"
+      },
+      {
+        "rva": "0x27b4b",
+        "symbol": [
+          "kernel32.dll",
+          "HeapCreate"
+        ],
+        "oracle": "0x42c0d4",
+        "candidate": "0x42c0d0"
+      },
+      {
+        "rva": "0x27b6a",
+        "symbol": [
+          "kernel32.dll",
+          "HeapDestroy"
+        ],
+        "oracle": "0x42c0e4",
+        "candidate": "0x42c0e0"
+      },
+      {
+        "rva": "0x27ba3",
+        "symbol": [
+          "kernel32.dll",
+          "HeapAlloc"
+        ],
+        "oracle": "0x42c148",
+        "candidate": "0x42c074"
+      },
+      {
+        "rva": "0x27bb3",
+        "symbol": [
+          "kernel32.dll",
+          "VirtualAlloc"
+        ],
+        "oracle": "0x42c0d8",
+        "candidate": "0x42c0d4"
+      },
+      {
+        "rva": "0x27cc1",
+        "symbol": [
+          "kernel32.dll",
+          "VirtualFree"
+        ],
+        "oracle": "0x42c0d0",
+        "candidate": "0x42c0cc"
+      },
+      {
+        "rva": "0x27cd8",
+        "symbol": [
+          "kernel32.dll",
+          "HeapFree"
+        ],
+        "oracle": "0x42c13c",
+        "candidate": "0x42c118"
+      },
+      {
+        "rva": "0x27d02",
+        "symbol": [
+          "kernel32.dll",
+          "VirtualFree"
+        ],
+        "oracle": "0x42c0d0",
+        "candidate": "0x42c0cc"
+      },
+      {
+        "rva": "0x27d39",
+        "symbol": [
+          "kernel32.dll",
+          "HeapFree"
+        ],
+        "oracle": "0x42c13c",
+        "candidate": "0x42c118"
+      },
+      {
+        "rva": "0x27d8b",
+        "symbol": [
+          "kernel32.dll",
+          "VirtualFree"
+        ],
+        "oracle": "0x42c0d0",
+        "candidate": "0x42c0cc"
+      },
+      {
+        "rva": "0x28034",
+        "symbol": [
+          "kernel32.dll",
+          "VirtualAlloc"
+        ],
+        "oracle": "0x42c0d8",
+        "candidate": "0x42c0d4"
+      },
+      {
+        "rva": "0x28398",
+        "symbol": [
+          "kernel32.dll",
+          "LCMapStringA"
+        ],
+        "oracle": "0x42c0cc",
+        "candidate": "0x42c0c8"
+      },
+      {
+        "rva": "0x283b7",
+        "symbol": [
+          "kernel32.dll",
+          "LCMapStringW"
+        ],
+        "oracle": "0x42c0bc",
+        "candidate": "0x42c0b8"
+      },
+      {
+        "rva": "0x2846c",
+        "symbol": [
+          "kernel32.dll",
+          "MultiByteToWideChar"
+        ],
+        "oracle": "0x42c0c8",
+        "candidate": "0x42c0c4"
+      },
+      {
+        "rva": "0x2849f",
+        "symbol": [
+          "kernel32.dll",
+          "MultiByteToWideChar"
+        ],
+        "oracle": "0x42c0c8",
+        "candidate": "0x42c0c4"
+      },
+      {
+        "rva": "0x284bd",
+        "symbol": [
+          "kernel32.dll",
+          "LCMapStringW"
+        ],
+        "oracle": "0x42c0bc",
+        "candidate": "0x42c0b8"
+      },
+      {
+        "rva": "0x284f3",
+        "symbol": [
+          "kernel32.dll",
+          "LCMapStringW"
+        ],
+        "oracle": "0x42c0bc",
+        "candidate": "0x42c0b8"
+      },
+      {
+        "rva": "0x2853c",
+        "symbol": [
+          "kernel32.dll",
+          "LCMapStringW"
+        ],
+        "oracle": "0x42c0bc",
+        "candidate": "0x42c0b8"
+      },
+      {
+        "rva": "0x28566",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x2858a",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x287e4",
+        "symbol": [
+          "kernel32.dll",
+          "SetFilePointer"
+        ],
+        "oracle": "0x42c0b8",
+        "candidate": "0x42c0b4"
+      },
+      {
+        "rva": "0x287f1",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x28b26",
+        "symbol": [
+          "kernel32.dll",
+          "UnhandledExceptionFilter"
+        ],
+        "oracle": "0x42c0c0",
+        "candidate": "0x42c0bc"
+      },
+      {
+        "rva": "0x28ce3",
+        "symbol": [
+          "kernel32.dll",
+          "GetModuleFileNameA"
+        ],
+        "oracle": "0x42c0b0",
+        "candidate": "0x42c0ac"
+      },
+      {
+        "rva": "0x28f89",
+        "symbol": [
+          "kernel32.dll",
+          "GetEnvironmentStrings"
+        ],
+        "oracle": "0x42c0a4",
+        "candidate": "0x42c0a0"
+      },
+      {
+        "rva": "0x28f95",
+        "symbol": [
+          "kernel32.dll",
+          "GetEnvironmentStringsW"
+        ],
+        "oracle": "0x42c0a0",
+        "candidate": "0x42c09c"
+      },
+      {
+        "rva": "0x2900c",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x29033",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x29049",
+        "symbol": [
+          "kernel32.dll",
+          "FreeEnvironmentStringsW"
+        ],
+        "oracle": "0x42c0b4",
+        "candidate": "0x42c0b0"
+      },
+      {
+        "rva": "0x29057",
+        "symbol": [
+          "kernel32.dll",
+          "FreeEnvironmentStringsW"
+        ],
+        "oracle": "0x42c0b4",
+        "candidate": "0x42c0b0"
+      },
+      {
+        "rva": "0x290a2",
+        "symbol": [
+          "kernel32.dll",
+          "FreeEnvironmentStringsA"
+        ],
+        "oracle": "0x42c0ac",
+        "candidate": "0x42c0a8"
+      },
+      {
+        "rva": "0x290c4",
+        "symbol": [
+          "kernel32.dll",
+          "FreeEnvironmentStringsA"
+        ],
+        "oracle": "0x42c0ac",
+        "candidate": "0x42c0a8"
+      },
+      {
+        "rva": "0x29147",
+        "symbol": [
+          "kernel32.dll",
+          "GetCPInfo"
+        ],
+        "oracle": "0x42c0a8",
+        "candidate": "0x42c0a4"
+      },
+      {
+        "rva": "0x2930f",
+        "symbol": [
+          "kernel32.dll",
+          "GetOEMCP"
+        ],
+        "oracle": "0x42c094",
+        "candidate": "0x42c090"
+      },
+      {
+        "rva": "0x29324",
+        "symbol": [
+          "kernel32.dll",
+          "GetACP"
+        ],
+        "oracle": "0x42c098",
+        "candidate": "0x42c094"
+      },
+      {
+        "rva": "0x293f5",
+        "symbol": [
+          "kernel32.dll",
+          "GetCPInfo"
+        ],
+        "oracle": "0x42c0a8",
+        "candidate": "0x42c0a4"
+      },
+      {
+        "rva": "0x29637",
+        "symbol": [
+          "kernel32.dll",
+          "GetStartupInfoA"
+        ],
+        "oracle": "0x42c0f4",
+        "candidate": "0x42c120"
+      },
+      {
+        "rva": "0x29705",
+        "symbol": [
+          "kernel32.dll",
+          "GetFileType"
+        ],
+        "oracle": "0x42c088",
+        "candidate": "0x42c084"
+      },
+      {
+        "rva": "0x2973b",
+        "symbol": [
+          "kernel32.dll",
+          "GetStdHandle"
+        ],
+        "oracle": "0x42c08c",
+        "candidate": "0x42c088"
+      },
+      {
+        "rva": "0x29778",
+        "symbol": [
+          "kernel32.dll",
+          "GetFileType"
+        ],
+        "oracle": "0x42c088",
+        "candidate": "0x42c084"
+      },
+      {
+        "rva": "0x297bc",
+        "symbol": [
+          "kernel32.dll",
+          "SetHandleCount"
+        ],
+        "oracle": "0x42c09c",
+        "candidate": "0x42c098"
+      },
+      {
+        "rva": "0x2987d",
+        "symbol": [
+          "kernel32.dll",
+          "GetModuleFileNameA"
+        ],
+        "oracle": "0x42c0b0",
+        "candidate": "0x42c0ac"
+      },
+      {
+        "rva": "0x299b2",
+        "symbol": [
+          "kernel32.dll",
+          "GetStdHandle"
+        ],
+        "oracle": "0x42c08c",
+        "candidate": "0x42c088"
+      },
+      {
+        "rva": "0x299d7",
+        "symbol": [
+          "kernel32.dll",
+          "WriteFile"
+        ],
+        "oracle": "0x42c0e0",
+        "candidate": "0x42c0dc"
+      },
+      {
+        "rva": "0x29b01",
+        "symbol": [
+          "kernel32.dll",
+          "SetStdHandle"
+        ],
+        "oracle": "0x42c090",
+        "candidate": "0x42c08c"
+      },
+      {
+        "rva": "0x29b15",
+        "symbol": [
+          "kernel32.dll",
+          "SetStdHandle"
+        ],
+        "oracle": "0x42c090",
+        "candidate": "0x42c08c"
+      },
+      {
+        "rva": "0x29b29",
+        "symbol": [
+          "kernel32.dll",
+          "SetStdHandle"
+        ],
+        "oracle": "0x42c090",
+        "candidate": "0x42c08c"
+      },
+      {
+        "rva": "0x29bc6",
+        "symbol": [
+          "kernel32.dll",
+          "SetStdHandle"
+        ],
+        "oracle": "0x42c090",
+        "candidate": "0x42c08c"
+      },
+      {
+        "rva": "0x29c82",
+        "symbol": [
+          "kernel32.dll",
+          "FlushFileBuffers"
+        ],
+        "oracle": "0x42c080",
+        "candidate": "0x42c07c"
+      },
+      {
+        "rva": "0x29c8c",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x29fb7",
+        "symbol": [
+          "kernel32.dll",
+          "CreateFileA"
+        ],
+        "oracle": "0x42c07c",
+        "candidate": "0x42c078"
+      },
+      {
+        "rva": "0x29fc4",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x29fde",
+        "symbol": [
+          "kernel32.dll",
+          "GetFileType"
+        ],
+        "oracle": "0x42c088",
+        "candidate": "0x42c084"
+      },
+      {
+        "rva": "0x29fe9",
+        "symbol": [
+          "kernel32.dll",
+          "CloseHandle"
+        ],
+        "oracle": "0x42c0e8",
+        "candidate": "0x42c0e4"
+      },
+      {
+        "rva": "0x29fef",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x2a233",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x2a7e0",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x2a828",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x2a851",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x2a883",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x2a8ff",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x2aa67",
+        "symbol": [
+          "kernel32.dll",
+          "SetUnhandledExceptionFilter"
+        ],
+        "oracle": "0x42c084",
+        "candidate": "0x42c080"
+      },
+      {
+        "rva": "0x2aa88",
+        "symbol": [
+          "kernel32.dll",
+          "SetUnhandledExceptionFilter"
+        ],
+        "oracle": "0x42c084",
+        "candidate": "0x42c080"
+      },
+      {
+        "rva": "0x2aaa2",
+        "symbol": [
+          "kernel32.dll",
+          "IsBadReadPtr"
+        ],
+        "oracle": "0x42c128",
+        "candidate": "0x42c114"
+      },
+      {
+        "rva": "0x2aac2",
+        "symbol": [
+          "kernel32.dll",
+          "IsBadWritePtr"
+        ],
+        "oracle": "0x42c124",
+        "candidate": "0x42c110"
+      },
+      {
+        "rva": "0x2aadd",
+        "symbol": [
+          "kernel32.dll",
+          "IsBadCodePtr"
+        ],
+        "oracle": "0x42c120",
+        "candidate": "0x42c10c"
+      },
+      {
+        "rva": "0x2ae5b",
+        "symbol": [
+          "kernel32.dll",
+          "GetStringTypeA"
+        ],
+        "oracle": "0x42c11c",
+        "candidate": "0x42c104"
+      },
+      {
+        "rva": "0x2ae76",
+        "symbol": [
+          "kernel32.dll",
+          "GetStringTypeW"
+        ],
+        "oracle": "0x42c118",
+        "candidate": "0x42c100"
+      },
+      {
+        "rva": "0x2aef2",
+        "symbol": [
+          "kernel32.dll",
+          "MultiByteToWideChar"
+        ],
+        "oracle": "0x42c0c8",
+        "candidate": "0x42c0c4"
+      },
+      {
+        "rva": "0x2af1a",
+        "symbol": [
+          "kernel32.dll",
+          "MultiByteToWideChar"
+        ],
+        "oracle": "0x42c0c8",
+        "candidate": "0x42c0c4"
+      },
+      {
+        "rva": "0x2af30",
+        "symbol": [
+          "kernel32.dll",
+          "GetStringTypeW"
+        ],
+        "oracle": "0x42c118",
+        "candidate": "0x42c100"
+      },
+      {
+        "rva": "0x2afc5",
+        "symbol": [
+          "kernel32.dll",
+          "LoadLibraryA"
+        ],
+        "oracle": "0x42c10c",
+        "candidate": "0x42c0f8"
+      },
+      {
+        "rva": "0x2afd1",
+        "symbol": [
+          "kernel32.dll",
+          "GetProcAddress"
+        ],
+        "oracle": "0x42c114",
+        "candidate": "0x42c0fc"
+      },
+      {
+        "rva": "0x2b065",
+        "symbol": [
+          "kernel32.dll",
+          "HeapAlloc"
+        ],
+        "oracle": "0x42c148",
+        "candidate": "0x42c074"
+      },
+      {
+        "rva": "0x2b272",
+        "symbol": [
+          "kernel32.dll",
+          "SetEndOfFile"
+        ],
+        "oracle": "0x42c108",
+        "candidate": "0x42c0f4"
+      },
+      {
+        "rva": "0x2b290",
+        "symbol": [
+          "kernel32.dll",
+          "GetLastError"
+        ],
+        "oracle": "0x42c078",
+        "candidate": "0x42c13c"
+      },
+      {
+        "rva": "0x2b372",
+        "symbol": [
+          "kernel32.dll",
+          "WideCharToMultiByte"
+        ],
+        "oracle": "0x42c0c4",
+        "candidate": "0x42c0c0"
+      },
+      {
+        "rva": "0x2b66d",
+        "symbol": [
+          "kernel32.dll",
+          "CompareStringA"
+        ],
+        "oracle": "0x42c104",
+        "candidate": "0x42c0f0"
+      },
+      {
+        "rva": "0x2b68a",
+        "symbol": [
+          "kernel32.dll",
+          "CompareStringW"
+        ],
+        "oracle": "0x42c100",
+        "candidate": "0x42c0ec"
+      },
+      {
+        "rva": "0x2b78e",
+        "symbol": [
+          "kernel32.dll",
+          "GetCPInfo"
+        ],
+        "oracle": "0x42c0a8",
+        "candidate": "0x42c0a4"
+      },
+      {
+        "rva": "0x2b84e",
+        "symbol": [
+          "kernel32.dll",
+          "MultiByteToWideChar"
+        ],
+        "oracle": "0x42c0c8",
+        "candidate": "0x42c0c4"
+      },
+      {
+        "rva": "0x2b8f5",
+        "symbol": [
+          "kernel32.dll",
+          "CompareStringW"
+        ],
+        "oracle": "0x42c100",
+        "candidate": "0x42c0ec"
+      },
+      {
+        "rva": "0x2bad1",
+        "symbol": [
+          "kernel32.dll",
+          "SetEnvironmentVariableA"
+        ],
+        "oracle": "0x42c0fc",
+        "candidate": "0x42c0e8"
+      },
+      {
+        "rva": "0x2bd42",
+        "symbol": [
+          "kernel32.dll",
+          "HeapAlloc"
+        ],
+        "oracle": "0x42c148",
+        "candidate": "0x42c074"
+      },
+      {
+        "rva": "0x2bd94",
+        "symbol": [
+          "kernel32.dll",
+          "HeapReAlloc"
+        ],
+        "oracle": "0x42c110",
+        "candidate": "0x42c108"
+      },
+      {
+        "rva": "0x2bed2",
+        "symbol": [
+          "kernel32.dll",
+          "RtlUnwind"
+        ],
+        "oracle": "0x42c074",
+        "candidate": "0x42c138"
+      }
+    ],
+    "differing_bytes_in_iat_fields": 261,
+    "remaining_count": 40,
+    "remaining_rvas": [
+      "0x193d7",
+      "0x193d8",
+      "0x193e1",
+      "0x193e2",
+      "0x193e3",
+      "0x193e6",
+      "0x193e7",
+      "0x193e8",
+      "0x193e9",
+      "0x193ea",
+      "0x193eb",
+      "0x193ee",
+      "0x193f2",
+      "0x193fa",
+      "0x19402",
+      "0x1940a",
+      "0x19412",
+      "0x19418",
+      "0x19419",
+      "0x1941a",
+      "0x1941b",
+      "0x1941e",
+      "0x19900",
+      "0x19901",
+      "0x19902",
+      "0x19903",
+      "0x19904",
+      "0x19905",
+      "0x19906",
+      "0x19907",
+      "0x19908",
+      "0x19909",
+      "0x1d64b",
+      "0x1d651",
+      "0x1d653",
+      "0x1d656",
+      "0x1d658",
+      "0x1d65e",
+      "0x1d924",
+      "0x1d92f"
+    ],
+    "equivalence_region_counts": {
+      "ChangePhase": 32,
+      "TreatEventBase": 8
+    }
+  },
+  "rdata_residual_diagnostic": {
+    "outside_import_thunk_arrays": []
+  },
+  "winner_locations": [
+    {
+      "name": "?BuildUp@CEvent@@IAEHUtagPOINT@@H@Z",
+      "rva": "0x1b030",
+      "owner": "13_event.obj"
+    },
+    {
+      "name": "?GetHide@CJauge@@QAEHXZ",
+      "rva": "0x1efc0",
+      "owner": "02_jauge.obj"
+    },
+    {
+      "name": "??1CMenu@@QAE@XZ",
+      "rva": "0x1f010",
+      "owner": "03_menu.obj"
+    },
+    {
+      "name": "?GetEnable@CSound@@QAEHXZ",
+      "rva": "0x22dc0",
+      "owner": "08_sound.obj"
+    },
+    {
+      "name": "?_CallMemberFunction0@@YGXPAX0@Z",
+      "rva": "0x23e20",
+      "owner": "LIBC:trnsctrl.obj"
+    },
+    {
+      "name": "__chkstk",
+      "rva": "0x2b630",
+      "owner": "LIBC:chkstk.obj"
+    },
+    {
+      "name": "_strncnt",
+      "rva": "0x285c0",
+      "owner": "LIBC:aw_map.obj"
+    },
+    {
+      "name": "_strncnt",
+      "rva": "0x285c0",
+      "owner": "LIBC:aw_map.obj"
+    },
+    {
+      "name": "?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+      "rva": "0x243f0",
+      "owner": "LIBC:ehvecdtr.obj"
+    }
+  ],
+  "sb2_family_evidence": [
+    {
+      "symbol": "?AscenseurShift@CDecor@@QAEHH@Z",
+      "rva": "0x00018960",
+      "size": 48,
+      "tu": "games/sb2/src/decmove.cpp"
+    },
+    {
+      "symbol": "?MoveAscenseurDetect@CDecor@@QAEHUtagPOINT@@H@Z",
+      "rva": "0x00019520",
+      "size": 192,
+      "tu": "games/sb2/src/decmove.cpp"
+    }
+  ],
+  "git_head": "aa3dfd685ac4374fb61a4f16ff72e87b7196a4a8",
+  "git_status": "",
+  "source_hashes": {
+    "src\\blupi.cpp": "c7718074ab06f2285f973d7357bc2c11185cdb11f21f9321ed166337404d7904",
+    "src\\button.cpp": "30d5d18718f910925c4b0973ee0643b44a3b8b94e5a227b32d5a885d052a2c41",
+    "src\\button.h": "b3f3834e33169502c4d70a3a88928a5187e4764b996bf7aa437c327ed2c11c3e",
+    "src\\ddutil.cpp": "6b8fbf357b64fdfe246e03faa4433fd2ddbf3da1b1801649c632867d320174d1",
+    "src\\ddutil.h": "5c5bd92efa27f5048e8ad6ba72c3bb07869f98272ce8080d3a876e655f8bd14d",
+    "src\\decblock.cpp": "22d791601feb256ce4517907e94e2e796ff1f628a33b26d521336541406dd6ca",
+    "src\\decblupi.cpp": "e202ea7afd8c28adb9330d4cd7f4fe6d5e4f1d766582c515b4902983720da7d4",
+    "src\\decdesign.cpp": "0ec77f3da600ebd7742578d2fba036449def39be1574a62e4a0533de92fc57ca",
+    "src\\decmove.cpp": "fecf1349a636b07c9b317621ec5f065bb30421e47ec1f71000c43e8b27d03b37",
+    "src\\decnet.cpp": "b464f514dabfff24db4c01719114d6dbed318f48bfe96183fd11756ae62b693d",
+    "src\\decor.cpp": "c7b336bc6a186b438b8d4d694a4cf8f6f5df33213a5b9faa80caf4c2f5f1cfb2",
+    "src\\decor.h": "abe521b0fcf70189a0181f9ff8d15355a23d38881299830f517eab0f93348df0",
+    "src\\dectables.cpp": "ae9a83f25e43e6aceb2980e3a2b907ca4761be941e505b70d0554fbf346da577",
+    "src\\dectables.h": "fb7450c94a0cb1fa7c8bb057e8d66d77861556d7c90f32e3eee916fbb47acc84",
+    "src\\def.h": "e24c4aa96c448a2a50ca13566fb5eb0806443ba0fbb28f25045931d13ff9cf00",
+    "src\\design_tables.h": "7bb9e46d0b216590f049460fbf4fa2584ed6f0a2dfc45ebbc720ecc551a98c5b",
+    "src\\event.cpp": "eec22627473c0a3e36073ef0b90a06100f1ae5cff0b1c715c762adc1f6a0001d",
+    "src\\event.h": "84310ad87a7f0bfa8d86a084523a7b4353bbd186902e617e0e9d937233813d95",
+    "src\\jauge.cpp": "20a488f0d20de12d177b7bccaa67372d59ba21dffcdc488cb263ce9006cee4ce",
+    "src\\jauge.h": "c89e1c3efa864015be89ec2fa06e2f070338f6471a6ab977bbe372633d6d57fa",
+    "src\\menu.cpp": "5675b7ef6902c6ba352ce4ccddfc8d326c6e43dbe1ba286b9dbe037c4bc52fbe",
+    "src\\menu.h": "be4479c5578438c3145de989f3bd4086b4ac685e7733ffd5ca2af859df74373a",
+    "src\\misc.cpp": "b6fae74eccabca3c92af70dcb4db05a4f978428ee92a7418a127cfb0f808d692",
+    "src\\misc.h": "a9a9cd994ea82f5109c061a228dadc2f495df834959bd365eacc44ad034f4a3b",
+    "src\\movie.cpp": "232114ee4125ec28ecf30ace99216b3f29582c00903bd8ce1d15613bcc567471",
+    "src\\movie.h": "6a1c6f8197c7986471c1beb522d3b823182113ac280b7555b3d3362e7c271ee2",
+    "src\\network.cpp": "ea7390b3ef4bfc08460f30479f211966b09db19f020e93a912ee503405e29c1d",
+    "src\\network.h": "ade8a688126d7e204c43dbddad7e44317959b5a29342a283d73093613e1fb130",
+    "src\\obstacle.h": "7588fc65f8cbc464732f621188583058e2926853724bd501140a8700d389815c",
+    "src\\pixmap.cpp": "21969976e206d540eda72dfed39c1d88356efd1c41536cbc45e5f027058155fc",
+    "src\\pixmap.h": "de1304af193195daa430c9409f87405007752c710d78f3e761ad4aaded2b74bf",
+    "src\\pixtables.h": "928c6881fb83db5627c1a121b4c4494128c33d3a747f25a37aa708a98519c1f6",
+    "src\\PROVENANCE.md": "cc36b1415423b663eaa0c2461132ec18a066fdfddcad623060851ba9a916cd33",
+    "src\\resource.h": "3e75b450e674fec3dec7e7135664aa59b7b8a65f8fa372ac63d0dbe11e935a5d",
+    "src\\sound.cpp": "8b32d61319c0617982ae420ed8f9bc7d03ea1f7be523d9576b247767964bff7a",
+    "src\\sound.h": "57158ba6675167df74489016bd90f537b694fe211ce50cbe84a6f414e445498d",
+    "src\\text.cpp": "1d2406a8f6574f5c7a8161322ed4cd145b7fc37d79243c2701df6c25172a502d",
+    "src\\text.h": "1284cdb61c011a6c7427e3b8088679dd07517cbfe6eb3df59bee98bb13614067",
+    "src\\texttables.h": "25bdce774959afe713c6e516fd04f3dd31e3317fa1b535eda3d754d2056a350b",
+    "src\\wave.h": "8b2e82b899eb39cd88c1a2ca5ddb893ad3e3b341fbd3034a0bccc6cb308a256d"
+  }
+}

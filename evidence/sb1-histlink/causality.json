@@ -1,0 +1,449 @@
+{
+  "scope": "Model-only; the two endpoints validated against full real traces and fold events.",
+  "groups": [
+    [
+      [
+        "?_CallMemberFunction0@@YGXPAX0@Z",
+        "trnsctrl.obj"
+      ],
+      [
+        "?_CallMemberFunction1@@YGXPAX00@Z",
+        "trnsctrl.obj"
+      ],
+      [
+        "?_CallMemberFunction2@@YGXPAX00H@Z",
+        "trnsctrl.obj"
+      ]
+    ],
+    [
+      [
+        "??1CButton@@QAE@XZ",
+        "00_button.obj"
+      ],
+      [
+        "??1CJauge@@QAE@XZ",
+        "02_jauge.obj"
+      ],
+      [
+        "??1CMenu@@QAE@XZ",
+        "03_menu.obj"
+      ],
+      [
+        "?OutputDebug@@YAXPAD@Z",
+        "04_misc.obj"
+      ]
+    ],
+    [
+      [
+        "?GetEnable@CSound@@QAEHXZ",
+        "08_sound.obj"
+      ],
+      [
+        "?GetNbProviders@CNetwork@@QAEHXZ",
+        "06_network.obj"
+      ],
+      [
+        "?GetTrueColorBack@CPixmap@@QAEHXZ",
+        "07_pixmap.obj"
+      ],
+      [
+        "?GetTrueColorDecor@CPixmap@@QAEHXZ",
+        "07_pixmap.obj"
+      ]
+    ],
+    [
+      [
+        "?BuildUp@CEvent@@IAEHUtagPOINT@@H@Z",
+        "13_event.obj"
+      ],
+      [
+        "?PlayDown@CEvent@@IAEHUtagPOINT@@H@Z",
+        "13_event.obj"
+      ],
+      [
+        "?PlayMove@CEvent@@IAEHUtagPOINT@@H@Z",
+        "13_event.obj"
+      ],
+      [
+        "?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z",
+        "13_event.obj"
+      ]
+    ],
+    [
+      [
+        "?GetHide@CJauge@@QAEHXZ",
+        "02_jauge.obj"
+      ],
+      [
+        "?GetNbSessions@CNetwork@@QAEHXZ",
+        "06_network.obj"
+      ]
+    ],
+    [
+      [
+        "?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+        "ehvecdtr.obj"
+      ],
+      [
+        "?FrameUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+        "frame.obj"
+      ]
+    ],
+    [
+      [
+        "_strncnt",
+        "aw_cmp.obj"
+      ],
+      [
+        "_strncnt",
+        "aw_map.obj"
+      ]
+    ]
+  ],
+  "factorial": [
+    {
+      "providers_external": false,
+      "sessions_external": false,
+      "winners": [
+        [
+          "?_CallMemberFunction0@@YGXPAX0@Z",
+          "trnsctrl.obj"
+        ],
+        [
+          "??1CButton@@QAE@XZ",
+          "00_button.obj"
+        ],
+        [
+          "?GetEnable@CSound@@QAEHXZ",
+          "08_sound.obj"
+        ],
+        [
+          "?PlayMove@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj"
+        ],
+        [
+          "?GetHide@CJauge@@QAEHXZ",
+          "02_jauge.obj"
+        ],
+        [
+          "?FrameUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+          "frame.obj"
+        ],
+        [
+          "_strncnt",
+          "aw_map.obj"
+        ]
+      ]
+    },
+    {
+      "providers_external": true,
+      "sessions_external": false,
+      "winners": [
+        [
+          "?_CallMemberFunction0@@YGXPAX0@Z",
+          "trnsctrl.obj"
+        ],
+        [
+          "??1CButton@@QAE@XZ",
+          "00_button.obj"
+        ],
+        [
+          "?GetEnable@CSound@@QAEHXZ",
+          "08_sound.obj"
+        ],
+        [
+          "?PlayMove@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj"
+        ],
+        [
+          "?GetHide@CJauge@@QAEHXZ",
+          "02_jauge.obj"
+        ],
+        [
+          "?FrameUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+          "frame.obj"
+        ],
+        [
+          "_strncnt",
+          "aw_map.obj"
+        ]
+      ]
+    },
+    {
+      "providers_external": false,
+      "sessions_external": true,
+      "winners": [
+        [
+          "?_CallMemberFunction0@@YGXPAX0@Z",
+          "trnsctrl.obj"
+        ],
+        [
+          "??1CButton@@QAE@XZ",
+          "00_button.obj"
+        ],
+        [
+          "?GetNbProviders@CNetwork@@QAEHXZ",
+          "06_network.obj"
+        ],
+        [
+          "?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj"
+        ],
+        [
+          "?GetNbSessions@CNetwork@@QAEHXZ",
+          "06_network.obj"
+        ],
+        [
+          "?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+          "ehvecdtr.obj"
+        ],
+        [
+          "_strncnt",
+          "aw_cmp.obj"
+        ]
+      ]
+    },
+    {
+      "providers_external": true,
+      "sessions_external": true,
+      "winners": [
+        [
+          "?_CallMemberFunction0@@YGXPAX0@Z",
+          "trnsctrl.obj"
+        ],
+        [
+          "??1CButton@@QAE@XZ",
+          "00_button.obj"
+        ],
+        [
+          "?GetNbProviders@CNetwork@@QAEHXZ",
+          "06_network.obj"
+        ],
+        [
+          "?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj"
+        ],
+        [
+          "?GetNbSessions@CNetwork@@QAEHXZ",
+          "06_network.obj"
+        ],
+        [
+          "?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+          "ehvecdtr.obj"
+        ],
+        [
+          "_strncnt",
+          "aw_cmp.obj"
+        ]
+      ]
+    }
+  ],
+  "changed_slots": [
+    {
+      "index": 358,
+      "base": [
+        "?EnumProviders@CNetwork@@QAEHXZ",
+        "06_network.obj"
+      ],
+      "extern": [
+        "?EnumProvidersCallback@@YGHPAU_GUID@@PADKKPAUNamedGUIDList@@@Z",
+        "06_network.obj"
+      ],
+      "before_key": [
+        80,
+        5
+      ],
+      "after_key": [
+        112,
+        0
+      ]
+    },
+    {
+      "index": 359,
+      "base": [
+        "?EnumProvidersCallback@@YGHPAU_GUID@@PADKKPAUNamedGUIDList@@@Z",
+        "06_network.obj"
+      ],
+      "extern": [
+        "?EnumProviders@CNetwork@@QAEHXZ",
+        "06_network.obj"
+      ],
+      "before_key": [
+        112,
+        0
+      ],
+      "after_key": [
+        80,
+        5
+      ]
+    },
+    {
+      "index": 364,
+      "base": [
+        "?EnumSessions@CNetwork@@QAEHXZ",
+        "06_network.obj"
+      ],
+      "extern": [
+        "?EnumSessionsCallback@@YGHPAUDPSESSIONDESC2@@PAKKPAUNamedGUIDList@@@Z",
+        "06_network.obj"
+      ],
+      "before_key": [
+        176,
+        8
+      ],
+      "after_key": [
+        128,
+        0
+      ]
+    },
+    {
+      "index": 365,
+      "base": [
+        "?EnumSessionsCallback@@YGHPAUDPSESSIONDESC2@@PAKKPAUNamedGUIDList@@@Z",
+        "06_network.obj"
+      ],
+      "extern": [
+        "?EnumSessions@CNetwork@@QAEHXZ",
+        "06_network.obj"
+      ],
+      "before_key": [
+        128,
+        0
+      ],
+      "after_key": [
+        176,
+        8
+      ]
+    }
+  ],
+  "base": {
+    "full_permutation_exact": true,
+    "all_folds_first_sorted_equivalent": true,
+    "folds": [
+      {
+        "keeper": [
+          "?_CallMemberFunction0@@YGXPAX0@Z",
+          "trnsctrl.obj"
+        ],
+        "fold_count": 2
+      },
+      {
+        "keeper": [
+          "??1CButton@@QAE@XZ",
+          "00_button.obj"
+        ],
+        "fold_count": 3
+      },
+      {
+        "keeper": [
+          "?GetEnable@CSound@@QAEHXZ",
+          "08_sound.obj"
+        ],
+        "fold_count": 3
+      },
+      {
+        "keeper": [
+          "?GetHide@CJauge@@QAEHXZ",
+          "02_jauge.obj"
+        ],
+        "fold_count": 1
+      },
+      {
+        "keeper": [
+          "?PlayMove@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj"
+        ],
+        "fold_count": 3
+      },
+      {
+        "keeper": [
+          "?FrameUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+          "frame.obj"
+        ],
+        "fold_count": 1
+      },
+      {
+        "keeper": [
+          "_strncnt",
+          "aw_map.obj"
+        ],
+        "fold_count": 1
+      }
+    ],
+    "population_count": 793,
+    "live_bit_set": 588,
+    "code_comdats": 793,
+    "module_count": 269,
+    "stamps": {
+      "394884": 1,
+      "0": 268
+    },
+    "trace_sha256": "406fb5dce88e94cec8cb0520dfee4dacfbecd8d34fac183db61ea0f6b5b50df7",
+    "reference_sha256": "406fb5dce88e94cec8cb0520dfee4dacfbecd8d34fac183db61ea0f6b5b50df7"
+  },
+  "extern": {
+    "full_permutation_exact": true,
+    "all_folds_first_sorted_equivalent": true,
+    "folds": [
+      {
+        "keeper": [
+          "?_CallMemberFunction0@@YGXPAX0@Z",
+          "trnsctrl.obj"
+        ],
+        "fold_count": 2
+      },
+      {
+        "keeper": [
+          "??1CButton@@QAE@XZ",
+          "00_button.obj"
+        ],
+        "fold_count": 3
+      },
+      {
+        "keeper": [
+          "?GetNbProviders@CNetwork@@QAEHXZ",
+          "06_network.obj"
+        ],
+        "fold_count": 3
+      },
+      {
+        "keeper": [
+          "?PlayUp@CEvent@@IAEHUtagPOINT@@H@Z",
+          "13_event.obj"
+        ],
+        "fold_count": 3
+      },
+      {
+        "keeper": [
+          "?GetNbSessions@CNetwork@@QAEHXZ",
+          "06_network.obj"
+        ],
+        "fold_count": 1
+      },
+      {
+        "keeper": [
+          "?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z",
+          "ehvecdtr.obj"
+        ],
+        "fold_count": 1
+      },
+      {
+        "keeper": [
+          "_strncnt",
+          "aw_cmp.obj"
+        ],
+        "fold_count": 1
+      }
+    ],
+    "population_count": 793,
+    "live_bit_set": 588,
+    "code_comdats": 793,
+    "module_count": 269,
+    "stamps": {
+      "394884": 1,
+      "0": 268
+    },
+    "trace_sha256": "e8a601aaf3d60c5f7276d880be96df34d583459948f8e233738133628b281e2f",
+    "reference_sha256": "e8a601aaf3d60c5f7276d880be96df34d583459948f8e233738133628b281e2f"
+  }
+}

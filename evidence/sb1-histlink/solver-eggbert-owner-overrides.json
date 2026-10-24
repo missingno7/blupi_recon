@@ -1,0 +1,92 @@
+{
+  "sb1/eggbert/en": {
+    "accepted_overrides": {
+      "?GetHide@CJauge@@QAEHXZ": {
+        "status": "folded",
+        "into": {
+          "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+          "tu": "src/network.cpp",
+          "rva": "0x20be0"
+        }
+      },
+      "?GetNbSessions@CNetwork@@QAEHXZ": {
+        "status": "strict"
+      }
+    }
+  },
+  "sb1/eggbert/de": {
+    "accepted_overrides": {
+      "?GetHide@CJauge@@QAEHXZ": {
+        "status": "folded",
+        "into": {
+          "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+          "tu": "src/network.cpp",
+          "rva": "0x20be0"
+        }
+      },
+      "?GetNbSessions@CNetwork@@QAEHXZ": {
+        "status": "strict"
+      }
+    }
+  },
+  "sb1/eggbert/es": {
+    "accepted_overrides": {
+      "?GetHide@CJauge@@QAEHXZ": {
+        "status": "folded",
+        "into": {
+          "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+          "tu": "src/network.cpp",
+          "rva": "0x20be0"
+        }
+      },
+      "?GetNbSessions@CNetwork@@QAEHXZ": {
+        "status": "strict"
+      }
+    }
+  },
+  "sb1/eggbert/fr": {
+    "accepted_overrides": {
+      "?GetHide@CJauge@@QAEHXZ": {
+        "status": "folded",
+        "into": {
+          "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+          "tu": "src/network.cpp",
+          "rva": "0x20be0"
+        }
+      },
+      "?GetNbSessions@CNetwork@@QAEHXZ": {
+        "status": "strict"
+      }
+    }
+  },
+  "sb1/eggbert/it": {
+    "accepted_overrides": {
+      "?GetHide@CJauge@@QAEHXZ": {
+        "status": "folded",
+        "into": {
+          "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+          "tu": "src/network.cpp",
+          "rva": "0x20be0"
+        }
+      },
+      "?GetNbSessions@CNetwork@@QAEHXZ": {
+        "status": "strict"
+      }
+    }
+  },
+  "sb1/eggbert/pt": {
+    "accepted_overrides": {
+      "?GetHide@CJauge@@QAEHXZ": {
+        "status": "folded",
+        "into": {
+          "symbol": "?GetNbSessions@CNetwork@@QAEHXZ",
+          "tu": "src/network.cpp",
+          "rva": "0x20be0"
+        }
+      },
+      "?GetNbSessions@CNetwork@@QAEHXZ": {
+        "status": "strict"
+      }
+    }
+  }
+}

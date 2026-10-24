@@ -1,0 +1,53 @@
+{
+  "command": [
+    "D:\\Prog\\blupi_recon\\.pyenv\\python.exe",
+    "tools/msvc.py",
+    "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\solver-blupi-extern-helpers.cpp",
+    "--tree",
+    "sp3",
+    "--out",
+    "D:\\Prog\\blupi_recon\\build\\w-sb1icf-static-probe\\blupi.obj",
+    "--log-dir",
+    "D:\\Prog\\blupi_recon\\build\\w-sb1icf-static-probe\\logs",
+    "--include",
+    "D:\\Prog\\blupi_recon\\scratch\\w-sb1icf\\extern",
+    "--include",
+    "C:\\tools\\dx5sdk\\INCLUDE",
+    "--define",
+    "WIN32",
+    "--define",
+    "NDEBUG",
+    "--define",
+    "_WINDOWS",
+    "--define",
+    "nullptr=0",
+    "--flag",
+    "/W3",
+    "--flag",
+    "/GX",
+    "--flag",
+    "/O2",
+    "--flag",
+    "/ML",
+    "--flag",
+    "/Gd",
+    "--flag",
+    "/Gy"
+  ],
+  "exit": 0,
+  "all_function_payloads_symbolic_relocations_and_section_order_identical": true,
+  "remaining_helpers": [
+    {
+      "name": "?FinishObjects@@YAXXZ",
+      "old_storage": 3,
+      "new_storage": 2,
+      "section": 38
+    },
+    {
+      "name": "?DoInit@@YAHPAXPADH@Z",
+      "old_storage": 3,
+      "new_storage": 2,
+      "section": 54
+    }
+  ]
+}

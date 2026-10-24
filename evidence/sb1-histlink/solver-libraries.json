@@ -1,0 +1,230 @@
+{
+  "archives": {
+    "sp3": {
+      "library": "C:\\tools\\msvc5_sp3\\VC\\LIB\\LIBC.LIB",
+      "sha256": "3b5f43e920c37c8da086b0d3ef0396e6517d44fcdcb4e7d03a6058620bc13ee3",
+      "ordinary_members": 585,
+      "code_comdat_members": 487,
+      "tiny_comdats": [
+        {
+          "member": "trnsctrl.obj",
+          "entry": {
+            "name": "?_CallMemberFunction0@@YGXPAX0@Z",
+            "size": 7,
+            "relocs": 0,
+            "raw_sha256": "ccbf196d9aacc84670c54b300822f455a21100f68e6b748f305d03175df37b65"
+          }
+        },
+        {
+          "member": "trnsctrl.obj",
+          "entry": {
+            "name": "?_CallMemberFunction1@@YGXPAX00@Z",
+            "size": 7,
+            "relocs": 0,
+            "raw_sha256": "ccbf196d9aacc84670c54b300822f455a21100f68e6b748f305d03175df37b65"
+          }
+        },
+        {
+          "member": "trnsctrl.obj",
+          "entry": {
+            "name": "?_CallMemberFunction2@@YGXPAX00H@Z",
+            "size": 7,
+            "relocs": 0,
+            "raw_sha256": "ccbf196d9aacc84670c54b300822f455a21100f68e6b748f305d03175df37b65"
+          }
+        }
+      ]
+    },
+    "sp2": {
+      "library": "C:\\tools\\msvc5_sp2\\VC\\LIB\\LIBC.LIB",
+      "sha256": "f81440dd014ca4ce7ef8b4d60ed1ee4ad544601b07fbdb4fca54a1dfca31f9b0",
+      "ordinary_members": 585,
+      "code_comdat_members": 487,
+      "tiny_comdats": [
+        {
+          "member": "trnsctrl.obj",
+          "entry": {
+            "name": "?_CallMemberFunction0@@YGXPAX0@Z",
+            "size": 7,
+            "relocs": 0,
+            "raw_sha256": "ccbf196d9aacc84670c54b300822f455a21100f68e6b748f305d03175df37b65"
+          }
+        },
+        {
+          "member": "trnsctrl.obj",
+          "entry": {
+            "name": "?_CallMemberFunction1@@YGXPAX00@Z",
+            "size": 7,
+            "relocs": 0,
+            "raw_sha256": "ccbf196d9aacc84670c54b300822f455a21100f68e6b748f305d03175df37b65"
+          }
+        },
+        {
+          "member": "trnsctrl.obj",
+          "entry": {
+            "name": "?_CallMemberFunction2@@YGXPAX00H@Z",
+            "size": 7,
+            "relocs": 0,
+            "raw_sha256": "ccbf196d9aacc84670c54b300822f455a21100f68e6b748f305d03175df37b65"
+          }
+        }
+      ]
+    },
+    "rtm": {
+      "library": "C:\\tools\\msvc5_rtm\\VC\\LIB\\LIBC.LIB",
+      "sha256": "4ae22c6f35a87c55c453ad388ada649ea3ba190614be3d1ab95935ba0faa7416",
+      "ordinary_members": 585,
+      "code_comdat_members": 487,
+      "tiny_comdats": [
+        {
+          "member": "trnsctrl.obj",
+          "entry": {
+            "name": "?_CallMemberFunction0@@YGXPAX0@Z",
+            "size": 7,
+            "relocs": 0,
+            "raw_sha256": "ccbf196d9aacc84670c54b300822f455a21100f68e6b748f305d03175df37b65"
+          }
+        },
+        {
+          "member": "trnsctrl.obj",
+          "entry": {
+            "name": "?_CallMemberFunction1@@YGXPAX00@Z",
+            "size": 7,
+            "relocs": 0,
+            "raw_sha256": "ccbf196d9aacc84670c54b300822f455a21100f68e6b748f305d03175df37b65"
+          }
+        },
+        {
+          "member": "trnsctrl.obj",
+          "entry": {
+            "name": "?_CallMemberFunction2@@YGXPAX00H@Z",
+            "size": 7,
+            "relocs": 0,
+            "raw_sha256": "ccbf196d9aacc84670c54b300822f455a21100f68e6b748f305d03175df37b65"
+          }
+        }
+      ]
+    }
+  },
+  "conditional_replacements": [
+    {
+      "release": "sp2",
+      "scope": "Conditional same loaded-member order; not a library extraction model or code-equivalence proof",
+      "count": 793,
+      "strict": false,
+      "band": false,
+      "changed_keys": [
+        {
+          "slot": 670,
+          "member": "mbctype.obj",
+          "name": "__setmbcp",
+          "key": [
+            512,
+            37
+          ]
+        },
+        {
+          "slot": 673,
+          "member": "mbctype.obj",
+          "name": "_setSBCS",
+          "key": [
+            48,
+            6
+          ]
+        },
+        {
+          "slot": 675,
+          "member": "mbctype.obj",
+          "name": "__getmbcp",
+          "key": [
+            16,
+            1
+          ]
+        }
+      ],
+      "inserted": [],
+      "signature": [
+        545,
+        15,
+        382,
+        264,
+        308,
+        616,
+        728
+      ]
+    },
+    {
+      "release": "rtm",
+      "scope": "Conditional same loaded-member order; not a library extraction model or code-equivalence proof",
+      "count": 791,
+      "strict": false,
+      "band": false,
+      "changed_keys": [
+        {
+          "removed_slot": 585,
+          "member": "wincrt0.obj"
+        },
+        {
+          "slot": 645,
+          "member": "aw_map.obj",
+          "name": "___crtLCMapStringA",
+          "key": [
+            544,
+            22
+          ]
+        },
+        {
+          "slot": 670,
+          "member": "mbctype.obj",
+          "name": "__setmbcp",
+          "key": [
+            496,
+            34
+          ]
+        },
+        {
+          "slot": 673,
+          "member": "mbctype.obj",
+          "name": "_setSBCS",
+          "key": [
+            48,
+            6
+          ]
+        },
+        {
+          "slot": 675,
+          "member": "mbctype.obj",
+          "name": "__getmbcp",
+          "key": [
+            16,
+            1
+          ]
+        },
+        {
+          "removed_slot": 674,
+          "member": "mbctype.obj"
+        },
+        {
+          "slot": 711,
+          "member": "aw_str.obj",
+          "name": "___crtGetStringTypeA",
+          "key": [
+            304,
+            15
+          ]
+        }
+      ],
+      "inserted": [],
+      "signature": [
+        547,
+        331,
+        360,
+        263,
+        308,
+        616,
+        646
+      ]
+    }
+  ],
+  "sp3_reconstruction_mismatches": []
+}
