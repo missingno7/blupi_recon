@@ -731,6 +731,24 @@ reaches 312 (Eggbert 2) / 337 (Blupi 2) functions at their original RVA, but the
 MouseMove, so it contradicts the binary. [OPEN] The original needs about four fewer IDs before MouseMove alongside the
 dead methods; no attested source shows where.
 
+### Round 19: bounded BlupiStep pilot and Blupi 2 residues (2026-10-24, `scratch/w-step2`, `w-b2pred`, `w-b2event2`, `w-eggev`)
+
+[EVIDENCE] BlupiStep key-mask TEST: a standalone positive control proves that a guarded named copy
+(`(old = keys) && (old & mask)` after the door check) makes C2 keep a named key range and emit the original operand
+order. Transferred as `(num3 = m_blupiCle) != 0` in BlupiStep it behaves exactly as predicted on SP3 and RTM (reader
++3 tuples, num3 in EAX, `85 f8` becomes the original `85 c7`, all 43 peer payloads unchanged), but keeps an extra
+`cmp`/`je` (8 bytes) the original lacks. [OPEN] The original needs a guarded key value that survives into lowering
+without an extra test and without living across OpenDoor; nested locals, comma assignments, references, pointers and
+inline getters are all folded back into a memory AND. Separate mask initialization failed its control; no route to
+the constant 1/2 split history. Pilot stopped by its bound.
+
+[NEGATIVE] Blupi 2 predicates: fresh RTM traces confirm the needed profile (0 -> +189 before IsBridge -> -51 -> +64);
+GetBlupiInfo needs both operand pairs reversed (nearest window +17..+20). No evidenced missing body or declaration
+supplies them. DrawButtons: no independently evidenced earlier source/header difference puts it in a byte-preserving
+window. ChangePhase: four candidates keep the zero/PLAY priorities (-65/-78); no source form crosses the 13-point
+boundary. Eggbert 2 (read-only): sb2-decomp's earlier BlitzActif/SoundEnviron declarations (+5 entities) are
+decompiler order, not independent evidence; nothing new for IsWorld, IsDeepWater, IsVentillo or the wind expression.
+
 ### DirectX header environment (round 5)
 
 [EVIDENCE] Static reads of both executables (`scratch/w-sdkenv/REPORT.md`): both contain exactly the ten
