@@ -29,6 +29,15 @@ Two goals, kept apart:
 
 ## Current state
 
+### June 1998 demo (tenth SB1 target)
+
+[EVIDENCE] `sb1/blupi/demo` adds the earlier June 18, 1998 demo to the nine retail SB1 targets.
+It uses the same `src/`, build-wide `_DEMO=1`, VC5 RTM and its own audited inventory. It is a
+partial matching target, not another completed retail language: [SB1_DEMO.md](SB1_DEMO.md).
+The target's executable is `assets/downloads/openeggbert/Speedy_Blupi_Demo/exe/Blupi.exe` (hash-pinned), never executed.
+The independent ICF/import constraints and remaining source-population assumptions are recorded
+in [SB1_CLOSURE.md](SB1_CLOSURE.md).
+
 ### Matching
 
 | Target | Strict game `.text` | Notes |

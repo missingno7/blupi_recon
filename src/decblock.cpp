@@ -831,6 +831,7 @@ BOOL CDecor::LoadImages()
 		POINT iconDim;
 		iconDim.x = 0;
 		iconDim.y = 0;
+#if !_DEMO // June demo always selects indexed-color images.
 		if (m_pPixmap->GetTrueColorDecor())
 		{
 			sprintf(filename, "image16\\decor%.3d.blp", m_region);
@@ -839,6 +840,7 @@ BOOL CDecor::LoadImages()
 				return TRUE;
 			}
 		}
+#endif
 		sprintf(filename, "image08\\decor%.3d.blp", m_region);
 		if (!m_pPixmap->Cache(3, filename, totalDim, iconDim, FALSE))
 		{

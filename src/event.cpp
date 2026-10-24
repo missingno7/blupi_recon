@@ -2243,6 +2243,7 @@ BOOL CEvent::ChangePhase(UINT phase)
 	if (table[m_index].backName[0] != '\0')
 	{
 		bEnable = FALSE;
+#if !_DEMO // June demo always selects indexed-color images.
 		if (m_pPixmap->GetTrueColorBack())
 		{
 			sprintf(str, table[m_index].backName, 16);
@@ -2256,6 +2257,7 @@ BOOL CEvent::ChangePhase(UINT phase)
 				bEnable = m_pPixmap->Cache(0, str, totalDim, iconDim, FALSE);
 			}
 		}
+#endif
 		if (!bEnable)
 		{
 			sprintf(str, table[m_index].backName, 8);

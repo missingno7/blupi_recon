@@ -2354,6 +2354,221 @@
       "oracle": "oracle/sb2-eggbert-en",
       "defines": [],
       "game_text_end": "0x2b3c0"
+    },
+    "sb1/blupi/demo": {
+      "exe": "assets/downloads/openeggbert/Speedy_Blupi_Demo/exe/Blupi.exe",
+      "sha256": "06faf60adf7585ade95dbeeeedcf0fc5e58decb46ef08d8e0adf111f34053fd7",
+      "built": "1998-06-18",
+      "linker": "LINK 5.00.7022 (RTM, evidence-supported candidate); compiler VC5 RTM 11.00.7022; RTM LIBC + DX5; docs/SB1_DEMO.md",
+      "status": "active",
+      "manifest": "recon.json",
+      "oracle": "oracle/sb1-blupi-demo",
+      "defines": [
+        "_DEMO=1"
+      ],
+      "game_text_end": "0x235f0",
+      "toolchain_tree": "rtm",
+      "accepted_overrides": {
+        "?ReadConfig@@YAHPAD@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?WindowProc@@YGJPAXIIJ@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?DoInit@@YAHPAXPADH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "??0CButton@@QAE@XZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "_DDColorMatch": {
+          "size": 240
+        },
+        "?LoadImages@CDecor@@QAEHXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?DrawInfo@CDecor@@QAEXXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?DecorNextAction@CDecor@@QAE?AUtagPOINT@@XZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?GetBlupiInfo@CDecor@@QAEXPAH000@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?BlupiSearchIcon@CDecor@@QAEXXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?BlupiStep@CDecor@@QAEXXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?MoveObjectStep@CDecor@@QAEXXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?MockeryDetect@CDecor@@QAEHUtagPOINT@@@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?GetMissionPath@CDecor@@QAEXPADHHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?Write@CDecor@@QAEHHHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?Read@CDecor@@QAEHHHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?CurrentWrite@CDecor@@QAEHHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?CurrentRead@CDecor@@QAEHHHPAH0@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?FileExist@CDecor@@QAEHHHPAD@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?GetButtonIndex@CEvent@@QAEHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?SetHide@CEvent@@QAEXHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?CreateButtons@CEvent@@IAEHXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?NetAdjustLobbyButtons@CEvent@@IAEXXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?DrawButtons@CEvent@@QAEHXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?EventButtons@CEvent@@IAEHIIJ@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?MouseOnButton@CEvent@@IAEHUtagPOINT@@@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?SearchPhase@CEvent@@IAEHI@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?CheckWorld1@CEvent@@IAEHXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?TryInsert@CEvent@@QAEXXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?ChangeButtons@CEvent@@IAEXH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?WriteInfo@CEvent@@IAEHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?ReadInfo@CEvent@@IAEHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?ClearGamer@CEvent@@QAEHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?DemoPlayStart@CEvent@@IAEHXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?GetNbSessions@CNetwork@@QAEHXZ": {
+          "status": "strict"
+        },
+        "??1CButton@@QAE@XZ": {
+          "status": "strict"
+        },
+        "??1CJauge@@QAE@XZ": {
+          "into": {
+            "symbol": "??1CButton@@QAE@XZ",
+            "rva": "0x00002970",
+            "tu": "src/button.cpp"
+          }
+        },
+        "??1CMenu@@QAE@XZ": {
+          "status": "folded",
+          "into": {
+            "symbol": "??1CButton@@QAE@XZ",
+            "rva": "0x00002970",
+            "tu": "src/button.cpp"
+          }
+        },
+        "?OutputDebug@@YAXPAD@Z": {
+          "into": {
+            "symbol": "??1CButton@@QAE@XZ",
+            "rva": "0x00002970",
+            "tu": "src/button.cpp"
+          }
+        },
+        "?AddCDPath@@YAXPAD@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?AddUserPath@@YAXPAD@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?Create@CPixmap@@QAEHPAXUtagPOINT@@HHH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?QuickIcon@CPixmap@@QAEXHHUtagPOINT@@@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?CreateSoundBuffer@CSound@@QAEHHKKKKH@Z": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        },
+        "?GetNbProviders@CNetwork@@QAEHXZ": {
+          "status": "strict"
+        },
+        "?GetTrueColorDecor@CPixmap@@QAEHXZ": {
+          "exclude": true,
+          "note": "[OPEN] June demo differs or remains unresolved; docs/SB1_DEMO.md."
+        }
+      },
+      "accepted_functions": [
+        {
+          "symbol": "?Create@CPixmap@@QAEHPAXUtagPOINT@@HH@Z",
+          "rva": "0x00020f20",
+          "size": 832,
+          "tu": "src/pixmap.cpp",
+          "note": "[EVIDENCE] June 1998 demo true-color-free Create API; all fixups verified."
+        }
+      ]
     }
   }
 }

@@ -55,11 +55,39 @@ distinguishes (1) reproducing the linker output, (2) recovering the linker input
 - [NEGATIVE] Library versions: VC5 RTM/SP2/SP3 system import libraries are identical; DX5 import libraries are
   confirmed by the original hints.
 
+## June 1998 demo: tenth target and independent constraint
+
+[EVIDENCE] `sb1/blupi/demo` is registered and verifiable, with its own audited inventory and RTM
+compiler/library evidence: [SB1_DEMO.md](SB1_DEMO.md). The existing nine reports are identical under
+like sandbox conditions, and the primary relink remains `557ca92e6ec8c71cfaf5e9f2d55969d3ebcd614c771c9010e074c6ad82ba3533`.
+The demo's original physical owners are button destructor / network session getter / sound enable
+getter / **FrameUnwindFilter** / **aw_cmp _strncnt**; entry `0x24a60`. Its CRT choices differ from
+the successful retail layout and were derived independently from complete member-body placements.
+
+[EVIDENCE / conditional model] The binary fixup decoder reproduces all sites in 419 US and 418
+Eggbert bodies. The June executable-COMDAT model uses real COFF keys and 23 binary-derived live
+keys, while retaining explicit assumptions for unobserved dead definitions and original CRT closure.
+RTM replay agrees at all 792 positions in a forecast frozen before a real six-method diagnostic link.
+
+[NEGATIVE] In the measured 42-method family through cardinality six, the sequence is **4,053 US
+fits -> 3 US+Eggbert fits -> 0 with the demo**. All three lose June game-owner constraints even
+without checking the CRT owners. The six-method source witness also changes MouseMove (7 bytes)
+and IsVentillo (371) on all three images. The fixed eight-helper subset family already has zero
+US+Eggbert fits; June does not narrow that empty family further. No tested common family preserves
+every existing payload and satisfies all three links. These bounds do not exhaust larger or
+revision-specific dead populations.
+
+[EVIDENCE] The **same +6 import encounter pattern survives all three links**, giving 128/128
+slots in each; the RTM demo witness was linked for real. Its baseline gives 15/128. The pattern
+still does not recover API identities. June has no Rich header, so it cannot decide the **-4
+loaded modules** or original TU partition. Full byte counts, source-gate failures, model boundaries
+and process cleanup receipts are in `scratch/w-demo10/REPORT.md` and its JSON evidence.
+
 ## Open items and the next evidence for each
 
 | Open item | Next evidence that could decide it |
 |---|---|
-| Dead-function population (ICF) | More independent links of related source: the **June 1998 demo** (`Blupi.exe`, LINK 5.00, docs/ORACLE.md) as a tenth image, joint ICF + import + Rich constraints across all images, original project/object lists |
+| Dead-function population (ICF) | The June demo now rejects the bounded common six-method fits; next: original project/object lists, authenticated revision-specific dead bodies, larger dependency-closed families and original CRT/member closure |
 | Import order + Rich (+6 dead imports, -4 modules) | The same joint model; a source revision with dead USER32 calls in the movie→pixmap and post-text regions; the original TU partition (docs/TU_MAP.md) |
 | ChangePhase (32 bytes), TreatEventBase (8 bytes) | Independent register-allocation track (docs/STATUS.md). [NEGATIVE] The linker work gives no new evidence about their source context. |
 | `.data` CRT pointer byte | follows from the CRT filter survivor; resolved in the 412/412 layout (`.data` byte-exact there) |

@@ -8,7 +8,9 @@
 
 #include <Windows.h>
 
+#ifndef _DEMO // June 1998 demo target selects the existing demo branches.
 #define _DEMO			FALSE	// TRUE=demo, FALSE=complet
+#endif
 #define _INTRO			FALSE	// TRUE si images d'introduction
 #ifndef _EGAMES			// set by the eGames targets (targets.json)
 #define _EGAMES			FALSE	// TRUE version pour eGames

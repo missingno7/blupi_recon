@@ -724,7 +724,11 @@ static BOOL DoInit(HINSTANCE hInstance, LPSTR lpCmdLine, int nCmdShow)
 	if (g_pPixmap == NULL) return InitFail("New pixmap", TRUE);
 	totalDim.x = LXIMAGE;
 	totalDim.y = LYIMAGE;
+#if _DEMO // June demo has no true-color parameter.
+	if (!g_pPixmap->Create(g_hWnd, totalDim, g_bFullScreen, g_mouseType))
+#else
 	if (!g_pPixmap->Create(g_hWnd, totalDim, g_bFullScreen, g_bTrueColorBack, g_mouseType))
+#endif
 		return InitFail("Create pixmap", TRUE);
 	OutputDebug("Image: init\n");
 	totalDim.x = LXIMAGE;

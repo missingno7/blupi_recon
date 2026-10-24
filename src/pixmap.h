@@ -19,7 +19,11 @@ public:
 
 	void	SetDebug(BOOL bDebug);
 	
+#if _DEMO // June demo Create has no true-color parameter.
+	BOOL	Create(HWND hwnd, POINT dim, BOOL bFullScreen, int mouseType);
+#else
 	BOOL	Create(HWND hwnd, POINT dim, BOOL bFullScreen, BOOL bTrueColor, int mouseType);
+#endif
 	BOOL	Create(HWND hwnd, POINT dim, BOOL bFullScreen, int mouseType, BOOL bTrueColor, BOOL bTrueColorDecor);
 	BOOL	Flush();
 	BOOL	Restore();
@@ -48,8 +52,12 @@ public:
 	BOOL	DrawImage(int chDst, int channel, RECT rect, int mode=0);
 	BOOL	DrawMap(int channel, RECT src, RECT dest);
 	void	QuickIcon(int channel, int rank, POINT pos);
+#if !_DEMO // June demo has no true-color field or getters.
 	BOOL	GetTrueColorBack();
+#endif
+#if !_DEMO // June demo has no true-color field or getters.
 	BOOL	GetTrueColorDecor();
+#endif
 
 	BOOL	BuildIconMask(int channelMask, int rankMask,
 						  int channel, int rankSrc, int rankDst);
@@ -79,7 +87,9 @@ protected:
 
 protected:
 	BOOL					m_bFullScreen;
+#if !_DEMO // June demo has no true-color field or getters.
 	BOOL						m_bTrueColorBack;
+#endif
 	int						m_mouseType;
 	BOOL					m_bDebug;
 	BOOL					m_bPalette;

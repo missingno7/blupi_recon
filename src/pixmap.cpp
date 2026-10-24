@@ -27,7 +27,9 @@ CPixmap::CPixmap()
 	int		i;
 	
 	m_bFullScreen  = FALSE;
+#if !_DEMO // June demo has no true-color field.
 	m_bTrueColorBack   = FALSE;
+#endif
 	m_mouseType    = MOUSETYPEGRA;
 	m_bDebug       = TRUE;
 	m_bPalette     = TRUE;
@@ -121,8 +123,12 @@ void CPixmap::SetDebug(BOOL bDebug)
 // Crée l'objet DirectDraw principal.
 // Retourne FALSE en cas d'erreur.
 
+#if _DEMO // June demo uses the four-argument API.
+BOOL CPixmap::Create(HWND hwnd, POINT dim, BOOL bFullScreen, int mouseType)
+#else
 BOOL CPixmap::Create(HWND hwnd, POINT dim,
 					 BOOL bFullScreen, BOOL bTrueColor, int mouseType)
+#endif
 {
 	DDSURFACEDESC		ddsd;
 	HRESULT				ddrval;
@@ -131,6 +137,7 @@ BOOL CPixmap::Create(HWND hwnd, POINT dim,
 	int					caps;
 	int					depth;
 
+#if !_DEMO // June 1998 demo predates true-color support.
 	hdc = CreateCompatibleDC(NULL);
 	if ( hdc == NULL )
 	{
@@ -146,9 +153,12 @@ BOOL CPixmap::Create(HWND hwnd, POINT dim,
 		DeleteDC(hdc);
 	}
 
+#endif
 	m_hWnd           = hwnd;
 	m_bFullScreen    = bFullScreen;
+#if !_DEMO // June demo has no true-color field.
 	m_bTrueColorBack = bTrueColor;
+#endif
 	m_mouseType      = mouseType;
 	m_dim            = dim;
 
@@ -193,8 +203,12 @@ BOOL CPixmap::Create(HWND hwnd, POINT dim,
     // Set the video mode to 640x480x8.
 	if ( m_bFullScreen )
 	{
+#if !_DEMO // June 1998 demo predates true-color support.
 		if ( bTrueColor )  depth = 16;
 		else               depth = 8;
+#else
+		depth = 8;
+#endif
 		ddrval = m_lpDD->SetDisplayMode(dim.x, dim.y, depth);
 		if ( ddrval != DD_OK )
 		{
@@ -291,6 +305,7 @@ BOOL CPixmap::Flush()
 	return TRUE;
 }
 
+#if !_DEMO // June 1998 demo predates true-color support.
 BOOL CPixmap::GetTrueColorBack()
 {
 	return m_bTrueColorBack;
@@ -301,6 +316,7 @@ BOOL CPixmap::GetTrueColorDecor()
 	return m_bTrueColorBack;
 }
 
+#endif
 // Restitue les bitmaps.
 
 BOOL CPixmap::Restore()
