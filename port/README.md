@@ -311,3 +311,9 @@ After 1.1.0:
 - The reconstructed game source derives from Planet Blupi (GPLv3+) and the SB2 reconstruction
   (GPLv3); see `src/PROVENANCE.md`. The port inherits those terms: its packages are GPLv3
   (`release/COPYING.txt`) and name this repository as their source.
+
+## Historical synchronization
+
+See [the fidelity policy](docs/FIDELITY.md) and [provenance map](provenance.json)
+for source/overlay ownership, scoped evidence and change review. Run
+`python port/tools/check_fidelity.py --check` or `ctest -R fidelity_map`.

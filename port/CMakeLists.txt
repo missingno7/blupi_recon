@@ -216,5 +216,8 @@ blupi_package_app(blupi)
 if(NOT ANDROID)
     add_subdirectory(games/sb2)
     enable_testing()
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME fidelity_map COMMAND ${Python3_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_fidelity.py --check)
     add_subdirectory(tests)
 endif()

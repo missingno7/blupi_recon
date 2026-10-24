@@ -57,4 +57,7 @@ cmake --build "$WORK/build/port-linux" -j 4
 # Both desktop entry points use common/app; Android still builds SB1 only.
 "$WORK/build/port-linux/blupi-sdl3" --version
 "$WORK/build/port-linux/blupi2-sdl3" --version
-ctest --test-dir "$WORK/build/port-linux" -j 1 --output-on-failure "$@"
+# The provenance map check needs the complete repository: run it on the real tree
+# (port/docs/FIDELITY.md) and exclude it from the partial copy's ctest run.
+python3 "$REPO/port/tools/check_fidelity.py" --check
+ctest --test-dir "$WORK/build/port-linux" -j 1 --output-on-failure -E '^fidelity_map$' "$@"

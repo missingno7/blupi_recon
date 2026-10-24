@@ -4,6 +4,9 @@ Scope: everything under `port/` — the native SDL3 port. The repository-wide ru
 overrides the root file's "no SDL, no modernization" rule *only inside `port/`*.
 
 Boundary with the reconstruction:
+- Historical/port synchronization follows [docs/FIDELITY.md](docs/FIDELITY.md).
+  Review affected provenance edges and hashes after source, overlay or port changes;
+  `ctest -R fidelity_map` checks the recorded snapshot, not semantic equivalence.
 - `src/` is the historical reconstruction. Never edit it for the port: not for a modern
   compiler, not for SDL, not for portability. If a shared TU cannot be used as is, add a
   port-side replacement under `games/sb1/game/`, name its historical origin in the file header, and
