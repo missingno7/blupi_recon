@@ -149,8 +149,10 @@ These are bounded receipts, not whole-game certification.
 
 **The port is not functionally complete.** These services are unavailable or differ:
 
-- **Multiplayer:** DirectPlay is unavailable, and session creation fails by design. This is the
-  required next milestone ([port/docs/ROADMAP.md](../port/docs/ROADMAP.md), stage 10).
+- **Multiplayer:** SB1 has native multiplayer (release candidate 1.2.0-rc1,
+  [port/docs/MULTIPLAYER.md](../port/docs/MULTIPLAYER.md)). It works for two to four players across
+  Windows, Linux and Android, with LAN discovery, a content check and `--net-join`. It has been tested
+  automatically, with little real-device play. SB2 multiplayer is still unavailable (roadmap stage 10).
 - **AVI movies:** not played; the phase is skipped.
 - **SB2 CD audio:** fails, logged once.
 - **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.
@@ -167,5 +169,6 @@ These are bounded receipts, not whole-game certification.
   evidence, not recovered source.
 - **Consolidation.** Stage 1 (ordinary builds) and stage 2 (this documentation) are done; stages
   3 to 5 follow (docs/CONSOLIDATION_PLAN.md).
-- **Port.** Native multiplayer for SB1 and SB2 is the required next port milestone
-  ([port/docs/ROADMAP.md](../port/docs/ROADMAP.md), stage 10).
+- **Port.** Native multiplayer, roadmap stage 10, is in progress:
+  - SB1 ships in 1.2.0-rc1;
+  - next: real-network tests, in-game address entry, then SB2.

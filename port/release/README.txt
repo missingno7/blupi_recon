@@ -74,6 +74,23 @@ The port's own options are on the game's settings screen, under
 None of them changes how the game plays.
 
 
+Multiplayer (Speedy Blupi and Speedy Eggbert)
+---------------------------------------------
+
+Two to four players, as in the original, on the game's own multiplayer
+screens: choose the provider "Native network (UDP)", then create a session
+or join one. Sessions on your local network are listed. Windows, Linux and
+Android players can play together if they have the same edition (Speedy
+Blupi or Speedy Eggbert) and the same multiplayer levels; the language may
+differ.
+
+To join a host over the internet, start with --net-join HOST[:PORT]. A host
+uses UDP ports 28640 (game) and 28641 (discovery): allow them in your
+firewall (and forward them on your router for internet play). --net-port N
+chooses other ports. If the host leaves, the session ends for everyone.
+This is a release candidate: multiplayer has had little real-world play.
+Speedy Blupi 2 and Speedy Eggbert 2 have no multiplayer yet.
+
 Your own language
 -----------------
 

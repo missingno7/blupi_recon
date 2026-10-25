@@ -19,7 +19,7 @@ BEGIN
             VALUE "InternalName", "@BLUPI_RC_NAME@"
             VALUE "OriginalFilename", "@BLUPI_RC_NAME@.exe"
             VALUE "ProductName", "@BLUPI_RC_PRODUCT@"
-            VALUE "ProductVersion", "@PROJECT_VERSION@"
+            VALUE "ProductVersion", "@BLUPI_PORT_VERSION@"
         END
     END
     BLOCK "VarFileInfo"

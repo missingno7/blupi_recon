@@ -12,7 +12,9 @@ cmake_minimum_required(VERSION 3.20)
 # The port's release version (port/VERSION.txt; also read by port/android).
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt BLUPI_PORT_VERSION LIMIT_COUNT 1)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt)
-project(blupi_port VERSION ${BLUPI_PORT_VERSION} LANGUAGES C CXX)
+# A pre-release suffix (1.2.0-rc1) stays in the shown version; CMake and the Windows resource take the number.
+string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" BLUPI_PORT_VERSION_NUMBER "${BLUPI_PORT_VERSION}")
+project(blupi_port VERSION ${BLUPI_PORT_VERSION_NUMBER} LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -154,7 +156,7 @@ target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/ge
 # needed only at its message boundary; platform/ still never sees them.
 add_library(blupi_app STATIC common/app/launcher.cpp)
 target_include_directories(blupi_app PUBLIC ${BLUPI_COMMON} PRIVATE ${BLUPI_COMMON}/compat/include)
-target_compile_definitions(blupi_app PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
+target_compile_definitions(blupi_app PRIVATE BLUPI_PORT_VERSION="${BLUPI_PORT_VERSION}")
 target_link_libraries(blupi_app PUBLIC blupi_platform blupi_net)
 
 # Port-owned replacements of the historical platform TUs, plus the shared
@@ -178,7 +180,7 @@ add_library(blupi_game STATIC
     games/sb1/game/language.cpp
     $<TARGET_OBJECTS:blupi_hist>)
 target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform blupi_app blupi_sb1_protocol)
-target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
+target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${BLUPI_PORT_VERSION}")
 target_include_directories(blupi_game PRIVATE ${BLUPI_GAME_DIR})
 
 # The built-in language packs (languages/*.txt, port/docs/LANGUAGES.md),

@@ -49,7 +49,7 @@ add_library(blupi2_game STATIC
     game/icon.cpp
     $<TARGET_OBJECTS:blupi2_hist>)
 target_link_libraries(blupi2_game PRIVATE blupi2_hist_context PUBLIC blupi_platform blupi_app)
-target_compile_definitions(blupi2_game PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
+target_compile_definitions(blupi2_game PRIVATE BLUPI_PORT_VERSION="${BLUPI_PORT_VERSION}")
 
 # blupi2's icon (res/icon.png, tools/make_icon.py --game sb2), for the window on
 # systems without executable resources (game/icon.cpp).

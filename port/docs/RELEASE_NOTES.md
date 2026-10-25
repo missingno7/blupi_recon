@@ -1,88 +1,91 @@
-# Speedy Blupi SDL3 port 1.1.0
+# Speedy Blupi SDL3 port 1.2.0-rc1 (release candidate)
 
-The native port of **Speedy Blupi** (Epsitec, 1998) for Windows, Linux and Android, now in every
-language of the original and with **Speedy Eggbert** (the eGames edition). It is built from this
-repository's reconstruction of the original program's source, compiled unchanged with a modern
-compiler, plus a small platform layer on SDL3.
+The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
+eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux and Android. It is
+built from this repository's reconstruction of the original programs' source, compiled unchanged with
+a modern compiler, plus a small platform layer on SDL3.
 
-**The original game's files are not included.** You need your own copy of Speedy Blupi or Speedy
-Eggbert (the CD or the installed game). On the first start the port asks for its folder and
-remembers it.
+**This is a release candidate.** It brings the first native multiplayer, which has been tested
+automatically but has had little real-world play. Reports are welcome.
 
-## New in 1.1
+**The original games' files are not included.** You need your own copy of the game: the CD or the
+installed game. On the first start the port asks for its folder and remembers it.
 
-- **Languages**, switchable at once under *Display options* → *Language*:
-  - Speedy Blupi: English, German, French;
-  - Speedy Eggbert: English, German, Spanish, French, Italian, Portuguese.
+## New in 1.2
 
-  The port starts in the language of your installed game. The German help screen gets its
-  original German layout.
-- **Your own language:** `blupi-sdl3 --export-language us mylanguage.txt` writes the English texts
-  as a starting point. Translate the file and put it in a `languages` folder next to your saves;
-  it appears under *Language*. Letters the game's font lacks are drawn as their base letter. The
-  format is in `port/docs/LANGUAGES.md` of the source.
-- **Speedy Eggbert 1** works: point the port at its folder. It is version 1.1 of the same game,
-  with no gameplay changes. Like the original 1.1, the port then quits without the goodbye
-  screen. Details: `docs/EGGBERT.md`.
-- **CDs:** point the port at a Speedy Blupi CD's root. It uses the data there and a language
-  folder's sounds.
+- **Speedy Blupi 2 and Speedy Eggbert 2** (Windows and Linux), as `blupi2-sdl3`. The program
+  recognises the edition from your data. It plays like the original, with the same optional
+  widescreen, smooth motion and Display options as Speedy Blupi.
+- **Multiplayer for Speedy Blupi and Speedy Eggbert**, again: the original's network game for two to
+  four players, rebuilt on a native network layer in place of DirectPlay. The original game logic is
+  unchanged.
+  - **Choosing a session:** use the game's own multiplayer screens. Choose the provider "Native network
+    (UDP)", then create a session, or join one found on your local network.
+  - **Platforms:** Windows, Linux and Android players of the same edition can play together. Players
+    need the same edition (Speedy Blupi or Speedy Eggbert) and the same multiplayer maps; any language
+    works. Other sessions are not listed.
+  - **Internet play:** start the joining player's game with `--net-join HOST[:PORT]` to add a host by
+    address. Hosts use UDP ports 28640 (game) and 28641 (discovery); allow them in the firewall. Use
+    `--net-port N` for other ports.
+  - **If the host leaves,** the session ends for everyone, as the original effectively did (host
+    migration is not supported).
+- **Speedy Eggbert's title screen** says "Version 1.1" like the original, and the Spanish `¡` has the
+  original width.
 
 ## Downloads
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.1.0-windows-x64.zip` | 64-bit Windows (tested on Windows 11) |
-| `speedy-blupi-sdl3-1.1.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later), X11 or Wayland |
-| `speedy-blupi-sdl3-1.1.0-android.apk` | Android 7.0 or newer, arm64 phones and tablets (and x86_64) |
+| `speedy-blupi-sdl3-1.2.0-rc1-windows-x64.zip` | 64-bit Windows (tested on Windows 11): `blupi-sdl3.exe` and `blupi2-sdl3.exe` |
+| `speedy-blupi-sdl3-1.2.0-rc1-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later), X11 or Wayland |
+| `speedy-blupi-sdl3-1.2.0-rc1-android.apk` | Android 7.0 or newer, arm64 phones and tablets (and x86_64); Speedy Blupi and Speedy Eggbert |
 | `SHA256SUMS.txt` | checksums |
 
-Windows and Linux: unpack anywhere and start `blupi-sdl3`. The Windows executable is not
-code-signed, so SmartScreen may ask for confirmation ("More info", "Run anyway").
-
-Android: install the APK; it updates 1.0.0 in place, keeping your imported game. On a first
-install, choose the folder with your copy of the game; the app copies it into its own storage.
+- **Windows and Linux:** unpack anywhere and start `blupi-sdl3` (Speedy Blupi, Speedy Eggbert) or
+  `blupi2-sdl3` (Speedy Blupi 2, Speedy Eggbert 2). The Windows executables are not code-signed, so
+  SmartScreen may ask for confirmation ("More info", "Run anyway").
+- **Android:** install the APK; it updates 1.1.0 in place and keeps your imported game. On a first
+  install, choose the folder with your copy of the game; the app copies it into its own storage.
 
 ## What you get
 
-- **The original game, exactly.** 640×480, the original 50 ms tick, 8- and 16-bit colour. Its
-  frames equal the historical rebuild's pixel for pixel (checked over the attract mode and a
-  menu tour), and the attract-mode demos replay identically on Windows and Linux.
-- **Music** from the game's MIDI files, played with the GeneralUser GS SoundFont (bundled).
-- **Optional extras** under *Display options* on the game's settings screen; none of them
-  changes how the game plays:
+- **The original games, exactly:** 640×480, the original 50 ms tick, 8- and 16-bit colour. Their
+  frames equal the historical rebuilds' pixel for pixel (checked over the attract modes and menu tours),
+  and the demos replay identically on Windows and Linux.
+- **Music** from the games' MIDI files, played with the GeneralUser GS SoundFont (bundled).
+- **Optional extras** under *Display options* on the settings screen; none of them changes how the game
+  plays:
   - widescreen from 4:3 up to 21:9, following the window's shape, in play and in the editor;
   - smooth motion between ticks;
   - redraw at the monitor's rate or the original 20 per second;
   - window or full screen (Alt+Enter), and fit-the-window or whole-pixel scaling;
   - the language.
+- **Languages:**
+  - Speedy Blupi: English, German, French.
+  - Speedy Eggbert: English, German, Spanish, French, Italian, Portuguese.
+  - Speedy Blupi 2: English, German, French.
+  - Your own language pack: `--export-language`.
 - **Gamepads** through the game's own joystick option.
-- **Android:** always full screen and landscape. Menus are tapped directly. In play there is a
-  touch joystick with jump, fire and pause buttons, and the editor has a scroll pad. The Back
-  button acts as Escape.
+- **Android:** always full screen and landscape. Menus are tapped directly. In play there is a touch
+  joystick with jump, fire and pause buttons, and the editor has a scroll pad. The Back button acts as
+  Escape.
 
 ## Not in this release
 
-- Network multiplayer: the original used DirectPlay. The multiplayer screens open, but there is
+- **Multiplayer for Speedy Blupi 2 and Speedy Eggbert 2.** Their multiplayer screens open, but there is
   nothing to join or create.
-- The intro and ending movies: the original skipped them when the system could not play AVI,
-  and the installed game does not include them.
+- **Speedy Blupi 2 and Speedy Eggbert 2 on Android.**
+- **The intro and ending movies.** The original skipped them when the system could not play AVI, and
+  the installed games do not include them.
+- **Speedy Blupi 2's CD audio tracks.**
 
 ## Known limitations
 
-- With Speedy Eggbert's data, the title screen says "Version 1.0" where the original 1.1 says
-  "Version 1.1". The Spanish `¡` is drawn wider than in Eggbert's Spanish original.
-- On Android a player's own language file goes into a `languages` folder inside the game folder
-  before importing it; there is no button for it yet.
-- On Linux the first-run folder dialog needs the desktop's file chooser portal (or `zenity`).
-  Without it, start the game with `--data "<game folder>"`, or put the port's files into the
-  game's folder.
-- On Android, gamepads and running in the background have had little testing.
-
-## Licences
-
-The port is free software under the GNU GPL version 3 (`COPYING.txt`), since its source derives
-from Planet Blupi (GPLv3+) and the Speedy Eggbert 2 reconstruction (GPLv3). The source is this
-repository at tag `port-v1.1.0` (folder `port/`). Third-party components: SDL 3.4.16 (zlib),
-TinySoundFont and TinyMidiLoader (MIT, zlib) and the GeneralUser GS SoundFont; see
-`THIRD_PARTY.txt` in each package. Speedy Blupi, Speedy Eggbert and their data are © Epsitec SA
-and are not included; this is a fan project, not affiliated with Epsitec.
+- **Multiplayer has been tested automatically** (two and four players on one machine, Windows and
+  Linux), but has had little play between real devices and networks. Also:
+  - there is no in-game field for a host's address: use `--net-join`, or the local-network list;
+  - an Android player who switches away from the game is likely to drop out of a session.
+- **Android:** a player's own language file goes into a `languages` folder inside the game folder before
+  importing it. Gamepads and running in the background have had little testing.
+- **Linux:** the first-run folder dialog needs the desktop's file chooser portal (or `zenity`). Without
+  it, start the game with `--data "<game folder>"`, or put the port's files into the game's folder.

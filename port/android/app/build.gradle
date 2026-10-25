@@ -14,7 +14,8 @@ if (!file("${sdl3Dir}/CMakeLists.txt").exists()) {
 // The port's version (port/VERSION.txt, as in the desktop builds): 1.2.3 is
 // versionName "1.2.3" and versionCode 10203.
 def portVersion = file('../../VERSION.txt').text.trim()
-def portVersionCode = portVersion.tokenize('.').collect { it as int }.inject(0) { code, part -> code * 100 + part }
+// A pre-release suffix (1.2.0-rc1) is kept in versionName; versionCode takes the number.
+def portVersionCode = portVersion.tokenize('-')[0].tokenize('.').collect { it as int }.inject(0) { code, part -> code * 100 + part }
 
 // Release signing: a keystore outside the repository, described by a
 // properties file (storeFile, storePassword, keyAlias, keyPassword). Default
