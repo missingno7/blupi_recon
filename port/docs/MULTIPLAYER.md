@@ -1,29 +1,49 @@
 # Native multiplayer (roadmap stage 10)
 
-## Pilot status (2026-10-25, branch `multiplayer-pilot`)
+## Status (2026-10-25, branch `multiplayer-pilot`)
 
-[EVIDENCE] SB1 desktop, two instances on one machine, Windows (MinGW build):
+Scope: one game and edition at a time, on any platform. Windows, Linux and Android builds of the same
+edition play together; different games or editions never do (the content check below refuses them).
 
-- `net_sb1_two_instances` (`tests/net_sb1.py`, scripts in `tests/net/`): a host and a client, both headless
-  and lockstepped by the supervisor (`--net-test-sync`), go through the original screens: choose player,
-  the provider list ("Native network (UDP)"), sessions, create (host) / join (client), the lobby with two
-  members, ready, start, then play. Each received 138 MOVE bundles from the other. Replicated embedded
-  events: lift start/end synchro from the host (types 50/51, the original host-only lift coordination), an
-  object delete, and sounds; lobby JOIN, READY, LOBBY and START. No packet was rejected. Run twice, each
-  peer's frame trace and network audit repeat byte for byte (about 22 s per run).
-- `net_transport`: handshake, member ids, reliable order, relay to a third member without echo,
-  unsequenced delivery, protocol/version/full/after-start refusals, graceful disconnect events
-  (relayed), bounded close, host loss.
+[EVIDENCE] Tests (Windows MinGW build; the two-instance test also on Linux):
+
+- `net_sb1_two_instances` and `net_sb1_four_instances` (`tests/net_sb1.py --players 2|4`, scripts in
+  `tests/net/`): a host and one or three clients, headless and lockstepped by the supervisor
+  (`--net-test-sync`), go through the original screens: choose player, the provider list ("Native network
+  (UDP)"), sessions, create / join, the lobby with all members, ready, start, then play. Every peer receives
+  every other member's MOVE bundles and their embedded events: the host's lift start/end synchro (types
+  50/51, the original host-only lift coordination), object starts/deletes and sounds; lobby JOIN, READY,
+  LOBBY and START. No packet is rejected. Run twice, each peer's frame trace and network audit repeat byte
+  for byte (about 22 s per run on Windows, 2 s on Linux).
+- `net_transport`: handshake, member ids, reliable order, relay without echo, unsequenced delivery,
+  protocol/version/content/full/after-start refusals, LAN discovery (and reporting of an incompatible
+  session), graceful disconnect events, bounded close, host loss.
 - `net_sb1_protocol`: the validator's corpus of valid and malformed packets for every message kind.
 
-[DESIGN] Options: `--net-port N` (listen and default probe port, 28640) and repeatable
-`--net-join HOST[:PORT]` (more sessions to list). Test only: `--net-test-sync` with the supervisor's
-`BLUPI_NET_TEST_DIR`/`BLUPI_NET_TEST_ROLE`; normal play never waits.
+[DESIGN] Cross-platform rules:
 
-[OPEN] Not yet: LAN discovery and more than two players in a test, internet use (the validator's
-coordinate margins are a pilot policy, to be reviewed before exposure), SB2 (`games/sb2/game/network.cpp`
-stays the unavailable stub), Android, Linux receipts. The host-loss and client-drop paths through the game
-(synthesized LEAVE/ABANDON, below) are tested at transport level only, not yet as a two-instance scenario.
+- **Wire format:** the historical byte layout, little-endian, signed char; `network.cpp` asserts the
+  sizes and offsets of `NetMessage`, `NetPacket` and `NetPlayer`, so a platform that differed would not
+  build.
+- **Compatibility:** every session envelope carries a 64-bit content fingerprint: the game, the edition
+  and the ten multiplayer maps (`data/world101..110`) as the game loads them. A join with another edition
+  or other maps is refused; such sessions are logged and not listed.
+- **Finding sessions:** LAN discovery (a broadcast query, answered on the game port + 1) fills the
+  original session list. Addresses can be added with `--net-join HOST[:PORT]`; `--net-port N` changes
+  the port (default 28640, discovery 28641). Android holds a Wi-Fi multicast lock while in the foreground,
+  so a phone that hosts is discoverable.
+
+[OPEN] Not yet:
+
+- an address entry in the game for internet play (desktop: `--net-join`);
+- real-network behaviour tests (latency, loss, reordering) and the host-loss and client-drop paths as
+  game scenarios (transport level only so far);
+- a phone-to-desktop session on real devices (the APK builds). [HYPOTHESIS] A backgrounded app stops
+  servicing its session (SDL pauses the game loop), so after ENet's peer timeout (1.5 to 3 s) the others see
+  it leave; untested;
+- the validator's remaining whitelists and margins before internet exposure;
+- SB2 (`games/sb2/game/network.cpp` stays the unavailable stub).
+
 Host migration is unsupported by design (below).
 
 Goal: restore the original multiplayer of Speedy Blupi 1 and Speedy Blupi 2 by replacing DirectPlay
