@@ -45,6 +45,8 @@ def run(args, work, port):
         command = [args.exe, "--headless", "--data", args.data, "--user", str(user), "--color", "16",
                    "--frames", str(args.frames), "--input", str(Path(args.inputs) / f"sb1_{name}.input"),
                    "--trace", str(work / f"{name}.trace"), "--net-test-sync", "--net-port", str(port)]
+        for frame in args.state_dump:
+            command += ["--state-dump", f"{frame}:{work / f'{name}-state-{frame}.txt'}"]
         log = open(work / f"{name}.log", "w", encoding="utf-8")
         peers.append((name, subprocess.Popen(command, env=env, stdout=log, stderr=subprocess.STDOUT), log))
     try:
@@ -119,6 +121,8 @@ def main():
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--frames", type=int, default=700)
     parser.add_argument("--timeout", type=float, default=240.0, help="seconds per run")
+    parser.add_argument("--state-dump", type=int, action="append", default=[], metavar="FRAME",
+                        help="diagnostic: each peer dumps its hashed state fields after FRAME")
     args = parser.parse_args()
     args.exe = str(Path(args.exe).resolve())
     args.work = args.work.resolve()
