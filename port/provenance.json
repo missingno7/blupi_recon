@@ -323,7 +323,7 @@
     "games/sb2/src/text.h": "aeb0b33c5615b70e70a67621d0b124ee34e986597ddab40c00b5b45d0294d3f0",
     "games/sb2/src/texttables.h": "31e799b15ab5c5e724ff96b87f831c40fae3161538e631b4971ccc1f586343f0",
     "games/sb2/src/wave.h": "6a633e098262a84f53387feda19df52fdb76a0c3c804d5e9f97a56610970a992",
-    "port/CMakeLists.txt": "37ff6d8c7a76e66a121c3db1ae9a7d8e730b1d4de9a0e54defd516795fe089e1",
+    "port/CMakeLists.txt": "3ca97183e1eace8ae85a85c94d4e2f7d278b2d629c870bc1b39d881be61a0594",
     "port/android/app/src/main/AndroidManifest.xml": "4464ace49a528b1b1e1d6707b10398b77fbe100a95fa5151c73d4ca6cb71a092",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/Blupi2Activity.java": "7fd89b874b4890b18e53f87ebff45fd8f70c9767eff37e85272bce891a4af6ef",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/BlupiActivity.java": "402880af4d2a26df397d4f5a3e012fb86b68311e513800f60427e9a8c6db369d",
@@ -347,6 +347,9 @@
     "port/common/compat/include/windowsx.h": "ae97f1d92824184c876762d9707b8761ce36ba371c5783f4919fd3ac589f8852",
     "port/common/compat/src/hist_stdio.cpp": "f359ad9fd0dfacd5a0c149ae9021b29a319a012e320938a37230475a155c5e72",
     "port/common/compat/src/win32.cpp": "283938589f1e27fbf6948d6577d128ce956d7b0c279efc471ee4babb82427bab",
+    "port/common/net/cnetwork.cpp": "32f1e1c175f5b1f9ce6a9373788486a650c753c2199ef58515eda188289ddb31",
+    "port/common/net/game_protocol.cpp": "d3eda1a01db576ae734c3cb4d5a087a48b937c24bfb57965581e2501e75d6c8e",
+    "port/common/net/game_protocol.h": "2c953d4ac8917db6019b31943ccb26da2fc8b9a9064fa1ef4029addeaf9cd62d",
     "port/common/net/session.cpp": "faf0d49ecf83f0b60e3c434a58e99407942c112239cb4f2d474ef26364621207",
     "port/common/net/session.h": "a59536bd67098fef0947019942c890a53a7950b0e61eff51f666122dbb2dd749",
     "port/common/platform/audio.cpp": "efe4312940a3b1918c7fb86f154200654356b7ced130b3f29a5b09697a105fdb",
@@ -386,10 +389,7 @@
     "port/games/sb1/game/member_access.h": "2211c3cf5802d8fb7d306f128c3790e74975f39cab701fec9cbb79ea60b1233c",
     "port/games/sb1/game/misc.cpp": "70067d1195cb29dddb6041d5225a7c99719588e0435d1a817d072b6094077a88",
     "port/games/sb1/game/movie.cpp": "44e67f1e63474ac2e776fe24332925b25317566d6dbf912ec9886c375e245f33",
-    "port/games/sb1/game/network.cpp": "09fa95109fb75d7cb58d5a0fee3582dbc88750c4869709e536372a779b2a954f",
-    "port/games/sb1/game/network_port.h": "9a1e42f9af83760f38aa379774ea471edfc94bdbda961a6872c08ec0e7b1817a",
-    "port/games/sb1/game/network_protocol.cpp": "3de2360f0f4a0a951fa403a45e4373b7575d6f27d73cd5778e1f5f80ae4354b8",
-    "port/games/sb1/game/network_protocol.h": "6866d28da7be665192226735e2ef4217e9da26fae22b86587c91ce9ddd74458b",
+    "port/games/sb1/game/network_port.h": "7f117a91a35f362990d10f36626975b79df6184b6f680a25462701f05f144f65",
     "port/games/sb1/game/pixmap.cpp": "fbc84d371784f7d1c5beb489e7aaf0a439b7ba2e85aeb4aceb5f8492e3a78f01",
     "port/games/sb1/game/port_game.h": "43e51951b01b5b6327949a87f33ffe7fcbb95767f3ca9fc6d996d59d7ccec8f0",
     "port/games/sb1/game/port_switches.h": "c782b02d0987f70b06c729273817e0cf16eaabe3cd556e0269d9464712ba8b39",
@@ -398,18 +398,18 @@
     "port/games/sb1/game/scene.h": "78cf1bd74beedf37e762897b64c04e0f7b6dc143515772b3ad32f8fb15a14ffd",
     "port/games/sb1/game/settings.h": "1f2b373625490a727d7b28932b69cc4c47b7b64a8c3e3b3a497b7d6f452e440c",
     "port/games/sb1/game/sound.cpp": "1124c8a5b38881299353fb59396e946f446133e7a34f3c633e93ee962632e6be",
-    "port/games/sb1/game/state_hash.cpp": "8391ee8689b639305ba2422df6c889bbe6791fe4628c0d4b90ee32298c1f24e5",
-    "port/games/sb2/CMakeLists.txt": "af89cd8df24acbd41472bc99f6e7d2f7533fe302ede32fc9de0aba5bc7866d04",
+    "port/games/sb1/game/state_hash.cpp": "6c10a5f17b4379b115491fc1a31e2d97d500639de04d85c73ef900b8d833e0ae",
+    "port/games/sb2/CMakeLists.txt": "b239e3f2e8dc32a28395b6e763aa380b67fdfa45588e0c7d57b11843e5a57026",
     "port/games/sb2/game/editor_wide.cpp": "9abfb871db5ad33e69592e0f3f0c650aa1e15fe233924e7ac22866fa052fb4d7",
     "port/games/sb2/game/end_of_tick.cpp": "cdacfb1263c1aa8bf08a1640c42be6bb56b9e1ea5814e260433f40d225cdc60d",
     "port/games/sb2/game/event.cpp": "2c1c09d5624488f999000faef303415bcaa9a2ea056e99a40e8ea7676d810936",
     "port/games/sb2/game/icon.cpp": "7ce486fb26826fb63190d62270def1fa78a00ca5e3357b73a18bb8bd5308095e",
     "port/games/sb2/game/language.cpp": "4b4084b3abecfc83ce671ba93b1ecb820a17fa5908572e5c30a685c7101d79b8",
-    "port/games/sb2/game/main.cpp": "362cc2c2d5c6172c1324f81c9074d02015bc899a6d92513659519840fbba7af6",
+    "port/games/sb2/game/main.cpp": "dd72b69b96b64902be265d8b3759757c83be1203615f9a3e11f9c79338a29495",
     "port/games/sb2/game/member_access.h": "2211c3cf5802d8fb7d306f128c3790e74975f39cab701fec9cbb79ea60b1233c",
     "port/games/sb2/game/misc.cpp": "f89b768be70d4f44fdc54fcb025b5795123dd38090b21a925f5507b5875d4a29",
     "port/games/sb2/game/movie.cpp": "7f9d79d4a55274b708982d97293e89a53b5056e75559be63a145c4b00ef42e7a",
-    "port/games/sb2/game/network.cpp": "890d6c72fe9c6a7f860b5039f426926e5a15288df455c38695e90a13566a005e",
+    "port/games/sb2/game/network_port.h": "c55587d955d94cbb1b90a16f463672bd8174f00d87e8a34f6ffb1796cf061183",
     "port/games/sb2/game/pixmap.cpp": "4f29179a3c6d1377943a73365eecf5f5d09856f1fe165a3f3af0b9f456f00601",
     "port/games/sb2/game/port_game.h": "d9557303d33bbc40b89cca64d4467bf8dc779fd0812dec9b413ef896bb060b24",
     "port/games/sb2/game/port_switches.h": "aa1590f7cb80a17393eaaffce151559bbc8d41221bfd700697cd8ba97170e002",
@@ -417,7 +417,7 @@
     "port/games/sb2/game/scene.cpp": "4422e79d7888ab40d03df4ae8d0cea6505b9caa1fd0de9d6c5995d6523e9ba80",
     "port/games/sb2/game/scene.h": "533bf4daf6816dcbb3b596993edd7548f44840f169eefae538e795468da5a7a6",
     "port/games/sb2/game/sound.cpp": "afeac7324949dfb4cc97c76c480598375867ac75ae996ce60cd6ab81f7f0d787",
-    "port/games/sb2/game/state_hash.cpp": "1c7c6ac6405edf0a0a0e3a4da4ab70e1855152d0885d58b25606a32de93b69d7",
+    "port/games/sb2/game/state_hash.cpp": "19cf32007968086688a6053c45bafa2978af9b9c4a6a86da3fdc0534d574ce55",
     "port/games/sb2/languages/README.md": "273b98953f166cbb8d7fd7761842bccc4940f3e6afa5da3924df3ae6c89b672f",
     "port/games/sb2/languages/blupi-de.txt": "0a5a26447af4478645a11742301d0d4768c3c0485468f7616412bc4300bdc2ca",
     "port/games/sb2/languages/blupi-en.txt": "1fd9678ee5eaf38a95c83398b122f7ff688d3ceb3e5bb1678a5d0dae51506866",
@@ -568,13 +568,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -660,13 +660,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -751,13 +751,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -842,13 +842,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -933,13 +933,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1024,13 +1024,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1115,13 +1115,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1206,13 +1206,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1297,13 +1297,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1389,13 +1389,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1480,13 +1480,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1572,13 +1572,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1654,13 +1654,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1737,13 +1737,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1819,13 +1819,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1901,13 +1901,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -1983,13 +1983,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2065,13 +2065,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2147,13 +2147,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2229,13 +2229,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2312,13 +2312,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2394,13 +2394,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2477,13 +2477,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2580,13 +2580,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2676,13 +2676,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2767,13 +2767,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2866,13 +2866,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -2960,13 +2960,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -3060,13 +3060,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -3169,13 +3169,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -3260,13 +3260,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -3371,13 +3371,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -3462,13 +3462,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -3529,7 +3529,7 @@
       ],
       "port": [
         {
-          "path": "port/games/sb1/game/network.cpp",
+          "path": "port/common/net/cnetwork.cpp",
           "symbols": [
             "CNetwork::CNetwork()",
             "int CNetwork::GetNbProviders()",
@@ -3554,7 +3554,7 @@
       "dependency_paths": [],
       "reason": "contract-equivalent accessors over the native session: provider/session counts, names and list frees as historical; index bounds also reject negative values (historical: unchecked); the constructor also zeroes m_players and creates the native session state; IsHost cached at create/join as historical",
       "proof_scope": [
-        "SB1 accessor contract; native session lifecycle exercised by the two-instance pilot test",
+        "SB1 accessor contract; native session lifecycle exercised by the two- and four-instance tests",
         "negative-index refusal is a port hardening, not historical behaviour"
       ],
       "tests": [
@@ -3566,8 +3566,11 @@
         "fidelity_audio_buffers_sb2_eggbert",
         "fidelity_audio_inventory",
         "fidelity_audio_mixer",
-        "net_sb1_protocol",
+        "net_protocol",
+        "net_sb1_four_instances",
         "net_sb1_two_instances",
+        "net_sb2_four_instances",
+        "net_sb2_two_instances",
         "net_transport"
       ],
       "evidence": [
@@ -3583,13 +3586,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "update port: the CNetwork adapter and validator moved to port/common/net (cnetwork.cpp, game_protocol.*), shared with SB2; SB1 keeps its protocol id, content fingerprint and rules (net_protocol corpus unchanged for SB1). Previous review (6adbe386dd) otherwise stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
+          "port/games/sb1/game/network.cpp",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Windows: net_protocol, net_transport, net_sb1_two/four_instances, golden tour/options pass."
       }
     },
     {
@@ -3654,7 +3658,7 @@
       ],
       "port": [
         {
-          "path": "port/games/sb1/game/network.cpp",
+          "path": "port/common/net/cnetwork.cpp",
           "symbols": [
             "CNetwork::~CNetwork()",
             "BOOL CNetwork::EnumProviders()",
@@ -3670,24 +3674,26 @@
           ]
         },
         {
-          "path": "port/games/sb1/game/network_protocol.h",
+          "path": "port/common/net/game_protocol.h",
           "symbols": [
-            "SB1 wire classification and validation"
+            "SB1 and SB2 wire rules, classification and validation"
           ]
         },
         {
-          "path": "port/games/sb1/game/network_protocol.cpp",
+          "path": "port/common/net/game_protocol.cpp",
           "symbols": [
             "Classify",
             "Validate",
-            "Canonicalise"
+            "Canonicalise",
+            "Rules SB1, SB2"
           ]
         },
         {
           "path": "port/games/sb1/game/network_port.h",
           "symbols": [
             "PortNetworkConfigure",
-            "PortNetworkTick"
+            "PortNetworkTick",
+            "PortNetworkRules (SB1)"
           ]
         },
         {
@@ -3726,9 +3732,11 @@
         "fidelity_audio_buffers_sb2_eggbert",
         "fidelity_audio_inventory",
         "fidelity_audio_mixer",
+        "net_protocol",
         "net_sb1_four_instances",
-        "net_sb1_protocol",
         "net_sb1_two_instances",
+        "net_sb2_four_instances",
+        "net_sb2_two_instances",
         "net_transport"
       ],
       "evidence": [
@@ -3744,13 +3752,17 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "update port: the CNetwork adapter and validator moved to port/common/net (cnetwork.cpp, game_protocol.*), shared with SB2; SB1 keeps its protocol id, content fingerprint and rules (net_protocol corpus unchanged for SB1). Previous review (6adbe386dd) otherwise stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
+          "port/games/sb1/game/network.cpp",
+          "port/games/sb1/game/network_port.h",
+          "port/games/sb1/game/network_protocol.cpp",
+          "port/games/sb1/game/network_protocol.h",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Windows: net_protocol, net_transport, net_sb1_two/four_instances, golden tour/options pass."
       }
     },
     {
@@ -3879,13 +3891,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -3982,13 +3994,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -4113,13 +4125,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -4212,13 +4224,13 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -4310,13 +4322,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       },
       "split_from": "F099"
     },
@@ -4425,13 +4437,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       },
       "split_from": "F099"
     },
@@ -4525,13 +4537,13 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -4647,13 +4659,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       },
       "split_from": "F105"
     },
@@ -4743,13 +4755,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -4857,13 +4869,13 @@
         "Resolve or explicitly classify failed-ReadData retained-buffer ownership, real device creation/failure propagation and historical COM/external device lifetime; do not infer these from successful offline loading/cleanup."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -4958,13 +4970,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -5089,13 +5101,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -5186,13 +5198,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -5529,13 +5541,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -5611,13 +5623,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -5702,14 +5714,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -5790,14 +5802,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -5873,14 +5885,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -5956,14 +5968,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -6047,14 +6059,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -6134,14 +6146,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -6226,13 +6238,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -6323,13 +6335,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -6405,13 +6417,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -6487,13 +6499,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -6589,13 +6601,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -6671,13 +6683,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -6728,7 +6740,7 @@
       ],
       "port": [
         {
-          "path": "port/games/sb2/game/network.cpp",
+          "path": "port/common/net/cnetwork.cpp",
           "symbols": [
             "CNetwork::CNetwork()",
             "int CNetwork::GetNbProviders()",
@@ -6752,19 +6764,25 @@
         "sb2_overlay_context"
       ],
       "dependency_paths": [],
-      "reason": "equivalent refactor (verbatim body): static body identity only; inherited services/defines separately classified; static body identity only; inherited services/defines separately classified; offline m_bHost stays FALSE",
+      "reason": "contract-equivalent accessors over the native session: provider/session counts, names and list frees as historical; index bounds also reject negative values (historical: unchecked); the constructor also zeroes m_players and creates the native session state; IsHost cached at create/join as historical",
       "proof_scope": [
-        "static body identity only; inherited services/defines separately classified",
-        "static body identity only; inherited services/defines separately classified; offline m_bHost stays FALSE"
+        "SB2 accessor contract; native session lifecycle exercised by the SB2 two- and four-instance tests",
+        "negative-index refusal is a port hardening, not historical behaviour"
       ],
       "tests": [
         "ctest -R sb2",
-        "fidelity_audio_mixer",
-        "fidelity_audio_inventory",
         "fidelity_audio_buffers_sb1",
         "fidelity_audio_buffers_sb1_eggbert",
+        "fidelity_audio_buffers_sb2_blupi",
         "fidelity_audio_buffers_sb2_eggbert",
-        "fidelity_audio_buffers_sb2_blupi"
+        "fidelity_audio_inventory",
+        "fidelity_audio_mixer",
+        "net_protocol",
+        "net_sb1_four_instances",
+        "net_sb1_two_instances",
+        "net_sb2_four_instances",
+        "net_sb2_two_instances",
+        "net_transport"
       ],
       "evidence": [
         "Initial scratch/w-fidelity audit REPORT.md; ledger F274,F277,F278,F280,F282,F283,F285,F290,F291",
@@ -6779,13 +6797,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "update port: SB2 multiplayer on the native session; the zero-provider stub is replaced by the shared adapter with SB2 rules (port/docs/MULTIPLAYER.md).",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/network.cpp"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Windows: net_sb2_two_instances (Eggbert 2), net_sb2_four_instances (Blupi 2), net_protocol; SB2 goldens pass."
       }
     },
     {
@@ -6840,7 +6859,7 @@
       ],
       "port": [
         {
-          "path": "port/games/sb2/game/network.cpp",
+          "path": "port/common/net/cnetwork.cpp",
           "symbols": [
             "CNetwork::~CNetwork()",
             "BOOL CNetwork::EnumProviders()",
@@ -6852,7 +6871,42 @@
             "BOOL CNetwork::Receive(LPVOID pDest, DWORD dwDataSize, LPDWORD lpdwPlayer)",
             "BOOL CNetwork::Close()",
             "void TraceErrorDP(HRESULT hErr)",
-            "zero-provider policy"
+            "native session adapter"
+          ]
+        },
+        {
+          "path": "port/common/net/game_protocol.h",
+          "symbols": [
+            "SB1 and SB2 wire rules, classification and validation"
+          ]
+        },
+        {
+          "path": "port/common/net/game_protocol.cpp",
+          "symbols": [
+            "Classify",
+            "Validate",
+            "Canonicalise",
+            "Rules SB1, SB2"
+          ]
+        },
+        {
+          "path": "port/games/sb2/game/network_port.h",
+          "symbols": [
+            "PortNetworkConfigure",
+            "PortNetworkTick",
+            "PortNetworkRules (SB2)"
+          ]
+        },
+        {
+          "path": "port/common/net/session.h",
+          "symbols": [
+            "blupi::net::Session and test ingress gate"
+          ]
+        },
+        {
+          "path": "port/common/net/session.cpp",
+          "symbols": [
+            "ENet star session, relay, handshake, test lockstep"
           ]
         }
       ],
@@ -6866,19 +6920,25 @@
         "sb2_overlay_context"
       ],
       "dependency_paths": [],
-      "reason": "deliberate platform modernization: zero providers/session failure; no multiplayer implementation; callbacks omitted because providers/session operations unsupported",
+      "reason": "deliberate platform replacement: native UDP (ENet) session under the historical CNetwork contract instead of DirectPlay 5; star relay with host-assigned DPIDs; reliable/unreliable as the original flags; atomic validation before legacy buffers; host migration unsupported (host loss yields the original LEAVE/ABANDON paths); no DirectPlay interoperability; SB2 has its own protocol id, rules (object types/speeds, unreliable types, sounds, icons, maps 1..12) and content fingerprint (worlds 201..212)",
       "proof_scope": [
-        "zero providers/session failure; no multiplayer implementation",
-        "callbacks omitted because providers/session operations unsupported"
+        "SB2, two (Speedy Eggbert 2) and four (Speedy Blupi 2) instances on one machine (Windows): lobby to play, replicated poses and events, repeatable traces; the SB2 rules in the validator corpus",
+        "not covered: real devices and networks for SB2, host loss through the game, internet"
       ],
       "tests": [
         "ctest -R sb2",
-        "fidelity_audio_mixer",
-        "fidelity_audio_inventory",
         "fidelity_audio_buffers_sb1",
         "fidelity_audio_buffers_sb1_eggbert",
+        "fidelity_audio_buffers_sb2_blupi",
         "fidelity_audio_buffers_sb2_eggbert",
-        "fidelity_audio_buffers_sb2_blupi"
+        "fidelity_audio_inventory",
+        "fidelity_audio_mixer",
+        "net_protocol",
+        "net_sb1_four_instances",
+        "net_sb1_two_instances",
+        "net_sb2_four_instances",
+        "net_sb2_two_instances",
+        "net_transport"
       ],
       "evidence": [
         "Initial scratch/w-fidelity audit REPORT.md; ledger F275,F276,F279,F281,F284,F286,F287,F288,F289,F292,F424",
@@ -6889,17 +6949,19 @@
         "scratch/w-audio/provenance-proposal.json",
         "scratch/w-audio/after-verbose.log (6/6, final complete patch)",
         "scratch/w-audio/final-focused.log (19/19, final complete patch)",
-        "scratch/w-audio/regression.log (193/193, before final loop-boundary normalization; not a final full-patch receipt)"
+        "scratch/w-audio/regression.log (193/193, before final loop-boundary normalization; not a final full-patch receipt)",
+        "port/docs/MULTIPLAYER.md (SB2 vocabulary identical to SB1: games/sb2/src decor.h, network.h, PK_*/MESS_*; rules cited in game_protocol.cpp)"
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "update port: SB2 multiplayer on the native session; the zero-provider stub is replaced by the shared adapter with SB2 rules (port/docs/MULTIPLAYER.md).",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/network.cpp"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Windows: net_sb2_two_instances (Eggbert 2), net_sb2_four_instances (Blupi 2), net_protocol; SB2 goldens pass."
       }
     },
     {
@@ -7017,13 +7079,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -7115,13 +7177,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -7202,13 +7264,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -7340,13 +7402,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -7430,13 +7492,13 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -7519,13 +7581,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       },
       "split_from": "F319"
     },
@@ -7625,13 +7687,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       },
       "split_from": "F319"
     },
@@ -7716,13 +7778,13 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -7829,13 +7891,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       },
       "split_from": "F325"
     },
@@ -7920,13 +7982,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -8029,13 +8091,13 @@
         "F353: test or explicitly classify actual audio device initialization/failure propagation separately from always-successful logical CSound::Create."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -8152,13 +8214,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       },
       "split_from": "F349"
     },
@@ -8239,13 +8301,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -8358,13 +8420,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -8450,13 +8512,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -8573,13 +8635,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -8665,13 +8727,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -8765,13 +8827,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -8861,13 +8923,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -8952,13 +9014,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -9046,13 +9108,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -9146,13 +9208,13 @@
         "Multi-cell drag sequences, arbitrary pre-existing world/lift state and host/toolbar routing remain outside this bounded handler matrix."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       },
       "verified_scope": {
         "targets": [
@@ -9272,13 +9334,13 @@
         "Capture complete m_players before NetSendLobby's raw copy; no successful-network dynamic proof is available in the port. Failed initial SavePalette/AVI restore remains a separate service-failure scope."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -9364,13 +9426,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -9458,13 +9520,13 @@
         "Trace rebuilt MCI open/play/stop/close/notify ordering and port events; separately document SoundFont/timbre/level policy and one-song limit."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -9551,13 +9613,13 @@
         "Add bounded SDL focus/lifecycle fixture and compare message/state sequence to rebuilt game; no original execution."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -9642,13 +9704,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -9746,13 +9808,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -9838,13 +9900,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -9921,13 +9983,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -10039,14 +10101,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -10123,13 +10185,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -10231,13 +10293,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -10318,13 +10380,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -10400,13 +10462,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -10485,13 +10547,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -10575,13 +10637,13 @@
         "Expand coverage separately for world-content variations, multi-cell drags and toolbar/host routing before claiming those scopes."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -10682,14 +10744,14 @@
         "Capture complete m_players before NetSendLobby's raw copy; no successful-network dynamic proof is available in the port. Failed initial SavePalette/AVI restore remains a separate service-failure scope."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -10766,13 +10828,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -10860,13 +10922,13 @@
         "Trace rebuilt real MCI open/play/stop/close/notify timing and late abort/new-song or overlapping-device cases; keep synth timbre, gain and one-song policy explicit."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -10944,14 +11006,14 @@
         "Add bounded SDL focus/lifecycle fixture and compare message/state sequence to rebuilt game; no original execution."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -11027,14 +11089,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -11123,13 +11185,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -11206,13 +11268,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -11311,13 +11373,13 @@
         "Internal assignment-by-assignment order, same-TU call interception, real network transport and untested states remain outside this bounded receipt."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -11403,13 +11465,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -11499,13 +11561,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -11578,13 +11640,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -11662,13 +11724,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -11848,13 +11910,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -11990,14 +12052,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action for this edge: SB2 main configures the network audit (--net-test-sync) and pumps the session each tick, as SB1 main does. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt",
           "port/games/sb2/game/main.cpp"
         ],
-        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
+        "evidence_scope": "SB2 goldens unchanged; network hooks exercised by net_sb2_*."
       }
     },
     {
@@ -12073,13 +12135,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -12222,13 +12284,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -12313,13 +12375,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -12397,13 +12459,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -12494,13 +12556,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -12603,13 +12665,13 @@
         "A separate demo port edition needs its own catalog, source review and tests before support can be claimed."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -12723,13 +12785,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -12872,13 +12934,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -13021,13 +13083,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -13149,13 +13211,13 @@
         "Storage exhaustion and OS close-failure behavior remain outside the tested contract; saved-game interchange remains F472."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -13269,13 +13331,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -13424,13 +13486,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -13561,13 +13623,13 @@
         "Real device initialization/loss, callback scheduling/concurrency and historical resampling transients/aliasing remain outside the offline proof; MIDI timbre and device timing are intentional differences."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -13676,13 +13738,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -13849,13 +13911,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -14022,13 +14084,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -14142,13 +14204,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -14274,13 +14336,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -14388,13 +14450,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -14638,13 +14700,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -14752,13 +14814,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: comment names the moved validator file. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
+          "port/games/sb1/game/state_hash.cpp",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Comment-only change."
       }
     },
     {
@@ -14852,13 +14915,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "update port: the state hash reads NetMessage::data1 as the adapter sends it (zero unless PK_OBJECTSTART), as SB1 does, so multiplayer hashes do not depend on stack contents. Previous review (6adbe386dd) otherwise stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/state_hash.cpp"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Single-player hashes unchanged (SB2 goldens pass); repeatable SB2 network traces."
       }
     },
     {
@@ -14949,13 +15013,13 @@
         "Capture rebuilt intro and exceptional read/cache recovery paths, plus non-English historical rendered pixels, under separately authorized runtime fixtures; resource consistency and port-native/reference menus do not prove these scopes."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       }
     },
     {
@@ -15092,13 +15156,13 @@
         "Historical timer/click scheduling remains nondeterministic; retain DIFFERENT receipts and investigate rather than aligning or masking them."
       ],
       "review": {
-        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
-        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
+        "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+        "disposition": "no port action: CMake moves the network adapter and validator to common/net, shared by SB1 and SB2, and adds the SB2 network tests; this edge's code and compile context are unchanged. Previous review (6adbe386dd) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Build configuration; desktop targets unchanged."
+        "evidence_scope": "Build configuration; no change to this edge's sources."
       },
       "verified_scope": {
         "targets": [
@@ -16147,6 +16211,152 @@
         "F472"
       ],
       "scope": "SB2 built for Android, its activity/import, touch and keyboard hooks."
+    },
+    {
+      "commit": "c88d7c4e74e2d01a12d7f086cb1ff38a9f58222d",
+      "round": "SB2 multiplayer",
+      "reviewed_edges": [
+        "F001",
+        "F002",
+        "F003",
+        "F004",
+        "F005",
+        "F006",
+        "F007",
+        "F008",
+        "F009",
+        "F010",
+        "F011",
+        "F012",
+        "F013",
+        "F014",
+        "F015",
+        "F016",
+        "F017",
+        "F018",
+        "F019",
+        "F020",
+        "F021",
+        "F022",
+        "F023",
+        "F024",
+        "F025",
+        "F027",
+        "F030",
+        "F031",
+        "F036",
+        "F037",
+        "F038",
+        "F048",
+        "F051",
+        "F055",
+        "F056",
+        "F074",
+        "F075",
+        "F077",
+        "F099",
+        "F105",
+        "F107",
+        "F112",
+        "F115",
+        "F120",
+        "F122",
+        "F123",
+        "F124",
+        "F148",
+        "F149",
+        "F195",
+        "F243",
+        "F244",
+        "F245",
+        "F246",
+        "F249",
+        "F250",
+        "F255",
+        "F256",
+        "F257",
+        "F263",
+        "F267",
+        "F270",
+        "F274",
+        "F275",
+        "F293",
+        "F294",
+        "F297",
+        "F298",
+        "F319",
+        "F325",
+        "F327",
+        "F332",
+        "F335",
+        "F347",
+        "F349",
+        "F350",
+        "F351",
+        "F354",
+        "F377",
+        "F378",
+        "F383",
+        "F385",
+        "F386",
+        "F388",
+        "F389",
+        "F391",
+        "F393",
+        "F396",
+        "F398",
+        "F399",
+        "F400",
+        "F401",
+        "F403",
+        "F404",
+        "F405",
+        "F410",
+        "F413",
+        "F415",
+        "F417",
+        "F418",
+        "F420",
+        "F422",
+        "F425",
+        "F427",
+        "F428",
+        "F429",
+        "F430",
+        "F432",
+        "F433",
+        "F434",
+        "F436",
+        "F437",
+        "F438",
+        "F440",
+        "F446",
+        "F448",
+        "F450",
+        "F451",
+        "F452",
+        "F453",
+        "F454",
+        "F455",
+        "F456",
+        "F457",
+        "F458",
+        "F459",
+        "F460",
+        "F461",
+        "F462",
+        "F463",
+        "F464",
+        "F465",
+        "F466",
+        "F467",
+        "F468",
+        "F469",
+        "F470",
+        "F471",
+        "F472"
+      ],
+      "scope": "Shared CNetwork adapter (port/common/net/cnetwork.cpp) and validator with per-game rules; SB2 on the native session; SB2 state-hash data1 normalisation; SB2 main network hooks; CMake build-context change."
     }
   ]
 }
