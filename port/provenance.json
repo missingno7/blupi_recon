@@ -260,6 +260,7 @@
     "port/AGENTS.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/README.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/android/app/src/main/AndroidManifest.xml": "Android platform glue with no historical counterpart: network permissions and the Wi-Fi multicast lock for LAN discovery (port/docs/MULTIPLAYER.md); the SDL activity and launcher manifest.",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/Blupi2Activity.java": "Android platform glue with no historical counterpart: network permissions and the Wi-Fi multicast lock for LAN discovery (port/docs/MULTIPLAYER.md); the SDL activity and launcher manifest.",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/BlupiActivity.java": "Android platform glue with no historical counterpart: network permissions and the Wi-Fi multicast lock for LAN discovery (port/docs/MULTIPLAYER.md); the SDL activity and launcher manifest.",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "Android launcher/import UI with no historical counterpart. GameFolder mirrors the native common/app/launcher.cpp RecognizesData rule (SB1 marker DATA/DEMO200.BLP); desktop ctest android_game_folder.",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/SetupActivity.java": "Android launcher/import UI with no historical counterpart. GameFolder mirrors the native common/app/launcher.cpp RecognizesData rule (SB1 marker DATA/DEMO200.BLP); desktop ctest android_game_folder.",
@@ -322,11 +323,12 @@
     "games/sb2/src/text.h": "aeb0b33c5615b70e70a67621d0b124ee34e986597ddab40c00b5b45d0294d3f0",
     "games/sb2/src/texttables.h": "31e799b15ab5c5e724ff96b87f831c40fae3161538e631b4971ccc1f586343f0",
     "games/sb2/src/wave.h": "6a633e098262a84f53387feda19df52fdb76a0c3c804d5e9f97a56610970a992",
-    "port/CMakeLists.txt": "04212f5148a9a69fa93701c2221027032a38f151a8a675eb7acff86d80f06c55",
-    "port/android/app/src/main/AndroidManifest.xml": "8c17697177036fdabf56fc980da139420ec1543d52463d5c2ea0c7d1c88cd183",
+    "port/CMakeLists.txt": "37ff6d8c7a76e66a121c3db1ae9a7d8e730b1d4de9a0e54defd516795fe089e1",
+    "port/android/app/src/main/AndroidManifest.xml": "4464ace49a528b1b1e1d6707b10398b77fbe100a95fa5151c73d4ca6cb71a092",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/Blupi2Activity.java": "7fd89b874b4890b18e53f87ebff45fd8f70c9767eff37e85272bce891a4af6ef",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/BlupiActivity.java": "402880af4d2a26df397d4f5a3e012fb86b68311e513800f60427e9a8c6db369d",
-    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "f122bdcdc3bf6cd0d42ffcd989bd0c056a06c0bd72dd49679d4a541bbd9fdef3",
-    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/SetupActivity.java": "a89446dda59d174ee39c819024782a25458a7ff4ca17ec9426ed7caa1468719d",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "b0aebaec8c54d3be2268e66e37a410b25be05ad51d4886e0f72667ecc552dbea",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/SetupActivity.java": "6e0dc5bc12bbb8a48bf70af7ea514d67131c7d374c5150d8bdc93ec6c0dbe095",
     "port/common/app/launcher.cpp": "f9da3d14228b8e9beb9801d3ab99d88a7a787b4a6d6e9a65c10aaedae61fb158",
     "port/common/app/launcher.h": "a24f508bb9b1145916ff62255abeb5c23e389ae4b8c9b47d88f54d0d13acdd61",
     "port/common/compat/include/WTypes.h": "ae97f1d92824184c876762d9707b8761ce36ba371c5783f4919fd3ac589f8852",
@@ -397,13 +399,13 @@
     "port/games/sb1/game/settings.h": "1f2b373625490a727d7b28932b69cc4c47b7b64a8c3e3b3a497b7d6f452e440c",
     "port/games/sb1/game/sound.cpp": "1124c8a5b38881299353fb59396e946f446133e7a34f3c633e93ee962632e6be",
     "port/games/sb1/game/state_hash.cpp": "8391ee8689b639305ba2422df6c889bbe6791fe4628c0d4b90ee32298c1f24e5",
-    "port/games/sb2/CMakeLists.txt": "896f7f99c6244c1d80712e8e380eb27ef70a6f3f1146b69d740fa06f349230ec",
+    "port/games/sb2/CMakeLists.txt": "af89cd8df24acbd41472bc99f6e7d2f7533fe302ede32fc9de0aba5bc7866d04",
     "port/games/sb2/game/editor_wide.cpp": "9abfb871db5ad33e69592e0f3f0c650aa1e15fe233924e7ac22866fa052fb4d7",
     "port/games/sb2/game/end_of_tick.cpp": "cdacfb1263c1aa8bf08a1640c42be6bb56b9e1ea5814e260433f40d225cdc60d",
     "port/games/sb2/game/event.cpp": "2c1c09d5624488f999000faef303415bcaa9a2ea056e99a40e8ea7676d810936",
     "port/games/sb2/game/icon.cpp": "7ce486fb26826fb63190d62270def1fa78a00ca5e3357b73a18bb8bd5308095e",
     "port/games/sb2/game/language.cpp": "4b4084b3abecfc83ce671ba93b1ecb820a17fa5908572e5c30a685c7101d79b8",
-    "port/games/sb2/game/main.cpp": "beb6ac073433e251ea672864434b4860e154562333ceda27df63f567c872d944",
+    "port/games/sb2/game/main.cpp": "362cc2c2d5c6172c1324f81c9074d02015bc899a6d92513659519840fbba7af6",
     "port/games/sb2/game/member_access.h": "2211c3cf5802d8fb7d306f128c3790e74975f39cab701fec9cbb79ea60b1233c",
     "port/games/sb2/game/misc.cpp": "f89b768be70d4f44fdc54fcb025b5795123dd38090b21a925f5507b5875d4a29",
     "port/games/sb2/game/movie.cpp": "7f9d79d4a55274b708982d97293e89a53b5056e75559be63a145c4b00ef42e7a",
@@ -566,14 +568,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -659,14 +660,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -751,14 +751,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -843,14 +842,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -935,14 +933,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1027,14 +1024,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1119,14 +1115,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1211,14 +1206,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1303,14 +1297,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1396,14 +1389,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1488,14 +1480,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1581,14 +1572,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1664,14 +1654,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1748,14 +1737,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1831,14 +1819,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1914,14 +1901,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -1997,14 +1983,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2080,14 +2065,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2163,14 +2147,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2246,14 +2229,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2330,14 +2312,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2413,14 +2394,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2497,14 +2477,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2601,14 +2580,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2698,14 +2676,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2790,14 +2767,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2890,14 +2866,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -2985,14 +2960,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -3086,14 +3060,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -3196,14 +3169,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -3288,14 +3260,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -3400,14 +3371,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -3492,14 +3462,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -3614,14 +3583,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (64f07b681c) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -3776,14 +3744,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (64f07b681c) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -3912,14 +3879,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -4016,14 +3982,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -4148,14 +4113,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -4248,14 +4212,13 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -4347,14 +4310,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       },
       "split_from": "F099"
     },
@@ -4463,14 +4425,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       },
       "split_from": "F099"
     },
@@ -4564,14 +4525,13 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -4687,14 +4647,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       },
       "split_from": "F105"
     },
@@ -4784,14 +4743,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -4899,14 +4857,13 @@
         "Resolve or explicitly classify failed-ReadData retained-buffer ownership, real device creation/failure propagation and historical COM/external device lifetime; do not infer these from successful offline loading/cleanup."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -5001,14 +4958,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -5133,14 +5089,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -5231,14 +5186,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -5575,14 +5529,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -5658,14 +5611,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -5750,14 +5702,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -5838,14 +5790,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -5921,14 +5873,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -6004,14 +5956,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -6095,14 +6047,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -6182,14 +6134,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -6274,14 +6226,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -6372,14 +6323,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -6455,14 +6405,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -6538,14 +6487,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -6641,14 +6589,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -6724,14 +6671,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -6833,14 +6779,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -6948,14 +6893,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -7073,14 +7017,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -7172,14 +7115,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -7260,14 +7202,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -7399,14 +7340,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -7490,14 +7430,13 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -7580,14 +7519,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       },
       "split_from": "F319"
     },
@@ -7687,14 +7625,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       },
       "split_from": "F319"
     },
@@ -7779,14 +7716,13 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -7893,14 +7829,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       },
       "split_from": "F325"
     },
@@ -7985,14 +7920,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -8095,14 +8029,13 @@
         "F353: test or explicitly classify actual audio device initialization/failure propagation separately from always-successful logical CSound::Create."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -8219,14 +8152,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       },
       "split_from": "F349"
     },
@@ -8307,14 +8239,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -8427,14 +8358,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -8520,14 +8450,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -8644,14 +8573,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -8737,14 +8665,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -8838,14 +8765,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -8935,14 +8861,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -9027,14 +8952,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -9122,14 +9046,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -9223,14 +9146,13 @@
         "Multi-cell drag sequences, arbitrary pre-existing world/lift state and host/toolbar routing remain outside this bounded handler matrix."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       },
       "verified_scope": {
         "targets": [
@@ -9350,14 +9272,13 @@
         "Capture complete m_players before NetSendLobby's raw copy; no successful-network dynamic proof is available in the port. Failed initial SavePalette/AVI restore remains a separate service-failure scope."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -9443,14 +9364,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -9538,14 +9458,13 @@
         "Trace rebuilt MCI open/play/stop/close/notify ordering and port events; separately document SoundFont/timbre/level policy and one-song limit."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -9632,14 +9551,13 @@
         "Add bounded SDL focus/lifecycle fixture and compare message/state sequence to rebuilt game; no original execution."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -9724,14 +9642,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -9829,14 +9746,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -9922,14 +9838,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -10006,14 +9921,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -10125,14 +10039,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -10209,14 +10123,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -10318,14 +10231,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -10406,14 +10318,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -10489,14 +10400,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -10575,14 +10485,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -10666,14 +10575,13 @@
         "Expand coverage separately for world-content variations, multi-cell drags and toolbar/host routing before claiming those scopes."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -10774,14 +10682,14 @@
         "Capture complete m_players before NetSendLobby's raw copy; no successful-network dynamic proof is available in the port. Failed initial SavePalette/AVI restore remains a separate service-failure scope."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -10858,14 +10766,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -10953,14 +10860,13 @@
         "Trace rebuilt real MCI open/play/stop/close/notify timing and late abort/new-song or overlapping-device cases; keep synth timbre, gain and one-song policy explicit."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -11038,14 +10944,14 @@
         "Add bounded SDL focus/lifecycle fixture and compare message/state sequence to rebuilt game; no original execution."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -11121,14 +11027,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -11217,14 +11123,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -11301,14 +11206,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -11407,14 +11311,13 @@
         "Internal assignment-by-assignment order, same-TU call interception, real network transport and untested states remain outside this bounded receipt."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -11500,14 +11403,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -11597,14 +11499,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -11677,14 +11578,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -11762,14 +11662,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -11949,14 +11848,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -12092,14 +11990,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "update port: SB2 maintenance switches the touch controls and the Android on-screen keyboard as SB1 does (no effect without a touch screen); CMake builds SB2 for Android. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
-          "port/games/sb2/CMakeLists.txt"
+          "port/games/sb2/CMakeLists.txt",
+          "port/games/sb2/game/main.cpp"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "SB2 goldens (attract/tour/editor) and smoke tests pass on Windows; Android emulator: start, menus, touch play."
       }
     },
     {
@@ -12175,14 +12073,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -12325,14 +12222,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -12417,14 +12313,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -12502,14 +12397,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -12600,14 +12494,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -12710,14 +12603,13 @@
         "A separate demo port edition needs its own catalog, source review and tests before support can be claimed."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -12831,14 +12723,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -12981,14 +12872,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -13131,14 +13021,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -13260,14 +13149,13 @@
         "Storage exhaustion and OS close-failure behavior remain outside the tested contract; saved-game interchange remains F472."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -13381,14 +13269,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -13537,14 +13424,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -13675,14 +13561,13 @@
         "Real device initialization/loss, callback scheduling/concurrency and historical resampling transients/aliasing remain outside the offline proof; MIDI timbre and device timing are intentional differences."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -13791,14 +13676,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -13965,14 +13849,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -14139,14 +14022,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -14260,14 +14142,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -14393,14 +14274,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -14508,14 +14388,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -14759,14 +14638,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -14874,14 +14752,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (5d7df34b19) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -14975,14 +14852,13 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -15073,14 +14949,13 @@
         "Capture rebuilt intro and exceptional read/cache recovery paths, plus non-English historical rendered pixels, under separately authorized runtime fixtures; resource consistency and port-native/reference menus do not prove these scopes."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       }
     },
     {
@@ -15217,14 +15092,13 @@
         "Historical timer/click scheduling remains nondeterministic; retain DIFFERENT receipts and investigate rather than aligning or masking them."
       ],
       "review": {
-        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+        "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+        "disposition": "no port action: CMake builds SB2 on Android as libblupi2.so. Previous review (0eb9f79a8f) stands.",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/platform/blupi_win.rc.in",
           "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
-        "evidence_scope": "Build configuration; no game, platform or test code changed."
+        "evidence_scope": "Build configuration; desktop targets unchanged."
       },
       "verified_scope": {
         "targets": [
@@ -16127,6 +16001,152 @@
         "F472"
       ],
       "scope": "Version string handling for a pre-release suffix."
+    },
+    {
+      "commit": "6adbe386dd3567657819c17fbfa0a775fc18fdf3",
+      "round": "SB2 on Android",
+      "reviewed_edges": [
+        "F001",
+        "F002",
+        "F003",
+        "F004",
+        "F005",
+        "F006",
+        "F007",
+        "F008",
+        "F009",
+        "F010",
+        "F011",
+        "F012",
+        "F013",
+        "F014",
+        "F015",
+        "F016",
+        "F017",
+        "F018",
+        "F019",
+        "F020",
+        "F021",
+        "F022",
+        "F023",
+        "F024",
+        "F025",
+        "F027",
+        "F030",
+        "F031",
+        "F036",
+        "F037",
+        "F038",
+        "F048",
+        "F051",
+        "F055",
+        "F056",
+        "F074",
+        "F075",
+        "F077",
+        "F099",
+        "F105",
+        "F107",
+        "F112",
+        "F115",
+        "F120",
+        "F122",
+        "F123",
+        "F124",
+        "F148",
+        "F149",
+        "F195",
+        "F243",
+        "F244",
+        "F245",
+        "F246",
+        "F249",
+        "F250",
+        "F255",
+        "F256",
+        "F257",
+        "F263",
+        "F267",
+        "F270",
+        "F274",
+        "F275",
+        "F293",
+        "F294",
+        "F297",
+        "F298",
+        "F319",
+        "F325",
+        "F327",
+        "F332",
+        "F335",
+        "F347",
+        "F349",
+        "F350",
+        "F351",
+        "F354",
+        "F377",
+        "F378",
+        "F383",
+        "F385",
+        "F386",
+        "F388",
+        "F389",
+        "F391",
+        "F393",
+        "F396",
+        "F398",
+        "F399",
+        "F400",
+        "F401",
+        "F403",
+        "F404",
+        "F405",
+        "F410",
+        "F413",
+        "F415",
+        "F417",
+        "F418",
+        "F420",
+        "F422",
+        "F425",
+        "F427",
+        "F428",
+        "F429",
+        "F430",
+        "F432",
+        "F433",
+        "F434",
+        "F436",
+        "F437",
+        "F438",
+        "F440",
+        "F446",
+        "F448",
+        "F450",
+        "F451",
+        "F452",
+        "F453",
+        "F454",
+        "F455",
+        "F456",
+        "F457",
+        "F458",
+        "F459",
+        "F460",
+        "F461",
+        "F462",
+        "F463",
+        "F464",
+        "F465",
+        "F466",
+        "F467",
+        "F468",
+        "F469",
+        "F470",
+        "F471",
+        "F472"
+      ],
+      "scope": "SB2 built for Android, its activity/import, touch and keyboard hooks."
     }
   ]
 }
