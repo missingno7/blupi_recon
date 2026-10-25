@@ -115,10 +115,13 @@ def main(argv=None):
             if other_path.is_file():
                 other = json.loads(other_path.read_text(encoding="utf-8"))
                 same_image = other["image"]["sha256_without_timestamps"] == record["image"]["sha256_without_timestamps"]
-                same_objects = all(other["objects"][k]["sha256_without_timestamp"] == v["sha256_without_timestamp"]
+                same_objects = all(other["objects"][k]["sections_sha256"] == v["sections_sha256"]
                                    for k, v in record["objects"].items())
-                row["reproducible"] = "yes (apart from timestamp fields)" if same_image and same_objects else "NO"
-                if row["reproducible"] == "NO":
+                row["reproducible"] = ("yes: image equal apart from timestamp fields, object sections equal"
+                                       if same_image and same_objects else
+                                       f"NO (image {'equal' if same_image else 'differs'}, "
+                                       f"objects {'equal' if same_objects else 'differ'})")
+                if row["reproducible"].startswith("NO"):
                     problems.append(f"{name}: differs from {other_path}")
             else:
                 row["reproducible"] = "not compared"

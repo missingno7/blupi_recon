@@ -177,9 +177,20 @@ def reproducible_digest(data, offsets):
     return hashlib.sha256(data).hexdigest()
 
 
-def object_digest(path):
-    """An object's SHA-256 without its COFF header TimeDateStamp (bytes 4..8)."""
-    return reproducible_digest(Path(path).read_bytes(), [4])
+def object_sections_digest(path):
+    """SHA-256 over an object's section names and raw contents (code and data).
+
+    Excludes the COFF header TimeDateStamp and the symbol table, whose .file record holds the absolute
+    source path, so equal digests mean equal compiled bytes from different checkouts or times."""
+    data = Path(path).read_bytes()
+    count, optional = int.from_bytes(data[2:4], "little"), int.from_bytes(data[16:18], "little")
+    result = hashlib.sha256()
+    for index in range(count):
+        header = 20 + optional + 40 * index
+        size = int.from_bytes(data[header + 16:header + 20], "little")
+        pointer = int.from_bytes(data[header + 20:header + 24], "little")
+        result.update(data[header:header + 8] + size.to_bytes(4, "little") + (data[pointer:pointer + size] if pointer else b""))
+    return result.hexdigest()
 
 
 def load_pins():
@@ -320,7 +331,7 @@ def build(spec, out, allow_unpinned=False):
         sources={u["source"]: dict(input=source_tree.resolve(manifest, u["source"]).relative_to(ROOT).as_posix(),
                                    sha256=digest(source_tree.resolve(manifest, u["source"]))) for u in units},
         historical_paths=historical_paths, compile_commands=compile_commands,
-        objects={k: dict(path=str(v), sha256=digest(v), sha256_without_timestamp=object_digest(v))
+        objects={k: dict(path=str(v), sha256=digest(v), sections_sha256=object_sections_digest(v))
                  for k, v in objects.items()},
         resources=dict(script=script.relative_to(ROOT).as_posix() if script else None, status=resource_status,
                        res_sha256=digest(res_files[0]) if res_files else None),
