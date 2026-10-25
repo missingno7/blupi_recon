@@ -259,6 +259,8 @@
     "docs/research/SB1_STATUS_2026-10-19.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/AGENTS.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/README.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
+    "port/android/app/src/main/AndroidManifest.xml": "Android platform glue with no historical counterpart: network permissions and the Wi-Fi multicast lock for LAN discovery (port/docs/MULTIPLAYER.md); the SDL activity and launcher manifest.",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/BlupiActivity.java": "Android platform glue with no historical counterpart: network permissions and the Wi-Fi multicast lock for LAN discovery (port/docs/MULTIPLAYER.md); the SDL activity and launcher manifest.",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "Android launcher/import UI with no historical counterpart. GameFolder mirrors the native common/app/launcher.cpp RecognizesData rule (SB1 marker DATA/DEMO200.BLP); desktop ctest android_game_folder.",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/SetupActivity.java": "Android launcher/import UI with no historical counterpart. GameFolder mirrors the native common/app/launcher.cpp RecognizesData rule (SB1 marker DATA/DEMO200.BLP); desktop ctest android_game_folder.",
     "port/docs/ARCHITECTURE.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
@@ -321,6 +323,8 @@
     "games/sb2/src/texttables.h": "31e799b15ab5c5e724ff96b87f831c40fae3161538e631b4971ccc1f586343f0",
     "games/sb2/src/wave.h": "6a633e098262a84f53387feda19df52fdb76a0c3c804d5e9f97a56610970a992",
     "port/CMakeLists.txt": "f56630a1787314731a365962b2bf661ff047a804b1a538198ba9ec3dad59f0ce",
+    "port/android/app/src/main/AndroidManifest.xml": "8c17697177036fdabf56fc980da139420ec1543d52463d5c2ea0c7d1c88cd183",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/BlupiActivity.java": "402880af4d2a26df397d4f5a3e012fb86b68311e513800f60427e9a8c6db369d",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "f122bdcdc3bf6cd0d42ffcd989bd0c056a06c0bd72dd49679d4a541bbd9fdef3",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/SetupActivity.java": "a89446dda59d174ee39c819024782a25458a7ff4ca17ec9426ed7caa1468719d",
     "port/common/app/launcher.cpp": "f9da3d14228b8e9beb9801d3ab99d88a7a787b4a6d6e9a65c10aaedae61fb158",
@@ -341,8 +345,8 @@
     "port/common/compat/include/windowsx.h": "ae97f1d92824184c876762d9707b8761ce36ba371c5783f4919fd3ac589f8852",
     "port/common/compat/src/hist_stdio.cpp": "f359ad9fd0dfacd5a0c149ae9021b29a319a012e320938a37230475a155c5e72",
     "port/common/compat/src/win32.cpp": "283938589f1e27fbf6948d6577d128ce956d7b0c279efc471ee4babb82427bab",
-    "port/common/net/session.cpp": "f9427a2569d944f47505d8f34e5b2903242080731c43e67c397277d699616bf6",
-    "port/common/net/session.h": "1aac2ac084de51f761a51b90f28222d17c428647aa71a936e5dba15fabd5f9a2",
+    "port/common/net/session.cpp": "faf0d49ecf83f0b60e3c434a58e99407942c112239cb4f2d474ef26364621207",
+    "port/common/net/session.h": "a59536bd67098fef0947019942c890a53a7950b0e61eff51f666122dbb2dd749",
     "port/common/platform/audio.cpp": "efe4312940a3b1918c7fb86f154200654356b7ced130b3f29a5b09697a105fdb",
     "port/common/platform/audio.h": "5ac7abe72761b98e46957eaecf54870ecdb202df387ec385502130b8827c2402",
     "port/common/platform/blupi_win.rc.in": "2efb42b605abf73ac18213988b34c55cc996f4f351127d21e29c51581ef6f7bc",
@@ -380,9 +384,9 @@
     "port/games/sb1/game/member_access.h": "2211c3cf5802d8fb7d306f128c3790e74975f39cab701fec9cbb79ea60b1233c",
     "port/games/sb1/game/misc.cpp": "70067d1195cb29dddb6041d5225a7c99719588e0435d1a817d072b6094077a88",
     "port/games/sb1/game/movie.cpp": "44e67f1e63474ac2e776fe24332925b25317566d6dbf912ec9886c375e245f33",
-    "port/games/sb1/game/network.cpp": "dbf30b7d6b012553bafe43711224b114aa696cb84b0a9c6510f5db7d83dc464b",
+    "port/games/sb1/game/network.cpp": "09fa95109fb75d7cb58d5a0fee3582dbc88750c4869709e536372a779b2a954f",
     "port/games/sb1/game/network_port.h": "9a1e42f9af83760f38aa379774ea471edfc94bdbda961a6872c08ec0e7b1817a",
-    "port/games/sb1/game/network_protocol.cpp": "d7b46d5bcfa63819423ee6fd6009c6313627f84e5e4018daa656a26e0a36c06c",
+    "port/games/sb1/game/network_protocol.cpp": "3de2360f0f4a0a951fa403a45e4373b7575d6f27d73cd5778e1f5f80ae4354b8",
     "port/games/sb1/game/network_protocol.h": "6866d28da7be665192226735e2ef4217e9da26fae22b86587c91ce9ddd74458b",
     "port/games/sb1/game/pixmap.cpp": "fbc84d371784f7d1c5beb489e7aaf0a439b7ba2e85aeb4aceb5f8492e3a78f01",
     "port/games/sb1/game/port_game.h": "43e51951b01b5b6327949a87f33ffe7fcbb95767f3ca9fc6d996d59d7ccec8f0",
@@ -3615,15 +3619,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: native multiplayer pilot (port/docs/MULTIPLAYER.md); reason/scope/tests rewritten for the native session",
+        "commit": "64f07b681cc2e89d7a5938c5827bd1bfdb9f5d81",
+        "disposition": "no port action: the shared session (port/common/net) gained cross-platform checks, content fingerprints and LAN discovery used only by SB1 CNetwork. Previous review (20699463be) stands.",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
           "port/games/sb1/game/network.cpp"
         ],
-        "evidence_scope": "net_sb1_protocol, net_transport, net_sb1_two_instances and the golden tour pass on Windows; scope as stated."
+        "evidence_scope": "Full Windows ctest passes (269/270 before this review: fidelity_map)."
       }
     },
     {
@@ -3748,8 +3749,8 @@
       "dependency_paths": [],
       "reason": "deliberate platform replacement: native UDP (ENet) session under the historical CNetwork contract instead of DirectPlay 5; star relay with host-assigned DPIDs; reliable/unreliable as the original flags; atomic validation before legacy buffers; host migration unsupported (host loss yields the original LEAVE/ABANDON paths); no DirectPlay interoperability",
       "proof_scope": [
-        "SB1 Blupi US data, two local instances on Windows (pilot): create, join, lobby, ready, start, play with replicated poses, lift synchro, object delete and sounds; repeatable traces",
-        "not covered: LAN discovery, more than two players, internet, Linux/Android receipts, host-loss through the game (transport level only)"
+        "SB1, two and four instances on one machine (Windows; two instances also Linux): lobby to play, replicated poses/lifts/objects/sounds, repeatable traces; LAN discovery and content refusal at transport level",
+        "not covered: real-network latency/loss, real devices (phone-desktop), host loss through the game, internet"
       ],
       "tests": [
         "ctest -R \"golden_(tour|options)\"",
@@ -3760,6 +3761,7 @@
         "fidelity_audio_buffers_sb2_eggbert",
         "fidelity_audio_inventory",
         "fidelity_audio_mixer",
+        "net_sb1_four_instances",
         "net_sb1_protocol",
         "net_sb1_two_instances",
         "net_transport"
@@ -3777,15 +3779,15 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: native multiplayer pilot (port/docs/MULTIPLAYER.md); reason/scope/tests rewritten for the native session",
+        "commit": "64f07b681cc2e89d7a5938c5827bd1bfdb9f5d81",
+        "disposition": "update port: cross-platform sessions: wire-layout static asserts, 64-bit content fingerprint (edition + multiplayer maps) in the envelope, LAN discovery on port + 1, four-member test lockstep; JOIN relayed to non-host members accepted as the original (event.cpp:4107)",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/network.cpp"
+          "port/common/net/session.cpp",
+          "port/common/net/session.h",
+          "port/games/sb1/game/network.cpp",
+          "port/games/sb1/game/network_protocol.cpp"
         ],
-        "evidence_scope": "net_sb1_protocol, net_transport, net_sb1_two_instances and the golden tour pass on Windows; scope as stated."
+        "evidence_scope": "net_transport, net_sb1_protocol, net_sb1_two_instances, net_sb1_four_instances pass on Windows."
       }
     },
     {
@@ -15978,6 +15980,15 @@
         "port/common/net/session.h": "1aac2ac084de51f761a51b90f28222d17c428647aa71a936e5dba15fabd5f9a2",
         "port/common/net/session.cpp": "f9427a2569d944f47505d8f34e5b2903242080731c43e67c397277d699616bf6"
       }
+    },
+    {
+      "commit": "64f07b681cc2e89d7a5938c5827bd1bfdb9f5d81",
+      "round": "cross-platform multiplayer",
+      "reviewed_edges": [
+        "F055",
+        "F056"
+      ],
+      "scope": "Wire guards, content handshake, LAN discovery, Android permissions/multicast lock, four players."
     }
   ]
 }
