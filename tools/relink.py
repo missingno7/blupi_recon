@@ -296,9 +296,10 @@ def main(argv=None):
     targets.add_argument(parser)
     args = parser.parse_args(argv)
     target = targets.load(args.target)
-    if not target.exe.is_file():
-        parser.error(f"target oracle is missing: {target.exe}")
-    target.check_exe()
+    if not args.standalone:
+        if not target.exe.is_file():
+            parser.error(f"target oracle is missing: {target.exe}")
+        target.check_exe()
     manifest = target.manifest()
     settings = manifest.get('standalone_link', {})
     tree, vc_root, shared_bin = toolchain_roots(manifest["toolchain"]["tree"])
