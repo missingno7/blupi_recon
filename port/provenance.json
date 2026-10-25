@@ -322,7 +322,7 @@
     "games/sb2/src/text.h": "aeb0b33c5615b70e70a67621d0b124ee34e986597ddab40c00b5b45d0294d3f0",
     "games/sb2/src/texttables.h": "31e799b15ab5c5e724ff96b87f831c40fae3161538e631b4971ccc1f586343f0",
     "games/sb2/src/wave.h": "6a633e098262a84f53387feda19df52fdb76a0c3c804d5e9f97a56610970a992",
-    "port/CMakeLists.txt": "f56630a1787314731a365962b2bf661ff047a804b1a538198ba9ec3dad59f0ce",
+    "port/CMakeLists.txt": "04212f5148a9a69fa93701c2221027032a38f151a8a675eb7acff86d80f06c55",
     "port/android/app/src/main/AndroidManifest.xml": "8c17697177036fdabf56fc980da139420ec1543d52463d5c2ea0c7d1c88cd183",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/BlupiActivity.java": "402880af4d2a26df397d4f5a3e012fb86b68311e513800f60427e9a8c6db369d",
     "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "f122bdcdc3bf6cd0d42ffcd989bd0c056a06c0bd72dd49679d4a541bbd9fdef3",
@@ -349,7 +349,7 @@
     "port/common/net/session.h": "a59536bd67098fef0947019942c890a53a7950b0e61eff51f666122dbb2dd749",
     "port/common/platform/audio.cpp": "efe4312940a3b1918c7fb86f154200654356b7ced130b3f29a5b09697a105fdb",
     "port/common/platform/audio.h": "5ac7abe72761b98e46957eaecf54870ecdb202df387ec385502130b8827c2402",
-    "port/common/platform/blupi_win.rc.in": "2efb42b605abf73ac18213988b34c55cc996f4f351127d21e29c51581ef6f7bc",
+    "port/common/platform/blupi_win.rc.in": "1b186a7f697dbf582a185770c4b92abf0ef2d85c744e9b75ed12d36d0e886341",
     "port/common/platform/entry.cpp": "851f84e210d02d21bd636f57a62e4772e041b7cf6191c52c96f06927ecdb0260",
     "port/common/platform/host.cpp": "bee32fa9c6c483000c2e5c1727779864abc8fee9e7f0b80f281e762f01c421c4",
     "port/common/platform/host.h": "6d1c754b18cde1554202b5db887510c31aa37288b143f1ba7db1f761b6db4be6",
@@ -397,7 +397,7 @@
     "port/games/sb1/game/settings.h": "1f2b373625490a727d7b28932b69cc4c47b7b64a8c3e3b3a497b7d6f452e440c",
     "port/games/sb1/game/sound.cpp": "1124c8a5b38881299353fb59396e946f446133e7a34f3c633e93ee962632e6be",
     "port/games/sb1/game/state_hash.cpp": "8391ee8689b639305ba2422df6c889bbe6791fe4628c0d4b90ee32298c1f24e5",
-    "port/games/sb2/CMakeLists.txt": "54213d3ca36eecfd5b6b8bb382e23dd3320b9b408ded4f59db76f799562768a0",
+    "port/games/sb2/CMakeLists.txt": "896f7f99c6244c1d80712e8e380eb27ef70a6f3f1146b69d740fa06f349230ec",
     "port/games/sb2/game/editor_wide.cpp": "9abfb871db5ad33e69592e0f3f0c650aa1e15fe233924e7ac22866fa052fb4d7",
     "port/games/sb2/game/end_of_tick.cpp": "cdacfb1263c1aa8bf08a1640c42be6bb56b9e1ea5814e260433f40d225cdc60d",
     "port/games/sb2/game/event.cpp": "2c1c09d5624488f999000faef303415bcaa9a2ea056e99a40e8ea7676d810936",
@@ -566,14 +566,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -659,14 +659,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -751,14 +751,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -843,14 +843,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -935,14 +935,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1027,14 +1027,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1119,14 +1119,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1211,14 +1211,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1303,14 +1303,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1396,14 +1396,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1488,14 +1488,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1581,14 +1581,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1664,14 +1664,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1748,14 +1748,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1831,14 +1831,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1914,14 +1914,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -1997,14 +1997,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2080,14 +2080,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2163,14 +2163,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2246,14 +2246,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2330,14 +2330,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2413,14 +2413,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2497,14 +2497,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2601,15 +2601,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2699,15 +2698,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2792,15 +2790,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2893,15 +2890,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -2989,15 +2985,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -3091,14 +3086,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -3201,14 +3196,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -3293,14 +3288,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -3405,14 +3400,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -3497,14 +3492,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -3619,12 +3614,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "64f07b681cc2e89d7a5938c5827bd1bfdb9f5d81",
-        "disposition": "no port action: the shared session (port/common/net) gained cross-platform checks, content fingerprints and LAN discovery used only by SB1 CNetwork. Previous review (20699463be) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
-          "port/games/sb1/game/network.cpp"
+          "port/CMakeLists.txt",
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes (269/270 before this review: fidelity_map)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (64f07b681c) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -3779,15 +3776,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "64f07b681cc2e89d7a5938c5827bd1bfdb9f5d81",
-        "disposition": "update port: cross-platform sessions: wire-layout static asserts, 64-bit content fingerprint (edition + multiplayer maps) in the envelope, LAN discovery on port + 1, four-member test lockstep; JOIN relayed to non-host members accepted as the original (event.cpp:4107)",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
-          "port/common/net/session.cpp",
-          "port/common/net/session.h",
-          "port/games/sb1/game/network.cpp",
-          "port/games/sb1/game/network_protocol.cpp"
+          "port/CMakeLists.txt",
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "net_transport, net_sb1_protocol, net_sb1_two_instances, net_sb1_four_instances pass on Windows."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (64f07b681c) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -3916,14 +3912,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -4020,14 +4016,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -4152,14 +4148,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -4252,14 +4248,14 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -4351,14 +4347,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       },
       "split_from": "F099"
     },
@@ -4467,14 +4463,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       },
       "split_from": "F099"
     },
@@ -4568,14 +4564,14 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -4691,14 +4687,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       },
       "split_from": "F105"
     },
@@ -4788,14 +4784,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -4903,14 +4899,14 @@
         "Resolve or explicitly classify failed-ReadData retained-buffer ownership, real device creation/failure propagation and historical COM/external device lifetime; do not infer these from successful offline loading/cleanup."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -5005,14 +5001,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -5137,14 +5133,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -5235,14 +5231,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -5579,14 +5575,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -5662,14 +5658,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -5754,14 +5750,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -5842,14 +5838,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -5925,14 +5921,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6008,14 +6004,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6099,14 +6095,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6186,14 +6182,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6278,14 +6274,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6376,14 +6372,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6459,14 +6455,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6542,14 +6538,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6645,14 +6641,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6728,14 +6724,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6837,14 +6833,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -6952,14 +6948,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -7077,14 +7073,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -7176,14 +7172,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -7264,14 +7260,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -7403,14 +7399,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -7494,14 +7490,14 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -7584,14 +7580,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       },
       "split_from": "F319"
     },
@@ -7691,14 +7687,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       },
       "split_from": "F319"
     },
@@ -7783,14 +7779,14 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -7897,14 +7893,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       },
       "split_from": "F325"
     },
@@ -7989,14 +7985,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -8099,14 +8095,14 @@
         "F353: test or explicitly classify actual audio device initialization/failure propagation separately from always-successful logical CSound::Create."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -8223,14 +8219,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       },
       "split_from": "F349"
     },
@@ -8311,14 +8307,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -8431,14 +8427,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -8524,14 +8520,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -8648,15 +8644,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -8742,14 +8737,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -8843,14 +8838,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -8940,14 +8935,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -9032,14 +9027,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -9127,14 +9122,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -9228,14 +9223,14 @@
         "Multi-cell drag sequences, arbitrary pre-existing world/lift state and host/toolbar routing remain outside this bounded handler matrix."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       },
       "verified_scope": {
         "targets": [
@@ -9355,15 +9350,14 @@
         "Capture complete m_players before NetSendLobby's raw copy; no successful-network dynamic proof is available in the port. Failed initial SavePalette/AVI restore remains a separate service-failure scope."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -9449,14 +9443,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -9544,14 +9538,14 @@
         "Trace rebuilt MCI open/play/stop/close/notify ordering and port events; separately document SoundFont/timbre/level policy and one-song limit."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -9638,15 +9632,14 @@
         "Add bounded SDL focus/lifecycle fixture and compare message/state sequence to rebuilt game; no original execution."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -9731,15 +9724,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -9837,14 +9829,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -9930,14 +9922,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10014,14 +10006,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10133,14 +10125,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10217,14 +10209,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10326,14 +10318,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10414,14 +10406,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10497,14 +10489,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10583,14 +10575,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10674,14 +10666,14 @@
         "Expand coverage separately for world-content variations, multi-cell drags and toolbar/host routing before claiming those scopes."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10782,14 +10774,14 @@
         "Capture complete m_players before NetSendLobby's raw copy; no successful-network dynamic proof is available in the port. Failed initial SavePalette/AVI restore remains a separate service-failure scope."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10866,14 +10858,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -10961,14 +10953,14 @@
         "Trace rebuilt real MCI open/play/stop/close/notify timing and late abort/new-song or overlapping-device cases; keep synth timbre, gain and one-song policy explicit."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11046,14 +11038,14 @@
         "Add bounded SDL focus/lifecycle fixture and compare message/state sequence to rebuilt game; no original execution."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11129,14 +11121,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11225,14 +11217,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11309,14 +11301,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11415,14 +11407,14 @@
         "Internal assignment-by-assignment order, same-TU call interception, real network transport and untested states remain outside this bounded receipt."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11508,14 +11500,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11605,14 +11597,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11685,14 +11677,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11770,14 +11762,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -11957,14 +11949,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -12100,14 +12092,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (083944a552) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -12183,14 +12175,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -12333,14 +12325,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -12425,15 +12417,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -12511,14 +12502,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -12609,15 +12600,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "update port: SB1 main.cpp configures the network audit and services the session in prepareTick; no effect without a session. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h",
-          "port/games/sb1/game/main.cpp"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest; the SB1 tour/options golden change is the provider list (m_nbFiles), port/docs/ORACLE.md."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -12720,14 +12710,14 @@
         "A separate demo port edition needs its own catalog, source review and tests before support can be claimed."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -12841,14 +12831,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -12991,14 +12981,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -13141,14 +13131,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -13270,14 +13260,14 @@
         "Storage exhaustion and OS close-failure behavior remain outside the tested contract; saved-game interchange remains F472."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -13391,14 +13381,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -13547,14 +13537,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -13685,14 +13675,14 @@
         "Real device initialization/loss, callback scheduling/concurrency and historical resampling transients/aliasing remain outside the offline proof; MIDI timbre and device timing are intentional differences."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -13801,14 +13791,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -13975,14 +13965,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -14149,14 +14139,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -14270,14 +14260,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -14403,14 +14393,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -14518,14 +14508,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -14769,14 +14759,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -14884,12 +14874,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5d7df34b192bf374892a4ae9afc97e2f0d975bee",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
-          "port/games/sb1/game/state_hash.cpp"
+          "port/CMakeLists.txt",
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "disposition": "update port (test diagnostics): the SB1 state hash reads NetMessage::data1 as the network adapter sends it (uninitialised in the host lift synchro, src/decmove.cpp); no game code change; every golden unchanged. Previous review (20699463be) stands.",
-        "evidence_scope": "Windows full ctest; Linux field dumps showed only CDecor::m_netMessages differing between runs."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (5d7df34b19) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -14983,14 +14975,14 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -15081,14 +15073,14 @@
         "Capture rebuilt intro and exceptional read/cache recovery paths, plus non-English historical rendered pixels, under separately authorized runtime fixtures; resource consistency and port-native/reference menus do not prove these scopes."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       }
     },
     {
@@ -15225,14 +15217,14 @@
         "Historical timer/click scheduling remains nondeterministic; retain DIFFERENT receipts and investigate rather than aligning or masking them."
       ],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
         "changed_paths": [
           "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/common/platform/blupi_win.rc.in",
+          "port/games/sb2/CMakeLists.txt"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "no port action: release version handling only (pre-release suffix in the shown version, number in CMake/FILEVERSION). Previous review (20699463be) stands.",
+        "evidence_scope": "Build configuration; no game, platform or test code changed."
       },
       "verified_scope": {
         "targets": [
@@ -15989,6 +15981,152 @@
         "F056"
       ],
       "scope": "Wire guards, content handshake, LAN discovery, Android permissions/multicast lock, four players."
+    },
+    {
+      "commit": "0eb9f79a8f104a526437d3c6ec30885e9ceadf46",
+      "round": "release 1.2.0-rc1",
+      "reviewed_edges": [
+        "F001",
+        "F002",
+        "F003",
+        "F004",
+        "F005",
+        "F006",
+        "F007",
+        "F008",
+        "F009",
+        "F010",
+        "F011",
+        "F012",
+        "F013",
+        "F014",
+        "F015",
+        "F016",
+        "F017",
+        "F018",
+        "F019",
+        "F020",
+        "F021",
+        "F022",
+        "F023",
+        "F024",
+        "F025",
+        "F027",
+        "F030",
+        "F031",
+        "F036",
+        "F037",
+        "F038",
+        "F048",
+        "F051",
+        "F055",
+        "F056",
+        "F074",
+        "F075",
+        "F077",
+        "F099",
+        "F105",
+        "F107",
+        "F112",
+        "F115",
+        "F120",
+        "F122",
+        "F123",
+        "F124",
+        "F148",
+        "F149",
+        "F195",
+        "F243",
+        "F244",
+        "F245",
+        "F246",
+        "F249",
+        "F250",
+        "F255",
+        "F256",
+        "F257",
+        "F263",
+        "F267",
+        "F270",
+        "F274",
+        "F275",
+        "F293",
+        "F294",
+        "F297",
+        "F298",
+        "F319",
+        "F325",
+        "F327",
+        "F332",
+        "F335",
+        "F347",
+        "F349",
+        "F350",
+        "F351",
+        "F354",
+        "F377",
+        "F378",
+        "F383",
+        "F385",
+        "F386",
+        "F388",
+        "F389",
+        "F391",
+        "F393",
+        "F396",
+        "F398",
+        "F399",
+        "F400",
+        "F401",
+        "F403",
+        "F404",
+        "F405",
+        "F410",
+        "F413",
+        "F415",
+        "F417",
+        "F418",
+        "F420",
+        "F422",
+        "F425",
+        "F427",
+        "F428",
+        "F429",
+        "F430",
+        "F432",
+        "F433",
+        "F434",
+        "F436",
+        "F437",
+        "F438",
+        "F440",
+        "F446",
+        "F448",
+        "F450",
+        "F451",
+        "F452",
+        "F453",
+        "F454",
+        "F455",
+        "F456",
+        "F457",
+        "F458",
+        "F459",
+        "F460",
+        "F461",
+        "F462",
+        "F463",
+        "F464",
+        "F465",
+        "F466",
+        "F467",
+        "F468",
+        "F469",
+        "F470",
+        "F471",
+        "F472"
+      ],
+      "scope": "Version string handling for a pre-release suffix."
     }
   ]
 }
