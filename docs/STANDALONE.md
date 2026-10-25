@@ -12,10 +12,14 @@ build dependencies. Capstone is needed for verification.
 .\.pyenv\python.exe tools/build.py
 ```
 
-Output: `build/standalone/BLUPI.EXE`, map, logs, `build.json` and `image.json`.
-Explicit link settings are recorded in `recon.json:standalone_link`. The gate
-says NOT_RUN because building does not read an oracle. The existing sound
-build-path helper may require running outside the sandbox. Playing would still
+[UPDATED 2026-10-25] The ordinary build now covers all 14 targets, and each writes to its own
+`build/standalone/<target-slug>/`. The current commands, requirements, outputs and reproducibility
+results are in [BUILDING.md](BUILDING.md). The original 2026-10-19 baseline follows; the output
+paths in it have since changed.
+
+Output (2026-10-19): `build/standalone/BLUPI.EXE`, map, logs, `build.json` and `image.json`.
+Explicit link settings are recorded in `recon.json:standalone_link`. The build reads no oracle.
+The existing sound build-path helper may require running outside the sandbox. Playing would still
 require level, graphics and sound assets. No game executable is run by the build.
 
 ## Accepted behavioral tier

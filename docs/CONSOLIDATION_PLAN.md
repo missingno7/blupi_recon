@@ -1,7 +1,15 @@
 # Consolidation plan (Priority 5) — for review
 
 2026-10-25, branch `sb2-matching`, HEAD `5711f29`. Status: **PROPOSAL**. Nothing below has been moved,
-renamed or deleted. It is based on three read-only audits, whose reports keep the file-level
+renamed or deleted.
+
+[UPDATED 2026-10-25] The user approved the plan, and stage 1 is **done**: commits `5be3032`,
+`d0ad80e` and `a4a2352`, with [BUILDING.md](BUILDING.md).
+
+- All 14 targets build without the original executables, from a pruned clean export.
+- The verify and relink gates for all 14 targets are unchanged.
+
+Stage 2 (documentation) follows. It is based on three read-only audits, whose reports keep the file-level
 evidence (ignored scratch):
 
 - `scratch/w-consolbuild/REPORT.md`: builds, tooling inventory, and a clean-export test.

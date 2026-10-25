@@ -178,6 +178,7 @@
     ]
   },
   "not_relevant": {
+    ".github/workflows/fidelity.yml": "Fidelity gate infrastructure; requires human tooling review, no historical gameplay counterpart.",
     "docs/ALLOCATOR.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/ANCESTRY_PLANETBLUPI.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/ANCESTRY_SB2.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
@@ -185,9 +186,11 @@
     "docs/BLOCKER_CHECKS.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/BLOOD2_TRANSFER.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/BLUPI_TU.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "docs/BUILDING.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/BUILD_PATH.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/C1_IL.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/COMPILER_STUDY.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "docs/CONSOLIDATION_PLAN.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/CONTEXT_REVISIT.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/CORE_CLUSTER.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/DATA_LAYOUT.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
@@ -250,6 +253,8 @@
     "docs/UI_CLUSTER.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/WORKFLOW.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "docs/experiments/FIFO_LIBORDER.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "port/AGENTS.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
+    "port/README.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/docs/ARCHITECTURE.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/docs/FIDELITY.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/docs/LANGUAGES.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
@@ -258,11 +263,8 @@
     "port/docs/RELEASING.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/docs/ROADMAP.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/docs/SB2_PORT.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
-    "port/AGENTS.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
-    "port/README.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
-    "port/tools/check_fidelity.py": "Fidelity gate infrastructure; requires human tooling review, no historical gameplay counterpart.",
-    ".github/workflows/fidelity.yml": "Fidelity gate infrastructure; requires human tooling review, no historical gameplay counterpart.",
-    "port/oracle/SB1_SAVE.md": "Save-capture procedure/results documentation; runtime proof is scoped and hash-pinned in F472 evidence, with no executable implementation content."
+    "port/oracle/SB1_SAVE.md": "Save-capture procedure/results documentation; runtime proof is scoped and hash-pinned in F472 evidence, with no executable implementation content.",
+    "port/tools/check_fidelity.py": "Fidelity gate infrastructure; requires human tooling review, no historical gameplay counterpart."
   },
   "reviewed_files": {
     ".github/workflows/fidelity.yml": "9bc65b9ac4718df5443e692ffd0d3aae8b27b434ad8e52ff96f2457a520b020f",
