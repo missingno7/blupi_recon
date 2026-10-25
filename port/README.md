@@ -183,6 +183,11 @@ SoundFont only when `--soundfont` is given. The music volume is the game's own o
 
 ## Status (2026-10-22)
 
+[SNAPSHOT] The current port status is in [docs/STATUS.md](../docs/STATUS.md) under "SDL3 port". That
+covers the latest test totals, the SB2 port, fidelity-map counts and the unavailable services, of which
+**multiplayer is a required upcoming milestone** ([docs/ROADMAP.md](docs/ROADMAP.md), stage 10).
+The receipts below are those of 2026-10-22.
+
 Verified ([EVIDENCE], reproduced by the commands above):
 
 - **Bit-identical to the historical rebuild.** The cross-build oracle compares every displayed

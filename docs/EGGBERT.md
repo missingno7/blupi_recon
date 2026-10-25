@@ -62,6 +62,10 @@ reconstruction builds both, and what it means for the port. Static reads only (2
 
 ## Matching
 
+[SNAPSHOT, superseded] The fresh accepted coverage (2026-10-25, `tools/target_coverage.py`) is
+**123,088 / 141,328** for every language, with 3 EQUIVALENT (15,360 B). See [STATUS.md](STATUS.md). The
+table below is 32 bytes higher, an earlier state.
+
 | Target | Strict bytes | Notes |
 |---|---|---|
 | `sb1/eggbert/en` | 123,120 / 141,328 | `_EGAMES`; WindowProc and DoInit excluded |

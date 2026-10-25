@@ -34,6 +34,10 @@ Faithful mode first (640x480, original timing and colour depths); enhancements l
 
 ## M1/M2 implementation and evidence (2026-10-23)
 
+[SNAPSHOT] The test totals in this section (100/100, 116/116) and the later 199/210 counts are
+milestone receipts from their dates. The current suite total is in
+[docs/STATUS.md](../../docs/STATUS.md).
+
 | Milestone | Status |
 |---|---|
 | M1 build | Done: the mingw-x64 Ninja preset builds `blupi` and `blupi2` (supervisor run, 2026-10-23). |

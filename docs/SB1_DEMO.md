@@ -12,6 +12,16 @@ language. The static oracle is `assets/downloads/openeggbert/Speedy_Blupi_Demo/e
 
 ## Target and toolchain
 
+[EVIDENCE, 2026-10-25] Two fresh figures with different denominators:
+
+| Figure | Value | Source |
+|---|---|---|
+| Accepted-manifest coverage | **73,248 / 140,784** (372 STRICT + 3 FOLDED) | `tools/target_coverage.py` |
+| STRICT emitted by the verifier | 89,296 | `tools/verify.py --target sb1/blupi/demo`, all TUs |
+
+The demo-only STRICT bodies are verified but not promoted into an accepted record, because the
+demo is an evidence-only target. The figures below are earlier snapshots.
+
 [EVIDENCE] The ordinary verifier works with `--target sb1/blupi/demo`. The effective manifest has
 375 expectations, including the demo's differently mangled `CPixmap::Create`. Fresh verification
 has no accepted regression and covers **76,768 / 140,784** bytes in this sandbox; the historical

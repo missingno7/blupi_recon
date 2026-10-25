@@ -151,7 +151,8 @@ tables in address order +123 `.data` bytes but lose Eggbert 2's GetBlupiInfo; SB
 form; TreatEventBase: 10 natural forms, no change. The experiments explain the pattern (two source revisions,
 local optima) but not the missing source.
 
-**D. Editions.** Eggbert 2 primary, Blupi 2 a protected secondary (policy above) works; its first use gave
+**D. Editions.** [SUPERSEDED 2026-10-24 by the independent-target policy and the `games/sb2/blupi/`
+overlay, section 11.] Eggbert 2 primary, Blupi 2 a protected secondary (policy above) works; its first use gave
 +112 STRICT bytes. A source split per edition is not justified: the evidenced edition differences are
 invisible declaration context, so a split would have to invent it.
 
@@ -831,7 +832,9 @@ wrong `decor.h`. Targets without overlays keep their original paths. `verify.py`
 `equivalence_target.py` consume logical TU identities and objects, rather than resolving source
 files; their checks need no change. SB1 and the SDL3 port retain their source trees.
 
-[EVIDENCE] Accepted coverage, counted independently by `target_coverage.py`:
+[EVIDENCE] Accepted coverage at the overlay integration, counted independently by `target_coverage.py`.
+[SNAPSHOT] Later rounds changed Blupi 2. As of 2026-10-25 it has 452 STRICT + 5 FOLDED, 122,240 bytes,
+and 9 EQUIVALENT (50,800 B); Eggbert 2 is unchanged. See [STATUS.md](STATUS.md).
 
 | Executable | Before STRICT / FOLDED / bytes | After STRICT / FOLDED / bytes | EQUIVALENT after |
 |---|---:|---:|---:|

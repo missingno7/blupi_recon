@@ -1,107 +1,171 @@
-# Status: Speedy Blupi 1 matching reconstruction (2026-10-19)
+# Status
 
-[EVIDENCE, 2026-10-20] Broader-context revisit: 40 full-event-TU controls, a VC4.2
-fingerprint and controlled LINK 7351 comparison yield no new STRICT match.
-Tested shared tails and earlier network/input forms do not explain the register
-residue. Full VC5 SP1 was subsequently obtained via the user's old-dos.ru link:
-its C1XX/C2, LINK and LIBC are byte-identical to the tested SP2 components. The
-SP1 compiler-version inventory gap is closed; it supplies no new strict match.
-See [CONTEXT_REVISIT.md](CONTEXT_REVISIT.md).
+The single current status page for every historical executable and the SDL3 port, as of
+**2026-10-25** on branch `sb2-matching`. Each figure is marked **fresh** (re-run for this page) or
+**doc** (taken from the cited document). Progress is reported per executable; no figure here is a
+combined metric. The previous SB1-only page is preserved as
+[research/SB1_STATUS_2026-10-19.md](research/SB1_STATUS_2026-10-19.md).
 
-[EVIDENCE] Recovery cleanup is complete: 24.494 GiB of obsolete experiments moved
-to `to_delete/`, leaving a 1.127 GiB active working set. The playable folder and
-verified build remain; research inputs are deduplicated in a 187.7 MiB local
-archive. See [RECOVERY_MILESTONE.md](RECOVERY_MILESTONE.md) for scope and checks.
+The four kinds of milestone below are independent claims:
 
-[EVIDENCE] Complete standalone source build validated without assets, oracle maps or the original EXE.
-`CEvent::ChangePhase` and `CEvent::TreatEventBase` are now accepted as **EQUIVALENT** under pinned static
-equivalence certificates, independently of STRICT. All strict peers still pass. See [STANDALONE.md](STANDALONE.md).
-[OPEN] Remaining strict bytes and whole-image layout are deferred pending new evidence; they do not block
-continuing from this source baseline. A bounded cnc-ddraw smoke test reaches the first playable level and exits
-cleanly ([RUNTIME.md](RUNTIME.md)); this does not establish full-game runtime equivalence.
+- STRICT coverage;
+- EQUIVALENT certificates;
+- whole-image identity;
+- port fidelity.
 
-[EVIDENCE] Milestone accepted by the user after manual play (2026-10-19): the game
-looks good. Remaining strict-match and linker-layout research is parked; the
-complete source-build baseline, two EQUIVALENT certificates and runtime harness
-are ready for subsequent work. Color depth is an explicit runtime option (8/16),
-with the harness default corrected to 16 to match the supplied original settings.
+A built executable is none of them ([BUILDING.md](BUILDING.md)).
 
-Strict acceptance is unchanged: only STRICT counts, and every canonical change passed `tools/verify.py` with zero
-accepted regressions. CDecor::Build became STRICT on 2026-10-19 (docs/RESIDUAL_CAUSES.md, "Build STRICT").
+## 1. Function matching: STRICT
 
-## Where it stands
+Fresh: `tools/target_coverage.py --target <t>` over the accepted manifests. The bytes are unique game
+`.text` bytes; FOLDED bodies count once, under their owner.
 
-| Area | State |
-|---|---|
-| Game code | 127,456 / 141,488 bytes STRICT (90.1 %). Every game function is STRICT or FOLDED except two. |
-| Behavioral exceptions | 2 EQUIVALENT functions; 16 differing aligned instructions remain deferred strict work (3,907 / 3,923) |
-| `.rsrc`, `.data`, file size, `.text` size, timestamp | `.rsrc` exact; `.data` 1 differing byte in a CRT pointer; file and `.text` sizes equal the oracle; timestamp equal under the historical host (fresh check: docs/BLOCKER_CHECKS.md) |
-| Whole image (canonical historical relink) | 121,401 differing bytes, almost all a +16 shift from LINK keeping a different copy of a folded empty function (ICF survivor), plus the CRT filter survivor, import order and the open functions |
+| Executable | Target(s) | STRICT + FOLDED records | STRICT bytes / game .text |
+|---|---|---:|---:|
+| Speedy Blupi 1 (1998), US | `sb1/blupi/us` (primary) | 407 + 6 | 127,456 / 141,488 (90.1%) |
+| Speedy Blupi 1, German | `sb1/blupi/de` | 407 + 6 | 127,456 / 141,488 (90.1%) |
+| Speedy Blupi 1, French | `sb1/blupi/fr` | 407 + 6 | 127,456 / 141,488 (90.1%) |
+| Speedy Eggbert 1 (1999) | `sb1/eggbert/en`, `de`, `es`, `fr`, `it`, `pt` (each) | 403 + 6 | 123,088 / 141,328 (87.1%) |
+| Speedy Blupi 1 June 1998 demo (evidence only) | `sb1/blupi/demo` | 372 + 3 | 73,248 / 140,784 (52.0%) |
+| Speedy Blupi 2 (2001) | `sb2/blupi/en`, `de`, `fr` (each) | 452 + 5 | 122,240 / 173,072 (70.6%) |
+| Speedy Eggbert 2 (2004) | `sb2/eggbert/en` | 450 + 12 | 136,448 / 172,992 (78.9%) |
 
-## The open functions
+Notes:
 
-| Function | Remaining | Cause (first divergent decision) | Proven by diagnostic | Source cause |
-|---|---|---|---|---|
-| CDecor::Build (0x4350) | STRICT (0 bytes, 1237/1237, 61/61 relocations) | A/B homes follow the animated-boundary reload order (0x40fbfa mode 1, ascending fragment ID); the IDs are popped by the first group split (0x437e67) in ascending member LR order from a batched LIFO free list | Forced extra drop at 0x41a6f8, or the reload swap: 0 bytes | [EVIDENCE] Solved: the big-decor Y start written as `tinyPoint.y = 0 - posDecor.y % DIMOBJY; tinyPoint.y += 2 - DIMOBJY;` interns A's NEG(y%64) identity before the quotient B, so A's web is walked first and B gets the lower fragment ID. |
-| CEvent::TreatEventBase (0x1d230) | 8 bytes, 1886/1894, register-only | One missing temp-rotor step at the rank-0 cheat toggle: early C2 backward reconstruction (0x40cbc8/0x40cd08) creates a short old-flag copy and 0x41ddfe folds it into the compare | Extra rotor assignment, or old-flag split: 0 bytes | [OPEN] Needs a copy that survives 0x41ddfe with the same MOV/XOR/TEST/SETcc. No STRICT function shows one (409 searched). Eliminated: toggle spellings, terminator forms, named/volatile/reference old values, clones, index reuse, else-if ranks, shared feedback. |
-| CEvent::ChangePhase (0x19310) | 32 bytes (8 instructions) | With the oracle's test order the pooled zero takes EBX before PLAY; zero's pool identity is fixed at 0x414ba6, before web partition; earlier groups keep 3/2/1 free colours | Zero-only cut of the three late zero reads: 0 bytes | [OPEN] Needs a separate late-zero component with PLAY connected through WriteInfo. Eliminated: condition-order families (canonical keeps a reordered guard as the closest form), flags, memset, mission arguments, renamed/copied results, counter epochs, shared two-consumer values, sign-mask test, shared failure tail. |
+- **The demo's verifier figure is higher.** Fresh, the verifier emits 89,296 STRICT bytes for the
+  demo. Its demo-only bodies are not promoted into accepted records, because the target is
+  evidence only (docs/SB1_DEMO.md).
+- **Earlier pages give the primary as "411 STRICT".** That is the verifier's emitted-record sum,
+  which counts repeated bodies; there are 407 unique accepted records.
 
-## What closed this phase (all canonical, zero regressions)
+## 2. EQUIVALENT certificates
 
-- Build STRICT: the big-decor Y start is two statements, the plain grid reset `0 - posDecor.y % DIMOBJY` and then
-  `+= 2 - DIMOBJY` (expression-identity order 0x42127d -> web LR order 0x416a40 -> fragment pop order 0x437e67 ->
-  boundary reload order 0x40fbfa -> stack homes 0x4367f0). Found by measuring the free-list counts directly
-  (`tools/c2trace/freelist.py`) after spelling and context sweeps proved the counts robust.
-- DrawButtons STRICT: loop-invariant title `pos.x = 330` with a separate number-label `POINT` (allocator cloning at
-  0x451ac3), and a named `int cutLength` (operand key order at 0x408d58).
-- Build 2,328 -> 8 bytes: `long screenY` with two real consumers (early forwarding 0x40b7b9; reproduces two of the three
-  diagnostic edits), and the reverse-moving loop written with the cursor in the for step and three `continue` guards
-  (changes the latch predecessor order and the allocator's region choice; the three-guard spelling keeps GetBlupiInfo's
-  symbol-ID window).
-- Method that worked: trace the actual compiler decision, find the earliest source-controllable input, confirm it in a
-  small file, then transfer. The wins came from real value relationships (a value with two consumers, a loop-invariant
-  field with a separate local, a named intermediate, loop control structure), never from spelling searches.
+Fresh. EQUIVALENT means static local behavioural equivalence under pinned certificate assumptions. It
+never counts as STRICT, and the byte status stays MISMATCH ([VERIFYING.md](VERIFYING.md)).
 
-## Linker side
+| Executable | Target-tier certificates | Bytes | Not covered by STRICT, FOLDED or EQUIVALENT |
+|---|---:|---:|---:|
+| SB1 US | 0 (the 2 standalone certificates are below) | 0 | 14,032 B |
+| SB1 German, French | 2 each: ChangePhase, TreatEventBase | 14,000 | 32 B |
+| Eggbert 1 (each language) | 3: ChangePhase, TreatEventBase, WindowProc | 15,360 | 2,880 B |
+| SB1 demo | 0 | 0 | 67,536 B |
+| Blupi 2 (each language) | 9 | 50,800 | 32 B |
+| Eggbert 2 | 4 | 36,304 | 240 B |
 
-- Import order (15/128), Rich count (268 vs 270) and the two ICF survivors depend on LINK's input population/order,
-  which the image does not identify. The historical MSVCRT qsort, comparator keys and extraction order are modelled
-  exactly (docs/LINK_ICF.md, docs/HISTLINK.md).
-- Experiment kept as evidence only (docs/experiments/FIFO_LIBORDER.md): Planet Blupi fifo.cpp as a REF-dead input plus
-  library order `kernel32 user32 gdi32 winmm dsound LIBC OLDNAMES ddraw dplayx` reproduces both ICF survivors and cuts the
-  whole-image difference to 40,288 bytes, but leaves the CRT -0x10 offset, Rich 269 and the import order unexplained.
-- LINK 5.10.7287 (Blood II's linker) is possible for Blupi: an EXE without exports records no linker build.
+- **SB1 US has two standalone certificates.** ChangePhase (6,928 B) and TreatEventBase (7,072 B)
+  are checked by `tools/equivalence.py` on every primary verify, and both passed fresh on
+  2026-10-25 ([STANDALONE.md](STANDALONE.md)). `equivalence_target.py` intentionally declares no
+  target tier for the primary. Of the 14,032 uncovered bytes, 14,000 are these two functions; the
+  rest are 32 bytes of DirectX import thunks and padding.
+- **The 32-byte remainders** of SB1 German/French and Blupi 2 are that same linker output.
+- **Eggbert 1's remaining bytes** include DoInit (relocations verified, raw comparator
+  RELOC-UNVERIFIED).
+- **Eggbert 2's 240 bytes** are CreateSoundBuffer (208 B, an `[OPEN]` sound.cpp line difference;
+  docs/SB2.md) plus 32 bytes of thunks.
 
-## Best next discriminators (only with new evidence)
+## 3. Whole image
 
-1. TreatEventBase: a rank-0 block that is rotor-neutral (result in ECX, rotor left at EDX; a one-slot shift before
-   temp assignment 21 gives 0 bytes). Routes: an old-flag copy that survives 0x41ddfe/0x409c5c, a terminator byte
-   that reaches temp assignment, or a preference for the select result (rank 1 gets one because its new value is
-   forwarded to a push; rank 0's forwarded forms coalesce with bEnable instead).
-2. ChangePhase: a source property that separates the three late zero reads into their own component before 0x414ba6,
-   or raises PLAY/9 by 14 at the oldPhase dispatch. The recovered cost and region model leaves no code-visible input
-   for either, so it is an IL property the machine code does not show (docs/RESIDUAL_CAUSES.md, model closure tests).
-3. Link: original project data (a .dsp, map or build log) or LINK 5.10.7287 itself.
+**Fresh relinks (2026-10-25).** These are the stage 1 regression-gate relinks
+(`tools/regression_gate.py`): the verified objects in the oracle-derived TU order, compared statically
+with each original.
 
-Closed in round 4 (docs/RESIDUAL_CAUSES.md, "Final targeted experiments"): symbol-ID operand order in
-ChangePhase blocks 3..99 (480 comparisons, none decided by a hash bit) and inline-helper preference for the
-TreatEventBase rank-0 toggle (five helper forms reduce to the direct IL or coalesce with bEnable).
+- **The primary relink runs under the historical host clock** (`--historical-host`). It is
+  `557ca92e…3533`, unchanged.
+- **The other relinks use the current clock.** Their PE and resource timestamp bytes therefore
+  differ too.
 
-Details and provenance: docs/RESIDUAL_CAUSES.md, docs/COMPILER_STUDY.md, docs/SYMBOL_ORDER.md, docs/LINK_ICF.md,
-msvc5kb/catalog.json.
+**No executable is byte-identical to its original.**
 
-## Fresh blocker checks (2026-10-19)
+| Executable | File size (orig / relink) | Same-offset differing bytes | Byte-exact sections | `.data` equal bytes, virtual-size delta | Accepted functions at original RVA |
+|---|---|---:|---|---|---:|
+| SB1 US | 535,552 / 535,552 | 121,401 | `.rsrc` | 329,727 / 329,728, 0 | 131 / 412 |
+| SB1 German, French | 538,112 / 538,112 | 26,261 each | `.rsrc` | 329,715 / 329,728, 0 | 394 / 412 |
+| Eggbert 1 (en, de, es, it, pt; fr) | equal for each language | 26,625; fr 26,553 | none (`.rsrc` differs in timestamps only, doc) | 329,202 / 329,216, 0 | 390 / 408 |
+| SB1 demo | 533,504 / 534,016 | 185,717 | none | 307,822 / 328,704, +736 | 10 / 374 |
+| Blupi 2 (each language) | equal for each language | 47,503 | `.rdata` | 347,915 / 349,184, 0 | 339 / 456 |
+| Eggbert 2 | 602,624 / 602,624 | 164,336 | `.rsrc` | 347,487 / 363,520, 0 | 87 / 461 |
 
-[EVIDENCE] Full gate PASS, including the historical sound path: 127,456 bytes, zero accepted regressions.
-Seventeen declaration controls produced no improvement. A compiler-host check observed 1,151 C1XX qsort calls;
-using historical qsort, then all 66 CL / 101 C1XX historical CRT bindings, preserved every event.cpp function
-payload, relocation and symbol order. Scope and reproducible scratch commands: [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md).
-The fresh canonical historical relink still differs in 121,401 bytes. No source or acceptance change was made.
+**Causes** (doc):
 
-## Independent Planet Blupi controls (2026-10-19)
+- **SB1 US:** almost all of its differences are a +16 shift. LINK keeps a different copy of a folded
+  empty function (an ICF survivor), plus the CRT filter survivor and the import order. Its Rich count
+  is 268 against 270 ([SB1_CLOSURE.md](SB1_CLOSURE.md), [BLOCKER_CHECKS.md](BLOCKER_CHECKS.md)).
+- **The original linker inputs are underdetermined,** and that limit applies to every target.
+- **SB1 demo:** it has no demo resource script, and its text is 32 bytes short. It is evidence only.
 
-[EVIDENCE] [PLANET_ORACLE.md](PLANET_ORACLE.md) authenticates official 1.7/1.8 binaries and the 2017 source import.
-Two unchanged 1.8 functions distinguish RTM C2 from SP3; the same Display test favors SP3 for SB1. A real member
-toggle keeps rotor EDX unchanged through an EAX preference, and a 688-byte STRICT Planet function supplies a
-pooled-constant control. Binary-evidenced version corrections give complete masked hits for both Planet event
-functions, with remaining relocation/data limits. Outcome C for SB1's two blockers; no canonical or acceptance change.
+**SB2 `.data` virtual size.** [EVIDENCE] The fresh relinks show the same `.data` virtual size as the
+originals for all four SB2 targets. docs/SB2.md round 20 had recorded +32. [OPEN] The cause of the
+change was not investigated in this consolidation; the hotspot-table correction (`96afd2e`) followed
+that round.
+
+**Experimental witness.** Branch `sb1-histlink` holds a 412/412-at-RVA linker-input candidate. It is
+evidence only, not recovered source (SB1_CLOSURE.md).
+
+## 4. Ordinary historical build
+
+Fresh: consolidation stage 1, on commit `a4a2352`. Details are in [BUILDING.md](BUILDING.md).
+
+- **All 14 executables build with `tools/build.py`,** using their historical compiler and linker.
+  No original executable, oracle, certificate or research tool is read; `tests/test_build_boundary.py`
+  enforces this.
+- **The clean-export test passed:** `tools/check_clean_build.py`, a pruned `git archive` with no
+  assets or oracle.
+  - Every image equals an independent build apart from its PE and resource-directory timestamps.
+  - Every toolchain component matched `toolchains.json`.
+  - Every historical `__FILE__` path was established.
+- **The SB1 demo builds with the retail resource script.** It is labelled PARTIAL.
+
+## 5. SDL3 port
+
+The port is two native programs, `blupi-sdl3` (SB1, Eggbert 1) and `blupi2-sdl3` (Blupi 2, Eggbert 2).
+They compile the historical game TUs unchanged: 12 from `src/` and 11 from `games/sb2/src/`
+([port/README.md](../port/README.md)).
+
+**Fresh results (2026-10-25):**
+
+- **Windows test suite: 269 / 269 passed**, serially, in 2,303 s: `ctest --test-dir build/port`
+  with the MinGW-x64 Ninja build. Linux and Android were not re-run (doc: the release receipts in
+  port/docs/RELEASING.md and ROADMAP.md).
+- **The provenance map passes:** `port/tools/check_fidelity.py --check`, with 139 edges and 0 issues.
+  The categories describe source relationships, not percentages of fidelity:
+
+| Target | Direct shared | Verified derivative | Verified platform replacement | Intentional difference | Unverified | Edges |
+|---|---:|---:|---:|---:|---:|---:|
+| SB1 US, German, French (each) | 12 | 24 | 16 | 13 | 6 | 71 |
+| Eggbert 1 (each language) | 12 | 24 | 16 | 14 | 6 | 72 |
+| Blupi 2 (each language) | 11 | 30 | 17 | 15 | 7 | 80 |
+| Eggbert 2 | 11 | 27 | 17 | 15 | 7 | 77 |
+| SB1 demo | not supported by the port (F454) | | | | | |
+
+**Runtime evidence** (doc: [port/docs/ORACLE.md](../port/docs/ORACLE.md) and
+[port/oracle/SB1_SAVE.md](../port/oracle/SB1_SAVE.md)):
+
+- **Cross-build display oracle against the rebuilt historical executables.** Attract mode is 2,200 of
+  2,200 frames identical for SB1 and for each SB2 edition, at 8 and 16 bpp.
+- **SB1 screen tour:** identical except for the multiplayer provider list.
+- **SB1 US save interchange:** identical in one recorded scenario, at both depths.
+
+These are bounded receipts, not whole-game certification.
+
+**The port is not functionally complete.** These services are unavailable or differ:
+
+- **Multiplayer:** DirectPlay is unavailable, and session creation fails by design. This is the
+  required next milestone ([port/docs/ROADMAP.md](../port/docs/ROADMAP.md), stage 10).
+- **AVI movies:** not played; the phase is skipped.
+- **SB2 CD audio:** fails, logged once.
+- **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.
+- **Coverage gaps:** hardware gamepads, Android keyboard/background, and the SB2 Android build are
+  open.
+
+## 6. Where work stands
+
+- **Matching.** The SB1 and SB2 function residues are at the limit of the current evidence: the
+  open functions need authentic source or context evidence (docs/SB1_CLOSURE.md, docs/SB2.md
+  section 12). Matching research resumes only on new evidence.
+- **Whole image.** The original linker inputs (dead contributions, TU population, order) are
+  underdetermined by the binaries. Experimental witnesses, such as branch `sb1-histlink`, are
+  evidence, not recovered source.
+- **Consolidation.** Stage 1 (ordinary builds) and stage 2 (this documentation) are done; stages
+  3 to 5 follow (docs/CONSOLIDATION_PLAN.md).
+- **Port.** Native multiplayer for SB1 and SB2 is the required next port milestone
+  ([port/docs/ROADMAP.md](../port/docs/ROADMAP.md), stage 10).

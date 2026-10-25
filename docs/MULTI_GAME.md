@@ -1,5 +1,15 @@
 # Multi-game layout: every Speedy Blupi and Speedy Eggbert build in one repository
 
+[SUPERSEDED 2026-10-25] Current per-executable status is in [STATUS.md](STATUS.md) and the binding
+rules in [AGENTS.md](../AGENTS.md); this page remains the reference for the target model, switches and
+source rules.
+
+- **Its tables and the SB2 bring-up plan are dated snapshots.** All four SB2 targets are now active,
+  and both SDL3 ports exist.
+- **The 2026-10-22 status line is superseded too.** It read "done in every language" and "SB2 port not
+  started". "Done" meant that the targets were registered and verified, not that they were 100%
+  STRICT.
+
 Status (2026-10-22): **Speedy Blupi 1 and Speedy Eggbert 1 are done in every language**, in matching
 (nine targets) and in the port (release 1.1.0). **SB2 matching has started** with Speedy Eggbert 2
 (`sb2/eggbert/en`): its own oracle, tree `games/sb2/src/` and manifest `games/sb2/recon.json`;
@@ -39,6 +49,16 @@ The independent ICF/import constraints and remaining source-population assumptio
 in [SB1_CLOSURE.md](SB1_CLOSURE.md).
 
 ### Matching
+
+[SNAPSHOT 2026-10-22, superseded] Fresh figures (2026-10-25) are in [STATUS.md](STATUS.md):
+
+- Eggbert 1: 123,088 / 141,328.
+- Eggbert 2: 136,448.
+- Blupi 2: 122,240.
+- Primary: 407 STRICT + 6 FOLDED accepted records. The "411" below is the verifier's emitted-record
+  sum, which counts repeated bodies.
+- The primary's ChangePhase and TreatEventBase have standalone certificates; no target EQUIVALENT
+  tier is declared for them.
 
 | Target | Strict game `.text` | Notes |
 |---|---|---|
@@ -243,6 +263,13 @@ No SB1 file changes in step 1; the SB1 gates must stay identical throughout.
 | SB2 work | its own reports; SB1 gates unchanged |
 
 ## Decisions
+
+[HISTORICAL] The 2026-10-22 decisions below are partly superseded:
+
+- **Independent targets (2026-10-24, AGENTS.md).** Each executable is matched on its own, and
+  Blupi 2 has its own overlay.
+- **SB2 is active,** both in matching and in the port.
+- **The two port programs share `port/common/app/launcher`.**
 
 Taken (2026-10-22):
 - `sb1/blupi/us` stays the primary matching target.

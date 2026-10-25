@@ -603,6 +603,36 @@ and tested before it is packed. Procedure, signing key and build machines:
 - [OPEN] The first-run folder dialog has not been tried by hand on each system; on Linux it
   needs the desktop's file chooser portal or zenity.
 
+## Stage 10: native multiplayer (required, not started)
+
+The port is **not functionally complete** until it has multiplayer. Today both games' DirectPlay
+services are unavailable: the provider list is empty and session creation fails, deliberately
+(`games/{sb1,sb2}/game/network.cpp`; see the INTENTIONAL_DIFFERENCE edges in `provenance.json`).
+
+**Goal:** restore native multiplayer for both SB1 and SB2 by replacing DirectPlay with a portable
+network transport. This milestone was agreed with the user on 2026-10-25. It comes after the
+repository consolidation, and the ordinary historical builds do not wait for it.
+
+The work must:
+
+- **Keep the reconstructed algorithms:** CEvent's and CDecor's multiplayer code stays as
+  reconstructed wherever possible. The historical sources in `src/` and `games/sb2/src/` are never
+  edited for the port.
+- **Keep CNetwork's semantics:** the original CNetwork-facing contract (enumeration, session, player
+  and message calls, their results and failure paths) stays intact. Only the transport underneath
+  it changes.
+- **Share one transport:** a single portable transport in `port/common/` serves both games. It
+  carries reliable and unreliable messages with the meaning the original sends gave them.
+- **Cover the whole flow:** session creation, discovery, joining, the lobby, teams, ready states and
+  gameplay.
+- **Validate packets:** every incoming packet is checked (size, type, ranges, sender) before legacy
+  game code sees it.
+- **Roll out in order:** first two local instances, then LAN, then the internet, and finally
+  cross-platform play, including Android where the game itself is supported.
+- **Prove it:** use the existing provenance/fidelity system (new or reclassified edges, with
+  reviews), plus independent multiplayer regression tests (scripted multi-instance sessions with
+  per-frame state traces).
+
 ## Order and dependencies
 
 ```
@@ -610,6 +640,7 @@ and tested before it is packed. Procedure, signing key and build machines:
 0.4 Linux ------------------------------------------------------------> 6 Android (best after 2 and 5)
                                                      5 -> 7 interpolation
                                                      5 -> 8 widescreen -> 9 settings screen
+consolidation (docs/CONSOLIDATION_PLAN.md) -> 10 native multiplayer: local -> LAN -> internet -> cross-platform
 ```
 
 Each stage lands separately, documented in `ARCHITECTURE.md`, with its gate as a ctest.

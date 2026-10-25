@@ -14,7 +14,7 @@ statically linked CRT at the first function Ghidra's function-ID database
 names as a known MSVC runtime routine, and writes oracle/<slug>/summary.json.
 
 The TU map (oracle/<slug>/tu_map.csv) is a separate step
-(tools/sb2_tumap.py): it needs evidence from other targets.
+(tools/crossmap.py, docs/SB2.md): it needs evidence from other targets.
 
 Static analysis only: the executable is never run.
 """

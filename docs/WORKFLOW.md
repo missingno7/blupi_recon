@@ -4,7 +4,9 @@ After the recovery cleanup, historical scratch/build paths may need restoration
 or regeneration. See [RECOVERY_MILESTONE.md](RECOVERY_MILESTONE.md) for the retained
 working set and research archive. `to_delete/` is not an input to any live workflow.
 
-The complete source-only build is `tools/build.py`; see [STANDALONE.md](STANDALONE.md).
+The complete source-only build is `tools/build.py` for all 14 targets; see [BUILDING.md](BUILDING.md).
+The verification commands and the all-target regression gate are in [VERIFYING.md](VERIFYING.md), and the
+2026-10-19 baseline with its certificates is in [STANDALONE.md](STANDALONE.md).
 Two explicit `equivalent_functions` entries now supplement strict acceptance.
 Verification reruns their static proof and checks pinned certificates; it never
 counts EQUIVALENT as STRICT or changes the raw comparator result. Re-certification

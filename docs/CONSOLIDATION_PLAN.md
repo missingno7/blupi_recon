@@ -9,7 +9,14 @@ renamed or deleted.
 - All 14 targets build without the original executables, from a pruned clean export.
 - The verify and relink gates for all 14 targets are unchanged.
 
-Stage 2 (documentation) follows. It is based on three read-only audits, whose reports keep the file-level
+Stage 2 (documentation) is **done**:
+
+- [STATUS.md](STATUS.md), [VERIFYING.md](VERIFYING.md) and [research/README.md](research/README.md)
+  are new, and the README is short.
+- The stale statements are labelled in place.
+- Nothing was moved or deleted. The old status page is preserved under `docs/research/`.
+- Native multiplayer is recorded as the required next port milestone (port/docs/ROADMAP.md,
+  stage 10). It is based on three read-only audits, whose reports keep the file-level
 evidence (ignored scratch):
 
 - `scratch/w-consolbuild/REPORT.md`: builds, tooling inventory, and a clean-export test.

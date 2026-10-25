@@ -1,154 +1,67 @@
-# Speedy Blupi 1 — matching decompilation
+# Speedy Blupi and Speedy Eggbert: matching reconstruction and SDL3 port
 
-Reconstructing the C++ source of **Speedy Blupi 1** (Epsitec, 1998; `BLUPI.EXE`, English/US build, SHA-256
-`be6de5a2…8290ac`) so that the historical compiler reproduces the original machine code exactly. Matching comes
-first. Rules for contributors and agents: [AGENTS.md](AGENTS.md).
+This repository reconstructs the C++ source of Epsitec's **Speedy Blupi 1** (1998) and **Speedy Blupi 2**
+(2001), and of their eGames editions **Speedy Eggbert 1** (1999) and **Speedy Eggbert 2** (2004). The
+goal is source that the historical Visual C++ 5 toolchain compiles back into the original machine
+code. The same sources also drive a native SDL3 port for Windows, Linux and Android.
 
-**Native SDL3 port (separate from the matching work):** [port/README.md](port/README.md) builds this same
-`src/` unchanged with a modern compiler and SDL3: the faithful 640×480 game with sound and MIDI music, plus
-optional widescreen and smooth motion, in every original language and for Speedy Eggbert too, on Windows,
-Linux and Android (release 1.1.0: [notes](port/docs/RELEASE_NOTES.md)). Players use their own copy of the game.
-The port never modifies the historical source.
+- **Historical matching.** There are 14 executables (SB1 US/German/French, Eggbert 1 in six
+  languages, the June 1998 SB1 demo as an evidence-only target, Blupi 2 English/German/French and
+  Eggbert 2). Each is matched independently and verified byte by byte against its original:
+  STRICT, FOLDED, or a separately certified EQUIVALENT tier.
+- **Ordinary builds.** Every executable builds from its reconstructed source with its historical
+  compiler and linker. No original executable or reverse-engineering tool is needed.
+- **SDL3 port.** [port/README.md](port/README.md): the faithful 640×480 games, plus optional
+  widescreen and smooth motion. They compile the historical game sources unchanged. Players use their
+  own copy of the game data. Multiplayer is not available yet; it is a required upcoming milestone.
 
-**Other builds** of the game are verified on the same `src/` as further targets
-(`tools/verify.py --target <id>`; [docs/MULTI_GAME.md](docs/MULTI_GAME.md),
-[docs/EGGBERT.md](docs/EGGBERT.md)). Every acceptance number below refers to the primary target.
+| Read | For |
+|---|---|
+| [docs/STATUS.md](docs/STATUS.md) | Current status of every executable and of the port: STRICT, EQUIVALENT, whole image, ordinary build, port fidelity |
+| [docs/BUILDING.md](docs/BUILDING.md) | Building the historical executables (`tools/build.py --target …`) |
+| [docs/VERIFYING.md](docs/VERIFYING.md) | Verifying against the originals, and the regression gate |
+| [docs/research/README.md](docs/research/README.md) | Index of the preserved research (compiler studies, TU reports, linker work) |
+| [AGENTS.md](AGENTS.md) | Binding rules for contributors and agents (port rules: [port/AGENTS.md](port/AGENTS.md)) |
 
-| Target | Executable | Strict game `.text` |
-|---|---|---|
-| `sb1/blupi/us` (primary) | Speedy Blupi 1.0, US | 127,456 / 141,488 |
-| `sb1/blupi/de`, `fr` | Speedy Blupi 1.0, German, French | 127,456 / 141,488 |
-| `sb1/eggbert/en`, `de`, `es`, `fr`, `it`, `pt` | Speedy Eggbert 1 (version 1.1), six languages | 123,120 / 141,328 (WindowProc, DoInit excluded) |
-| `sb2/*` | Speedy Blupi 2, Speedy Eggbert 2 | planned, not started |
+## Quick start
 
-## Status (verified with `tools/verify.py`)
-
-Recovery is consolidated: [milestone and cleanup record](docs/RECOVERY_MILESTONE.md).
-Obsolete experiments are quarantined under ignored `to_delete/`; compact research
-inputs remain in `build/recovery/` and canonical findings remain in Git.
-
-**Complete standalone source build available:** `tools/build.py` compiles all 19 TUs and resources without
-the original EXE. The two remaining game bodies are accepted as **EQUIVALENT** under checked static assumptions;
-strict matching research is deferred until new evidence. See [docs/STANDALONE.md](docs/STANDALONE.md)
-for certificates, build instructions and validation limits. A cnc-ddraw runtime smoke test reaches the first
-playable level and exits cleanly; see [docs/RUNTIME.md](docs/RUNTIME.md). Full gameplay equivalence remains unproven.
-
-**127,456 / 141,488 game `.text` bytes (90.1 %)**, built with one shared
-header set for every TU (no per-TU preprocessor views; no active withdrawals; withdrawal history in
-[docs/WORKFLOW.md](docs/WORKFLOW.md) and [docs/HEADERS.md](docs/HEADERS.md)). Two mapped game functions remain non-STRICT:
-`CEvent::ChangePhase` and `CEvent::TreatEventBase`, each with eight differing instructions.
-Fresh verification and historical relink gates pass with zero accepted regressions, including the sound build path
-([docs/BLOCKER_CHECKS.md](docs/BLOCKER_CHECKS.md), 2026-10-19). The verifier reports 411 STRICT and 6 FOLDED emitted
-function records; these include repeated bodies across TUs.
-STRICT = every non-relocated byte equal at one proven location and every relocation target proven (imports, calls,
-data, string payloads). FOLDED = an identical body the original linker merged into another function. Relocation-
-unverified, masked or behavioural similarity is never counted.
-
-| TU | strict | TU | strict | TU | strict |
-|---|---:|---|---:|---|---:|
-| blupi.cpp | 13 | decor.cpp | 21 | movie.cpp | 13 |
-| button.cpp | 18 (+1 folded) | event.cpp | 88 | network.cpp | 19 (+2 folded) |
-| ddutil.cpp | 8 | jauge.cpp | 9 (+1 folded) | pixmap.cpp | 36 (+1 folded) |
-| decblock.cpp | 26 | menu.cpp | 8 | sound.cpp | 28 |
-| decblupi.cpp | 20 | misc.cpp | 10 (+1 folded) | text.cpp | 7 |
-| decdesign.cpp | 42 | decmove.cpp | 39 | decnet.cpp | 6 |
-
-(Per-TU counts are the verifier's and include header inline bodies compiled into each TU.)
-
-Data: `dectables.cpp` holds SB1 tables as initialized data whose bytes the verifier checks (relocations into them are
-proven by payload). Calls to imports may go through exact `jmp [IAT]` thunks, as in the original.
-
-EQUIVALENT bodies (best-known reconstructions in `src/`, strict work deferred): `CEvent::ChangePhase` 0x19310
-(32 differing non-relocation bytes) and `CEvent::TreatEventBase` 0x1d230 (8 register bytes).
-`CEvent::DrawButtons`, `CDecor::Build` and `CDecor::DoInit` are STRICT.
-
-Per-TU details, near misses and blockers: `docs/*_TU.md`, `docs/CORE_CLUSTER.md`, `docs/UI_CLUSTER.md`,
-`docs/ENGINE_PROBE.md`.
-
-## Key facts ([EVIDENCE] unless noted)
-
-- **Toolchain** ([docs/TOOLCHAIN.md](docs/TOOLCHAIN.md)): MSVC 5.0, compiler pinned to VS97 SP3 `cl 11.00.7022`
-  (RTM differs on some functions), `/O2 /GX /ML /Gd /Gy`, statically linked VC5 SP3 `LIBC.LIB`, linker 5.10 family
-  (exact build open), identical-COMDAT folding observed. Original build path `F:\Profil\` (`__FILE__`), reproduced
-  by a temporary drive mapping for `sound.cpp` ([docs/BUILD_PATH.md](docs/BUILD_PATH.md)).
-- **Layout** ([docs/TU_MAP.md](docs/TU_MAP.md), `oracle/tu_map.csv`): `.text` is TU blocks in alphabetical source
-  order, functions in source order; game code ends at RVA `0x238b0`, VC5 LIBC follows (no SB1 `wave.cpp`).
-- **Ancestry** ([docs/ANCESTRY_PLANETBLUPI.md](docs/ANCESTRY_PLANETBLUPI.md),
-  [docs/ANCESTRY_SB2.md](docs/ANCESTRY_SB2.md)): Planet Blupi v1.8.0 sources compile to exact SB1 functions for
-  sound/movie/misc/ddutil/pixmap/UI code; game logic is the Speedy Blupi engine (SB2 reconstruction is a structural
-  hint; SB1's `CDecor` lacks SB2's trajectory arrays). Free Eggbert is a fork of sb2-decomp, not independent evidence.
-- **Compiler knowledge** ([msvc5kb/README.md](msvc5kb/README.md)): rule catalog compatible with Blood II's VC5 KB;
-  SB1 validations include TU symbol-count context resolved by genuine declarations for `StopSound`,
-  statement order VC5-ORD-01, local-array layout BLUPI-LOC-01, and SIB order from function-wide block shape BLUPI-REG-01.
-
-## Reproduce
-
-Inputs (ignored by git): `assets/` (original game files and ISO), `external/` (read-only references:
-planetblupi, sb2-decomp, free-eggbert), historical toolchains under `C:\tools` (`msvc5_sp3`, `dx5sdk`, Ghidra 12.1),
-Python with pefile + capstone (`.pyenv\python.exe` locally).
-
-```powershell
-.\.pyenv\python.exe tools\verify.py                       # clean build of src/ + strict compare, regression gate
-.\.pyenv\python.exe tools\verify.py --tu src/x.cpp=scratch\tu\x.cpp --build-dir me   # test a candidate
-.\.pyenv\python.exe tools\verify.py --accept              # promote newly STRICT functions (no regressions allowed)
-.\.pyenv\python.exe tools\oracle.py all --fresh           # regenerate oracle/ inventory and function map
-.\.pyenv\python.exe tools\decomp.py <rva|name>            # seeded Ghidra pseudocode (evidence only)
-.\.pyenv\python.exe msvc5kb\tools\kb.py hints <func> --json <cmpfunc.json>   # compiler-rule hints for a mismatch
+```bash
+.pyenv/python.exe tools/build.py --target sb1/blupi/us
+.pyenv/python.exe tools/verify.py --target sb2/eggbert/en
 ```
 
-Workflow details: [docs/WORKFLOW.md](docs/WORKFLOW.md). Source provenance and every compile adaptation:
-[src/PROVENANCE.md](src/PROVENANCE.md).
-
-## Distance to a byte-identical executable (2026-10-19)
-
-| Item | State |
-|---|---|
-| Game code | 127,456 / 141,488 bytes (90.1 %); 2 functions open: ChangePhase and TreatEventBase, 8 differing instructions each; docs/RESIDUAL_CAUSES.md |
-| Whole file | same size (535,552 B); fresh historical relink: 121,401 bytes differ at the same offset. Most are a +16 shift from RVA 0x2a30 to about 0x1f000: LINK keeps button's folded empty function (~CButton/~CMenu/~CJauge/OutputDebug) where the oracle keeps a later copy (ICF survivor, link inputs), plus the CRT filter survivor, imports and the two open functions |
-| Link | no unresolved externals; Rich header: CVTRES 5.00.1668 entry exact, stamp-less count 268 vs oracle 270 (two modules unidentified) |
-| `.text` | size exact; 121,100 differing bytes; the historical runtime alone does not recover the oracle's ICF survivors |
-| `.rdata` | size exact; 4,680 / 4,978 initialized bytes equal |
-| `.data` | size exact; 329,727 / 329,728 raw bytes equal; one differing byte in a CRT pointer |
-| `.rsrc` | byte-exact (docs/RESOURCES.md) |
-| PE header | timestamp and `.text` size equal; 2 bytes differ: Rich count 268/270 and entry 0x24d20/0x24d40 (CRT filter survivor) |
-
-## Where to continue
-
-Current state and the paused blockers: **docs/STATUS.md** (2026-10-19).
-
-Next new work: the first step of Speedy Blupi 2 / Speedy Eggbert 2 (registry and inventory only),
-[docs/MULTI_GAME.md](docs/MULTI_GAME.md).
-
-The tested families and unresolved compiler decisions are recorded in `docs/RESIDUAL_CAUSES.md` and `msvc5kb`.
-TreatEventBase needs a rotor-neutral rank-zero toggle; ChangePhase needs the oracle's test order with PLAY
-allocated before zero. Original project/build evidence or LINK 5.10.7287 could help discriminate the linker
-input and version hypotheses. The latest declaration and historical compiler-front-end controls produced no
-new match ([docs/BLOCKER_CHECKS.md](docs/BLOCKER_CHECKS.md)).
-
-The independent [Planet Blupi study](docs/PLANET_ORACLE.md) found a real RTM/SP3 back-end fingerprint and natural
-Boolean/constant-allocation controls. It does not close either SB1 function; historical acceptance remains 90.1%.
+- **`build.py`** builds one executable from its reconstructed source. It needs VC5 SP3/RTM and the
+  DirectX 5 SDK under `C:\tools`, plus Python with pefile.
+- **`verify.py`** verifies one target against its original. It also needs the original under
+  `assets/` and Capstone.
 
 ## Repository layout
 
 | Path | Contents |
 |---|---|
-| `src/` | The reconstructed historical source of every SB1 target; compiled unchanged by the port too |
-| `targets.json` | Target registry: every executable, its linker, build path, defines and oracle |
-| `tools/`, `tests/`, `oracle/`, `evidence/`, `steering/`, `recon.json` | Matching build, verifier, oracle inventories (`oracle/` primary, `oracle/<target>/` others), equivalence certificates and steering patches |
-| `docs/` | Matching research, findings and status ([docs/STATUS.md](docs/STATUS.md)) |
-| `msvc5kb/` | Knowledge base of MSVC 5 code-generation findings |
-| `port/` | The native SDL3 port: `common/` (no game names), `games/sb1/` (Speedy Blupi 1 and Speedy Eggbert 1), language packs, its own build, docs and rules ([port/README.md](port/README.md)) |
+| `src/` | Reconstructed historical source of the ten SB1 targets: Blupi, Eggbert 1 and the demo, with build-wide edition/language switches |
+| `games/sb2/src/`, `games/sb2/blupi/` | SB2 source (Eggbert 2) and the Blupi 2 whole-file overlay; `games/sb2/res/` holds the SB2 resource scripts |
+| `targets.json`, `recon.json`, `games/sb2/recon.json`, `toolchains.json` | Target registry, manifests (build settings and acceptance records), pinned toolchain hashes |
+| `tools/` | `build.py` (ordinary build), `verify.py`/`relink.py`/`regression_gate.py` (verification), and research tools ([docs/research/README.md](docs/research/README.md)) |
+| `oracle/`, `evidence/`, `tests/` | Oracle inventories, equivalence certificates, tests |
+| `msvc5kb/`, `steering/` | MSVC 5 code-generation knowledge base; a steering demonstration (never canonical source) |
+| `port/` | The SDL3 port: `common/`, `games/sb1/`, `games/sb2/`, its own build, docs and provenance map |
 
-Not in the repository: `assets/` (the original game), `external/` (reference repositories),
-`build/` and `scratch/` (generated output).
+**Not in the repository:**
+
+- `assets/`, the original games, which are immutable;
+- `external/`, read-only reference repositories;
+- `C:\tools`, the historical toolchains;
+- `build/` and `scratch/`, generated output.
 
 ## Licence
 
 The source in this repository is free software under the GNU General Public License, version 3
 ([LICENSE](LICENSE)). The reconstruction derives from Planet Blupi (GPLv3 or later) and the
-Speedy Eggbert 2 reconstruction (GPLv3); see [src/PROVENANCE.md](src/PROVENANCE.md). The port's
-third-party components keep their own licences ([port/third_party/README.md](port/third_party/README.md)).
+Speedy Eggbert 2 reconstruction (GPLv3); see [src/PROVENANCE.md](src/PROVENANCE.md) and
+[games/sb2/src/PROVENANCE.md](games/sb2/src/PROVENANCE.md). The port's third-party components keep their
+own licences ([port/third_party/README.md](port/third_party/README.md)).
 
-Speedy Blupi and its data (graphics, sounds, music, levels) are © Epsitec SA. They are not part
-of this repository or of its licence; the port's icon (`port/res/`) is cut from the game's own
-Blupi sprite. This is a fan project, not affiliated with Epsitec.
+Speedy Blupi, Speedy Eggbert and their data (graphics, sounds, music, levels) are © Epsitec SA. They are
+not part of this repository or of its licence; the port's icon (`port/res/`) is cut from the game's own
+Blupi sprite. This is a fan project, not affiliated with Epsitec or eGames.
