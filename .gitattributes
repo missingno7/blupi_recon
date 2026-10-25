@@ -10,3 +10,5 @@ games/sb2/blupi/** -text
 tools/cmpfunc_target.py -text
 oracle/functions.csv -text
 oracle/sb2-eggbert-en/functions.csv -text
+# Vendored ENet (port/third_party/enet/README.md): upstream bytes unchanged.
+port/third_party/enet/** -text

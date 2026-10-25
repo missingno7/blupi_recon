@@ -8,6 +8,11 @@ headers) or moving the submodule pin, and record the new version and checksum be
 TinySoundFont v0.9 (MIT) and TinyMidiLoader v0.7 (zlib) by Bernhard Schelling; details and
 SHA-256 in [tinysoundfont/README.md](tinysoundfont/README.md).
 
+## enet/ (vendored sources)
+
+ENet 1.3.18 (MIT) by Lee Salzman, the UDP transport under the native multiplayer
+(`port/common/net/`); release tag, archive and per-file SHA-256 in [enet/README.md](enet/README.md).
+
 ## generaluser-gs/ (git submodule)
 
 GeneralUser GS v2.0.3, the General MIDI / GS SoundFont by S. Christian Collins that the port uses
