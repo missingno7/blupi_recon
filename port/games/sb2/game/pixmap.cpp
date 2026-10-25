@@ -8,7 +8,7 @@
 // method bodies: the clipping arithmetic, icon tables, colour-key juggling and
 // the software mouse cursor are copied from src/pixmap.cpp. The DirectDraw
 // and GDI calls are replaced by commands to a rendering device
-// (port/render/device.h). What DirectDraw decided (blit validity, the colour
+// (port/common/render/device.h). What DirectDraw decided (blit validity, the colour
 // key in force) is decided here from a CPU-side registry, so the device only
 // executes. The reference device is the software renderer, which reproduces
 // the original pixels in 8 bpp and RGB565 (port/docs/ORACLE.md).
@@ -1828,7 +1828,7 @@ bool PortPixmapWideRegionEqualsBack(int x)
 }
 
 
-// Touch screens (port/platform/touch.h): a game button as an image for the
+// Touch screens (port/common/platform/touch.h): a game button as an image for the
 // on-screen controls. The button background (CHBUTTON icon 0 released, 1
 // pressed) with an icon on it (the phase table's icon number + 6, as
 // CButton::Draw draws it), from the sheet as loaded; the sheet's colour key

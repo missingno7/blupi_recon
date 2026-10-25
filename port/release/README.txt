@@ -1,17 +1,20 @@
-Speedy Blupi - SDL3 port, version @VERSION@
-============================================
+Speedy Blupi and Speedy Eggbert - SDL3 port, version @VERSION@
+==============================================================
 
-A native version of Speedy Blupi (Epsitec, 1998) for today's Windows and
-Linux, built from a reconstruction of the original program's source. The game
-plays exactly like the original, at its original 640x480 and timing, and adds
-optional widescreen, smooth motion and display settings.
+Native versions of Speedy Blupi 1 (Epsitec, 1998) and Speedy Blupi 2 (2001),
+and of their eGames editions Speedy Eggbert 1 and Speedy Eggbert 2, for
+today's Windows and Linux. They are built from a reconstruction of the original
+programs' source. The games play like the originals, at their original 640x480
+and timing, and add optional widescreen, smooth motion and display settings.
+Multiplayer is not available yet.
 
-The original game's files are NOT included: you need your own copy of
-Speedy Blupi (the CD, or the game installed from it). Speedy Eggbert, the
-eGames edition (version 1.1 of the same game), works too.
+The original games' files are NOT included: you need your own copy of the
+game (the CD, or the game installed from it).
+  - blupi-sdl3: Speedy Blupi 1 (version 1.0) or Speedy Eggbert 1 (1.1).
+  - blupi2-sdl3: Speedy Blupi 2 or Speedy Eggbert 2.
 
-The version number at the top is the port's own. The game itself is
-version 1.0 (Speedy Blupi) or 1.1 (Speedy Eggbert), as its title screen says.
+The version number at the top is the port's own. The game's own version is
+shown on its title screen.
 
 
 Starting the game

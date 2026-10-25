@@ -1,5 +1,5 @@
 // SB2 adapter, derived from port/games/sb1/game/misc.cpp and
-// games/sb2/games/sb2/src/misc.cpp (historical origin).
+// games/sb2/src/misc.cpp (historical origin).
 // Port replacement of games/sb2/src/misc.cpp (historical: Planet Blupi-derived utility
 // TU). InitRandom/Random/ConvLongToPos/AddCDPath keep their historical bodies
 // (rand/srand resolve to the Microsoft LIBC generator via port_forced.h).

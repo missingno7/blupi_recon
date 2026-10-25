@@ -417,6 +417,37 @@ foreach(edition eggbert blupi)
     endif()
 endforeach()
 include(launcher_tests.cmake)
+# Python fidelity drivers: the repository's .pyenv where present (Windows development), else the
+# interpreter CMake found, so Linux copies register the same tests. Tests that parse original PE
+# resources need pefile and are registered only when this interpreter has it.
+if(EXISTS "${PROJECT_SOURCE_DIR}/../.pyenv/python.exe")
+    set(BLUPI_TEST_PYTHON "${PROJECT_SOURCE_DIR}/../.pyenv/python.exe")
+else()
+    set(BLUPI_TEST_PYTHON "${Python3_EXECUTABLE}")
+endif()
+execute_process(COMMAND "${BLUPI_TEST_PYTHON}" -c "import pefile" RESULT_VARIABLE pefile_missing
+    OUTPUT_QUIET ERROR_QUIET)
+if(pefile_missing)
+    set(BLUPI_TEST_PYTHON_PEFILE OFF)
+    message(STATUS "fidelity: ${BLUPI_TEST_PYTHON} has no pefile; resource-string tests are not registered")
+else()
+    set(BLUPI_TEST_PYTHON_PEFILE ON)
+endif()
+if(EXISTS "${PROJECT_SOURCE_DIR}/../assets/blupi2_variants")
+    set(blupi2_variants_default "${PROJECT_SOURCE_DIR}/../assets/blupi2_variants")
+endif()
+set(BLUPI2_TEST_DATA_VARIANTS "${blupi2_variants_default}" CACHE PATH
+    "Blupi 2 language variants (deutsch/, francais/) for the SB2 resource-string test")
+# The Android importer's game-folder rule, with a desktop JDK when one is installed.
+find_package(Java COMPONENTS Development QUIET)
+if(Java_JAVAC_EXECUTABLE AND Java_JAVA_EXECUTABLE)
+    add_test(NAME android_game_folder COMMAND ${CMAKE_COMMAND}
+        -DJAVAC=${Java_JAVAC_EXECUTABLE} -DJAVA=${Java_JAVA_EXECUTABLE}
+        -DSRC=${PROJECT_SOURCE_DIR}/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java
+        -DCHECK=${CMAKE_CURRENT_SOURCE_DIR}/android_game_folder/GameFolderCheck.java
+        -DWORK=${CMAKE_CURRENT_BINARY_DIR}/android_game_folder
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/android_game_folder.cmake)
+endif()
 include(fidelity_gaps.cmake)
 include(fidelity_sb1edit.cmake)
 include(fidelity_audio.cmake)

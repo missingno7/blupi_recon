@@ -267,10 +267,12 @@ recorded.
 [EVIDENCE] The port reproduces itself exactly (two runs, 3000 frames, identical per-frame screen
 hashes, `ctest -R replay`).
 
-[OPEN] Comparison with the historical build. The historical rebuild can run the same attract
-mode under cnc-ddraw, but its frames are tied to wall-clock timing, so a frame-indexed capture
-needs a hook outside `src/` (for example in the cnc-ddraw `Blt` path, or a debugger breakpoint on
-`CPixmap::Display`). Prefer that to any change to the historical source.
+[EVIDENCE, updated 2026-10-25] Comparison with the historical build: done outside `src/`.
+The cross-build oracle runs the rebuilt historical executables under cnc-ddraw, with a
+frame-hashing proxy. Each displayed frame is compared with the port's reference renderer:
+2,200 of 2,200 attract frames are identical for SB1 and each SB2 edition at 8 and 16 bpp
+([ORACLE.md](ORACLE.md)). The original note follows: the historical frames are tied to
+wall-clock timing, so a frame-indexed capture needs a hook outside `src/`.
 
 ## 7. Portability notes
 
@@ -298,9 +300,12 @@ needs a hook outside `src/` (for example in the cnc-ddraw `Blt` path, or a debug
 - Reads outside static tables made by the original are reproduced with BLUPI.EXE's neighbouring
   values (`games/sb1/game/pixmap.cpp`, `docs/ORACLE.md`), so they do not depend on a compiler's data
   layout.
-- Android (later):
+- Android (implemented, roadmap stage 6; SB1 and Eggbert 1 only):
   - storage: SDL pref path for the user root; the game data, supplied by the player, imported
-    once into app storage so the file-based `vfs` works unchanged;
+    once into app storage so the file-based `vfs` works unchanged. The importer
+    (`android/.../GameFolder.java`) recognises a game folder by the same files as the native
+    launcher's `RecognizesData`. It refuses SB2 folders, which the app does not support yet,
+    and asks again after an incomplete earlier import, keeping saves;
   - lifecycle: map to `WM_ACTIVATEAPP`;
   - touch: synthesize mouse and key messages;
   - ARM64: the struct layout notes above apply unchanged.
@@ -476,7 +481,9 @@ ownership for M4a.
   game; it names no game. `games/sb1/` holds Speedy Blupi 1's port code, which also serves
   Speedy Eggbert 1. A second game gets `games/sb2/` and its own executable linking the same
   `common/` libraries; code moves to `common/` only when both games build with it. There is
-  no game interface or registry: `common/platform/entry.cpp` calls the game's `BlupiMain`.
+  no multi-game registry: `common/platform/entry.cpp` calls the game's `BlupiMain`. Each game
+  fills one `app::Game` callback descriptor for the shared launcher (`common/app/launcher.h`,
+  "Shared desktop and Android launcher" above).
 - **One program per game, for all its editions and languages.** [EVIDENCE] Speedy Blupi 1.0
   and Speedy Eggbert 1.1 have the same gameplay code (`docs/EGGBERT.md`). Their differences
   reach the port as:
@@ -488,8 +495,10 @@ ownership for M4a.
   - one edition branch, for behaviour the data cannot carry: Speedy Eggbert quits without the
     goodbye screen (`main.cpp`).
 - **What the port leaves out on purpose:** the CD checks (it reads a game folder or a CD's
-  root, `vfs`) and the 1.0/1.1 difference after a background image fails to load (only a
-  damaged folder reaches it). The matching targets keep both.
+  root, `vfs`) and the 1.0/1.1 difference in read/cache failure recovery. Speedy Eggbert 1
+  uses Blupi's INSERT/retry recovery for both background **and mission** read/cache failures,
+  not Eggbert's INIT recovery; only a damaged folder reaches it ([FIDELITY.md](FIDELITY.md)).
+  The matching targets keep both.
 - **SB2 editions follow the same rule.** [EVIDENCE] `games/sb2/game/event.cpp` owns
   `CEvent` because its original `_EGAMES` blocks choose two phase tables and behavior
   that must be selected at runtime in one executable. Both original tables are retained

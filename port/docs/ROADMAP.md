@@ -603,15 +603,32 @@ and tested before it is packed. Procedure, signing key and build machines:
 - [OPEN] The first-run folder dialog has not been tried by hand on each system; on Linux it
   needs the desktop's file chooser portal or zenity.
 
-## Stage 10: native multiplayer (required, not started)
+## Stage 10: native multiplayer (required; the next major milestone)
 
 The port is **not functionally complete** until it has multiplayer. Today both games' DirectPlay
 services are unavailable: the provider list is empty and session creation fails, deliberately
 (`games/{sb1,sb2}/game/network.cpp`; see the INTENTIONAL_DIFFERENCE edges in `provenance.json`).
 
 **Goal:** restore native multiplayer for both SB1 and SB2 by replacing DirectPlay with a portable
-network transport. This milestone was agreed with the user on 2026-10-25. It comes after the
-repository consolidation, and the ordinary historical builds do not wait for it.
+network transport (agreed with the user, 2026-10-25). **Priority:** it starts immediately after
+consolidation stage 3 (low-risk port cleanup). It comes ahead of the optional larger refactoring of
+the language, pixmap and audio adapters (consolidation stage 4), and the ordinary historical builds
+do not wait for it. SB1 and SB2 share the transport but keep their own game protocols and
+behaviour; they are not required to play with each other.
+
+**Order:**
+
+1. A bounded assessment of the original protocol and of the transport.
+2. A small end-to-end pilot: two instances on one machine, covering session creation, joining,
+   the lobby, ready states and real gameplay.
+3. LAN, up to four players.
+4. The internet by direct IP and port, with NAT traversal or a relay only where needed.
+5. Android interoperability, for the editions available on Android.
+
+The original host-migration behaviour is documented explicitly, and is either supported or
+clearly reported as unsupported, never silently changed. No generalized multiplayer framework,
+no rewrite of the original synchronization algorithms, no change to the historical matching
+sources.
 
 The work must:
 
@@ -640,7 +657,8 @@ The work must:
 0.4 Linux ------------------------------------------------------------> 6 Android (best after 2 and 5)
                                                      5 -> 7 interpolation
                                                      5 -> 8 widescreen -> 9 settings screen
-consolidation (docs/CONSOLIDATION_PLAN.md) -> 10 native multiplayer: local -> LAN -> internet -> cross-platform
+consolidation stage 3 -> 10 native multiplayer: assessment -> local pilot -> LAN (4) -> internet -> Android
+                      -> then optional consolidation stage 4 (language/pixmap/audio adapter extraction)
 ```
 
 Each stage lands separately, documented in `ARCHITECTURE.md`, with its gate as a ctest.

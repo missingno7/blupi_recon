@@ -5,9 +5,11 @@
 // the original did when the MCI AVI driver was unavailable; CEvent::StartMovie
 // then skips the movie and continues with the following phase. The movie
 // files are not part of the installed data either (they stayed on the CD).
+// The missing service is logged once (port/AGENTS.md), as in the SB2 adapter.
 
 #include "def.h"
 #include "movie.h"
+#include "platform/host.h"
 
 CMovie::CMovie()
 {
@@ -24,6 +26,8 @@ CMovie::~CMovie()
 
 BOOL CMovie::Create()
 {
+	static bool reported = false;
+	if (!reported) { blupi::host::log_info("SB1: AVI movies unavailable; continuing without movie playback."); reported = true; }
 	m_bEnable = FALSE;
 	return FALSE;
 }

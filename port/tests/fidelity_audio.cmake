@@ -8,9 +8,21 @@ target_compile_features(fidelity_audio_driver PUBLIC cxx_std_17)
 add_executable(fidelity_audio_mixer "${audio_tests}/fidelity_audio_mixer.cpp")
 target_link_libraries(fidelity_audio_mixer PRIVATE fidelity_audio_driver)
 add_test(NAME fidelity_audio_mixer COMMAND fidelity_audio_mixer)
-if(Python3_EXECUTABLE AND EXISTS "${audio_tests}/../../assets/Speedy Blupi/SOUND")
+# Every original SOUND folder: the whole asset tree in a development checkout, else the configured
+# edition data roots (the Linux scripts' case-sensitive copies).
+set(sound_roots)
+if(EXISTS "${audio_tests}/../../assets/Speedy Blupi/SOUND")
+    list(APPEND sound_roots --assets "${audio_tests}/../../assets")
+else()
+    foreach(root "${BLUPI_TEST_DATA}" "${BLUPI_TEST_DATA_EGGBERT}" "${BLUPI2_TEST_DATA}" "${BLUPI2_TEST_DATA_BLUPI}")
+        if(root AND IS_DIRECTORY "${root}")
+            list(APPEND sound_roots --assets "${root}")
+        endif()
+    endforeach()
+endif()
+if(Python3_EXECUTABLE AND sound_roots)
     add_test(NAME fidelity_audio_inventory COMMAND "${Python3_EXECUTABLE}"
-        "${audio_tests}/fidelity_audio_inventory.py" --assets "${audio_tests}/../../assets"
+        "${audio_tests}/fidelity_audio_inventory.py" ${sound_roots}
         --receipt "${CMAKE_CURRENT_BINARY_DIR}/fidelity_audio_inventory.json")
 endif()
 foreach(game sb1 sb2)

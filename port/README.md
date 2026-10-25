@@ -1,7 +1,8 @@
-# Speedy Blupi 1 — native SDL3 port
+# Speedy Blupi and Speedy Eggbert — native SDL3 port
 
-The modern, portable build of the reconstructed game. It lives entirely under `port/` and builds
-from the historical source in `../src` **without modifying it**. The matching reconstruction
+The modern, portable build of the reconstructed games: `blupi-sdl3` (Speedy Blupi 1 and Speedy
+Eggbert 1) and `blupi2-sdl3` (Speedy Blupi 2 and Speedy Eggbert 2). It lives entirely under `port/`
+and builds from the historical sources in `../src` and `../games/sb2/src` **without modifying them**. The matching reconstruction
 (`src/`, `tools/`, `oracle/`, `msvc5kb/`, evidence and acceptance status) is unaffected by
 anything here. Rules for working in this directory: [AGENTS.md](AGENTS.md). Design and analysis:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -269,7 +270,8 @@ Not implemented / known gaps (each fails the way the original did when the servi
 - **AVI movies**: `CMovie` reports itself disabled, so movies are skipped as in the original
   without the MCI AVI driver. The movie files are not part of the installed data anyway.
 - **Multiplayer**: `CNetwork` enumerates no DirectPlay providers; the multiplayer screens open
-  with nothing to join.
+  with nothing to join. The port is therefore not functionally complete. Native multiplayer is
+  the next required milestone ([docs/ROADMAP.md](docs/ROADMAP.md), stage 10).
 - **Gamepads** stand in for the 1998 joystick. The game's own joystick code runs unchanged on
   SDL gamepads: choose the gamepad under "Choose input device" on the settings screen (each
   session, as in the original). Stick or d-pad move; A, B, X, Y are joystick buttons 1–4;
@@ -277,8 +279,10 @@ Not implemented / known gaps (each fails the way the original did when the servi
   yet with real hardware.
 - **MouseType 2/3** (Windows cursors): mapped to SDL system cursors, not the original `.cur`
   shapes. The default MouseType 1 (game-drawn cursor) is exact.
-- The cross-build oracle covers the attract mode and the screen tour, not yet every screen, the
-  graphic cursor, the editor or save/load ([docs/ORACLE.md](docs/ORACLE.md)).
+- The cross-build oracle covers the attract mode, the screen tour and an editor session, plus a
+  bounded SB1 US save interchange in one scenario ([docs/ORACLE.md](docs/ORACLE.md),
+  [oracle/SB1_SAVE.md](oracle/SB1_SAVE.md)). It does not cover every screen, state, language or
+  the graphic cursor.
 - **Linux**: builds and passes the whole test suite with traces identical to Windows (see
   the build section).
 - **Android**: playable on the Android 16 emulator and on a physical phone (Galaxy S24 Ultra):
@@ -298,9 +302,10 @@ After 1.1.0:
    in the APK for the corpus gate on device.
 3. Custom port graphics (touch controls, icon) from a player-supplied folder; stage 2 (GPU
    backend) only if profiling shows a need.
-4. Speedy Blupi 2 and Speedy Eggbert 2 start in the matching reconstruction
-   ([../docs/MULTI_GAME.md](../docs/MULTI_GAME.md)); `games/sb2/` follows once their source
-   exists.
+4. **Native multiplayer for SB1 and SB2** replaces DirectPlay under the existing `CNetwork`
+   interface. It is the next major milestone, after consolidation stage 3
+   ([docs/ROADMAP.md](docs/ROADMAP.md), stage 10).
+5. Speedy Blupi 2 and Speedy Eggbert 2 on Android (the desktop `blupi2-sdl3` exists).
 
 ## Dependencies and licences
 

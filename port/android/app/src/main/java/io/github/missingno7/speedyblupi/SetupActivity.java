@@ -34,8 +34,10 @@ public class SetupActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (hasGame(new File(getFilesDir(), "game")) ||
-            (getExternalFilesDir(null) != null && hasGame(new File(getExternalFilesDir(null), "game")))) {
+        File imported = new File(getFilesDir(), "game");
+        if (GameFolder.recognize(imported) == GameFolder.Kind.SB1 ||
+            (getExternalFilesDir(null) != null &&
+             GameFolder.recognize(new File(getExternalFilesDir(null), "game")) == GameFolder.Kind.SB1)) {
             startGame();
             return;
         }
@@ -53,6 +55,13 @@ public class SetupActivity extends Activity {
         status.setText("Speedy Blupi needs your own copy of the game.\n\n"
                 + "Choose the folder of an installed Speedy Blupi (the one that contains "
                 + "DATA, IMAGE08, IMAGE16 and SOUND). Its files are copied into the app once.");
+        // An earlier import that the game would not start (incomplete, or another game):
+        // ask again. Saves and settings live outside files/game and are kept.
+        if (imported.exists()) {
+            status.setText("The game files in the app are incomplete or are not Speedy Blupi.\n\n"
+                    + "Choose the folder of an installed Speedy Blupi or Speedy Eggbert again. "
+                    + "Your saves are kept.");
+        }
         layout.addView(status);
 
         choose = new Button(this);
@@ -89,10 +98,15 @@ public class SetupActivity extends Activity {
             String rootId = DocumentsContract.getTreeDocumentId(tree);
             int[] count = { 0 };
             copyTree(getContentResolver(), tree, rootId, temp, 0, count);
-            File game = findGame(temp);
+            File game = GameFolder.find(temp);
             if (game == null) {
+                GameFolder.Kind why = GameFolder.explain(temp);
                 deleteTree(temp);
-                report("That folder does not contain Speedy Blupi (no DATA and IMAGE08 folders).", true);
+                report(why == GameFolder.Kind.SB2
+                        ? "That folder holds Speedy Blupi 2 or Speedy Eggbert 2, which this app does not support yet."
+                        : why == GameFolder.Kind.INCOMPLETE
+                        ? "That folder's game files are incomplete (DATA/CONFIG.DEF, IMAGE08/INIT.BLP and DATA/DEMO200.BLP are needed)."
+                        : "That folder does not contain Speedy Blupi (no DATA and IMAGE08 folders).", true);
                 return;
             }
             deleteTree(target);
@@ -139,29 +153,6 @@ public class SetupActivity extends Activity {
                 }
             }
         }
-    }
-
-    // The game folder has DATA and IMAGE08 (any case); the chosen folder or one below.
-    private static File findGame(File dir) {
-        if (hasGame(dir)) return dir;
-        File[] children = dir.listFiles();
-        if (children == null) return null;
-        for (File child : children) {
-            if (child.isDirectory() && hasGame(child)) return child;
-        }
-        return null;
-    }
-
-    private static boolean hasGame(File dir) {
-        File[] children = dir.listFiles();
-        if (children == null) return false;
-        boolean data = false, image = false;
-        for (File child : children) {
-            if (!child.isDirectory()) continue;
-            if (child.getName().equalsIgnoreCase("DATA")) data = true;
-            if (child.getName().equalsIgnoreCase("IMAGE08")) image = true;
-        }
-        return data && image;
     }
 
     private static void deleteTree(File file) {

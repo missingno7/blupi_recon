@@ -1,5 +1,5 @@
 // SB2 adapter, derived from port/games/sb1/game/movie.cpp and
-// games/sb2/games/sb2/src/movie.cpp (historical origin).
+// games/sb2/src/movie.cpp (historical origin).
 // Port replacement of games/sb2/src/movie.cpp (historical: Planet Blupi-derived MCI AVI
 // playback of CMovie).
 //

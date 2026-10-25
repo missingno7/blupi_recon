@@ -1,5 +1,5 @@
 // Port compatibility header: <io.h> directory enumeration routed through the
-// port file system (port/compat/src/vfs.cpp).
+// port file system (port/common/platform/vfs.cpp).
 #ifndef BLUPI_COMPAT_IO_H
 #define BLUPI_COMPAT_IO_H
 

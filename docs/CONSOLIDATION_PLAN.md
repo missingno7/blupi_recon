@@ -247,6 +247,13 @@ stage starts, and the rollback is `git revert` of that stage's commits.
 
 Stages 1 and 2 are independent and could run in parallel. Stages 3 and 4 touch only `port/`.
 
+[UPDATED 2026-10-25, user direction]
+
+- **Native multiplayer comes right after stage 3** (port/docs/ROADMAP.md, stage 10). Stages 4 and 5
+  are optional and follow it.
+- **The network adapters are left out of stage 3.** Rank 6's movie/network alignment is reduced
+  to the SB1 movie log-once, because the network stubs will be replaced by the real transport.
+
 Matching research resumes only on new evidence, after stage 2.
 
 ## 8. Pilot (non-disruptive): repair the oracle-free build

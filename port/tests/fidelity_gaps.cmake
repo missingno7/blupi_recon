@@ -5,10 +5,13 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_libraries(fidelity_sound_sb2 PRIVATE blupi2_hist_context blupi2_game)
     add_executable(fidelity_language_sb2 fidelity_language.cpp)
     target_link_libraries(fidelity_language_sb2 PRIVATE blupi2_hist_context blupi2_game)
-    if(EXISTS "${PROJECT_SOURCE_DIR}/../.pyenv/python.exe" AND BLUPI2_TEST_DATA AND BLUPI2_TEST_DATA_BLUPI)
-        add_test(NAME fidelity_sb2_resources COMMAND "${PROJECT_SOURCE_DIR}/../.pyenv/python.exe"
+    if(BLUPI_TEST_PYTHON_PEFILE AND BLUPI2_TEST_DATA AND BLUPI2_TEST_DATA_BLUPI AND BLUPI2_TEST_DATA_VARIANTS)
+        add_test(NAME fidelity_sb2_resources COMMAND "${BLUPI_TEST_PYTHON}"
             "${CMAKE_CURRENT_SOURCE_DIR}/fidelity_resources.py"
-            --repo "${PROJECT_SOURCE_DIR}/.." --exe $<TARGET_FILE:fidelity_language_sb2>
+            --eggbert2 "${BLUPI2_TEST_DATA}" --blupi2 "${BLUPI2_TEST_DATA_BLUPI}"
+            --blupi2-variants "${BLUPI2_TEST_DATA_VARIANTS}"
+            --languages "${PROJECT_SOURCE_DIR}/games/sb2/languages"
+            --exe $<TARGET_FILE:fidelity_language_sb2>
             --work "${CMAKE_CURRENT_BINARY_DIR}/fidelity_resources")
     endif()
     add_executable(fidelity_editor_sb2 fidelity_editor.cpp)

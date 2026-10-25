@@ -2,12 +2,13 @@
 // stage 8). Derived from CEvent::BuildDown and CEvent::BuildMove
 // (src/event.cpp) and CDecor::ScreenPosToCelPos (src/decdesign.cpp).
 //
-// The editor's frame is centred in the wide view (never clamped), so a
-// position left or right of it is a frame position below 0 or from LXIMAGE
-// on, with the same mapping to cells. The original rejects those positions:
-// they were outside its window. Positions inside the frame still go to the
-// game unchanged. Cells outside the world are treated like positions outside
-// the original window: nothing happens and no cell is highlighted.
+// The world frame's place in the wide view is scene::PlaceView's: centred, and
+// clamped at a world edge like the play view. PortEditorMouse (main.cpp) gives a
+// press on one of the game's buttons to the game unchanged and passes world input
+// here in frame coordinates, including positions below 0 or from LXIMAGE on,
+// which the original rejected as outside its window. Cells outside the world are
+// treated like positions outside the original window: nothing happens and no
+// cell is highlighted.
 
 #include "def.h"
 #include "decor.h"

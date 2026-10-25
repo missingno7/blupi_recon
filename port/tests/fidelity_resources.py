@@ -37,19 +37,21 @@ def resources(path):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--repo', type=Path, required=True)
+    ap.add_argument('--eggbert2', type=Path, required=True, help='Eggbert 2 game root')
+    ap.add_argument('--blupi2', type=Path, required=True, help='Blupi 2 game root')
+    ap.add_argument('--blupi2-variants', type=Path, required=True, help='holds deutsch/ and francais/')
+    ap.add_argument('--languages', type=Path, required=True, help='port/games/sb2/languages')
     ap.add_argument('--exe', type=Path, required=True)
     ap.add_argument('--work', type=Path, required=True)
     args = ap.parse_args()
-    cases = [('eggbert-en', 'assets/eggbert2', 'Eggbert2.exe', ''),
-             ('blupi-en', 'assets/blupi2', 'BLUPI.EXE', ''),
-             ('blupi-de', 'assets/blupi2', 'Blupi.exe', 'deutsch'),
-             ('blupi-fr', 'assets/blupi2', 'Blupi.exe', 'francais')]
+    cases = [('eggbert-en', args.eggbert2, 'Eggbert2.exe', ''),
+             ('blupi-en', args.blupi2, 'BLUPI.EXE', ''),
+             ('blupi-de', args.blupi2, 'Blupi.exe', 'deutsch'),
+             ('blupi-fr', args.blupi2, 'Blupi.exe', 'francais')]
     args.work.mkdir(parents=True, exist_ok=True)
-    for pack, base, name, variant in cases:
-        data = args.repo / base
-        language = args.repo / 'assets/blupi2_variants' / variant if variant else data
-        original = language / name
+    for pack, data, name, variant in cases:
+        language = args.blupi2_variants / variant if variant else data
+        original = next((p for p in language.iterdir() if p.name.lower() == name.lower()), language / name)
         if not original.is_file():
             raise FileNotFoundError(original)
         expected = resources(original)
@@ -60,7 +62,7 @@ def main():
                 out.write(struct.pack('<II', sid, len(value)))
                 out.write(value)
         subprocess.run([str(args.exe), str(data), str(args.work / pack), pack,
-                        str(args.repo / 'port/games/sb2/languages' / (pack + '.txt')),
+                        str(args.languages / (pack + '.txt')),
                         str(fixture), str(language)], check=True, timeout=30)
 
 

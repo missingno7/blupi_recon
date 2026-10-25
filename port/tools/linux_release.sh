@@ -16,6 +16,8 @@
 #   BLUPI_LINUX_WORK  work directory (default: ~/blupi-release)
 #   BLUPI_DATA        game folder for the tests (default: assets/Speedy Blupi of this repo)
 #   BLUPI_SDL3_SRC    SDL3 source tree (default: build/third_party/SDL3-3.4.16 of this repo)
+#   BLUPI_TEST_DATA_EGGBERT, BLUPI2_DATA, BLUPI2_TEST_DATA_BLUPI, BLUPI2_TEST_DATA_VARIANTS
+#                     further editions for their tests, as in linux_check.sh (default: assets/, if present)
 #
 # Needs what linux_check.sh needs, and the development files of SDL's
 # backends, which decide what the SDL build supports (Ubuntu: libx11-dev
@@ -42,10 +44,12 @@ rsync -a --delete "$SDL/" "$WORK/sdl3-src/"
 # Enable each edition's regression suite when its original data is available.
 DATA2=${BLUPI2_DATA:-$REPO/assets/eggbert2}
 BLUPI2=${BLUPI2_TEST_DATA_BLUPI:-$REPO/assets/blupi2}
+VARIANTS2=${BLUPI2_TEST_DATA_VARIANTS:-$REPO/assets/blupi2_variants}
 EGGBERT1=${BLUPI_TEST_DATA_EGGBERT:-$REPO/assets/eggbert/Game}
 EGGBERT2_TEST=
 BLUPI2_TEST=
 EGGBERT1_TEST=
+VARIANTS2_TEST=
 if [ -d "$EGGBERT1" ]; then
     rsync -a --delete "$EGGBERT1/" "$WORK/eggbert-data/"
     EGGBERT1_TEST=$WORK/eggbert-data
@@ -58,6 +62,10 @@ if [ -d "$BLUPI2" ]; then
     rsync -a --delete "$BLUPI2/" "$WORK/blupi2-data/"
     BLUPI2_TEST=$WORK/blupi2-data
 fi
+if [ -d "$VARIANTS2" ]; then
+    rsync -a --delete "$VARIANTS2/" "$WORK/blupi2-variants/"
+    VARIANTS2_TEST=$WORK/blupi2-variants
+fi
 
 cmake -S "$WORK/sdl3-src" -B "$WORK/build/sdl3" -G Ninja -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX="$WORK/sdl3" -DCMAKE_INSTALL_LIBDIR=lib \
@@ -69,9 +77,13 @@ B="$WORK/build/release"
 cmake -S "$WORK/port" -B "$B" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_PREFIX_PATH="$WORK/sdl3" -DBLUPI_PORTABLE=ON -DBLUPI_TEST_DATA="$WORK/data" \
     -DBLUPI2_TEST_DATA="$EGGBERT2_TEST" -DBLUPI2_TEST_DATA_BLUPI="$BLUPI2_TEST" \
-    -DBLUPI_TEST_DATA_EGGBERT="$EGGBERT1_TEST"
+    -DBLUPI_TEST_DATA_EGGBERT="$EGGBERT1_TEST" \
+    -DBLUPI2_TEST_DATA_VARIANTS="$VARIANTS2_TEST"
 cmake --build "$B" -j 4
-ctest --test-dir "$B" -j 1 --output-on-failure
+# The provenance map check needs the complete repository: run it on the real tree
+# (port/docs/FIDELITY.md) and exclude it from the partial copy's ctest run, as linux_check.sh does.
+python3 "$REPO/port/tools/check_fidelity.py" --check
+ctest --test-dir "$B" -j 1 --output-on-failure -E '^fidelity_map$'
 
 OUT="$WORK/package/$NAME"
 rm -rf "$WORK/package"

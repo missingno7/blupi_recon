@@ -6,11 +6,11 @@
 // Sound effects: the historical bodies are kept (volume/pan arithmetic in
 // DirectSound hundredths of dB, per-Blupi channel stealing, the .blp wave
 // header reader); IDirectSoundBuffer calls go to the port mixer
-// (port/platform/audio.cpp).
+// (port/common/platform/audio.cpp).
 //
 // MIDI music: the historical MCI-sequencer flow is kept (open + play with
 // MCI_NOTIFY per song, close in SuspendMusic, midiOut volume table); the
-// sequencer is the port's SoundFont synthesizer (port/platform/music.cpp).
+// sequencer is the port's SoundFont synthesizer (port/common/platform/music.cpp).
 // Like MCI, the end of a song posts MM_MCINOTIFY(MCI_NOTIFY_SUCCESSFUL) to the
 // window, whose handler (game/main.cpp, copied from blupi.cpp) suspends and
 // restarts the music; closing a song that is still playing posts

@@ -34,10 +34,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         else()
             set(data "${BLUPI2_TEST_DATA_BLUPI}")
         endif()
-        if(data AND EXISTS "${PROJECT_SOURCE_DIR}/../.pyenv/python.exe")
+        if(data AND BLUPI_TEST_PYTHON)
             foreach(scenario attract tour editor save)
                 add_test(NAME fidelity_init_${edition}_${scenario}
-                    COMMAND "${PROJECT_SOURCE_DIR}/../.pyenv/python.exe" "${init_tests}/fidelity_init.py"
+                    COMMAND "${BLUPI_TEST_PYTHON}" "${init_tests}/fidelity_init.py"
                     --exe $<TARGET_FILE:fidelity_init_${game}> --data "${data}" --game ${game}
                     --scenario ${scenario} --work "${CMAKE_CURRENT_BINARY_DIR}/fidelity_init_${edition}_${scenario}")
                 set_tests_properties(fidelity_init_${edition}_${scenario} PROPERTIES TIMEOUT 1200)

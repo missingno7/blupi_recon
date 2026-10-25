@@ -3,7 +3,7 @@
 // Declares only the Win32 names that the shared historical game TUs in ../src
 // use, with the values of the original SDK so that message numbers, key codes
 // and serialized struct layouts are unchanged. Behaviour lives in
-// port/compat/src/win32.cpp. Anything not listed here is intentionally absent.
+// port/common/compat/src/win32.cpp. Anything not listed here is intentionally absent.
 //
 // Case variants used by the historical source (Windows.h, WTypes.h, DEF.H) are
 // resolved by the case-insensitive Windows file system; on case-sensitive
@@ -167,7 +167,7 @@ typedef struct _SECURITY_ATTRIBUTES
 #define VK_F11      0x7A
 #define VK_F12      0x7B
 
-// Functions implemented by the port (port/compat/src/win32.cpp).
+// Functions implemented by the port (port/common/compat/src/win32.cpp).
 BOOL    PostMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL    GetCursorPos(LPPOINT pt);
 BOOL    SetCursorPos(int x, int y);

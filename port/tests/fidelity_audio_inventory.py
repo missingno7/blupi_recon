@@ -13,14 +13,16 @@ import struct
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--assets", type=Path, required=True)
+    parser.add_argument("--assets", type=Path, action="append", required=True,
+                        help="a root searched for SOUND folders; repeatable")
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args()
     formats, folders = Counter(), Counter()
     rows = []
-    for folder in sorted(args.assets.rglob("*")):
-        if not folder.is_dir() or folder.name.lower() != "sound":
-            continue
+    folders_found = sorted((root, folder) for root in args.assets for folder in root.rglob("*")
+                           if folder.is_dir() and folder.name.lower() == "sound")
+    for root, folder in folders_found:
+        label = root.name if len(args.assets) > 1 else ""
         for path in sorted(folder.iterdir()):
             if not path.is_file():
                 continue
@@ -38,9 +40,9 @@ def main():
             assert header[12:16] == b"fmt " and header[36:40] == b"data", path
             assert struct.unpack_from("<I", header, 16)[0] == 16, path
             assert size >= 4 and size % align == 0 and path.stat().st_size >= 44 + size, path
-            relative = path.relative_to(args.assets).as_posix()
+            relative = "/".join(filter(None, [label, path.relative_to(root).as_posix()]))
             formats[str(fmt)] += 1
-            folders[path.parent.relative_to(args.assets).as_posix()] += 1
+            folders["/".join(filter(None, [label, path.parent.relative_to(root).as_posix()]))] += 1
             rows.append({"path": relative, "format": fmt, "data_bytes": size,
                          "header_sha256": hashlib.sha256(header).hexdigest()})
     assert rows, "no original SOUND WAVs available"
