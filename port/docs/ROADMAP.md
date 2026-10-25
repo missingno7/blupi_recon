@@ -605,9 +605,11 @@ and tested before it is packed. Procedure, signing key and build machines:
 
 ## Stage 10: native multiplayer (required; the next major milestone)
 
-The port is **not functionally complete** until it has multiplayer. Today both games' DirectPlay
-services are unavailable: the provider list is empty and session creation fails, deliberately
-(`games/{sb1,sb2}/game/network.cpp`; see the INTENTIONAL_DIFFERENCE edges in `provenance.json`).
+**Status (2026-10-25):** both games have native multiplayer on one shared transport, with their own
+protocol ids and wire rules (`common/net/`, [MULTIPLAYER.md](MULTIPLAYER.md)): steps 1 to 3 and 5
+done for SB1 (phone-PC session tested by the user), SB2 tested on one machine (two and four
+players); internet play by `--net-join` only. Before, both games' DirectPlay services were
+unavailable: the provider list was empty and session creation failed, deliberately.
 
 **Goal:** restore native multiplayer for both SB1 and SB2 by replacing DirectPlay with a portable
 network transport (agreed with the user, 2026-10-25). **Priority:** it starts immediately after

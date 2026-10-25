@@ -1,0 +1,10 @@
+# Native multiplayer, SB2 client (member id 2, lobby slot 1); see sb2_host.input.
+40 key 13           # title -> choose player
+70 click 127 434    # choose player: multiplayer service
+100 click 160 130   # service: provider row 0
+230 click 242 409   # service: OK -> EnumSessions finds the host's session (created at 170)
+260 click 140 130   # sessions: row 0
+270 click 140 409   # sessions: join -> lobby (JOIN, slot 1)
+300 click 308 160   # lobby: ready (slot 1)
+400 keydown 37      # play: walk left
+460 keyup 37

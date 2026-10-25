@@ -45,7 +45,7 @@ add_library(blupi2_game STATIC
     ${BLUPI_COMMON}/ui/options_screen.cpp ${BLUPI_COMMON}/ui/settings.cpp
     game/editor_wide.cpp game/scene.cpp game/end_of_tick.cpp
     game/main.cpp game/pixmap.cpp game/sound.cpp game/misc.cpp
-    game/movie.cpp game/network.cpp game/state_hash.cpp game/language.cpp game/probe.cpp
+    game/movie.cpp ${BLUPI_COMMON}/net/cnetwork.cpp game/state_hash.cpp game/language.cpp game/probe.cpp
     game/icon.cpp
     $<TARGET_OBJECTS:blupi2_hist>)
 target_link_libraries(blupi2_game PRIVATE blupi2_hist_context PUBLIC blupi_platform blupi_app)

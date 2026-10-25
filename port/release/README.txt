@@ -88,8 +88,9 @@ To join a host over the internet, start with --net-join HOST[:PORT]. A host
 uses UDP ports 28640 (game) and 28641 (discovery): allow them in your
 firewall (and forward them on your router for internet play). --net-port N
 chooses other ports. If the host leaves, the session ends for everyone.
-This is a release candidate: multiplayer has had little real-world play.
-Speedy Blupi 2 and Speedy Eggbert 2 have no multiplayer yet.
+Speedy Blupi 2 and Speedy Eggbert 2 work the same way, from their own
+multiplayer screens. This is a release candidate: multiplayer has had little
+real-world play.
 
 Your own language
 -----------------

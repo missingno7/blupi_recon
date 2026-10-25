@@ -1,0 +1,19 @@
+# Native multiplayer, SB2 host (port/tests/net_session.py --game sb2). Frame-indexed; the instances run
+# in lockstep under --net-test-sync. Button centres from the phase tables of port/games/sb2/game/event.cpp
+# (the same in both editions).
+40 key 13           # title -> choose player
+70 click 127 434    # choose player: multiplayer service (EnumProviders)
+100 click 160 130   # service: provider row 0, "Native network (UDP)"
+110 click 242 409   # service: OK -> CreateProvider, EnumSessions -> sessions
+140 click 182 409   # sessions: create a session
+150 key 82          # R
+151 key 79          # O
+152 key 79          # O
+153 key 77          # M
+170 click 242 346   # create: OK -> CreateSession -> lobby (host, slot 0)
+330 click 308 118   # lobby: host ready (slot 0)
+360 click 528 409   # lobby: start (all present and ready) -> play
+400 keydown 39      # play: walk right
+460 keyup 39
+480 keydown 38      # jump
+484 keyup 38

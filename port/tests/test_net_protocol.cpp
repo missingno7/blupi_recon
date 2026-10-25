@@ -1,14 +1,14 @@
-#include "game/network_protocol.h"
+#include "net/game_protocol.h"
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
-namespace wire=blupi::sb1::net;
+namespace wire=blupi::net::game;
 using Bytes=std::vector<uint8_t>;
 static void Check(bool ok,const char* what) { if (!ok) { std::fprintf(stderr,"FAIL %s\n",what); std::exit(1); } }
 static Bytes Packet(int type,size_t n) { Bytes b(n); b[0]=uint8_t(n); b[1]=type; return b; }
 static void Short(Bytes& b,int at,int v) { b[at]=uint8_t(v); b[at+1]=uint8_t(v>>8); }
 int main() {
-    wire::Context c; c.origin=2; c.local=1; c.receiverHost=true; c.reliable=true;
+    wire::Context c; c.rules=&wire::SB1; c.origin=2; c.local=1; c.receiverHost=true; c.reliable=true;
     c.known=[](uint32_t id){return id==1 || id==2;}; c.liveLift=[](int i){return i==0 || i==199;};
     c.players[0]={true,true,1,0}; c.players[1]={true,true,2,1};
     auto good=[&](const Bytes& b){ const char* error=wire::Validate(b.data(),b.size(),c); if (error) std::fprintf(stderr,"type %d: %s\n",b[1],error); Check(!error,"valid packet"); };
@@ -65,5 +65,24 @@ int main() {
     c.origin=99; bad(move);
     Check(wire::Classify(move.data(),20)==wire::Class::Gameplay,"MOVE namespace");
     Check(wire::Classify(close.data(),2)==wire::Class::Lobby,"CLOSE namespace");
-    std::puts("SB1 packet corpus passed before legacy layout entry");
+    // Speedy Blupi 2: the same vocabulary under its own rules.
+    auto event=[&](int type,int speed,int v){ Bytes e=move; e.resize(28); e[19]=1; e[20]=type; e[21]=uint8_t(speed); Short(e,26,v); return e; };
+    auto rules=[&](const wire::Rules& r,const Bytes& e,bool ok){ c.rules=&r; if (ok) good(e); else bad(e); };
+    c.origin=1; b=lobby; Short(b,2,12); rules(wire::SB2,b,true); rules(wire::SB1,b,false);
+    Short(b,2,13); rules(wire::SB2,b,false); c.origin=2;
+    b=move; Short(b,12,335); rules(wire::SB2,b,true); rules(wire::SB1,b,false);
+    Short(b,12,336); rules(wire::SB2,b,false);
+    b=move; b[16]=10; Short(b,12,288); rules(wire::SB2,b,true); rules(wire::SB1,b,false);
+    Short(b,12,289); rules(wire::SB2,b,false);
+    rules(wire::SB2,event(30,0,440),true); rules(wire::SB1,event(30,0,440),false); rules(wire::SB2,event(30,0,441),false);
+    rules(wire::SB2,event(40,0,92),true); rules(wire::SB1,event(40,0,92),false); rules(wire::SB2,event(40,0,93),false);
+    rules(wire::SB2,event(20,0,46),true); rules(wire::SB1,event(20,0,46),false);         // OVER
+    rules(wire::SB2,event(20,58,36),true); rules(wire::SB1,event(20,58,36),false);       // POLLUTION
+    rules(wire::SB2,event(20,-3,93),true); rules(wire::SB2,event(20,5,93),false);        // EXPLO8
+    rules(wire::SB2,event(21,0,100),true); rules(wire::SB2,event(21,0,204),false);       // delete any type
+    c.reliable=false;
+    rules(wire::SB2,event(20,0,90),true); rules(wire::SB2,event(20,0,46),false);         // EXPLO5 / OVER
+    c.reliable=true;
+    c.rules=nullptr; bad(move);
+    std::puts("SB1 and SB2 packet corpora passed before legacy layout entry");
 }

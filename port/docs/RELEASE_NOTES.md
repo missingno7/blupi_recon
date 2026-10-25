@@ -18,14 +18,13 @@ installed game. On the first start the port asks for its folder and remembers it
 - **Speedy Blupi 2 and Speedy Eggbert 2** on Windows and Linux (`blupi2-sdl3`) and in the Android
   app. The program recognises the edition from your data. It plays like the original, with the same optional
   widescreen, smooth motion and Display options as Speedy Blupi.
-- **Multiplayer for Speedy Blupi and Speedy Eggbert**, again: the original's network game for two to
-  four players, rebuilt on a native network layer in place of DirectPlay. The original game logic is
-  unchanged.
+- **Multiplayer**, again, in all four games: the original's network game for two to four players,
+  rebuilt on a native network layer in place of DirectPlay. The original game logic is unchanged.
   - **Choosing a session:** use the game's own multiplayer screens. Choose the provider "Native network
     (UDP)", then create a session, or join one found on your local network.
   - **Platforms:** Windows, Linux and Android players of the same edition can play together. Players
-    need the same edition (Speedy Blupi or Speedy Eggbert) and the same multiplayer maps; any language
-    works. Other sessions are not listed.
+    need the same game and edition (Speedy Blupi, Speedy Eggbert, Speedy Blupi 2 or Speedy Eggbert 2)
+    and the same multiplayer maps; any language works. Other sessions are not listed.
   - **Internet play:** start the joining player's game with `--net-join HOST[:PORT]` to add a host by
     address. Hosts use UDP ports 28640 (game) and 28641 (discovery); allow them in the firewall. Use
     `--net-port N` for other ports.
@@ -75,8 +74,6 @@ installed game. On the first start the port asks for its folder and remembers it
 
 ## Not in this release
 
-- **Multiplayer for Speedy Blupi 2 and Speedy Eggbert 2.** Their multiplayer screens open, but there is
-  nothing to join or create.
 - **The intro and ending movies.** The original skipped them when the system could not play AVI, and
   the installed games do not include them.
 - **Speedy Blupi 2's CD audio tracks.**

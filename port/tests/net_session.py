@@ -1,6 +1,6 @@
-"""Two to four SB1 instances in one native multiplayer session (port/docs/MULTIPLAYER.md).
+"""Two to four SB1 or SB2 instances in one native multiplayer session (port/docs/MULTIPLAYER.md).
 
-A host and a client run headless with scripted input (tests/net/sb1_*.input) and --net-test-sync: this
+A host and clients run headless with scripted input (tests/net/<game>_*.input) and --net-test-sync: this
 supervisor grants each tick to both only after both finished the previous one, telling each how many
 messages every member had sent by then, so each peer sees the same messages at the same tick in every run.
 The test checks from each peer's network audit (user dir/network.trace) that they created and joined one
@@ -17,7 +17,7 @@ import subprocess
 import sys
 import time
 
-PLAY = 1525
+PLAY = 1525  # WM_PHASE_PLAY, in both games
 
 
 def free_port():
@@ -43,7 +43,7 @@ def run(args, work, port):
         user.mkdir()
         env = dict(os.environ, BLUPI_NET_TEST_DIR=str(control), BLUPI_NET_TEST_ROLE=str(role))
         command = [args.exe, "--headless", "--data", args.data, "--user", str(user), "--color", "16",
-                   "--frames", str(args.frames), "--input", str(Path(args.inputs) / f"sb1_{name}.input"),
+                   "--frames", str(args.frames), "--input", str(Path(args.inputs) / f"{args.game}_{name}.input"),
                    "--trace", str(work / f"{name}.trace"), "--net-test-sync", "--net-port", str(port)]
         for frame in args.state_dump:
             command += ["--state-dump", f"{frame}:{work / f'{name}-state-{frame}.txt'}"]
@@ -128,7 +128,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--exe", required=True)
     parser.add_argument("--data", required=True)
-    parser.add_argument("--inputs", required=True, help="directory with sb1_host.input and sb1_client.input")
+    parser.add_argument("--game", choices=("sb1", "sb2"), default="sb1", help="which game's input scripts")
+    parser.add_argument("--inputs", required=True, help="directory with <game>_host.input, <game>_client.input, ...")
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--frames", type=int, default=700)
     parser.add_argument("--players", type=int, choices=(2, 3, 4), default=2)

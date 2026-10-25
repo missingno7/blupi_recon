@@ -137,7 +137,7 @@ void visit_value(F& f, const char* name, const T& v)
 
 // The host's lift synchro messages (CDecor::MoveObjectStepLine, src/decmove.cpp: PK_ASCENSEURSTART/END)
 // leave NetMessage::data1 uninitialised; only PK_OBJECTSTART carries a value there (the speed). The
-// queue is hashed with that byte read as the network adapter sends it (network_protocol.cpp
+// queue is hashed with that byte read as the network adapter sends it (net/game_protocol.cpp
 // Canonicalise), so the hash does not depend on stack contents. Single-player runs never push these.
 template <typename F, size_t N>
 void visit_value(F& f, const char* name, const NetMessage (&v)[N])

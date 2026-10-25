@@ -31,6 +31,7 @@
 #include "menu.h"
 #include "event.h"
 #include "network.h"
+#include "game/network_port.h"
 #include "misc.h"
 #include "port_messages.h"
 
@@ -1174,6 +1175,7 @@ int BlupiMain(int argc, char** argv)
     game.validateOptions = [](const Options& o) { return !o.host.headless || o.ticks >= 0; };
 
     game.configure = [](const Options& o) {
+        PortNetworkConfigure(o.net.testSync ? o.userRoot+"/network.trace" : "");
         g_bHeadless = o.host.headless;
         g_portColorDepth = o.colorDepth; g_wideWidth = o.wideWidth;
         g_bReference = o.reference; g_renderRepeat = o.renderRepeat;
@@ -1207,7 +1209,11 @@ int BlupiMain(int argc, char** argv)
     game.finish = [&]() { FinishObjects(); if (demoLog) { fclose(demoLog); demoLog = nullptr; } };
     game.timerStep = TimerStep; game.timerInterval = []() { return g_timerInterval; };
     game.soundPoll = PortSoundPoll; game.saveSettings = PortSaveSettings;
-    game.prepareTick = [](long frame) { g_drawProbeFrame = frame; PortProbeApply(frame); };
+    game.prepareTick = [](long frame) {
+        g_drawProbeFrame = frame;
+        PortNetworkTick(frame);
+        PortProbeApply(frame);
+    };
     game.completedTick = [&](long frame) {
         int demo = g_pEvent->*PortEventAccess::m_bDemoPlay ? 300 + g_pEvent->*PortEventAccess::m_demoNumber : -1;
         if (demoLog && demo != lastDemo) fprintf(demoLog, "%ld %d\n", frame, demo);

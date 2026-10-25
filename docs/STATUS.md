@@ -152,7 +152,8 @@ These are bounded receipts, not whole-game certification.
 - **Multiplayer:** SB1 has native multiplayer (release candidate 1.2.0-rc1,
   [port/docs/MULTIPLAYER.md](../port/docs/MULTIPLAYER.md)). It works for two to four players across
   Windows, Linux and Android, with LAN discovery, a content check and `--net-join`. It has been tested
-  automatically, with little real-device play. SB2 multiplayer is still unavailable (roadmap stage 10).
+  automatically, with little real-device play. SB2 has the same multiplayer since 2026-10-25, tested
+  automatically on one machine (two and four players).
 - **AVI movies:** not played; the phase is skipped.
 - **SB2 CD audio:** fails, logged once.
 - **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.

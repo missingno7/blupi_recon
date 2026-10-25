@@ -454,21 +454,34 @@ include(fidelity_audio.cmake)
 include(fidelity_init.cmake)
 include(fidelity_save.cmake)
 
-add_executable(test_net_sb1_protocol test_net_sb1_protocol.cpp)
-target_link_libraries(test_net_sb1_protocol PRIVATE blupi_sb1_protocol)
-add_test(NAME net_sb1_protocol COMMAND test_net_sb1_protocol)
+add_executable(test_net_protocol test_net_protocol.cpp)
+target_link_libraries(test_net_protocol PRIVATE blupi_net)
+add_test(NAME net_protocol COMMAND test_net_protocol)
 add_executable(test_net_transport test_net_transport.cpp)
 target_link_libraries(test_net_transport PRIVATE blupi_net)
 add_test(NAME net_transport COMMAND test_net_transport)
 set_tests_properties(net_transport PROPERTIES TIMEOUT 20)
-# Two SB1 instances in one native session on loopback, lockstepped by the supervisor (net_sb1.py).
+# Two and four instances in one native session on loopback, lockstepped by the supervisor
+# (net_session.py): SB1, and SB2 in both editions.
 if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
-    add_test(NAME net_sb1_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_sb1.py"
+    add_test(NAME net_sb1_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
         --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1")
     set_tests_properties(net_sb1_two_instances PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
-    add_test(NAME net_sb1_four_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_sb1.py"
+    add_test(NAME net_sb1_four_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
         --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_4" --players 4)
     set_tests_properties(net_sb1_four_instances PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
+endif()
+if(BLUPI2_TEST_DATA AND BLUPI_TEST_PYTHON)
+    add_test(NAME net_sb2_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
+        --game sb2 --exe $<TARGET_FILE:blupi2> --data "${BLUPI2_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2")
+    set_tests_properties(net_sb2_two_instances PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
+endif()
+if(BLUPI2_TEST_DATA_BLUPI AND BLUPI_TEST_PYTHON)
+    add_test(NAME net_sb2_four_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_session.py"
+        --game sb2 --exe $<TARGET_FILE:blupi2> --data "${BLUPI2_TEST_DATA_BLUPI}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb2_4" --players 4)
+    set_tests_properties(net_sb2_four_instances PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
 endif()

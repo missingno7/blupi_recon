@@ -132,6 +132,27 @@ BLUPI_MEMBER_ACCESS(DecorAccess, CDecor, HASH_DECOR_MEMBERS)
 #define HASH_EVENT_MEMBERS(X) EVENT_VALUES(X) EVENT_TEXTS(X) X(m_buttons)
 BLUPI_MEMBER_ACCESS(EventAccess, CEvent, HASH_EVENT_MEMBERS)
 
+template <typename F, typename T>
+void visit_value(F& f, const char* name, const T& v)
+{
+	f(name, &v, sizeof(v));
+}
+
+// The host's lift synchro messages (CDecor::MoveObjectStepLine, games/sb2/src/decmove.cpp:
+// PK_ASCENSEURSTART/END) leave NetMessage::data1 uninitialised; only PK_OBJECTSTART carries a value
+// there (the speed). The queue is hashed with that byte read as the network adapter sends it
+// (port/common/net/game_protocol.cpp Canonicalise), so the hash does not depend on stack contents.
+// Single-player runs never push these.
+template <typename F, size_t N>
+void visit_value(F& f, const char* name, const NetMessage (&v)[N])
+{
+	NetMessage copy[N];
+	memcpy(copy, v, sizeof(copy));
+	for (NetMessage& m : copy)
+		if (m.type != PK_OBJECTSTART) m.data1 = 0;
+	f(name, copy, sizeof(copy));
+}
+
 // Calls f(name, bytes, size) for every hashed piece of state, in a fixed order.
 template <typename F>
 void visit_state(F&& f)
@@ -141,7 +162,7 @@ void visit_state(F&& f)
 	if (g_pDecor != NULL)
 	{
 		const CDecor& d = *g_pDecor;
-#define VISIT(m) f("CDecor::" #m, &(d.*DecorAccess::m), sizeof(d.*DecorAccess::m));
+#define VISIT(m) visit_value(f, "CDecor::" #m, d.*DecorAccess::m);
 		DECOR_VALUES(VISIT)
 #undef VISIT
 #define VISIT(m) visit_texts(f, "CDecor::" #m, d.*DecorAccess::m);

@@ -55,11 +55,11 @@ else()
     target_compile_definitions(blupi_enet PRIVATE HAS_FCNTL=1 HAS_POLL=1 HAS_GETADDRINFO=1
         HAS_GETNAMEINFO=1 HAS_INET_PTON=1 HAS_INET_NTOP=1 HAS_SOCKLEN_T=1)
 endif()
-add_library(blupi_net STATIC common/net/session.cpp)
+# The transport and the games' wire rules (SB1, SB2), shared by both games. Each game compiles the
+# CNetwork adapter (common/net/cnetwork.cpp) in its own historical context.
+add_library(blupi_net STATIC common/net/session.cpp common/net/game_protocol.cpp)
 target_include_directories(blupi_net PUBLIC ${BLUPI_COMMON})
 target_link_libraries(blupi_net PRIVATE blupi_enet)
-add_library(blupi_sb1_protocol STATIC games/sb1/game/network_protocol.cpp)
-target_include_directories(blupi_sb1_protocol PUBLIC ${BLUPI_GAME_DIR})
 
 # Historical TUs compiled unchanged. The other seven historical TUs (blupi, ddutil,
 # misc, movie, network, pixmap, sound) talk to Windows/DirectX/MCI and are replaced
@@ -169,7 +169,7 @@ add_library(blupi_game STATIC
     games/sb1/game/pixmap.cpp
     games/sb1/game/sound.cpp
     games/sb1/game/movie.cpp
-    games/sb1/game/network.cpp
+    common/net/cnetwork.cpp
     games/sb1/game/state_hash.cpp
     games/sb1/game/scene.cpp
     games/sb1/game/probe.cpp
@@ -179,7 +179,7 @@ add_library(blupi_game STATIC
     common/ui/settings.cpp
     games/sb1/game/language.cpp
     $<TARGET_OBJECTS:blupi_hist>)
-target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform blupi_app blupi_sb1_protocol)
+target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform blupi_app)
 target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${BLUPI_PORT_VERSION}")
 target_include_directories(blupi_game PRIVATE ${BLUPI_GAME_DIR})
 

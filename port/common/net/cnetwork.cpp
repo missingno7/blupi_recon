@@ -1,10 +1,12 @@
-// Native replacement of src/network.cpp. The DirectPlay public contract stays
-// intact; UDP sessions do not interoperate with DirectPlay and never migrate hosts.
+// Native replacement of src/network.cpp and games/sb2/src/network.cpp, compiled in each game's
+// historical context (its def.h, decor.h, network.h; game/network_port.h names its wire rules). The
+// DirectPlay public contract stays intact; UDP sessions do not interoperate with DirectPlay and never
+// migrate hosts.
 #include "def.h"
 #include "network.h"
 #include "decor.h"
 #include "event.h"
-#include "game/network_protocol.h"
+#include "net/game_protocol.h"
 #include "game/network_port.h"
 #include "game/port_game.h"
 #include "game/member_access.h"
@@ -38,9 +40,10 @@ static_assert(sizeof(NetPlayer) == 32 && offsetof(NetPlayer, dpid) == 4 && offse
 extern CDecor* g_pDecor;
 extern CEvent* g_pEvent;
 
-// What every peer of a session must share, on any platform: the edition and the ten multiplayer
-// maps (data/world101..110.blp, the lobby's map choices 1..10), read through the game's file system
-// exactly as the game will load them. FNV-1a, 64 bits; carried in every session envelope.
+// What every peer of a session must share, on any platform: the game, the edition and the
+// multiplayer maps (SB1 data/world101..110.blp, SB2 world201..212.blp: the lobby's map choices),
+// read through the game's file system exactly as the game will load them. FNV-1a, 64 bits; carried
+// in every session envelope.
 static uint64_t ContentFingerprint()
 {
 	uint64_t hash = 1469598103934665603ULL;
@@ -48,9 +51,10 @@ static uint64_t ContentFingerprint()
 		const uint8_t* bytes = static_cast<const uint8_t*>(data);
 		for (size_t i = 0; i < size; i++) { hash ^= bytes[i]; hash *= 1099511628211ULL; }
 	};
-	const std::string game = "sb1/" + PortEdition();   // "blupi" or "eggbert", from the data
+	const blupi::net::game::Rules& rules = PortNetworkRules();
+	const std::string game = std::string(rules.game) + "/" + PortEdition();   // "sb1/blupi", ...
 	mix(game.c_str(), game.size() + 1);
-	for (int map = 101; map <= 110; map++)
+	for (int map = rules.worldBase + 1; map <= rules.worldBase + rules.maps; map++)
 	{
 		char name[32];
 		snprintf(name, sizeof(name), "data\\world%.3d.blp", map);
@@ -67,12 +71,12 @@ static uint64_t ContentFingerprint()
 	return hash;
 }
 namespace {
-namespace wire = blupi::sb1::net;
+namespace wire = blupi::net::game;
 namespace native = blupi::net;
 #define NET_DECOR_MEMBERS(X) X(m_moveObject) X(m_decor) X(m_netBlupiPos) X(m_netBlupiIcon)
 BLUPI_MEMBER_ACCESS(NetDecor, CDecor, NET_DECOR_MEMBERS)
 struct State {
-    native::Session session{wire::Protocol,wire::Version};
+    native::Session session{PortNetworkRules().protocol,wire::Version};
     bool provider=false, started=false, terminal=false;
     std::vector<native::Advertisement> listed;
     std::deque<native::Message> lobby,gameplay;
@@ -90,7 +94,7 @@ void Reject(State& s,const char* reason) {
     if (s.logged.insert(reason).second) { char b[160]; snprintf(b,sizeof(b),"rejected %s",reason); Note(b); }
 }
 wire::Context Context(CNetwork* n,uint32_t origin,bool reliable,bool trusted=false) {
-    State& s=Get(n); wire::Context c;
+    State& s=Get(n); wire::Context c; c.rules=&PortNetworkRules();
     c.origin=origin; c.local=n->m_dpid; c.receiverHost=n->IsHost(); c.started=s.started;
     c.reliable=reliable; c.trusted=trusted;
     for (int i=0;i<4;++i) {

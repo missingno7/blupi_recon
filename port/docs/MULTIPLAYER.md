@@ -2,31 +2,36 @@
 
 ## Status (2026-10-25, branch `multiplayer-pilot`)
 
-Scope: one game and edition at a time, on any platform. Windows, Linux and Android builds of the same
-edition play together; different games or editions never do (the content check below refuses them).
+Scope: Speedy Blupi and Speedy Eggbert (SB1), Speedy Blupi 2 and Speedy Eggbert 2 (SB2), one game and
+edition at a time, on any platform. Windows, Linux and Android builds of the same edition play together;
+different games or editions never do (the protocol id and the content check below refuse them).
 
 [EVIDENCE] Tests (Windows MinGW build; the two-instance test also on Linux):
 
-- `net_sb1_two_instances` and `net_sb1_four_instances` (`tests/net_sb1.py --players 2|4`, scripts in
-  `tests/net/`): a host and one or three clients, headless and lockstepped by the supervisor
+- `net_sb1_two_instances` and `net_sb1_four_instances` (`tests/net_session.py --players 2|4`, scripts
+  `tests/net/sb1_*.input`): a host and one or three clients, headless and lockstepped by the supervisor
   (`--net-test-sync`), go through the original screens: choose player, the provider list ("Native network
   (UDP)"), sessions, create / join, the lobby with all members, ready, start, then play. Every peer receives
   every other member's MOVE bundles and their embedded events: the host's lift start/end synchro (types
   50/51, the original host-only lift coordination), object starts/deletes and sounds; lobby JOIN, READY,
   LOBBY and START. No packet is rejected. Run twice, each peer's frame trace and network audit repeat byte
   for byte (about 22 s per run on Windows, 2 s on Linux).
+- `net_sb2_two_instances` (Speedy Eggbert 2 data) and `net_sb2_four_instances` (Speedy Blupi 2 data):
+  the same scenario with `--game sb2` (scripts `tests/net/sb2_*.input`, from SB2's own phase tables),
+  with the same checks and repeatability (about 23 s per run on Windows).
 - `net_transport`: handshake, member ids, reliable order, relay without echo, unsequenced delivery,
   protocol/version/content/full/after-start refusals, LAN discovery (and reporting of an incompatible
   session), graceful disconnect events, bounded close, host loss.
-- `net_sb1_protocol`: the validator's corpus of valid and malformed packets for every message kind.
+- `net_protocol`: the validator's corpus of valid and malformed packets for every message kind, and the
+  places where the SB1 and SB2 rules differ.
 
 [DESIGN] Cross-platform rules:
 
-- **Wire format:** the historical byte layout, little-endian, signed char; `network.cpp` asserts the
+- **Wire format:** the historical byte layout, little-endian, signed char; `cnetwork.cpp` asserts the
   sizes and offsets of `NetMessage`, `NetPacket` and `NetPlayer`, so a platform that differed would not
   build.
 - **Compatibility:** every session envelope carries a 64-bit content fingerprint: the game, the edition
-  and the ten multiplayer maps (`data/world101..110`) as the game loads them. A join with another edition
+  and the multiplayer maps (SB1 `data/world101..110`, SB2 `data/world201..212`) as the game loads them. A join with another edition
   or other maps is refused; such sessions are logged and not listed.
 - **Finding sessions:** LAN discovery (a broadcast query, answered on the game port + 1) fills the
   original session list. Addresses can be added with `--net-join HOST[:PORT]`; `--net-port N` changes
@@ -43,7 +48,7 @@ edition play together; different games or editions never do (the content check b
   servicing its session (SDL pauses the game loop), so after ENet's peer timeout (1.5 to 3 s) the others see
   it leave; untested;
 - the validator's remaining whitelists and margins before internet exposure;
-- SB2 (`games/sb2/game/network.cpp` stays the unavailable stub).
+- SB2 between real devices (tested on one machine only).
 
 Host migration is unsupported by design (below).
 
@@ -84,9 +89,14 @@ assessment [MULTIPLAYER_ASSESSMENT.md](MULTIPLAYER_ASSESSMENT.md) (static, file:
 - [DESIGN] **Envelope:** game protocol id (SB1 and SB2 differ and never interoperate), protocol version,
   session epoch, origin member id (the DPID the game sees; assigned by the host, nonzero), payload length.
   The member id comes from the connection, never from a client-written field.
-- [DESIGN] **One game protocol adapter per game** (`games/sb1/game/network_protocol.*`, later sb2). It
-  classifies a payload by (length, type) into the lobby or the gameplay namespace (unambiguous for SB1:
-  lobby lengths 2/12/28/108/132, gameplay 3/4/20..60), and validates it atomically before `Receive`
+- [DESIGN] **One validator, one rule table per game** (`common/net/game_protocol.*`). [EVIDENCE] SB2
+  inherited SB1's messages and layouts unchanged (`games/sb2/src` decor.h, network.h, the PK_*/MESS_*
+  values, the same Send/Receive sites); only what each game's code can emit differs: object types and
+  speeds, the unreliable effect types, sounds, icon counts and the lobby's maps (SB1 1..10, SB2 1..12).
+  Each table cites its sources; SB1 and SB2 also have their own protocol ids. One `CNetwork` adapter
+  (`common/net/cnetwork.cpp`) is compiled in each game's historical context; `game/network_port.h`
+  names the game's rules. The validator classifies a payload by (length, type) into the lobby or the
+  gameplay namespace (unambiguous: lobby lengths 2/12/28/108/132, gameplay 3/4/20..60), and validates it atomically before `Receive`
   returns it: exact lengths, sender owns the DPIDs it names, slot/team/ready/map ranges, NUL-terminated
   names and chat, embedded event count and per-event ranges. Rejected packets are counted and logged,
   never passed on. `Receive(…, 200, …)` returns only lobby messages; `Receive(…, 60, …)` only gameplay
@@ -113,6 +123,6 @@ assessment [MULTIPLAYER_ASSESSMENT.md](MULTIPLAYER_ASSESSMENT.md) (static, file:
    two-instance regression test.
 2. LAN, up to four players, with discovery.
 3. Internet: direct IP and port first; NAT traversal or a relay only where needed.
-4. SB2 adapter on the same transport (its own protocol id and validator).
+4. SB2 on the same transport, with its own protocol id and rules (done 2026-10-25).
 5. Android: INTERNET permission, lifecycle handling, interoperability with the desktop for the editions
    the app supports.
