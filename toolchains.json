@@ -1,0 +1,85 @@
+{
+  "about": "Expected historical toolchain components for tools/build.py (docs/BUILDING.md). External, never vendored: install under C:\tools. The build refuses a different binary unless --allow-unpinned-toolchain, which it records as a degradation. Paths are relative to each root; Windows paths are case-insensitive.",
+  "trees": {
+    "sp3": {
+      "root": "C:\\tools\\msvc5_sp3",
+      "release": "Visual C++ 5.0 Service Pack 3 (C1XX/C2 11.00.7303, LINK 5.10.7303)",
+      "files": {
+        "compile": {
+          "VC/BIN/CL.EXE": "bf9f9c74f756fed96e13f7f9a4273495c7dde0a1fb968e3ef6d760ad6d73dfeb",
+          "VC/BIN/C1XX.DLL": "e27df3bb9a37058c85dad3fb7d1ed30b9e52d38fb6c0f66c8fdba0a11111d3d9",
+          "VC/BIN/C2.EXE": "e75aecaf4073b0817ffb638cae5fff636b2e2d1a090daabf8f68dbc954515fae",
+          "SHAREDIDE/BIN/MSPDB50.DLL": "730497a2cc447ad0ea91c52ed9aa1b9d21572f4ca37ce686937946c5a98f7f8c"
+        },
+        "resource": {
+          "SHAREDIDE/BIN/RC.EXE": "14a84379d318c76760bd550afaece03b5e8b39b49cbf6de7e0f7f0eac8216242",
+          "SHAREDIDE/BIN/RCDLL.DLL": "3c36f9b3d433eb5354655796659d6247684df8158b367d334969183b35454f3c",
+          "VC/MFC/INCLUDE/AFXRES.H": "47fba734122fd7f960413411e26c62768eefaa8f1b4141023948d55d434fa3cf"
+        },
+        "link": {
+          "VC/BIN/LINK.EXE": "04c892989f4cc8076ef45e033215eb7aefbdf1459cbee9b13a81f8ddb718b579",
+          "VC/BIN/CVTRES.EXE": "16a45886f9257d990a9478c32ee6c1cbf4ac1fbcf889e5755960539233962465",
+          "SHAREDIDE/BIN/MSPDB50.DLL": "730497a2cc447ad0ea91c52ed9aa1b9d21572f4ca37ce686937946c5a98f7f8c",
+          "SHAREDIDE/BIN/MSDIS100.DLL": "2abf240e688910b903065c2c26321d1dc3aecb82186fdbee113a01c9ef3d8943"
+        },
+        "libraries": {
+          "VC/LIB/KERNEL32.LIB": "095f231e13cb3e6a6c4913d33ca8048506011034c89774b6ba0857466abba3cf",
+          "VC/LIB/USER32.LIB": "5badb752dbcd6355a666d5b88aa9fd5e27291c16edc76f1b5258468d994f1809",
+          "VC/LIB/GDI32.LIB": "3c202569b76ec990be85393d484261fdb9b67614b35d7abd169eecf845d070f8",
+          "VC/LIB/WINMM.LIB": "a996cf8e569b6f2dd0a478119a57c325733af545ffee2e6c6fa7dba40bfba260",
+          "VC/LIB/LIBC.LIB": "3b5f43e920c37c8da086b0d3ef0396e6517d44fcdcb4e7d03a6058620bc13ee3",
+          "VC/LIB/OLDNAMES.LIB": "56190b253c7c5f127569cd1dc037e27600f42e4952f558e7ab1966cbb98cb1d6"
+        }
+      }
+    },
+    "rtm": {
+      "root": "C:\\tools\\msvc5_rtm",
+      "release": "Visual C++ 5.0 RTM (C1XX/C2 11.00.7022, LINK 5.00.7022)",
+      "files": {
+        "compile": {
+          "VC/BIN/CL.EXE": "bf9f9c74f756fed96e13f7f9a4273495c7dde0a1fb968e3ef6d760ad6d73dfeb",
+          "VC/BIN/C1XX.DLL": "fea1e9fbbc2d204202f1a5ea61e5a938b17a92acda57e16dd53d4ec01c9d186b",
+          "VC/BIN/C2.EXE": "6d1406af5f62647347cfa7175cd7e108b838d6841a546396f29252198a14d73d",
+          "SHAREDIDE/BIN/MSPDB50.DLL": "06aaaca9c928bdef790259c9c30328529e10d1ec2f77da09c4ff74de7734fe69"
+        },
+        "resource": {
+          "SHAREDIDE/BIN/RC.EXE": "14a84379d318c76760bd550afaece03b5e8b39b49cbf6de7e0f7f0eac8216242",
+          "SHAREDIDE/BIN/RCDLL.DLL": "3c36f9b3d433eb5354655796659d6247684df8158b367d334969183b35454f3c",
+          "VC/MFC/INCLUDE/AFXRES.H": "47fba734122fd7f960413411e26c62768eefaa8f1b4141023948d55d434fa3cf"
+        },
+        "link": {
+          "VC/BIN/LINK.EXE": "279544809e6353c8e622eb88aea94e86b0258f3c4b8a976373bf4d68a41b63e1",
+          "VC/BIN/CVTRES.EXE": "0f82167cd888105224463feef5cadebaef970c12932597919e3033d77ed3de6c",
+          "SHAREDIDE/BIN/MSPDB50.DLL": "06aaaca9c928bdef790259c9c30328529e10d1ec2f77da09c4ff74de7734fe69",
+          "SHAREDIDE/BIN/MSDIS100.DLL": "c54d1bf7bc7bf321ad8a903f083f34b0f12ec984761c0280ff9a72190798c0cb"
+        },
+        "libraries": {
+          "VC/LIB/KERNEL32.LIB": "095f231e13cb3e6a6c4913d33ca8048506011034c89774b6ba0857466abba3cf",
+          "VC/LIB/USER32.LIB": "5badb752dbcd6355a666d5b88aa9fd5e27291c16edc76f1b5258468d994f1809",
+          "VC/LIB/GDI32.LIB": "3c202569b76ec990be85393d484261fdb9b67614b35d7abd169eecf845d070f8",
+          "VC/LIB/WINMM.LIB": "a996cf8e569b6f2dd0a478119a57c325733af545ffee2e6c6fa7dba40bfba260",
+          "VC/LIB/LIBC.LIB": "4ae22c6f35a87c55c453ad388ada649ea3ba190614be3d1ab95935ba0faa7416",
+          "VC/LIB/OLDNAMES.LIB": "56190b253c7c5f127569cd1dc037e27600f42e4952f558e7ab1966cbb98cb1d6"
+        }
+      }
+    }
+  },
+  "sdk": {
+    "dx5": {
+      "root": "C:\\tools\\dx5sdk",
+      "release": "DirectX 5 SDK",
+      "files": {
+        "include": {
+          "INCLUDE/DDRAW.H": "623ed553f6a52584cecf9280765c1807a5753836165da4acbac249094b5f063f",
+          "INCLUDE/DSOUND.H": "67f7c8a9f665e826bebbfae68cdace844201b0dbd33374e3c71e4e295edba098",
+          "INCLUDE/DPLAY.H": "546bef5a76cf6c394b455096f86fc9525fd588f00811cbf21706f56f2a0ca516"
+        },
+        "libraries": {
+          "LIB/DSOUND.LIB": "d3fa26193425aa6f8036803b9b3d54844de0e818d3cd5127a4e82270eb076c82",
+          "LIB/DDRAW.LIB": "ff9b53803b300dfec1e9c3403acdc4614474bbb82c256d1a9c930c6d84ab783a",
+          "LIB/DPLAYX.LIB": "fbd8f636bfea34649b850bf89139bf715862f1b3cdb2a3c9ab8a7bbe6cb2e67c"
+        }
+      }
+    }
+  }
+}

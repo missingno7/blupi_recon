@@ -114,6 +114,32 @@
       "source": "games/sb2/src/dectables.cpp"
     }
   ],
+  "standalone_link": {
+    "image_base": "0x400000",
+    "section_alignment": 4096,
+    "object_order": [
+      "games/sb2/src/blupi.cpp",
+      "games/sb2/src/button.cpp",
+      "games/sb2/src/ddutil.cpp",
+      "games/sb2/src/decblock.cpp",
+      "games/sb2/src/decdesign.cpp",
+      "games/sb2/src/decblupi.cpp",
+      "games/sb2/src/decnet.cpp",
+      "games/sb2/src/decmove.cpp",
+      "games/sb2/src/decor.cpp",
+      "games/sb2/src/event.cpp",
+      "games/sb2/src/jauge.cpp",
+      "games/sb2/src/menu.cpp",
+      "games/sb2/src/misc.cpp",
+      "games/sb2/src/movie.cpp",
+      "games/sb2/src/network.cpp",
+      "games/sb2/src/dectables.cpp",
+      "games/sb2/src/pixmap.cpp",
+      "games/sb2/src/sound.cpp",
+      "games/sb2/src/text.cpp"
+    ],
+    "provenance": "Ordinary-build settings for all four SB2 targets (tools/build.py). Image base and section alignment are those of the four originals; the object order is the text order of their TU anchors, also SB1's (docs/SB2.md). A chosen build configuration, not a claim of original linker-input identity."
+  },
   "accepted_functions": [
     {
       "symbol": "?GetNum@@YAHPAD@Z",

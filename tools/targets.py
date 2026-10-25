@@ -181,6 +181,66 @@ def load(name: str | None = None) -> Target:
                   source_overlays=list(spec.get("source_overlays", [])))
 
 
+BUILD_SECTIONS = ("source_root", "toolchain", "translation_units", "standalone_link", "source_overlays")
+
+
+@dataclass
+class BuildSpec:
+    """What an ordinary build of a target needs: no executable, hash, oracle directory or address map."""
+    name: str
+    status: str
+    manifest_path: Path
+    image_name: str
+    defines: list[str]
+    toolchain_tree: str | None
+    link_tree: str | None
+    build_path: str | None
+    source_overlays: list[str]
+    resource_script: str | None
+    resource_note: str | None
+
+    @property
+    def primary(self) -> bool:
+        return self.status == "primary"
+
+    @property
+    def slug(self) -> str:
+        return self.name.replace("/", "-")
+
+    def manifest(self) -> dict[str, Any]:
+        """The manifest's build sections with this target's defines, compiler, path and overlays applied.
+
+        Verification data (accepted functions, mappings, certificates) is dropped, never interpreted."""
+        full = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        manifest = copy.deepcopy({key: full[key] for key in BUILD_SECTIONS if key in full})
+        manifest["source_overlays"] = list(manifest.get("source_overlays", [])) + self.source_overlays
+        manifest["toolchain"]["defines"] = list(manifest["toolchain"].get("defines", [])) + self.defines
+        if self.toolchain_tree:
+            manifest["toolchain"]["tree"] = self.toolchain_tree
+        if self.build_path:
+            for unit in manifest["translation_units"]:
+                if unit.get("build_path"):
+                    unit["build_path"] = self.build_path
+        return manifest
+
+
+def build_spec(name: str | None = None) -> BuildSpec:
+    """A target's ordinary-build settings, read from targets.json alone."""
+    data = registry()
+    name = name or data["default"]
+    spec = data["targets"].get(name)
+    if spec is None:
+        raise ValueError(f"unknown target {name!r}; known: {', '.join(data['targets'])}")
+    status = spec.get("status", "active")
+    # The registry's executable path is used for its file name only; the file is never opened.
+    image_name = "BLUPI.EXE" if status == "primary" else Path(spec["exe"]).name
+    return BuildSpec(name=name, status=status, manifest_path=ROOT / spec["manifest"], image_name=image_name,
+                     defines=list(spec.get("defines", [])), toolchain_tree=spec.get("toolchain_tree"),
+                     link_tree=spec.get("link_tree"), build_path=spec.get("build_path"),
+                     source_overlays=list(spec.get("source_overlays", [])),
+                     resource_script=spec.get("resource_script"), resource_note=spec.get("resource_note"))
+
+
 def add_argument(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--target", metavar="GAME/EDITION/LANGUAGE",
                         help=f"matching target from targets.json (default: {registry()['default']})")

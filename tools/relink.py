@@ -8,13 +8,16 @@ import csv
 import hashlib
 import io
 import json
-import os
 from pathlib import Path
 import re
 import subprocess
 import sys
 
 import pefile
+
+from build import (build_resources, digest, image_info, imports, link_environment, link_options,  # noqa: F401
+                   recorded_order, resource_script, target_libraries, toolchain_roots)
+import targets
 
 ROOT = Path(__file__).resolve().parents[1]
 LINKERS = {
@@ -27,20 +30,6 @@ LINKERS = {
 }
 
 
-def build_resources(out, rc_source, vc_root):
-    """Compile a target's resource script to .res; the selected linker converts it."""
-    rc = vc_root.parent / "SHAREDIDE/BIN/RC.EXE"
-    res = out / (rc_source.stem + ".res")
-    temp = ROOT / "build/tmp"
-    temp.mkdir(parents=True, exist_ok=True)
-    system = os.environ.get("SystemRoot", r"C:\Windows")
-    env = dict(SystemRoot=system, TMP=str(temp), TEMP=str(temp), INCLUDE=f"{vc_root / 'INCLUDE'};{vc_root / 'MFC/INCLUDE'}",
-               PATH=os.pathsep.join(map(str, [rc.parent, vc_root / "BIN", Path(system) / "System32", Path(system)])))
-    run = subprocess.run([str(rc), "/r", "/fo", str(res), rc_source.name], cwd=rc_source.parent, env=env,
-                         capture_output=True, text=True, encoding="mbcs", errors="replace")
-    if run.returncode:
-        raise SystemExit("RC failed: " + run.stdout + run.stderr)
-    return res
 
 
 def resource_directory_timestamp(pe):
@@ -64,12 +53,6 @@ def parse_number(value):
     return int(value, 0) if isinstance(value, str) else int(value)
 
 
-def toolchain_roots(tree_name):
-    sys.path.insert(0, str(ROOT / "tools"))
-    import msvc
-    tree = msvc.resolve_tree(tree_name).resolve()
-    _compiler_bin, vc_root, shared_bin, _ = msvc.tool_layout(tree, None)
-    return tree, vc_root, shared_bin
 
 
 def linker_path(selection, target_tree, vc_root):
@@ -81,25 +64,6 @@ def linker_path(selection, target_tree, vc_root):
     return LINKERS[selection]
 
 
-def target_libraries(manifest, vc_root, library_vc_root=None):
-    """Use the target linker's CRT and the SDK named by its include path."""
-    library_vc_root = library_vc_root or vc_root
-    libraries = [library_vc_root / "LIB" / (s + ".lib") for s in
-                 ("kernel32", "user32", "gdi32", "winmm")]
-    dx_lib_dirs = []
-    for include in manifest["toolchain"].get("include_dirs", []):
-        path = Path(include)
-        if path.name.lower() == "include":
-            candidate = path.parent / "LIB"
-            if candidate.is_dir() and candidate not in dx_lib_dirs:
-                dx_lib_dirs.append(candidate)
-    if not dx_lib_dirs:
-        dx_lib_dirs = [Path(r"C:\tools\dx5sdk\LIB")]
-    # DX5 SDK: oracle GUIDs (docs/TOOLCHAIN.md); network.cpp defines INITGUID.
-    libraries += [dx_lib_dirs[0] / (s + ".lib") for s in ("dsound", "ddraw", "dplayx")]
-    # Explicit game import libraries precede LIBC, as in the SB1 proven link.
-    libraries += [library_vc_root / "LIB" / "LIBC.LIB", library_vc_root / "LIB" / "OLDNAMES.LIB"]
-    return libraries
 
 
 def rich_header(path):
@@ -126,8 +90,6 @@ def rich_header(path):
                 entries=entries)
 
 
-def digest(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 def read_map(path):
@@ -159,23 +121,8 @@ def oracle_order(units, target):
     return sorted(units, key=lambda u: first.get(Path(u["source"]).name, 1 << 32))
 
 
-def imports(pe):
-    return [dict(dll=e.dll.decode("ascii"), descriptor_rva=pe.get_rva_from_offset(e.struct.get_file_offset()),
-                 int_rva=e.struct.OriginalFirstThunk, iat_rva=e.struct.FirstThunk,
-                 names=[i.name.decode("ascii") if i.name else "#" + str(i.ordinal) for i in e.imports])
-            for e in getattr(pe, "DIRECTORY_ENTRY_IMPORT", [])]
 
 
-def image_info(pe):
-    header = pe.OPTIONAL_HEADER
-    return dict(file_timestamp=pe.FILE_HEADER.TimeDateStamp,
-                image_base=header.ImageBase, entry_rva=header.AddressOfEntryPoint,
-                section_alignment=header.SectionAlignment, file_alignment=header.FileAlignment,
-                linker_version=[header.MajorLinkerVersion, header.MinorLinkerVersion],
-                sections=[dict(name=s.Name.rstrip(b"\0").decode(), rva=s.VirtualAddress,
-                               virtual_size=s.Misc_VirtualSize, raw_size=s.SizeOfRawData,
-                               raw_offset=s.PointerToRawData, characteristics=s.Characteristics)
-                          for s in pe.sections], imports=imports(pe))
 
 
 def import_comparison(oracle, candidate):
@@ -261,12 +208,6 @@ def layout_report(oracle, candidate, map_symbols, manifest):
     return result
 
 
-def recorded_order(units, settings):
-    names = settings['object_order']
-    by_name = {unit['source']: unit for unit in units}
-    if len(names) != len(set(names)) or set(names) != set(by_name):
-        raise ValueError('standalone object_order must contain every translation unit exactly once')
-    return [by_name[name] for name in names]
 
 
 def main(argv=None):
@@ -280,8 +221,6 @@ def main(argv=None):
     parser.add_argument("--historical-cvtres-only", action="store_true",
                         help="run RTM CVTRES under histlink's oracle clock, then LINK on the normal host")
     parser.add_argument("--order", choices=("oracle", "manifest", "recorded", "eggbert-jauge-before-menu"))
-    parser.add_argument("--standalone", action="store_true",
-                        help="build from recorded source settings without reading an oracle or running verification")
     parser.add_argument("--opt", choices=("ref,icf", "ref,noicf", "noref,icf", "noref,noicf"), default="ref,icf")
     parser.add_argument("--library", action="append", default=[], type=Path, help="additional genuine library")
     parser.add_argument("--library-order", choices=("target", "crt-first"), default="target",
@@ -292,31 +231,22 @@ def main(argv=None):
     parser.add_argument("--entry", default=None, help="explicit /entry symbol (default: LINK chooses for /subsystem:windows)")
     parser.add_argument("--diagnostic", action="store_true",
                         help="link even when accepted functions regress (layout diagnostics only; the gate stays FAIL)")
-    import targets
     targets.add_argument(parser)
     args = parser.parse_args(argv)
+    # Ordinary, oracle-free builds are tools/build.py; this command compares against the original.
     target = targets.load(args.target)
-    if not args.standalone:
-        if not target.exe.is_file():
-            parser.error(f"target oracle is missing: {target.exe}")
-        target.check_exe()
+    if not target.exe.is_file():
+        parser.error(f"target oracle is missing: {target.exe}")
+    target.check_exe()
+    spec = targets.build_spec(target.name)
     manifest = target.manifest()
     settings = manifest.get('standalone_link', {})
     tree, vc_root, shared_bin = toolchain_roots(manifest["toolchain"]["tree"])
-    default_linker = ("rtm" if manifest["toolchain"]["tree"].lower() == "rtm" or
-                      target.name.startswith("sb1/eggbert/") else "sp3")
+    default_linker = spec.link_tree or ("rtm" if manifest["toolchain"]["tree"].lower() == "rtm" else "sp3")
     args.linker = args.linker or default_linker
-    args.order = args.order or ('recorded' if args.standalone else 'oracle')
-    if args.standalone and args.order in ('oracle', 'eggbert-jauge-before-menu'):
-        parser.error('--standalone cannot use an oracle-based object order')
-    if args.standalone and not all(key in settings for key in ('image_base', 'section_alignment')):
-        parser.error('--standalone requires image_base and section_alignment in the selected manifest')
-    if args.historical_host and args.standalone:
-        parser.error('--historical-host requires an oracle timestamp; omit --standalone')
+    args.order = args.order or 'oracle'
     if args.historical_cvtres_only and args.historical_host:
         parser.error('--historical-cvtres-only cannot be combined with --historical-host')
-    if args.historical_cvtres_only and args.standalone:
-        parser.error('--historical-cvtres-only requires an oracle resource timestamp; omit --standalone')
     if args.historical_cvtres_only and args.linker not in (None, "rtm"):
         parser.error('--historical-cvtres-only requires the pinned RTM linker/resource toolchain')
     if args.historical_host and args.linker not in ("sp3", "rtm"):
@@ -378,38 +308,34 @@ def main(argv=None):
     # Reuse the canonical verifier's comparison/regression logic, without its
     # clean-build operation or any manifest promotion. Supplemental CRT evidence
     # is compiled via msvc.py and is deliberately absent from the link inputs.
-    if args.standalone:
-        regressions = []
-        gate = dict(status='NOT_RUN', reason='standalone build; no oracle read', degraded=degraded)
+    import verify
+    verify.BUILD = out
+    verify.TARGET = target
+    verify.GAME_TEXT_END = target.game_text_end
+    verify.GAME_TEXT_SIZE = target.game_text_end - verify.ORACLE_TEXT_START
+    verify.DEGRADED.clear()
+    verify.DEGRADED.update(degraded)
+    evidence_objects = verify.compile_crt_evidence(manifest)
+    comparison = verify.run_comparator(list(objects.values()), evidence_objects, manifest)
+    stream = io.StringIO()
+    with contextlib.redirect_stdout(stream):
+        by_unit, coverage = verify.report(comparison, [u["source"] for u in units])
+    (out / "verify.log").write_text(stream.getvalue(), encoding="utf-8")
+    regressions = verify.accepted_regressions(manifest, by_unit)
+    if target.primary:
+        import equivalence
+        equivalent = equivalence.check(manifest, comparison, evidence_objects, out)
+    elif target.name.startswith(('sb1/', 'sb2/')):
+        import equivalence_target
+        equivalent = equivalence_target.check(target, manifest, comparison, evidence_objects, out)
     else:
-        import verify
-        verify.BUILD = out
-        verify.TARGET = target
-        verify.GAME_TEXT_END = target.game_text_end
-        verify.GAME_TEXT_SIZE = target.game_text_end - verify.ORACLE_TEXT_START
-        verify.DEGRADED.clear()
-        verify.DEGRADED.update(degraded)
-        evidence_objects = verify.compile_crt_evidence(manifest)
-        comparison = verify.run_comparator(list(objects.values()), evidence_objects, manifest)
-        stream = io.StringIO()
-        with contextlib.redirect_stdout(stream):
-            by_unit, coverage = verify.report(comparison, [u["source"] for u in units])
-        (out / "verify.log").write_text(stream.getvalue(), encoding="utf-8")
-        regressions = verify.accepted_regressions(manifest, by_unit)
-        if target.primary:
-            import equivalence
-            equivalent = equivalence.check(manifest, comparison, evidence_objects, out)
-        elif target.name.startswith(('sb1/', 'sb2/')):
-            import equivalence_target
-            equivalent = equivalence_target.check(target, manifest, comparison, evidence_objects, out)
-        else:
-            equivalent = dict(status="NOT_APPLICABLE", reason="SB2 target has its own oracle inventory")
-        gate = dict(regressions=regressions, degraded=degraded, coverage=coverage,
-                    equivalence=equivalent,
-                    status="FAIL" if regressions else "INCOMPLETE" if degraded else "PASS")
+        equivalent = dict(status="NOT_APPLICABLE", reason="SB2 target has its own oracle inventory")
+    gate = dict(regressions=regressions, degraded=degraded, coverage=coverage,
+                equivalence=equivalent,
+                status="FAIL" if regressions else "INCOMPLETE" if degraded else "PASS")
     (out / "gate.json").write_text(json.dumps(gate, indent=2) + "\n", encoding="utf-8")
     print(f"accepted-function gate {gate['status']}" +
-          (f"; coverage {coverage} / {verify.GAME_TEXT_SIZE}" if not args.standalone else ''), flush=True)
+          f"; coverage {coverage} / {verify.GAME_TEXT_SIZE}", flush=True)
     if regressions:
         print("\n".join(regressions))
         if not args.diagnostic:
@@ -431,9 +357,9 @@ def main(argv=None):
     else:
         ordered = units
     oracle_path = args.oracle.resolve() if args.oracle else target.exe
-    oracle = None if args.standalone else pefile.PE(str(oracle_path))
-    image_base = int(settings['image_base'], 0) if args.standalone else oracle.OPTIONAL_HEADER.ImageBase
-    alignment = settings['section_alignment'] if args.standalone else oracle.OPTIONAL_HEADER.SectionAlignment
+    oracle = pefile.PE(str(oracle_path))
+    image_base = oracle.OPTIONAL_HEADER.ImageBase
+    alignment = oracle.OPTIONAL_HEADER.SectionAlignment
     linker = linker_path(args.linker, manifest["toolchain"]["tree"], vc_root)
     library_vc_root = vc_root
     if args.linker == "rtm" and manifest["toolchain"]["tree"].lower() != "rtm":
@@ -453,22 +379,13 @@ def main(argv=None):
     image_name = "BLUPI.EXE" if target.primary else target.exe.name
     image_path = out / image_name
     map_path = out / (Path(image_name).stem + ".map")
-    options = ["/nologo", "/machine:i386", "/subsystem:windows,4.0", *([f"/entry:{args.entry}"] if args.entry else []),
-               f"/base:0x{image_base:x}", f"/align:{alignment}",
-               "/fixed", "/incremental:no", *([] if args.default_libs else ["/nodefaultlib"]),
-               *["/opt:" + s for s in args.opt.split(",")],
-               f"/out:{image_path}", f"/map:{map_path}"]
-    source_root = effective_root
-    resource_candidates = [source_root / "res" / f"{target.slug}.rc"]
-    if source_root != ROOT / "src":
-        resource_candidates.insert(0, ROOT / "games/sb2/res" / f"{target.slug}.rc")
-    resource_candidates.append(source_root / "res" / "blupi.rc")
-    resource_script = next((candidate for candidate in resource_candidates if candidate.is_file()), None)
+    options = link_options(image_base, alignment, image_path, map_path, args.opt, args.entry, args.default_libs)
+    script, script_choice = resource_script(spec, effective_root)
     if args.no_res:
         res_files, resource_status = [], "omitted by --no-res"
-    elif resource_script is not None:
-        res_files = [build_resources(out, resource_script, vc_root)]
-        resource_status = f"{resource_script.relative_to(ROOT)} via target RC + CVTRES"
+    elif script is not None:
+        res_files = [build_resources(out, script, vc_root)]
+        resource_status = f"{script.relative_to(ROOT)} via target RC + CVTRES ({script_choice})"
     else:
         res_files, resource_status = [], "no source .rc in target tree; original .rsrc is comparison-only"
 
@@ -511,13 +428,7 @@ def main(argv=None):
         command = [sys.executable, str(ROOT / "tools/histlink.py"), "--tool", tool_kind,
                    "--timestamp", hex(oracle.FILE_HEADER.TimeDateStamp), "--report", str(host_report),
                    "--", "@" + str(response)]
-    temp = ROOT / "build/tmp"
-    temp.mkdir(parents=True, exist_ok=True)
-    system = os.environ.get("SystemRoot", r"C:\Windows")
-    env = dict(SystemRoot=system, TMP=str(temp), TEMP=str(temp), LIB=str(vc_root / "LIB"),
-               PATH=os.pathsep.join(map(str, [linker.parent, vc_root / "BIN",
-                                             shared_bin or vc_root.parent / "SHAREDIDE/BIN",
-                                             Path(system) / "System32", Path(system)])))
+    env, _search = link_environment(linker, vc_root, shared_bin)
     # Never leave a stale successful image/map after a failed link.
     for path in (image_path, map_path, out / "layout.json", out / "image.json"):
         if path.exists():
@@ -541,8 +452,7 @@ def main(argv=None):
                   object_mode="reused; see object compile logs for candidate source provenance" if
                   args.objects_dir else "canonical", toolchain=manifest["toolchain"],
                   linker_sha256=digest(linker), libraries={str(p): digest(p) for p in libraries},
-                  degraded=degraded, exit_code=run.returncode, standalone=args.standalone,
-                  oracle_read=not args.standalone,
+                  degraded=degraded, exit_code=run.returncode,
                   resource_status=resource_status, duplicate_symbols=duplicates,
                   unresolved_symbols=unresolved)
     if run.returncode >= 0xC0000000:
@@ -579,12 +489,6 @@ def main(argv=None):
                 path.unlink()
         return run.returncode
     candidate = pefile.PE(str(image_path))
-    if args.standalone:
-        result = image_info(candidate)
-        result['sha256'] = digest(image_path)
-        (out / 'image.json').write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
-        print(f"linked {image_path} from source (no oracle read; static inspection only)")
-        return 0
     result = layout_report(oracle, candidate, read_map(map_path), manifest)
     result["target"] = target.name
     result["oracle_path"] = str(oracle_path)
