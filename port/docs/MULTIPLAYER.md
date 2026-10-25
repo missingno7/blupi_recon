@@ -4,7 +4,7 @@ Goal: restore the original multiplayer of Speedy Blupi 1 and Speedy Blupi 2 by r
 underneath the historical `CNetwork` interface. The reconstructed game logic (CEvent lobby and phases,
 CDecor's `TreatNetData`, `NetMessage` producers in decnet/decmove/decblupi) stays as it is: the historical
 TUs in `src/` and `games/sb2/src/` are never edited. Evidence for every protocol fact below is in the
-assessment `scratch/w-netassess/REPORT.md` (static, file:line); facts are [EVIDENCE], design choices
+assessment [MULTIPLAYER_ASSESSMENT.md](MULTIPLAYER_ASSESSMENT.md) (static, file:line); facts are [EVIDENCE], design choices
 [DESIGN], unknowns [OPEN].
 
 ## What the original does
