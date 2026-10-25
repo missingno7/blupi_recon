@@ -264,6 +264,8 @@
     "port/docs/ARCHITECTURE.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/docs/FIDELITY.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/docs/LANGUAGES.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "port/docs/MULTIPLAYER.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
+    "port/docs/MULTIPLAYER_ASSESSMENT.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/docs/ORACLE.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/docs/RELEASE_NOTES.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/docs/RELEASING.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
