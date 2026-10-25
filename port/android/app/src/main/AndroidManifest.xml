@@ -10,6 +10,11 @@
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
     <uses-feature android:name="android.hardware.type.pc" android:required="false" />
 
+    <!-- Native multiplayer (port/docs/MULTIPLAYER.md): UDP sessions, and the Wi-Fi multicast lock
+         that lets a phone receive LAN discovery broadcasts while it hosts. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+
     <application
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
