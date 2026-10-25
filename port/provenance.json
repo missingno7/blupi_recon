@@ -392,7 +392,7 @@
     "port/games/sb1/game/scene.h": "78cf1bd74beedf37e762897b64c04e0f7b6dc143515772b3ad32f8fb15a14ffd",
     "port/games/sb1/game/settings.h": "1f2b373625490a727d7b28932b69cc4c47b7b64a8c3e3b3a497b7d6f452e440c",
     "port/games/sb1/game/sound.cpp": "1124c8a5b38881299353fb59396e946f446133e7a34f3c633e93ee962632e6be",
-    "port/games/sb1/game/state_hash.cpp": "774757d0e5a790d4cb12fb69a4f53416372af5792e7f70abe17e7a2e05610e1b",
+    "port/games/sb1/game/state_hash.cpp": "8391ee8689b639305ba2422df6c889bbe6791fe4628c0d4b90ee32298c1f24e5",
     "port/games/sb2/CMakeLists.txt": "54213d3ca36eecfd5b6b8bb382e23dd3320b9b408ded4f59db76f799562768a0",
     "port/games/sb2/game/editor_wide.cpp": "9abfb871db5ad33e69592e0f3f0c650aa1e15fe233924e7ac22866fa052fb4d7",
     "port/games/sb2/game/end_of_tick.cpp": "cdacfb1263c1aa8bf08a1640c42be6bb56b9e1ea5814e260433f40d225cdc60d",
@@ -14882,14 +14882,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "20699463be1f84d09ae56a870cf8bc9f9b4846a6",
-        "disposition": "no port action: the shared launcher gains opt-in --net-port/--net-join/--net-test-sync and a per-iteration network service call, inactive for other games (SB2 links no session); CMake adds the ENet and session libraries. Previous review (5be3032bb8) stands.",
+        "commit": "5d7df34b192bf374892a4ae9afc97e2f0d975bee",
         "changed_paths": [
-          "port/CMakeLists.txt",
-          "port/common/app/launcher.cpp",
-          "port/common/app/launcher.h"
+          "port/games/sb1/game/state_hash.cpp"
         ],
-        "evidence_scope": "Full Windows ctest passes with the options absent (goldens unchanged except the SB1 tour/options provider list)."
+        "disposition": "update port (test diagnostics): the SB1 state hash reads NetMessage::data1 as the network adapter sends it (uninitialised in the host lift synchro, src/decmove.cpp); no game code change; every golden unchanged. Previous review (20699463be) stands.",
+        "evidence_scope": "Windows full ctest; Linux field dumps showed only CDecor::m_netMessages differing between runs."
       }
     },
     {
