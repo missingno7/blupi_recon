@@ -259,6 +259,8 @@
     "docs/research/SB1_STATUS_2026-10-19.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/AGENTS.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/README.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "Android launcher/import UI with no historical counterpart. GameFolder mirrors the native common/app/launcher.cpp RecognizesData rule (SB1 marker DATA/DEMO200.BLP); desktop ctest android_game_folder.",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/SetupActivity.java": "Android launcher/import UI with no historical counterpart. GameFolder mirrors the native common/app/launcher.cpp RecognizesData rule (SB1 marker DATA/DEMO200.BLP); desktop ctest android_game_folder.",
     "port/docs/ARCHITECTURE.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
     "port/docs/FIDELITY.md": "Contributor policy/documentation only; human review of fidelity obligations remains required.",
     "port/docs/LANGUAGES.md": "Documentation receipt/prose; no implementation content. Review factual claims separately; no port code action.",
@@ -317,21 +319,23 @@
     "games/sb2/src/texttables.h": "31e799b15ab5c5e724ff96b87f831c40fae3161538e631b4971ccc1f586343f0",
     "games/sb2/src/wave.h": "6a633e098262a84f53387feda19df52fdb76a0c3c804d5e9f97a56610970a992",
     "port/CMakeLists.txt": "28dcbdf8216e183a14e5502498387cbba3d9dc32c142f7a29f7631f4a48959ea",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/GameFolder.java": "f122bdcdc3bf6cd0d42ffcd989bd0c056a06c0bd72dd49679d4a541bbd9fdef3",
+    "port/android/app/src/main/java/io/github/missingno7/speedyblupi/SetupActivity.java": "a89446dda59d174ee39c819024782a25458a7ff4ca17ec9426ed7caa1468719d",
     "port/common/app/launcher.cpp": "6ce480a438e13c07b9ffcd2f2c5e0c6273389d7950147498d286dcf648f61114",
     "port/common/app/launcher.h": "0a9a1ff1317ec6cb54d02decda7d61675ae1f0ffa182ca3a88986629733f272a",
     "port/common/compat/include/WTypes.h": "ae97f1d92824184c876762d9707b8761ce36ba371c5783f4919fd3ac589f8852",
     "port/common/compat/include/commdlg.h": "ae97f1d92824184c876762d9707b8761ce36ba371c5783f4919fd3ac589f8852",
     "port/common/compat/include/ddraw.h": "d5cf67213f714c96c5104d95fbbf077841a894de5dfbd16dda127e1531073950",
     "port/common/compat/include/digitalv.h": "70f1afdb9c6d6337dc23b98f3030d04b011deec0f62de918a9a9e371cf421683",
-    "port/common/compat/include/direct.h": "2667ab59ac86d6a2458d677e1a812cea5dd81438c39aadc93d3a42beca611226",
+    "port/common/compat/include/direct.h": "5ca3007a66ee43afe0062a82bc590c24bc5e1b314aa5fcc3145ae5cc94630b28",
     "port/common/compat/include/dplay.h": "90d3289335cf07905d06ff13191346acc8a9b0aeb648d5d8c27981af35771994",
     "port/common/compat/include/dsound.h": "cb36fb999ef32a597f976082d596310262aa134e1579efd5f251cfb445011c7d",
-    "port/common/compat/include/io.h": "6fc89ab28a6491acf4ba5c4191eb93dc2ff15243f7f4ea9165e9db3c65c4cf65",
+    "port/common/compat/include/io.h": "ed2009a399e25a38e9b8900451493fbd2f2474ffd00a74159ef1e68d57db0d26",
     "port/common/compat/include/mmsystem.h": "1ba8922c82b664f7053b5771d43c9118570f1fbc14131f2179aa6e54e7e5dca1",
     "port/common/compat/include/port_forced.h": "f10eafb04a5c4c7745b46b6829cd4b90eaf1c1824bc5d34f050086e1ce627cba",
     "port/common/compat/include/port_hist_stdio.h": "f428f4ea0988061ef2c3380f6e60363147a74a94f513e716054267ae02f2ab90",
     "port/common/compat/include/port_messages.h": "acdf3f3568a46d3ede540a6696d5110a348071f7fb93df6861ab5128f10d8703",
-    "port/common/compat/include/windows.h": "faa7882940fa36392ac651c95ba9d9b2c91d423dbe6ec1270713fe75807bebc9",
+    "port/common/compat/include/windows.h": "57567a1f0534768016587e402b362ee8c8da491f74ffc01417919a3d9db4c68f",
     "port/common/compat/include/windowsx.h": "ae97f1d92824184c876762d9707b8761ce36ba371c5783f4919fd3ac589f8852",
     "port/common/compat/src/hist_stdio.cpp": "f359ad9fd0dfacd5a0c149ae9021b29a319a012e320938a37230475a155c5e72",
     "port/common/compat/src/win32.cpp": "283938589f1e27fbf6948d6577d128ce956d7b0c279efc471ee4babb82427bab",
@@ -365,22 +369,22 @@
     "port/common/ui/options_screen.cpp": "26b28b7a3d7266e950fc8e6695d463e0748a12510b78a5d0b58aa73d599a49ad",
     "port/common/ui/settings.cpp": "084cece4dbf5d9f0e482a5eab56368b4e7d608b6e9f7b6e0caf11dd7b26d6b6f",
     "port/common/ui/settings.h": "b6078bdb068176f0a67a39a5108edc145defbb97d9ed83a8afde5cdce6328189",
-    "port/games/sb1/game/editor_wide.cpp": "fe89503bf62b1598a5905035f1b0af3b8d90cb6f3f3c9c420793c79cb1d64ea0",
+    "port/games/sb1/game/editor_wide.cpp": "54558b34fdd6631c3ea9e89e0129ec4384e100787b5f59d497c6ac3cfba5f1d1",
     "port/games/sb1/game/end_of_tick.cpp": "838256d26dc53a1212c4fe63aeb3af19a6c75c3184045f6a2d84ea16e4581740",
     "port/games/sb1/game/language.cpp": "6f3ee26b4017c0b77ef3dd698e5114c0e27d12bb21157c243ae890f742b845bc",
     "port/games/sb1/game/main.cpp": "9704506af0d4c4168ec67637f7d107194a7ed1aec752c65fb392d4036bc152d2",
     "port/games/sb1/game/member_access.h": "2211c3cf5802d8fb7d306f128c3790e74975f39cab701fec9cbb79ea60b1233c",
     "port/games/sb1/game/misc.cpp": "70067d1195cb29dddb6041d5225a7c99719588e0435d1a817d072b6094077a88",
-    "port/games/sb1/game/movie.cpp": "1269c081864bbed7dbe1e2ba92821a75adb9b0b279ffdc520e50f89fa4352c1e",
+    "port/games/sb1/game/movie.cpp": "44e67f1e63474ac2e776fe24332925b25317566d6dbf912ec9886c375e245f33",
     "port/games/sb1/game/network.cpp": "7bd54229cbbdd09c35cbb257e5ab6feafc976c7a2ce60899c0d678b7f3a5f335",
-    "port/games/sb1/game/pixmap.cpp": "657d6deadb8a1d5155d94ff8579796be16144acf4f982e2cbeccce47274f8f1f",
+    "port/games/sb1/game/pixmap.cpp": "fbc84d371784f7d1c5beb489e7aaf0a439b7ba2e85aeb4aceb5f8492e3a78f01",
     "port/games/sb1/game/port_game.h": "43e51951b01b5b6327949a87f33ffe7fcbb95767f3ca9fc6d996d59d7ccec8f0",
     "port/games/sb1/game/port_switches.h": "c782b02d0987f70b06c729273817e0cf16eaabe3cd556e0269d9464712ba8b39",
     "port/games/sb1/game/probe.cpp": "fd87ff430fba47a686474bcaa69903deab9c8ae7314f2316b74f523d383018b9",
     "port/games/sb1/game/scene.cpp": "ae80fa622d86799e3430f1a7ef9e3f9eda7dfef6fcd25dddd9148de2a7863f23",
     "port/games/sb1/game/scene.h": "78cf1bd74beedf37e762897b64c04e0f7b6dc143515772b3ad32f8fb15a14ffd",
     "port/games/sb1/game/settings.h": "1f2b373625490a727d7b28932b69cc4c47b7b64a8c3e3b3a497b7d6f452e440c",
-    "port/games/sb1/game/sound.cpp": "9101b1c1a7ae4beb3a1f9b1bc23061cf2d3f7f2fb980f6c3a76bbba0c86ff221",
+    "port/games/sb1/game/sound.cpp": "1124c8a5b38881299353fb59396e946f446133e7a34f3c633e93ee962632e6be",
     "port/games/sb1/game/state_hash.cpp": "774757d0e5a790d4cb12fb69a4f53416372af5792e7f70abe17e7a2e05610e1b",
     "port/games/sb2/CMakeLists.txt": "54213d3ca36eecfd5b6b8bb382e23dd3320b9b408ded4f59db76f799562768a0",
     "port/games/sb2/game/editor_wide.cpp": "9abfb871db5ad33e69592e0f3f0c650aa1e15fe233924e7ac22866fa052fb4d7",
@@ -390,16 +394,16 @@
     "port/games/sb2/game/language.cpp": "4b4084b3abecfc83ce671ba93b1ecb820a17fa5908572e5c30a685c7101d79b8",
     "port/games/sb2/game/main.cpp": "beb6ac073433e251ea672864434b4860e154562333ceda27df63f567c872d944",
     "port/games/sb2/game/member_access.h": "2211c3cf5802d8fb7d306f128c3790e74975f39cab701fec9cbb79ea60b1233c",
-    "port/games/sb2/game/misc.cpp": "3e105bbb6d3c4ee8d0b93938d1c5f53b43765c728a58f04e5c067a4376cfc8e2",
-    "port/games/sb2/game/movie.cpp": "dff275d0f553a4d9554f5fa4203e1b85754f90775490781b23d1317292e936cf",
+    "port/games/sb2/game/misc.cpp": "f89b768be70d4f44fdc54fcb025b5795123dd38090b21a925f5507b5875d4a29",
+    "port/games/sb2/game/movie.cpp": "7f9d79d4a55274b708982d97293e89a53b5056e75559be63a145c4b00ef42e7a",
     "port/games/sb2/game/network.cpp": "890d6c72fe9c6a7f860b5039f426926e5a15288df455c38695e90a13566a005e",
-    "port/games/sb2/game/pixmap.cpp": "e226f53a594735d62cb93c659ac287ab0768b0c1a9d8efbc8d38f025056d1e98",
+    "port/games/sb2/game/pixmap.cpp": "4f29179a3c6d1377943a73365eecf5f5d09856f1fe165a3f3af0b9f456f00601",
     "port/games/sb2/game/port_game.h": "d9557303d33bbc40b89cca64d4467bf8dc779fd0812dec9b413ef896bb060b24",
     "port/games/sb2/game/port_switches.h": "aa1590f7cb80a17393eaaffce151559bbc8d41221bfd700697cd8ba97170e002",
     "port/games/sb2/game/probe.cpp": "723be61ff5ab5d727ebaf981f58b97faf68d7cc366b221833a2e107887aa6f32",
     "port/games/sb2/game/scene.cpp": "4422e79d7888ab40d03df4ae8d0cea6505b9caa1fd0de9d6c5995d6523e9ba80",
     "port/games/sb2/game/scene.h": "533bf4daf6816dcbb3b596993edd7548f44840f169eefae538e795468da5a7a6",
-    "port/games/sb2/game/sound.cpp": "77fc2633965c97803cec3663a2a5960e3eb48fbf66835f29d2025dc7866e5378",
+    "port/games/sb2/game/sound.cpp": "afeac7324949dfb4cc97c76c480598375867ac75ae996ce60cd6ab81f7f0d787",
     "port/games/sb2/game/state_hash.cpp": "1c7c6ac6405edf0a0a0e3a4da4ab70e1855152d0885d58b25606a32de93b69d7",
     "port/games/sb2/languages/README.md": "273b98953f166cbb8d7fd7761842bccc4940f3e6afa5da3924df3ae6c89b672f",
     "port/games/sb2/languages/blupi-de.txt": "0a5a26447af4478645a11742301d0d4768c3c0485468f7616412bc4300bdc2ca",
@@ -3354,13 +3358,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "update port: SB1 CMovie::Create now logs the unavailable AVI service once (port/AGENTS.md), as the SB2 adapter already did; m_bEnable/return FALSE and the skipped movie phase are unchanged. Previous review (5be3032bb8) otherwise stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/movie.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Diagnostic-only change; Windows ctest 269/270 with fidelity_map pending this review; no gameplay, trace or golden change."
       }
     },
     {
@@ -3445,13 +3448,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "update port: SB1 CMovie::Create now logs the unavailable AVI service once (port/AGENTS.md), as the SB2 adapter already did; m_bEnable/return FALSE and the skipped movie phase are unchanged. Previous review (5be3032bb8) otherwise stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/movie.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Diagnostic-only change; Windows ctest 269/270 with fidelity_map pending this review; no gameplay, trace or golden change."
       }
     },
     {
@@ -3820,13 +3822,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -3923,13 +3924,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -4054,13 +4054,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -4153,13 +4152,12 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -4251,13 +4249,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       },
       "split_from": "F099"
     },
@@ -4366,13 +4363,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       },
       "split_from": "F099"
     },
@@ -4466,13 +4462,12 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -4588,13 +4583,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       },
       "split_from": "F105"
     },
@@ -4684,13 +4678,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -4798,13 +4791,12 @@
         "Resolve or explicitly classify failed-ReadData retained-buffer ownership, real device creation/failure propagation and historical COM/external device lifetime; do not infer these from successful offline loading/cleanup."
       ],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -4899,13 +4891,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -5030,13 +5021,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -6161,13 +6151,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/misc.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -6258,13 +6247,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/misc.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -6340,13 +6328,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/misc.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -6422,13 +6409,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/misc.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -6952,13 +6938,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -7050,13 +7035,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -7137,13 +7121,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -7275,13 +7258,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -7365,13 +7347,12 @@
         "Directly test CPixmap::IsIconPixel if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -7454,13 +7435,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       },
       "split_from": "F319"
     },
@@ -7560,13 +7540,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       },
       "split_from": "F319"
     },
@@ -7651,13 +7630,12 @@
         "Directly test CPixmap::BuildIconMask if retained as a supported API; do not infer its contract from active cursor captures."
       ],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -7764,13 +7742,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       },
       "split_from": "F325"
     },
@@ -7855,13 +7832,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -7964,13 +7940,12 @@
         "F353: test or explicitly classify actual audio device initialization/failure propagation separately from always-successful logical CSound::Create."
       ],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -8087,13 +8062,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       },
       "split_from": "F349"
     },
@@ -8174,13 +8148,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -8293,13 +8266,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -8887,13 +8859,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/editor_wide.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -8981,13 +8952,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/editor_wide.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -9081,13 +9051,12 @@
         "Multi-cell drag sequences, arbitrary pre-existing world/lift state and host/toolbar routing remain outside this bounded handler matrix."
       ],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/editor_wide.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       },
       "verified_scope": {
         "targets": [
@@ -9299,13 +9268,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -9393,13 +9361,12 @@
         "Trace rebuilt MCI open/play/stop/close/notify ordering and port events; separately document SoundFont/timbre/level policy and one-song limit."
       ],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -10699,13 +10666,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -10793,13 +10759,12 @@
         "Trace rebuilt real MCI open/play/stop/close/notify timing and late abort/new-song or overlapping-device cases; keep synth timbre, gain and one-song policy explicit."
       ],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/sound.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -11334,13 +11299,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb1/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -11593,13 +11557,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/pixmap.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -11921,13 +11884,12 @@
       ],
       "follow_up": [],
       "review": {
-        "commit": "5be3032bb8ea36434751d0b6bf42b2669fa68ef3",
-        "disposition": "no port action: build-only registry fields for tools/build.py and tools/relink.py (targets.json link_tree, resource_script, resource_note; games/sb2/recon.json standalone_link). No port file reads them; check_fidelity target_policy, defines, source roots and overlays are identical for all 14 targets. The previous review (874d84cb1d) stands.",
+        "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+        "disposition": "no port action: comment-only correction (stale paths/description); comment-stripped code identical (scratch/stage1/commentonly.py). Previous review (5be3032bb8) stands.",
         "changed_paths": [
-          "targets.json",
-          "games/sb2/recon.json"
+          "port/games/sb2/game/misc.cpp"
         ],
-        "evidence_scope": "Registry/manifest diff is additive build-only keys (scratch/stage1/policy_same.py); no source, port or test input changed; this preserves the edge's kind/proof limits and does not newly certify behaviour."
+        "evidence_scope": "Lexical review; preserves the edge kind/proof limits; no behaviour newly certified."
       }
     },
     {
@@ -15556,6 +15518,68 @@
         "F471",
         "F472"
       ]
+    },
+    {
+      "commit": "083944a552e593784cccc22fb606df0c502e2de3",
+      "round": "consolidation stage 3",
+      "scope": "Low-risk port cleanup: comment-only path/description corrections, SB1 movie log-once, Android import recognition (unowned launcher UI registered as not_relevant), Linux test portability (tests are not owned).",
+      "reviewed_edges": [
+        "F048",
+        "F051",
+        "F074",
+        "F075",
+        "F077",
+        "F099",
+        "F105",
+        "F107",
+        "F112",
+        "F115",
+        "F120",
+        "F122",
+        "F123",
+        "F124",
+        "F255",
+        "F256",
+        "F257",
+        "F263",
+        "F293",
+        "F294",
+        "F297",
+        "F298",
+        "F319",
+        "F325",
+        "F327",
+        "F332",
+        "F335",
+        "F347",
+        "F349",
+        "F350",
+        "F351",
+        "F354",
+        "F388",
+        "F389",
+        "F391",
+        "F396",
+        "F398",
+        "F425",
+        "F427",
+        "F434",
+        "F438",
+        "F446"
+      ],
+      "changed_file_hashes": {
+        "port/common/compat/include/direct.h": "5ca3007a66ee43afe0062a82bc590c24bc5e1b314aa5fcc3145ae5cc94630b28",
+        "port/common/compat/include/io.h": "ed2009a399e25a38e9b8900451493fbd2f2474ffd00a74159ef1e68d57db0d26",
+        "port/common/compat/include/windows.h": "57567a1f0534768016587e402b362ee8c8da491f74ffc01417919a3d9db4c68f",
+        "port/games/sb1/game/editor_wide.cpp": "54558b34fdd6631c3ea9e89e0129ec4384e100787b5f59d497c6ac3cfba5f1d1",
+        "port/games/sb1/game/movie.cpp": "44e67f1e63474ac2e776fe24332925b25317566d6dbf912ec9886c375e245f33",
+        "port/games/sb1/game/pixmap.cpp": "fbc84d371784f7d1c5beb489e7aaf0a439b7ba2e85aeb4aceb5f8492e3a78f01",
+        "port/games/sb1/game/sound.cpp": "1124c8a5b38881299353fb59396e946f446133e7a34f3c633e93ee962632e6be",
+        "port/games/sb2/game/misc.cpp": "f89b768be70d4f44fdc54fcb025b5795123dd38090b21a925f5507b5875d4a29",
+        "port/games/sb2/game/movie.cpp": "7f9d79d4a55274b708982d97293e89a53b5056e75559be63a145c4b00ef42e7a",
+        "port/games/sb2/game/pixmap.cpp": "4f29179a3c6d1377943a73365eecf5f5d09856f1fe165a3f3af0b9f456f00601",
+        "port/games/sb2/game/sound.cpp": "afeac7324949dfb4cc97c76c480598375867ac75ae996ce60cd6ab81f7f0d787"
+      }
     }
   ]
 }
