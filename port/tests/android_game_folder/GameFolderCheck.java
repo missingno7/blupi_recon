@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 // Desktop check of the Android importer's recognition rule (GameFolder.java): the same files as
-// the native launcher's RecognizesData, any case; Speedy Blupi 2 / Eggbert 2 folders and the
-// former DATA + IMAGE08-only false positive are refused with their reason. Synthetic trees only.
+// the native launcher's RecognizesData, any case; SB1 and SB2 folders are told apart and the
+// former DATA + IMAGE08-only false positive is refused. Synthetic trees only.
 public final class GameFolderCheck {
     private static int failures;
 
@@ -24,12 +24,13 @@ public final class GameFolderCheck {
 
         expect("SB1", GameFolder.recognize(sb1) == GameFolder.Kind.SB1);
         expect("lower-case SB1", GameFolder.recognize(lower) == GameFolder.Kind.SB1);
-        expect("SB2 refused", GameFolder.recognize(sb2) == GameFolder.Kind.SB2 && GameFolder.find(sb2) == null);
+        expect("SB2", GameFolder.recognize(sb2) == GameFolder.Kind.SB2 && sb2.equals(GameFolder.find(sb2, GameFolder.Kind.SB2))
+                && GameFolder.find(sb2, GameFolder.Kind.SB1) == null);
         expect("folders only", GameFolder.recognize(folders) == GameFolder.Kind.INCOMPLETE);
         expect("no edition marker", GameFolder.recognize(noMarker) == GameFolder.Kind.INCOMPLETE);
-        expect("game one level below", new File(cd, "ENGLISH").equals(GameFolder.find(cd)));
-        expect("SB2 below explained", GameFolder.find(sb2cd) == null && GameFolder.explain(sb2cd) == GameFolder.Kind.SB2);
-        expect("nothing", GameFolder.recognize(empty) == GameFolder.Kind.NONE && GameFolder.find(empty) == null);
+        expect("game one level below", new File(cd, "ENGLISH").equals(GameFolder.find(cd, GameFolder.Kind.SB1)));
+        expect("SB2 one level below", new File(sb2cd, "Game").equals(GameFolder.find(sb2cd, GameFolder.Kind.SB2)));
+        expect("nothing", GameFolder.recognize(empty) == GameFolder.Kind.NONE && GameFolder.find(empty, GameFolder.Kind.SB1) == null);
         deleteTree(work);
         if (failures != 0) {
             System.out.println(failures + " failure(s)");

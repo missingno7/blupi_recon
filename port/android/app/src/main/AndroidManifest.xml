@@ -42,5 +42,16 @@
             android:launchMode="singleInstance"
             android:configChanges="layoutDirection|locale|grammaticalGender|fontScale|fontWeightAdjustment|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
             android:preferMinimalPostProcessing="true" />
+
+        <!-- Speedy Blupi 2 / Speedy Eggbert 2 (libblupi2.so), in its own process: one SDL state per game. -->
+        <activity
+            android:name=".Blupi2Activity"
+            android:exported="false"
+            android:process=":sb2"
+            android:screenOrientation="sensorLandscape"
+            android:alwaysRetainTaskState="true"
+            android:launchMode="singleInstance"
+            android:configChanges="layoutDirection|locale|grammaticalGender|fontScale|fontWeightAdjustment|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            android:preferMinimalPostProcessing="true" />
     </application>
 </manifest>

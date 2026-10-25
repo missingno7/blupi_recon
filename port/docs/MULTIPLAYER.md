@@ -38,7 +38,8 @@ edition play together; different games or editions never do (the content check b
 - an address entry in the game for internet play (desktop: `--net-join`);
 - real-network behaviour tests (latency, loss, reordering) and the host-loss and client-drop paths as
   game scenarios (transport level only so far);
-- a phone-to-desktop session on real devices (the APK builds). [HYPOTHESIS] A backgrounded app stops
+- [EVIDENCE, 2026-10-25, user test] An SB1 session between an Android phone (1.2.0-rc1) and a Windows PC
+  worked without issues. Not yet: more real devices and networks. [HYPOTHESIS] A backgrounded app stops
   servicing its session (SDL pauses the game loop), so after ENet's peer timeout (1.5 to 3 s) the others see
   it leave; untested;
 - the validator's remaining whitelists and margins before internet exposure;

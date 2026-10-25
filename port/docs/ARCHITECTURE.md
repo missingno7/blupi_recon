@@ -300,12 +300,16 @@ wall-clock timing, so a frame-indexed capture needs a hook outside `src/`.
 - Reads outside static tables made by the original are reproduced with BLUPI.EXE's neighbouring
   values (`games/sb1/game/pixmap.cpp`, `docs/ORACLE.md`), so they do not depend on a compiler's data
   layout.
-- Android (implemented, roadmap stage 6; SB1 and Eggbert 1 only):
-  - storage: SDL pref path for the user root; the game data, supplied by the player, imported
-    once into app storage so the file-based `vfs` works unchanged. The importer
-    (`android/.../GameFolder.java`) recognises a game folder by the same files as the native
-    launcher's `RecognizesData`. It refuses SB2 folders, which the app does not support yet,
-    and asks again after an incomplete earlier import, keeping saves;
+- Android (implemented, roadmap stage 6): one app with both games. SB1 and Eggbert 1 are
+  `libmain.so` (`BlupiActivity`); SB2 and Eggbert 2 are `libblupi2.so` (`Blupi2Activity`, in
+  its own process `:sb2`, so that each game has its own SDL state).
+  - storage: the game data, supplied by the player, is imported once into app storage so the
+    file-based `vfs` works unchanged: SB1 to `files/game`, SB2 to `files/game2`. The importer
+    (`android/.../GameFolder.java`) tells the games apart by the same files as the native
+    launcher's `RecognizesData` (`DATA/DEMO200.BLP` or `DATA/BENCH.BLP`). It asks again after an
+    incomplete earlier import, keeping saves. SB1's user root is SDL's pref path (on Android the
+    app's files folder, whatever the org and app names), so SB2 gets its own, `files/sb2`
+    (`--user`).
   - lifecycle: map to `WM_ACTIVATEAPP`;
   - touch: synthesize mouse and key messages;
   - ARM64: the struct layout notes above apply unchanged.
@@ -415,8 +419,8 @@ objects, phases, layouts and rendering details that differ between SB1 and SB2.
 `cmake/package_app.cmake` supplies both desktop targets' runtime layout: SDL copy,
 SoundFont copy, MinGW static runtimes, non-Debug GUI subsystem, and portable Linux
 `$ORIGIN`/SDL library copy. The `blupi2` target produces `blupi2-sdl3`; `blupi` produces
-`blupi-sdl3`. Android continues to build only SB1 as `libmain.so` and skips desktop
-packaging.
+`blupi-sdl3`. On Android they are the shared libraries `libmain.so` and `libblupi2.so`,
+without desktop packaging.
 
 [EVIDENCE] The supervisor-review cleanup removes all four former launcher policy
 fields. Both games queue ordinary script input, apply probes, then dispatch; both

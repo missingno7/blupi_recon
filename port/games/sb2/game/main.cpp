@@ -1214,7 +1214,28 @@ int BlupiMain(int argc, char** argv)
         lastDemo = demo;
     };
     game.maintenance = []() {
-
+        if (g_pEvent == NULL) return;
+        const UINT phase = g_pEvent->GetPhase();
+        // Touch screens (Android), as in SB1: the play controls while the game is played; the
+        // scroll pad in the editor, its buttons made from the game's own sprites when the editor
+        // is entered (the palette in force then). The Display options follow SetDecor.
+        if (blupi::host::touch_screen())
+        {
+            static UINT touchPhase = 0;
+            if (phase == WM_PHASE_BUILD && touchPhase != WM_PHASE_BUILD) PortTouchEditorImages();
+            touchPhase = phase;
+        }
+        blupi::host::set_touch_mode(phase == WM_PHASE_PLAY || phase == WM_PHASE_PLAYTEST ? blupi::host::TouchMode::Play
+                                    : phase == WM_PHASE_BUILD ? blupi::host::TouchMode::Editor
+                                                              : blupi::host::TouchMode::Off);
+        // Android: the on-screen keyboard only while the game asks for text (the phases whose
+        // WM_CHAR handling edits a name, games/sb2/src/event.cpp).
+        if (blupi::host::text_input_on_demand())
+        {
+            blupi::host::set_text_input(phase == WM_PHASE_NAMEGAMER || phase == WM_PHASE_NAMEDESIGN ||
+                                        phase == WM_PHASE_WRITEDESIGN || phase == WM_PHASE_CREATE ||
+                                        phase == WM_PHASE_MULTI);
+        }
     };
     game.phase = []() { return g_pEvent ? g_pEvent->GetPhase() : 0u; };
     game.stateHash = PortStateHash; game.screenHash = PortPixmapScreenHash;

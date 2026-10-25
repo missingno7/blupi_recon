@@ -30,7 +30,7 @@ Starting the game
    Otherwise the first-run folder chooser asks where your game is installed.
    The same display and command-line options apply; use --help for the list.
    SB2 uses BLUPI2_DATA and keeps blupi2-sdl3.json and saves under
-   Epsitec/Speedy Blupi 2 SDL3 (or --user). Android remains SB1 only.
+   Epsitec/Speedy Blupi 2 SDL3 (or --user). The Android app has both games.
 3. On the first start the game asks for the folder where Speedy Blupi is
    installed: the one that contains DATA, IMAGE08, IMAGE16 and SOUND. A
    folder that contains it (for example the CD) works too. The choice is

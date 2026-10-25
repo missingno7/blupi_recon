@@ -1,20 +1,22 @@
-# Speedy Blupi SDL3 port 1.2.0-rc1 (release candidate)
+# Speedy Blupi SDL3 port 1.2.0-rc2 (release candidate)
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux and Android. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-**This is a release candidate.** It brings the first native multiplayer, which has been tested
-automatically but has had little real-world play. Reports are welcome.
+**This is a release candidate.** It brings the first native multiplayer, tested automatically and
+in one session between an Android phone and a Windows PC. Reports are welcome.
+
+Since 1.2.0-rc1: Speedy Blupi 2 and Speedy Eggbert 2 are in the Android app.
 
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
 
 ## New in 1.2
 
-- **Speedy Blupi 2 and Speedy Eggbert 2** (Windows and Linux), as `blupi2-sdl3`. The program
-  recognises the edition from your data. It plays like the original, with the same optional
+- **Speedy Blupi 2 and Speedy Eggbert 2** on Windows and Linux (`blupi2-sdl3`) and in the Android
+  app. The program recognises the edition from your data. It plays like the original, with the same optional
   widescreen, smooth motion and Display options as Speedy Blupi.
 - **Multiplayer for Speedy Blupi and Speedy Eggbert**, again: the original's network game for two to
   four players, rebuilt on a native network layer in place of DirectPlay. The original game logic is
@@ -36,16 +38,17 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.2.0-rc1-windows-x64.zip` | 64-bit Windows (tested on Windows 11): `blupi-sdl3.exe` and `blupi2-sdl3.exe` |
-| `speedy-blupi-sdl3-1.2.0-rc1-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later), X11 or Wayland |
-| `speedy-blupi-sdl3-1.2.0-rc1-android.apk` | Android 7.0 or newer, arm64 phones and tablets (and x86_64); Speedy Blupi and Speedy Eggbert |
+| `speedy-blupi-sdl3-1.2.0-rc2-windows-x64.zip` | 64-bit Windows (tested on Windows 11): `blupi-sdl3.exe` and `blupi2-sdl3.exe` |
+| `speedy-blupi-sdl3-1.2.0-rc2-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later), X11 or Wayland |
+| `speedy-blupi-sdl3-1.2.0-rc2-android.apk` | Android 7.0 or newer, arm64 phones and tablets (and x86_64); all four games |
 | `SHA256SUMS.txt` | checksums |
 
 - **Windows and Linux:** unpack anywhere and start `blupi-sdl3` (Speedy Blupi, Speedy Eggbert) or
   `blupi2-sdl3` (Speedy Blupi 2, Speedy Eggbert 2). The Windows executables are not code-signed, so
   SmartScreen may ask for confirmation ("More info", "Run anyway").
-- **Android:** install the APK; it updates 1.1.0 in place and keeps your imported game. On a first
-  install, choose the folder with your copy of the game; the app copies it into its own storage.
+- **Android:** install the APK; it updates 1.1.0 and 1.2.0-rc1 in place and keeps your imported game.
+  Choose a game folder to import; the app copies it into its own storage. It tells the two games apart,
+  and after a second import it asks which game to start.
 
 ## What you get
 
@@ -74,7 +77,6 @@ installed game. On the first start the port asks for its folder and remembers it
 
 - **Multiplayer for Speedy Blupi 2 and Speedy Eggbert 2.** Their multiplayer screens open, but there is
   nothing to join or create.
-- **Speedy Blupi 2 and Speedy Eggbert 2 on Android.**
 - **The intro and ending movies.** The original skipped them when the system could not play AVI, and
   the installed games do not include them.
 - **Speedy Blupi 2's CD audio tracks.**
@@ -82,7 +84,7 @@ installed game. On the first start the port asks for its folder and remembers it
 ## Known limitations
 
 - **Multiplayer has been tested automatically** (two and four players on one machine, Windows and
-  Linux), but has had little play between real devices and networks. Also:
+  Linux) and in one phone-to-PC session; it has had little other real-world play. Also:
   - there is no in-game field for a host's address: use `--net-join`, or the local-network list;
   - an Android player who switches away from the game is likely to drop out of a session.
 - **Android:** a player's own language file goes into a `languages` folder inside the game folder before

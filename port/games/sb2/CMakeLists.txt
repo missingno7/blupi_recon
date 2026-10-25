@@ -72,10 +72,15 @@ add_custom_command(OUTPUT ${SB2_PACK_INC}
 target_sources(blupi2_game PRIVATE ${SB2_PACK_INC})
 target_include_directories(blupi2_game PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated)
 
-# Desktop bring-up; Android's single libmain continues to be SB1.
-add_executable(blupi2 ${BLUPI_COMMON}/platform/entry.cpp)
+# The program: blupi2-sdl3 on the desktop; on Android libblupi2.so, which its own SDL activity
+# loads (port/android: Blupi2Activity), beside SB1's libmain.so.
+if(ANDROID)
+    add_library(blupi2 SHARED ${BLUPI_COMMON}/platform/entry.cpp)
+else()
+    add_executable(blupi2 ${BLUPI_COMMON}/platform/entry.cpp)
+    set_target_properties(blupi2 PROPERTIES OUTPUT_NAME blupi2-sdl3 RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+endif()
 target_link_libraries(blupi2 PRIVATE blupi2_game SDL3::SDL3)
-set_target_properties(blupi2 PROPERTIES OUTPUT_NAME blupi2-sdl3 RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 if(WIN32)
     # blupi2's icon (res/icon.ico, which SDL also uses for the window) and version.
     set(BLUPI_RC_ICON ${SB2_GAME}/res/icon.ico)

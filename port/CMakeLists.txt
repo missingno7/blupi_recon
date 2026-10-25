@@ -234,8 +234,9 @@ endif()
 # (Android: the APK carries it as an asset, see port/android/app/build.gradle.)
 blupi_package_app(blupi)
 
+# Speedy Blupi 2 / Speedy Eggbert 2: blupi2-sdl3 on the desktop, libblupi2.so on Android.
+add_subdirectory(games/sb2)
 if(NOT ANDROID)
-    add_subdirectory(games/sb2)
     enable_testing()
     find_package(Python3 REQUIRED COMPONENTS Interpreter)
     add_test(NAME fidelity_map COMMAND ${Python3_EXECUTABLE}

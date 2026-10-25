@@ -371,7 +371,7 @@ posted keys while Display options is open, matching live input. The four former
 launcher behavior switches are removed.
 `cmake/package_app.cmake` now handles both desktop targets' SDL/SoundFont copies,
 MinGW runtime linkage and portable Linux rpath/library layout. Release scripts carry
-both executables. Android remains SB1 only.
+both executables. Android carries SB2 since 1.2.0-rc2 (`libblupi2.so`, `Blupi2Activity`).
 
 [EVIDENCE] Launcher Windows gate: both games build in `build/port-launcher` with
 VS2022 CMake, MinGW GCC and SDL3 3.4.16, using the documented Makefiles fallback

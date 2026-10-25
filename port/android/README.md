@@ -1,16 +1,21 @@
-# Speedy Blupi 1 for Android
+# Speedy Blupi and Speedy Blupi 2 for Android
 
-The SDL3 port (`port/`) as an Android app: the same CMake project builds `libmain.so`
-(the game) and `libSDL3.so`; SDL's Java activity runs it. Roadmap stage 6
-(`../docs/ROADMAP.md`).
+The SDL3 port (`port/`) as an Android app with both games. The same CMake project builds
+`libmain.so` (Speedy Blupi and Speedy Eggbert), `libblupi2.so` (Speedy Blupi 2 and Speedy
+Eggbert 2) and `libSDL3.so`; SDL's Java activities run them (`BlupiActivity`, and
+`Blupi2Activity` in its own process). Roadmap stage 6 (`../docs/ROADMAP.md`).
 
 ## What the app does
 
 - **Your own copy of the game.** The app contains no game data. On first run it asks for the
-  folder of an installed Speedy Blupi, the one with `DATA`, `IMAGE08`, `IMAGE16` and `SOUND`,
-  or a folder above it. It uses the system folder picker and copies the files once into its
-  private storage (`SetupActivity`, `files/game`). Later runs start the game directly.
-  Uninstalling the app deletes that copy, the saves and the settings.
+  folder of an installed game, the one with `DATA`, `IMAGE08`, `IMAGE16` and `SOUND`, or a
+  folder above it. It uses the system folder picker and copies the files once into its private
+  storage (`SetupActivity`): Speedy Blupi or Speedy Eggbert to `files/game`, Speedy Blupi 2 or
+  Speedy Eggbert 2 to `files/game2`. Later runs show the imported games and a button to import
+  another. SB2 keeps its saves and settings in `files/sb2`. Uninstalling the app deletes the
+  copies, the saves and the settings.
+- **Development:** data pushed with adb to the app's external files folder (`files/game`,
+  `files/game2`) is used as well; `--es game sb1` or `--es game sb2` starts that game directly.
 - **Full screen, landscape**, with the 4:3 game frame centred. Widescreen (Display options)
   uses the whole screen.
 - **Touch:**

@@ -5,8 +5,8 @@ import java.io.File;
 // Which game a folder holds, with the native launcher's recognition rule
 // (common/app/launcher.cpp RecognizesData; games/sb1/game/main.cpp): DATA/CONFIG.DEF,
 // IMAGE08/INIT.BLP and the edition marker, any case. Speedy Blupi 1 and Speedy Eggbert 1
-// carry DATA/DEMO200.BLP; Speedy Blupi 2 and Speedy Eggbert 2 carry DATA/BENCH.BLP and are
-// not part of the Android app yet. No Android dependency, so the rule is tested on the
+// carry DATA/DEMO200.BLP (libmain.so); Speedy Blupi 2 and Speedy Eggbert 2 carry DATA/BENCH.BLP
+// (libblupi2.so, games/sb2/game/main.cpp). No Android dependency, so the rule is tested on the
 // desktop (port/tests/android_game_folder.cmake).
 final class GameFolder {
     enum Kind { SB1, SB2, INCOMPLETE, NONE }
@@ -26,18 +26,18 @@ final class GameFolder {
         return Kind.INCOMPLETE;
     }
 
-    // The game folder: the chosen folder or one level below; an SB1 game first.
-    static File find(File dir) {
-        if (recognize(dir) == Kind.SB1) return dir;
+    // A game folder of the given kind: the chosen folder or one level below.
+    static File find(File dir, Kind kind) {
+        if (recognize(dir) == kind) return dir;
         File[] children = dir.listFiles();
         if (children == null) return null;
         for (File c : children) {
-            if (c.isDirectory() && recognize(c) == Kind.SB1) return c;
+            if (c.isDirectory() && recognize(c) == kind) return c;
         }
         return null;
     }
 
-    // The most specific reason a folder (or one below it) is not a usable SB1 game.
+    // The most specific reason a folder (or one below it) holds no usable game.
     static Kind explain(File dir) {
         Kind best = recognize(dir);
         File[] children = dir.listFiles();

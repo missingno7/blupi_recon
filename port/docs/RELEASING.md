@@ -20,7 +20,7 @@ single `blupi_package_app` helper in `cmake/package_app.cmake` packages their ru
 dependencies and selects the Windows GUI subsystem outside Debug. Each can run from
 its original game's folder or use the first-run chooser. Settings and environment
 names are separate (`blupi-sdl3.json`/`BLUPI_DATA`, `blupi2-sdl3.json`/`BLUPI2_DATA`).
-Android still contains SB1 only. The Linux scripts copy SB2's historical source tree
+The Android app contains both games (`libmain.so`, `libblupi2.so`). The Linux scripts copy SB2's historical source tree
 and enable both SB2 editions' tests when their data is present. Desktop archives now
 carry both executables; `package_release.py windows` verifies both version strings.
 

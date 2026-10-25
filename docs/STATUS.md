@@ -156,8 +156,8 @@ These are bounded receipts, not whole-game certification.
 - **AVI movies:** not played; the phase is skipped.
 - **SB2 CD audio:** fails, logged once.
 - **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.
-- **Coverage gaps:** hardware gamepads, Android keyboard/background, and the SB2 Android build are
-  open.
+- **Coverage gaps:** hardware gamepads and Android keyboard/background are open. SB2 on Android
+  (1.2.0-rc2) is checked on the emulator only: start, menus, touch controls and play.
 
 ## 6. Where work stands
 
