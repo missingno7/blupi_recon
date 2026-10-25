@@ -109,6 +109,16 @@ screen started to say "Version 1.1" like the original 1.1 (`VERSION_TEXT`,
 title-screen checkpoints (frames 10–990, `WM_PHASE_INIT`) changed; frame, phase and state hash are
 identical at all 750 checkpoints. The Speedy Blupi traces did not change.
 
+The SB1 tour and options traces (`tour16`, `tour8`, `tour16_de`, `options16`) were updated once on the
+`multiplayer-pilot` branch (2026-10-25), when `CNetwork` started to list a provider, "Native network
+(UDP)" (port/docs/MULTIPLAYER.md). The tour opens the multiplayer service screen at frame 190 and
+leaves with Escape. [EVIDENCE] Frames and phases are identical at every checkpoint; the state and
+screen hashes differ from checkpoint 195 on. A field dump (`--state-dump`) on both builds gives the
+cause: on the service screen the provider row's button is shown and enabled. From frame 225 on, the
+only differing field is `CEvent::m_nbFiles`, the number of listed providers (now 1, before 0), which
+the game keeps after leaving that screen. The original, with DirectPlay installed, also listed
+providers here; the cross-build tour above already differed only on this screen.
+
 ## Not covered yet
 
 - **Graphic cursor (MouseType 1):** its blits are the same code paths as icons, but not compared
