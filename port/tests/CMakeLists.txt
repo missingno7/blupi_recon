@@ -467,4 +467,8 @@ if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
         --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
         --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1")
     set_tests_properties(net_sb1_two_instances PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
+    add_test(NAME net_sb1_four_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_sb1.py"
+        --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1_4" --players 4)
+    set_tests_properties(net_sb1_four_instances PROPERTIES TIMEOUT 900 RUN_SERIAL TRUE)
 endif()

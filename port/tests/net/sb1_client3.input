@@ -1,0 +1,10 @@
+# Native multiplayer pilot, SB1 client 3 (member id 4, lobby slot 3); see sb1_host.input.
+40 click 112 430    # title: dice -> choose player
+70 click 127 431    # choose player: multiplayer service
+100 click 160 130   # service: provider row 0
+250 click 242 407   # service: OK -> EnumSessions finds the host's session
+272 click 140 130   # sessions: row 0
+290 click 140 407   # sessions: join -> lobby (JOIN, slot 3)
+320 click 308 244   # lobby: ready (slot 3)
+400 keydown 37      # play: walk
+440 keyup 37

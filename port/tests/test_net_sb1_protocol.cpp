@@ -16,6 +16,7 @@ int main() {
     Bytes join=Packet(2,28); join[4]=2; join[8]='B'; c.players[1].present=false; good(join);
     auto b=join; b[4]=1; bad(b); b=join; for (int i=8;i<28;++i)b[i]='x'; bad(b);
     b=join; b.pop_back(); bad(b); c.players[1].present=true; bad(join);
+    c.receiverHost=false; good(join); c.receiverHost=true;   // relayed to a client: the legacy code only redraws
     for (int type:{3,5,6,11}) {
         b=Packet(type,type==11 ? 108 : 12); b[4]=2;
         if (type==5)c.players[1].ready=false;

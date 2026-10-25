@@ -67,7 +67,8 @@ struct Session::Impl {
     std::deque<Message> incoming;
     std::deque<Departure> departures;
     std::map<uint32_t,uint32_t> received;
-    uint32_t released[2] = {0,0};
+    uint32_t released[4] = {0,0,0,0};   // test lockstep: released sequence per origin id 1..4
+    bool synced = false;                // joiner: membership counts applied once
 
     std::vector<uint8_t> Packet(Kind kind, uint32_t origin, uint32_t seq, const void* body, size_t n) {
         std::vector<uint8_t> b(Header+n);
@@ -91,8 +92,13 @@ struct Session::Impl {
         active = false; error = why;
     }
     void Membership() {
-        std::vector<uint8_t> b(16);
-        for (unsigned i = 0; i < 4; ++i) Put(b,4*i,members[i]);
+        // Member ids, then how many data messages each has sent so far (as the host knows it): a new
+        // member never receives the earlier ones, so the test lockstep must not wait for them.
+        std::vector<uint8_t> b(32);
+        for (unsigned i = 0; i < 4; ++i) {
+            Put(b,4*i,members[i]);
+            Put(b,16+4*i,members[i] == id ? sequence : members[i] ? received[members[i]] : 0);
+        }
         Broadcast(Packet(Members,1,0,b.data(),b.size()));
     }
     void Reject(ENetPeer* peer, const char* why) {
@@ -145,8 +151,18 @@ struct Session::Impl {
             return;
         }
         if (Get(b,16) != epoch || !active) return;
-        if (!host && kind == Members && origin == 1 && length == 16) {
+        if (!host && kind == Members && origin == 1 && length == 32) {
             for (unsigned i=0;i<4;++i) members[i] = Get(body,4*i);
+            if (!synced) {
+                for (unsigned i=0;i<4;++i) {
+                    const uint32_t member=members[i], sent=Get(body,16+4*i);
+                    if (member && member!=id && member<=4) {
+                        received[member]=std::max(received[member],sent);
+                        released[member-1]=std::max(released[member-1],sent);
+                    }
+                }
+                synced=true;
+            }
             return;
         }
         if (!host && kind == Gone && origin == 1 && length == 4) {
@@ -340,7 +356,7 @@ bool Session::Receive(Message& message) {
     }
     if (p->incoming.empty()) return false;
     const auto& first=p->incoming.front();
-    if (options.testSync && (first.tick>=currentTick || first.origin>2 || first.sequence>p->released[first.origin-1])) return false;
+    if (options.testSync && (first.tick>=currentTick || first.origin>4 || first.sequence>p->released[first.origin-1])) return false;
     message=std::move(p->incoming.front()); p->incoming.pop_front(); return true;
 }
 bool Session::Departed(Departure& d) { if (p->departures.empty()) return false; d=p->departures.front(); p->departures.pop_front(); return true; }
@@ -375,7 +391,7 @@ void ServiceAll() { for (auto* s:sessions) s->Service(); }
 namespace {
 std::string ControlPath(const char* kind,long tick) {
     const char* dir=std::getenv("BLUPI_NET_TEST_DIR"); const char* role=std::getenv("BLUPI_NET_TEST_ROLE");
-    if (!dir || !role || (std::strcmp(role,"0") && std::strcmp(role,"1"))) return {};
+    if (!dir || !role || role[0]<'0' || role[0]>'3' || role[1]) return {};
     return std::string(dir)+"/"+role+"-"+kind+"-"+std::to_string(tick);
 }
 }
@@ -383,18 +399,22 @@ bool BeginTestTick(long tick) {
     if (!options.testSync) return true;
     const auto path=ControlPath("grant",tick); if (path.empty()) return false;
     const auto deadline=Clock::now()+std::chrono::seconds(10);
-    uint32_t counts[2]{};
+    // The grant lists how many data messages each member id 1..N had sent by the end of the
+    // previous tick (N = the supervisor's peer count, at most 4).
+    uint32_t counts[4]{};
     for (;;) {
         ServiceAll();
         std::ifstream file(path);
-        if (file >> counts[0] >> counts[1]) break;
+        unsigned n=0;
+        while (n<4 && file >> counts[n]) ++n;
+        if (n>=2) break;
         if (Clock::now()>=deadline) return false;
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     currentTick=uint32_t(tick);
     for (auto* s:sessions) {
         auto& p=*s->p;
-        for (uint32_t origin=1;origin<=2;++origin) {
+        for (uint32_t origin=1;origin<=4;++origin) {
             while (p.active && origin!=p.id && p.received[origin]<counts[origin-1]) {
                 ServiceAll(); if (Clock::now()>=deadline) return false;
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));

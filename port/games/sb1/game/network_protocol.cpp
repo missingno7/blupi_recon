@@ -99,7 +99,9 @@ const char* Validate(const uint8_t* p,size_t n,const Context& c) {
         switch (p[1]) {
         case 1: return c.trusted && c.origin==c.host ? nullptr : "close-is-internal";
         case 2:
-            if (!c.receiverHost || c.origin==c.host || slot!=-1 || count>=4 || U32(p+4)!=c.origin) return "join-owner/duplicate/full";
+            // A JOIN goes to every member; only the host acts on it, the others redraw (event.cpp:4107).
+            if (c.origin==c.host || U32(p+4)!=c.origin) return "join-owner";
+            if (c.receiverHost && (slot!=-1 || count>=4)) return "join-duplicate/full";
             return String(p+8,20) ? nullptr : "join-name";
         case 4: {
             if (c.origin!=c.host || S16(p+2)<1 || S16(p+2)>10) return "lobby-owner/map";
