@@ -15,9 +15,10 @@
 namespace blupi::net {
 namespace {
 using Clock = std::chrono::steady_clock;
-constexpr uint32_t Magic = 0x4e455431;
+constexpr uint32_t Magic = 0x4e455431, DiscoveryQuery = 0x51445442, DiscoveryAnswer = 0x41445442;
 enum Kind { Hello = 1, Welcome, Refuse, Members, Data, Query, Answer, Gone };
-constexpr size_t Header = 36, MaxQueue = 1024;
+// Envelope: magic, protocol, version, kind, epoch, origin, sequence, tick, length, content (64-bit).
+constexpr size_t Header = 44, MaxQueue = 1024;
 Options options;
 uint32_t currentTick = 0;
 uint32_t testSent = 0;
@@ -29,6 +30,9 @@ void Put(std::vector<uint8_t>& b, size_t at, uint32_t n) {
 uint32_t Get(const uint8_t* b, size_t at) {
     uint32_t n = 0; for (int i = 0; i < 4; ++i) n |= uint32_t(b[at+i]) << (8*i); return n;
 }
+// ENetBuffer's field order differs by platform (Windows: WSABUF), so it is filled by name.
+ENetBuffer Buffer(void* data, size_t size) { ENetBuffer b; b.data = data; b.dataLength = size; return b; }
+uint64_t Content(const uint8_t* b) { return uint64_t(Get(b,36)) | uint64_t(Get(b,40)) << 32; }
 bool Text(const uint8_t* b, size_t n) { return n > 0 && n <= 100 && b[n-1] == 0 && std::memchr(b, 0, n) == b+n-1; }
 }
 bool ParseEndpoint(const std::string& value, Endpoint& out) {
@@ -50,6 +54,9 @@ const Options& Configuration() { return options; }
 
 struct Session::Impl {
     uint32_t protocol, version, epoch = 0, id = 0, nextId = 2, sequence = 0;
+    uint64_t content = 0;
+    ENetSocket discovery = ENET_SOCKET_NULL;   // host: LAN discovery answers, game port + 1
+    uint16_t port = 0;
     ENetHost* socket = nullptr;
     ENetPeer* server = nullptr;
     bool host = false, active = false, started = false;
@@ -66,6 +73,7 @@ struct Session::Impl {
         std::vector<uint8_t> b(Header+n);
         Put(b,0,Magic); Put(b,4,protocol); Put(b,8,version); Put(b,12,kind);
         Put(b,16,epoch); Put(b,20,origin); Put(b,24,seq); Put(b,28,currentTick); Put(b,32,uint32_t(n));
+        Put(b,36,uint32_t(content)); Put(b,40,uint32_t(content >> 32));
         if (n) std::memcpy(b.data()+Header,body,n);
         return b;
     }
@@ -99,6 +107,11 @@ struct Session::Impl {
         if (Get(b,4) != protocol || Get(b,8) != version) {
             if (host) Reject(peer,"protocol/version mismatch");
             else if (kind == Refuse) { error = "protocol/version mismatch"; }
+            return;
+        }
+        // Probes are answered whatever their content, so a client can tell an incompatible session.
+        if (Content(b) != content && kind != Refuse && kind != Query) {
+            if (host) Reject(peer,"different game edition or multiplayer maps");
             return;
         }
         if (host && (kind == Hello || kind == Query)) {
@@ -164,8 +177,18 @@ bool Session::Create(uint16_t port,const std::string& name,const std::string& pl
     ENetAddress address{ENET_HOST_ANY,port};
     p->socket=enet_host_create(&address,8,2,0,0);
     if (!p->socket) { p->error="cannot bind UDP port"; return false; }
-    p->host=true; p->active=true; p->id=1; p->members[0]=1; p->name=name; p->player=player;
+    p->host=true; p->active=true; p->id=1; p->members[0]=1; p->name=name; p->player=player; p->port=port;
     p->epoch=uint32_t(Clock::now().time_since_epoch().count()) | 1u;
+    // LAN discovery (Discover): a plain UDP socket beside the session's. Without it the session can
+    // still be joined by address; a second host on the same machine shares it where the system allows.
+    if (port < 65535) {
+        p->discovery=enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
+        ENetAddress any{ENET_HOST_ANY,uint16_t(port+1)};
+        if (p->discovery!=ENET_SOCKET_NULL && (enet_socket_set_option(p->discovery,ENET_SOCKOPT_REUSEADDR,1) < 0 ||
+            enet_socket_set_option(p->discovery,ENET_SOCKOPT_NONBLOCK,1) < 0 || enet_socket_bind(p->discovery,&any) < 0)) {
+            enet_socket_destroy(p->discovery); p->discovery=ENET_SOCKET_NULL;
+        }
+    }
     return true;
 }
 bool Session::Join(const Advertisement& ad,const std::string& player,unsigned deadlineMs) {
@@ -199,7 +222,7 @@ std::vector<Advertisement> Session::Probe(const std::vector<Endpoint>& endpoints
                 p->Write(peer,p->Packet(Query,0,0,query,sizeof(query)));
             } else if (event.type==ENET_EVENT_TYPE_RECEIVE) {
                 const auto* b=event.packet->data; const size_t n=event.packet->dataLength;
-                if (n>=Header+21 && n<=Header+120 && Get(b,0)==Magic && Get(b,4)==p->protocol && Get(b,8)==p->version &&
+                if (n>=Header+21 && n<=Header+120 && Get(b,0)==Magic && Get(b,4)==p->protocol && Get(b,8)==p->version && Content(b)==p->content &&
                     Get(b,12)==Answer && Get(b,32)==n-Header && Text(b+Header+20,n-Header-20))
                     found.push_back({endpoint,reinterpret_cast<const char*>(b+Header+20),Get(b,16)});
                 enet_packet_destroy(event.packet); done=true;
@@ -210,8 +233,64 @@ std::vector<Advertisement> Session::Probe(const std::vector<Endpoint>& endpoints
     }
     return found;
 }
+void Session::SetContent(uint64_t fingerprint) { p->content = fingerprint; }
+std::vector<Advertisement> Session::Discover(uint16_t port,unsigned deadlineMs,unsigned* incompatible) {
+    // LAN discovery: one query to the local broadcast address and to this machine, answers collected
+    // until the deadline. Joinable sessions with the same protocol, version and content are returned.
+    std::vector<Advertisement> found;
+    if (incompatible) *incompatible=0;
+    if (!Init() || port >= 65535) return found;
+    ENetSocket socket=enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
+    if (socket==ENET_SOCKET_NULL) return found;
+    enet_socket_set_option(socket,ENET_SOCKOPT_BROADCAST,1);
+    enet_socket_set_option(socket,ENET_SOCKOPT_NONBLOCK,1);
+    std::vector<uint8_t> query(12); Put(query,0,DiscoveryQuery); Put(query,4,p->protocol); Put(query,8,p->version);
+    for (enet_uint32 host : {ENET_HOST_BROADCAST, enet_uint32(ENET_HOST_TO_NET_32(0x7f000001))}) {
+        ENetAddress to{host,uint16_t(port+1)}; ENetBuffer buffer=Buffer(query.data(),query.size());
+        enet_socket_send(socket,&to,&buffer,1);
+    }
+    std::vector<uint32_t> epochs;
+    const auto deadline=Clock::now()+std::chrono::milliseconds(deadlineMs);
+    while (Clock::now()<deadline) {
+        ServiceAll();
+        uint8_t answer[160]; ENetAddress from{}; ENetBuffer buffer=Buffer(answer,sizeof(answer));
+        const int n=enet_socket_receive(socket,&from,&buffer,1);
+        if (n<=0) { std::this_thread::sleep_for(std::chrono::milliseconds(1)); continue; }
+        if (n<34 || Get(answer,0)!=DiscoveryAnswer || Get(answer,4)!=p->protocol || Get(answer,8)!=p->version ||
+            !Text(answer+32,size_t(n)-32)) continue;
+        const uint64_t content=uint64_t(Get(answer,12)) | uint64_t(Get(answer,16))<<32;
+        const uint32_t epoch=Get(answer,20), game=Get(answer,24);
+        if (std::find(epochs.begin(),epochs.end(),epoch)!=epochs.end()) continue;
+        epochs.push_back(epoch);
+        if (content!=p->content) { if (incompatible) ++*incompatible; continue; }
+        if (answer[28] || answer[29]>=4 || game==0 || game>65535) continue;
+        char ip[64]{};
+        if (enet_address_get_host_ip(&from,ip,sizeof(ip))<0) continue;
+        found.push_back({{ip,uint16_t(game)},reinterpret_cast<const char*>(answer+32),epoch});
+    }
+    enet_socket_destroy(socket);
+    return found;
+}
 void Session::Service(unsigned waitMs) {
     if (!p->socket) return;
+    if (p->host && p->discovery!=ENET_SOCKET_NULL) {
+        // Answer LAN discovery queries: protocol and version must match; content is reported so the
+        // asker can tell an incompatible session. Started sessions do not take new members.
+        uint8_t query[64]; ENetAddress from{};
+        for (unsigned count=0;count<16;++count) {
+            ENetBuffer buffer=Buffer(query,sizeof(query));
+            if (enet_socket_receive(p->discovery,&from,&buffer,1) != 12) break;
+            if (Get(query,0)!=DiscoveryQuery || Get(query,4)!=p->protocol || Get(query,8)!=p->version) continue;
+            std::vector<uint8_t> answer(32+p->name.size()+1);
+            Put(answer,0,DiscoveryAnswer); Put(answer,4,p->protocol); Put(answer,8,p->version);
+            Put(answer,12,uint32_t(p->content)); Put(answer,16,uint32_t(p->content>>32)); Put(answer,20,p->epoch);
+            Put(answer,24,p->port);
+            answer[28]=p->started; answer[29]=uint8_t(std::count_if(p->members.begin(),p->members.end(),[](uint32_t m){return m!=0;}));
+            std::memcpy(answer.data()+32,p->name.c_str(),p->name.size()+1);
+            ENetBuffer reply=Buffer(answer.data(),answer.size());
+            enet_socket_send(p->discovery,&from,&reply,1);
+        }
+    }
     ENetEvent event{};
     for (unsigned count=0;count<512 && enet_host_service(p->socket,&event,count ? 0 : waitMs)>0;++count) {
         if (event.type==ENET_EVENT_TYPE_CONNECT) {
@@ -282,8 +361,9 @@ void Session::Close(unsigned deadlineMs) {
         enet_host_flush(p->socket);
         enet_host_destroy(p->socket);
     }
-    const auto protocol=p->protocol,version=p->version;
-    p.reset(new Impl); p->protocol=protocol; p->version=version;
+    if (p->discovery!=ENET_SOCKET_NULL) enet_socket_destroy(p->discovery);
+    const auto protocol=p->protocol,version=p->version; const uint64_t content=p->content;
+    p.reset(new Impl); p->protocol=protocol; p->version=version; p->content=content;
 }
 bool Session::Active() const { return p->active; }
 bool Session::IsHost() const { return p->host; }

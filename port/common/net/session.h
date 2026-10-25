@@ -29,9 +29,13 @@ public:
     ~Session();
     Session(const Session&) = delete;
     Session& operator=(const Session&) = delete;
+    // Peers must agree on the game content (e.g. edition and multiplayer maps): set before Create/Join/Probe.
+    void SetContent(uint64_t fingerprint);
     bool Create(uint16_t port, const std::string& name, const std::string& player);
     bool Join(const Advertisement&, const std::string& player, unsigned deadlineMs = 1500);
     std::vector<Advertisement> Probe(const std::vector<Endpoint>&, unsigned deadlineMs = 200);
+    // LAN discovery: sessions answering on game port + 1; counts incompatible (other content) answers.
+    std::vector<Advertisement> Discover(uint16_t port, unsigned deadlineMs = 300, unsigned* incompatible = nullptr);
     void Service(unsigned waitMs = 0);
     bool Send(const void*, size_t, bool reliable);
     bool Receive(Message&);

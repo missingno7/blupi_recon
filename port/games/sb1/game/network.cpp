@@ -6,11 +6,30 @@
 #include "event.h"
 #include "game/network_protocol.h"
 #include "game/network_port.h"
+#include "game/port_game.h"
 #include "game/member_access.h"
 #include "net/session.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
+
+// The wire format is the historical in-memory layout of these structures, which the original code
+// fills by field and by byte offset (event.cpp, decmove.cpp): little-endian, natural alignment, signed
+// char (-fsigned-char, CMakeLists.txt). Windows, Linux and Android (x86-64, ARM64) all agree; a target
+// that did not would fail here instead of speaking a different protocol.
+static_assert(sizeof(short) == 2 && sizeof(int) == 4 && sizeof(DPID) == 4, "wire integer widths");
+static_assert(char(-1) < 0, "the historical context needs signed char");
+#if !defined(_WIN32) && !(defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#error "the native multiplayer wire format is little-endian"
+#endif
+static_assert(sizeof(NetMessage) == 8 && offsetof(NetMessage, data2) == 2 &&
+              offsetof(NetMessage, data3) == 4 && offsetof(NetMessage, data4) == 6, "NetMessage layout");
+static_assert(sizeof(NetPacket) == 60 && offsetof(NetPacket, data1) == 2 && offsetof(NetPacket, time) == 4 &&
+              offsetof(NetPacket, blupiPosX) == 8 && offsetof(NetPacket, blupiChannel) == 16 &&
+              offsetof(NetPacket, nbMessages) == 19 && offsetof(NetPacket, messages) == 20, "NetPacket layout");
+static_assert(sizeof(NetPlayer) == 32 && offsetof(NetPlayer, dpid) == 4 && offsetof(NetPlayer, team) == 8 &&
+              offsetof(NetPlayer, name) == 10, "NetPlayer layout (LOBBY carries four)");
 #include <deque>
 #include <map>
 #include <memory>
@@ -18,6 +37,35 @@
 
 extern CDecor* g_pDecor;
 extern CEvent* g_pEvent;
+
+// What every peer of a session must share, on any platform: the edition and the ten multiplayer
+// maps (data/world101..110.blp, the lobby's map choices 1..10), read through the game's file system
+// exactly as the game will load them. FNV-1a, 64 bits; carried in every session envelope.
+static uint64_t ContentFingerprint()
+{
+	uint64_t hash = 1469598103934665603ULL;
+	auto mix = [&hash](const void* data, size_t size) {
+		const uint8_t* bytes = static_cast<const uint8_t*>(data);
+		for (size_t i = 0; i < size; i++) { hash ^= bytes[i]; hash *= 1099511628211ULL; }
+	};
+	const std::string game = "sb1/" + PortEdition();   // "blupi" or "eggbert", from the data
+	mix(game.c_str(), game.size() + 1);
+	for (int map = 101; map <= 110; map++)
+	{
+		char name[32];
+		snprintf(name, sizeof(name), "data\\world%.3d.blp", map);
+		uint64_t size = 0;
+		if (FILE* file = fopen(name, "rb"))
+		{
+			uint8_t buffer[4096];
+			size_t n;
+			while ((n = fread(buffer, 1, sizeof(buffer), file)) > 0) { mix(buffer, n); size += n; }
+			fclose(file);
+		}
+		mix(&size, sizeof(size));
+	}
+	return hash;
+}
 namespace {
 namespace wire = blupi::sb1::net;
 namespace native = blupi::net;
@@ -139,13 +187,28 @@ BOOL CNetwork::EnumProviders() {
 }
 int CNetwork::GetNbProviders() { return m_providers.nb; }
 char* CNetwork::GetProviderName(int i) { return i<0 || i>=m_providers.nb ? nullptr : (*m_providers.pList)[i].name; }
-BOOL CNetwork::CreateProvider(int i) { if (i!=0 || m_providers.nb!=1) return FALSE; Get(this).provider=true; Note("provider Native network (UDP)"); return TRUE; }
+BOOL CNetwork::CreateProvider(int i) {
+    if (i!=0 || m_providers.nb!=1) return FALSE;
+    auto& s=Get(this); s.provider=true;
+    const uint64_t content=ContentFingerprint(); s.session.SetContent(content);
+    char note[96]; snprintf(note,sizeof(note),"provider Native network (UDP); content %016llx",(unsigned long long)content);
+    Note(note); return TRUE;
+}
 void CNetwork::FreeProviderList() { std::free(m_providers.pList); m_providers={0,nullptr}; }
 BOOL CNetwork::EnumSessions() {
     FreeSessionList(); auto& s=Get(this); if (!s.provider) return FALSE;
     auto endpoints=native::Configuration().endpoints;
     endpoints.insert(endpoints.begin(),{"127.0.0.1",native::Configuration().port});
-    s.listed=s.session.Probe(endpoints);
+    // Sessions on the LAN (discovery) and at the configured addresses (--net-join, this machine),
+    // each listed once.
+    unsigned incompatible=0;
+    s.listed=s.session.Discover(native::Configuration().port,300,&incompatible);
+    for (auto& ad:s.session.Probe(endpoints)) {
+        bool known=false;
+        for (const auto& other:s.listed) known=known || other.epoch==ad.epoch;
+        if (!known) s.listed.push_back(std::move(ad));
+    }
+    if (incompatible) Note("ignored a session of another edition or with other multiplayer maps");
     m_sessions.pList=(NamedGUID(*)[MAXSESSION])std::calloc(MAXSESSION,sizeof(NamedGUID));
     if (!m_sessions.pList) return FALSE;
     for (const auto& ad:s.listed) {

@@ -30,6 +30,13 @@ int main() {
     Check(Until([&]{return other.Receive(m);}),"unsequenced other receive");
     Session mismatch(124,1); Check(!mismatch.Join(ads[0],"wrong",300),"protocol refusal");
     Session revision(123,2); Check(!revision.Join(ads[0],"wrong",300),"version refusal");
+    Session content(123,1); content.SetContent(7);
+    Check(content.Probe({{"127.0.0.1",port}}).empty(),"different content not listed");
+    Check(!content.Join(ads[0],"wrong",300),"content refusal");
+    Session finder(123,1); unsigned foreign=0;
+    auto lan=finder.Discover(port,300,&foreign);
+    Check(lan.size()==1 && lan[0].name=="test room" && lan[0].endpoint.port==port && foreign==0,"LAN discovery");
+    Check(content.Discover(port,300,&foreign).empty() && foreign==1,"discovery reports other content");
     Session fourth(123,1),fifth(123,1); Check(fourth.Join(ads[0],"fourth"),"four members");
     Check(!fifth.Join(ads[0],"fifth",300),"full refusal");
     const auto before=std::chrono::steady_clock::now(); other.Close(80);
