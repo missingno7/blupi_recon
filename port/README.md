@@ -186,7 +186,8 @@ SoundFont only when `--soundfont` is given. The music volume is the game's own o
 
 [SNAPSHOT] The current port status is in [docs/STATUS.md](../docs/STATUS.md) under "SDL3 port". That
 covers the latest test totals, the SB2 port, fidelity-map counts and the unavailable services, of which
-**multiplayer is a required upcoming milestone** ([docs/ROADMAP.md](docs/ROADMAP.md), stage 10).
+**native multiplayer is a pilot**: SB1 two-instance sessions work on one machine; LAN, internet,
+SB2 and Android follow ([docs/MULTIPLAYER.md](docs/MULTIPLAYER.md)).
 The receipts below are those of 2026-10-22.
 
 Verified ([EVIDENCE], reproduced by the commands above):
@@ -269,9 +270,10 @@ Not implemented / known gaps (each fails the way the original did when the servi
   -6 dB so that GeneralUser GS does not clip at full option volume.
 - **AVI movies**: `CMovie` reports itself disabled, so movies are skipped as in the original
   without the MCI AVI driver. The movie files are not part of the installed data anyway.
-- **Multiplayer**: `CNetwork` enumerates no DirectPlay providers; the multiplayer screens open
-  with nothing to join. The port is therefore not functionally complete. Native multiplayer is
-  the next required milestone ([docs/ROADMAP.md](docs/ROADMAP.md), stage 10).
+- **Multiplayer**: SB1 has a native UDP pilot (ENet under the original `CNetwork`): two instances
+  on one machine create/join a session, use the lobby and play (`--net-port`, `--net-join`). No LAN
+  discovery, internet or host migration yet; SB2 keeps the unavailable stub
+  ([docs/MULTIPLAYER.md](docs/MULTIPLAYER.md)).
 - **Gamepads** stand in for the 1998 joystick. The game's own joystick code runs unchanged on
   SDL gamepads: choose the gamepad under "Choose input device" on the settings screen (each
   session, as in the original). Stick or d-pad move; A, B, X, Y are joystick buttons 1–4;

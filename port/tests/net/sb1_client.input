@@ -1,0 +1,10 @@
+# Native multiplayer pilot, SB1 client (port/tests/net_sb1.py); see sb1_host.input.
+40 click 112 430    # title: dice -> choose player
+70 click 127 431    # choose player: multiplayer service
+100 click 160 130   # service: provider row 0
+230 click 242 407   # service: OK -> EnumSessions finds the host's session (created at 170)
+260 click 140 130   # sessions: row 0
+270 click 140 407   # sessions: join -> lobby (JOIN, slot 1)
+300 click 308 160   # lobby: client ready (slot 1)
+400 keydown 37      # play: walk left
+460 keyup 37

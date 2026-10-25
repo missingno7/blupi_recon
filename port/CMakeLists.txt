@@ -40,6 +40,25 @@ set(BLUPI_HIST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/../src)
 set(BLUPI_COMMON ${CMAKE_CURRENT_SOURCE_DIR}/common)
 set(BLUPI_GAME_DIR ${CMAKE_CURRENT_SOURCE_DIR}/games/sb1)
 
+# Pinned, unmodified ENet C sources. It never sees the game's compat headers.
+add_library(blupi_enet STATIC
+    third_party/enet/callbacks.c third_party/enet/compress.c
+    third_party/enet/host.c third_party/enet/list.c third_party/enet/packet.c
+    third_party/enet/peer.c third_party/enet/protocol.c
+    third_party/enet/unix.c third_party/enet/win32.c)
+target_include_directories(blupi_enet PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/enet/include)
+if(WIN32)
+    target_link_libraries(blupi_enet PUBLIC ws2_32 winmm)
+else()
+    target_compile_definitions(blupi_enet PRIVATE HAS_FCNTL=1 HAS_POLL=1 HAS_GETADDRINFO=1
+        HAS_GETNAMEINFO=1 HAS_INET_PTON=1 HAS_INET_NTOP=1 HAS_SOCKLEN_T=1)
+endif()
+add_library(blupi_net STATIC common/net/session.cpp)
+target_include_directories(blupi_net PUBLIC ${BLUPI_COMMON})
+target_link_libraries(blupi_net PRIVATE blupi_enet)
+add_library(blupi_sb1_protocol STATIC games/sb1/game/network_protocol.cpp)
+target_include_directories(blupi_sb1_protocol PUBLIC ${BLUPI_GAME_DIR})
+
 # Historical TUs compiled unchanged. The other seven historical TUs (blupi, ddutil,
 # misc, movie, network, pixmap, sound) talk to Windows/DirectX/MCI and are replaced
 # by port-owned files in game/.
@@ -136,7 +155,7 @@ target_include_directories(blupi_platform PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/ge
 add_library(blupi_app STATIC common/app/launcher.cpp)
 target_include_directories(blupi_app PUBLIC ${BLUPI_COMMON} PRIVATE ${BLUPI_COMMON}/compat/include)
 target_compile_definitions(blupi_app PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
-target_link_libraries(blupi_app PUBLIC blupi_platform)
+target_link_libraries(blupi_app PUBLIC blupi_platform blupi_net)
 
 # Port-owned replacements of the historical platform TUs, plus the shared
 # historical objects: everything that sees the Win32 compatibility names.
@@ -158,7 +177,7 @@ add_library(blupi_game STATIC
     common/ui/settings.cpp
     games/sb1/game/language.cpp
     $<TARGET_OBJECTS:blupi_hist>)
-target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform blupi_app)
+target_link_libraries(blupi_game PRIVATE blupi_hist_context PUBLIC blupi_platform blupi_app blupi_sb1_protocol)
 target_compile_definitions(blupi_game PRIVATE BLUPI_PORT_VERSION="${PROJECT_VERSION}")
 target_include_directories(blupi_game PRIVATE ${BLUPI_GAME_DIR})
 

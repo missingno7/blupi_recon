@@ -35,6 +35,7 @@
 #include "game/scene.h"
 #include "game/settings.h"
 #include "game/member_access.h"
+#include "game/network_port.h"
 #include "platform/audio.h"
 #include "platform/music.h"
 #include "platform/host.h"
@@ -1224,6 +1225,7 @@ int BlupiMain(int argc, char** argv)
     };
 
     game.configure = [](const Options& o) {
+        PortNetworkConfigure(o.net.testSync ? o.userRoot+"/network.trace" : "");
         g_bHeadless = o.host.headless;
         g_portColorDepth = o.colorDepth; g_wideWidth = o.wideWidth;
         g_bReference = o.reference; g_renderRepeat = o.renderRepeat;
@@ -1255,7 +1257,11 @@ int BlupiMain(int argc, char** argv)
     game.finish = FinishObjects;
     game.timerStep = TimerStep; game.timerInterval = []() { return g_timerInterval; };
     game.soundPoll = PortSoundPoll; game.saveSettings = PortSaveSettings;
-    game.prepareTick = [](long frame) { g_portFrame = frame; PortProbeApply(frame); };
+    game.prepareTick = [](long frame) {
+        g_portFrame = frame;
+        PortNetworkTick(frame);
+        PortProbeApply(frame);
+    };
     game.completedTick = [](long) {};
     game.maintenance = []() {
         if (g_pEvent != NULL)

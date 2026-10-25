@@ -15,6 +15,7 @@
 #include "windows.h"
 #include "platform/host.h"
 #include "ui/settings.h"
+#include "net/session.h"
 
 namespace blupi::app {
 struct ScriptedInput { long tick = 0; std::string kind; int x = 0, y = 0; };
@@ -51,6 +52,7 @@ struct Options
     int wideWidth = 0, renderRepeat = 0;
     bool reference = false;
     bool        verbose = false;
+    blupi::net::Options net;
 };
 
 

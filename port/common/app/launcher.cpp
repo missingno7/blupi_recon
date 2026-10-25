@@ -49,10 +49,13 @@ void Usage(const Game& game)
         "  --soundfont FILE    SoundFont (.sf2) for the MIDI music; default: BLUPI_SOUNDFONT,\n"
         "                      then soundfont.sf2 in the user directory or next to the program\n"
         "  --verbose           log the game's debug output\n"
+        "  --net-port N        native network listen/probe port (default 28640)\n"
+        "  --net-join HOST[:PORT]  additional session probe endpoint (repeatable)\n"
         "  --version           print the version and exit\n"
         "  --language CODE     built-in pack or a pack in the user folder languages/\n"
         "test options:\n"
         "  --headless          no window, no audio device, frames run back to back\n"
+        "  --net-test-sync     reliable tick ingress, requires the test supervisor\n"
         "  --frames N          exit after N game frames (WM_UPDATE)\n"
         "  --trace FILE        write 'frame phase state-hash screen-hash' per frame\n"
         "  --trace-every N     write only every Nth frame (checkpoints)\n"
@@ -117,6 +120,17 @@ bool ParseOptions(int argc, char** argv, Options& o, Game& game)
         else if (a == "--soundfont") o.soundFont = next();
         else if (a == "--verbose") o.verbose = true;
         else if (a == "--headless") o.host.headless = true;
+        else if (a == "--net-port") {
+            blupi::net::Endpoint endpoint;
+            if (!blupi::net::ParseEndpoint(std::string("127.0.0.1:")+next(),endpoint)) return false;
+            o.net.port=endpoint.port;
+        }
+        else if (a == "--net-join") {
+            blupi::net::Endpoint endpoint;
+            if (!blupi::net::ParseEndpoint(next(),endpoint)) return false;
+            o.net.endpoints.push_back(endpoint);
+        }
+        else if (a == "--net-test-sync") o.net.testSync=true;
         else if (a == "--frames") o.ticks = atol(next());
         else if (a == "--trace") o.trace = next();
         else if (a == "--trace-every") { o.traceEvery = atol(next()); if (o.traceEvery < 1) o.traceEvery = 1; }
@@ -395,6 +409,10 @@ int Run(int argc, char** argv, Game& game)
     o.host.integerScale = (*game.settings).integerScale;
     o.host.autoWide = (*game.settings).widescreen && o.wideWidth == 0;
     o.host.viewWidth = o.wideWidth;
+    if (o.net.testSync && (!o.host.headless || !getenv("BLUPI_NET_TEST_DIR") || !getenv("BLUPI_NET_TEST_ROLE"))) {
+        fprintf(stderr,"--net-test-sync requires headless test supervisor\n"); return 2;
+    }
+    blupi::net::Configure(o.net);
     game.configure(o);
     o.host.iconPng = game.icon;
     o.host.iconPngSize = game.iconSize;
@@ -555,10 +573,12 @@ int Run(int argc, char** argv, Game& game)
         // the original message loop, where the timer thread posted WM_UPDATE
         // behind them. [EVIDENCE] cross-build oracle, scripted tour 2026-10-21.
         game.soundPoll();
+        blupi::net::ServiceAll();
         DispatchPosted(game);
         if (*game.quit) break;
         if (o.host.headless || now >= nextTick)
         {
+            if (!blupi::net::BeginTestTick(frame)) { fprintf(stderr,"network test tick grant timed out\n"); result=7; break; }
             PostScriptedInput(o, frame, game);
             game.prepareTick(frame);
             DispatchPosted(game);
@@ -577,6 +597,7 @@ int Run(int argc, char** argv, Game& game)
         {
             frame++;
             game.completedTick(frame);
+            if (!blupi::net::EndTestTick(frame-1)) { fprintf(stderr,"network test tick completion failed\n"); result=7; break; }
             if (o.host.headless)
             {
                 // No audio device: advance the synthesizer by one timer interval per

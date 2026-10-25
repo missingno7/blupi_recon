@@ -453,3 +453,18 @@ include(fidelity_sb1edit.cmake)
 include(fidelity_audio.cmake)
 include(fidelity_init.cmake)
 include(fidelity_save.cmake)
+
+add_executable(test_net_sb1_protocol test_net_sb1_protocol.cpp)
+target_link_libraries(test_net_sb1_protocol PRIVATE blupi_sb1_protocol)
+add_test(NAME net_sb1_protocol COMMAND test_net_sb1_protocol)
+add_executable(test_net_transport test_net_transport.cpp)
+target_link_libraries(test_net_transport PRIVATE blupi_net)
+add_test(NAME net_transport COMMAND test_net_transport)
+set_tests_properties(net_transport PROPERTIES TIMEOUT 20)
+# Two SB1 instances in one native session on loopback, lockstepped by the supervisor (net_sb1.py).
+if(BLUPI_TEST_DATA AND BLUPI_TEST_PYTHON)
+    add_test(NAME net_sb1_two_instances COMMAND "${BLUPI_TEST_PYTHON}" "${CMAKE_CURRENT_SOURCE_DIR}/net_sb1.py"
+        --exe $<TARGET_FILE:blupi> --data "${BLUPI_TEST_DATA}" --inputs "${CMAKE_CURRENT_SOURCE_DIR}/net"
+        --work "${CMAKE_CURRENT_BINARY_DIR}/net_sb1")
+    set_tests_properties(net_sb1_two_instances PROPERTIES TIMEOUT 600 RUN_SERIAL TRUE)
+endif()
