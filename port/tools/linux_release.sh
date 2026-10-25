@@ -12,6 +12,7 @@
 # minimum (releases: WSL Ubuntu 22.04, glibc 2.35; port/docs/RELEASING.md).
 #
 #   wsl -d Ubuntu-22.04 -u root -e sh port/tools/linux_release.sh
+#   wsl -d Ubuntu-22.04 -u root -e sh port/tools/linux_release.sh -R '<regex>'   # a test subset
 #
 #   BLUPI_LINUX_WORK  work directory (default: ~/blupi-release)
 #   BLUPI_DATA        game folder for the tests (default: assets/Speedy Blupi of this repo)
@@ -83,7 +84,7 @@ cmake --build "$B" -j 4
 # The provenance map check needs the complete repository: run it on the real tree
 # (port/docs/FIDELITY.md) and exclude it from the partial copy's ctest run, as linux_check.sh does.
 python3 "$REPO/port/tools/check_fidelity.py" --check
-ctest --test-dir "$B" -j 1 --output-on-failure -E '^fidelity_map$'
+ctest --test-dir "$B" -j 1 --output-on-failure -E '^fidelity_map$' "$@"
 
 OUT="$WORK/package/$NAME"
 rm -rf "$WORK/package"
