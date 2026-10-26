@@ -149,16 +149,17 @@ These are bounded receipts, not whole-game certification.
 
 **The port is not functionally complete.** These services are unavailable or differ:
 
-- **Multiplayer:** SB1 has native multiplayer (release candidate 1.2.0-rc1,
-  [port/docs/MULTIPLAYER.md](../port/docs/MULTIPLAYER.md)). It works for two to four players across
-  Windows, Linux and Android, with LAN discovery, a content check and `--net-join`. It has been tested
-  automatically, with little real-device play. SB2 has the same multiplayer since 2026-10-25, tested
-  automatically on one machine (two and four players).
+- **Multiplayer:** both games have native multiplayer since port 1.2.0
+  ([port/docs/MULTIPLAYER.md](../port/docs/MULTIPLAYER.md)): two to four players across Windows, Linux
+  and Android, with LAN discovery, a content check and `--net-join`. Tested automatically (two and four
+  players on one machine) and, for each game, by the user between real devices; little other
+  real-world play. No in-game address entry: Android joins LAN sessions only.
 - **AVI movies:** not played; the phase is skipped.
 - **SB2 CD audio:** fails, logged once.
 - **MIDI:** played with a modern SoundFont, not the 1998 device's timbre.
 - **Coverage gaps:** hardware gamepads and Android keyboard/background are open. SB2 on Android
-  (1.2.0-rc2) is checked on the emulator only: start, menus, touch controls and play.
+  (since 1.2.0-rc2) is checked on the emulator (start, menus, touch controls, play) and by the user's
+  multiplayer test.
 
 ## 6. Where work stands
 
@@ -170,6 +171,6 @@ These are bounded receipts, not whole-game certification.
   evidence, not recovered source.
 - **Consolidation.** Stage 1 (ordinary builds) and stage 2 (this documentation) are done; stages
   3 to 5 follow (docs/CONSOLIDATION_PLAN.md).
-- **Port.** Native multiplayer, roadmap stage 10, is in progress:
-  - SB1 ships in 1.2.0-rc1;
-  - next: real-network tests, in-game address entry, then SB2.
+- **Port.** 1.2.0 ships both games with native multiplayer (roadmap stage 10). Open: an in-game
+  address entry for internet play, real-network fault tests, and the optional consolidation stage 4
+  (shared language, pixmap and audio services).

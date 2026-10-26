@@ -47,8 +47,9 @@ different games or editions never do (the protocol id and the content check belo
   worked without issues. Not yet: more real devices and networks. [HYPOTHESIS] A backgrounded app stops
   servicing its session (SDL pauses the game loop), so after ENet's peer timeout (1.5 to 3 s) the others see
   it leave; untested;
+- [EVIDENCE, 2026-10-26, user test] SB2 multiplayer with the local test builds (Windows package and
+  Android APK of commit e6a305f) worked;
 - the validator's remaining whitelists and margins before internet exposure;
-- SB2 between real devices (tested on one machine only).
 
 Host migration is unsupported by design (below).
 

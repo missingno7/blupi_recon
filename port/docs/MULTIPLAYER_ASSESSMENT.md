@@ -1,5 +1,10 @@
 # netassess — bounded multiplayer protocol and transport assessment
 
+> **Historical planning record (2026-10-25).** The file plan and the "keep SB2 unavailable" advice below
+> predate the implementation. The implemented design and current status are in
+> [MULTIPLAYER.md](MULTIPLAYER.md): the adapter and validator live in `port/common/net/`
+> (`cnetwork.cpp`, `game_protocol.*`) and serve both SB1 and SB2.
+
 Date: 2026-10-25. Repository: D:\Prog\blupi_recon. Branch pointer inspected: .git/HEAD:1, refs/heads/sb2-matching.
 
 ## Scope and recommendation

@@ -86,7 +86,9 @@ def android():
 def sums():
     lines = []
     for f in sorted(os.listdir(OUT)):
-        if f.startswith('speedy-blupi-sdl3-%s-' % VERSION):
+        # Exactly this version's packages: 1.2.0 must not also take 1.2.0-rc2's.
+        if re.fullmatch(r'speedy-blupi-sdl3-%s-(windows-x64\.zip|linux-x86_64\.tar\.gz|android\.apk)'
+                        % re.escape(VERSION), f):
             digest = hashlib.sha256(open(os.path.join(OUT, f), 'rb').read()).hexdigest()
             lines.append('%s  %s\n' % (digest, f))
     open(os.path.join(OUT, 'SHA256SUMS.txt'), 'w', newline='\n').write(''.join(lines))

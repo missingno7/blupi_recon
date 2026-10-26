@@ -1,14 +1,13 @@
-# Speedy Blupi SDL3 port 1.2.0-rc2 (release candidate)
+# Speedy Blupi SDL3 port 1.2.0
 
 The native port of **Speedy Blupi** (Epsitec, 1998) and **Speedy Blupi 2** (2001), and of their
 eGames editions **Speedy Eggbert** and **Speedy Eggbert 2**, for Windows, Linux and Android. It is
 built from this repository's reconstruction of the original programs' source, compiled unchanged with
 a modern compiler, plus a small platform layer on SDL3.
 
-**This is a release candidate.** It brings the first native multiplayer, tested automatically and
-in one session between an Android phone and a Windows PC. Reports are welcome.
-
-Since 1.2.0-rc1: Speedy Blupi 2 and Speedy Eggbert 2 are in the Android app.
+Version 1.2 brings Speedy Blupi 2 and Speedy Eggbert 2, and the original multiplayer of all four
+games on a native network layer. It follows the release candidates 1.2.0-rc1 and 1.2.0-rc2; since
+rc2, Speedy Blupi 2 and Speedy Eggbert 2 have multiplayer too.
 
 **The original games' files are not included.** You need your own copy of the game: the CD or the
 installed game. On the first start the port asks for its folder and remembers it.
@@ -37,15 +36,16 @@ installed game. On the first start the port asks for its folder and remembers it
 
 | File | For |
 |---|---|
-| `speedy-blupi-sdl3-1.2.0-rc2-windows-x64.zip` | 64-bit Windows (tested on Windows 11): `blupi-sdl3.exe` and `blupi2-sdl3.exe` |
-| `speedy-blupi-sdl3-1.2.0-rc2-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later), X11 or Wayland |
-| `speedy-blupi-sdl3-1.2.0-rc2-android.apk` | Android 7.0 or newer, arm64 phones and tablets (and x86_64); all four games |
+| `speedy-blupi-sdl3-1.2.0-windows-x64.zip` | 64-bit Windows (tested on Windows 11): `blupi-sdl3.exe` and `blupi2-sdl3.exe` |
+| `speedy-blupi-sdl3-1.2.0-linux-x86_64.tar.gz` | x86-64 Linux with glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later), X11 or Wayland |
+| `speedy-blupi-sdl3-1.2.0-android.apk` | Android 7.0 or newer, arm64 phones and tablets (and x86_64); all four games |
 | `SHA256SUMS.txt` | checksums |
 
 - **Windows and Linux:** unpack anywhere and start `blupi-sdl3` (Speedy Blupi, Speedy Eggbert) or
   `blupi2-sdl3` (Speedy Blupi 2, Speedy Eggbert 2). The Windows executables are not code-signed, so
   SmartScreen may ask for confirmation ("More info", "Run anyway").
-- **Android:** install the APK; it updates 1.1.0 and 1.2.0-rc1 in place and keeps your imported game.
+- **Android:** install the APK; it updates 1.1.0 and the 1.2 release candidates in place and keeps your
+  imported games.
   Choose a game folder to import; the app copies it into its own storage. It tells the two games apart,
   and after a second import it asks which game to start.
 
@@ -80,8 +80,9 @@ installed game. On the first start the port asks for its folder and remembers it
 
 ## Known limitations
 
-- **Multiplayer has been tested automatically** (two and four players on one machine, Windows and
-  Linux) and in one phone-to-PC session; it has had little other real-world play. Also:
+- **Multiplayer** is tested automatically (two and four players on one machine, Windows and Linux)
+  and was played between real devices for both games, but has had little real-world play beyond that.
+  Also:
   - there is no in-game field for a host's address: use `--net-join`, or the local-network list;
   - an Android player who switches away from the game is likely to drop out of a session.
 - **Android:** a player's own language file goes into a `languages` folder inside the game folder before
